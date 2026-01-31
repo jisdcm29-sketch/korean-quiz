@@ -1,10 +1,9 @@
-
 <!DOCTYPE html>
 <html lang="mn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1A-1과 단어 테스트</title>
+    <title>1A-1과 단어 테스트 (품사별 분류)</title>
     <style>
         body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; color: #333; }
         .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
@@ -35,7 +34,7 @@
     <div id="quiz-section">
         <h3 id="question-number" style="color: #3498db;"></h3>
         <p id="question-instruction" class="instruction"></p>
-        <p id="question-text" style="font-size: 32px; font-weight: bold; margin: 20px 0; color: #2c3e50;"></p>
+        <p id="question-text" style="font-size: 32px; font-weight: bold; margin: 25px 0; color: #2c3e50;"></p>
         <div id="choices"></div>
     </div>
 
@@ -55,21 +54,28 @@
 </div>
 
 <script>
+    // 품사별로 분류된 단어 리스트 (n: 명사, v: 동사, o: 기타)
     const rawWords = [
-        { kor: "공항", mon: "нисэх онгоцны буудал" }, { kor: "시장", mon: "зах" }, { kor: "가다", mon: "явах" },
-        { kor: "영국", mon: "британ" }, { kor: "책상", mon: "ширээ" }, { kor: "학교", mon: "сургууль" },
-        { kor: "마시다", mon: "уух" }, { kor: "먹다", mon: "идэх" }, { kor: "주스", mon: "жүүс" },
-        { kor: "호주", mon: "австрали" }, { kor: "집", mon: "гэр" }, { kor: "의사", mon: "эмч" },
-        { kor: "미국", mon: "америк" }, { kor: "회사원", mon: "компанийн ажилтан" }, { kor: "사다", mon: "авах" },
-        { kor: "프랑스", mon: "франц" }, { kor: "오다", mon: "ирэх" }, { kor: "피자", mon: "пицца" },
-        { kor: "도서관", mon: "номын сан" }, { kor: "몽골", mon: "монгол" }, { kor: "읽다", mon: "унших" },
-        { kor: "한국", mon: "солонгос" }, { kor: "선생님", mon: "багш" }, { kor: "기자", mon: "сэтгүүлч" },
-        { kor: "식당", mon: "хоолны газар" }, { kor: "요리사", mon: "тогооч" }, { kor: "요리하다", mon: "хоол хийх" },
-        { kor: "주다", mon: "өгөх" }, { kor: "중국", mon: "хятад" }, { kor: "사람", mon: "хүн" },
-        { kor: "일본", mon: "япон" }, { kor: "군인", mon: "цэрэг" }, { kor: "가수", mon: "дуучин" },
-        { kor: "어느", mon: "аль" }, { kor: "의자", mon: "сандал" }, { kor: "운동하다", mon: "дасгал хийх" },
-        { kor: "마트", mon: "супермаркет" }, { kor: "학생", mon: "оюутан" }, { kor: "백화점", mon: "их дэлгүүр" },
-        { kor: "독일", mon: "герман" }
+        { kor: "공항", mon: "нисэх онгоцны буудал", pos: "n" }, { kor: "시장", mon: "зах", pos: "n" }, 
+        { kor: "가다", mon: "явах", pos: "v" }, { kor: "영국", mon: "британ", pos: "n" }, 
+        { kor: "책상", mon: "ширээ", pos: "n" }, { kor: "학교", mon: "сургууль", pos: "n" },
+        { kor: "마시다", mon: "уух", pos: "v" }, { kor: "먹다", mon: "идэх", pos: "v" }, 
+        { kor: "주스", mon: "жүүс", pos: "n" }, { kor: "호주", mon: "австрали", pos: "n" }, 
+        { kor: "집", mon: "гэр", pos: "n" }, { kor: "의사", mon: "эмч", pos: "n" },
+        { kor: "미국", mon: "америк", pos: "n" }, { kor: "회사원", mon: "компанийн ажилтан", pos: "n" }, 
+        { kor: "사다", mon: "авах", pos: "v" }, { kor: "프랑스", mon: "франц", pos: "n" }, 
+        { kor: "오다", mon: "ирэх", pos: "v" }, { kor: "피자", mon: "пицца", pos: "n" },
+        { kor: "도서관", mon: "номын сан", pos: "n" }, { kor: "몽골", mon: "монгол", pos: "n" }, 
+        { kor: "읽다", mon: "унших", pos: "v" }, { kor: "한국", mon: "солонгос", pos: "n" }, 
+        { kor: "선생님", mon: "багш", pos: "n" }, { kor: "기자", mon: "сэтгүүлч", pos: "n" },
+        { kor: "식당", mon: "хоолны газар", pos: "n" }, { kor: "요리사", mon: "тогооч", pos: "n" }, 
+        { kor: "요리하다", mon: "хоол хийх", pos: "v" }, { kor: "주다", mon: "өгөх", pos: "v" }, 
+        { kor: "중국", mon: "хятад", pos: "n" }, { kor: "사람", mon: "хүн", pos: "n" },
+        { kor: "일본", mon: "япон", pos: "n" }, { kor: "군인", mon: "цэрэг", pos: "n" }, 
+        { kor: "가수", mon: "дуучин", pos: "n" }, { kor: "어느", mon: "аль", pos: "o" }, 
+        { kor: "의자", mon: "сандал", pos: "n" }, { kor: "운동하다", mon: "дасгал хийх", pos: "v" },
+        { kor: "마트", mon: "супермаркет", pos: "n" }, { kor: "학생", mon: "оюутан", pos: "n" }, 
+        { kor: "백화점", mon: "их дэлгүүр", pos: "n" }, { kor: "독일", mon: "герман", pos: "n" }
     ];
 
     let wordList = [];
@@ -82,20 +88,33 @@
     function prepareQuestions() {
         const shuffled = [...rawWords].sort(() => 0.5 - Math.random());
         wordList = shuffled.map((w, index) => {
-            const isKorQuestion = Math.random() < 0.5; // 질문 언어 무작위 섞기
+            const isKorQuestion = Math.random() < 0.5;
             return {
                 q: isKorQuestion ? w.kor : w.mon,
                 a: isKorQuestion ? w.mon : w.kor,
-                type: isKorQuestion ? "kor" : "mon"
+                type: isKorQuestion ? "kor" : "mon",
+                pos: w.pos
             };
         });
 
         wordList.forEach(w => {
-            let pool = w.type === "kor" ? rawWords.map(i => i.mon) : rawWords.map(i => i.kor);
+            // 같은 품사(pos)를 가진 단어들 중에서 오답 후보를 선택
+            let pool = rawWords.filter(item => item.pos === w.pos || w.pos === 'o');
+            let choicePool = w.type === "kor" ? pool.map(i => i.mon) : pool.map(i => i.kor);
+            
             let choices = [w.a];
-            pool = pool.filter(p => p !== w.a);
-            pool.sort(() => 0.5 - Math.random());
-            choices.push(...pool.slice(0, 3));
+            let distractors = choicePool.filter(p => p !== w.a);
+            distractors.sort(() => 0.5 - Math.random());
+            
+            // 만약 같은 품사 단어가 부족하면 전체에서 보충
+            if (distractors.length < 3) {
+                let backupPool = w.type === "kor" ? rawWords.map(i => i.mon) : rawWords.map(i => i.kor);
+                backupPool = backupPool.filter(p => p !== w.a && !distractors.includes(p));
+                backupPool.sort(() => 0.5 - Math.random());
+                distractors.push(...backupPool.slice(0, 3 - distractors.length));
+            }
+
+            choices.push(...distractors.slice(0, 3));
             w.choices = choices.sort(() => 0.5 - Math.random());
         });
     }
