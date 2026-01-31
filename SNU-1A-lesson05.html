@@ -104,3 +104,356 @@
       <p style="margin-top:12px; font-weight:900; color:#1f2f45;">
         Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.
       </p>
+      <p class="note" id="logStatus"></p>
+    </div>
+
+    <div class="btnRow">
+      <button class="btn" style="background:var(--ok);" onclick="openScreenshotHelp()">Скриншот</button>
+      <button class="btn btnGray" onclick="goHome()">Эхлэл</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h2>Скриншот хийх арга</h2>
+    <p>
+      <b>iPhone:</b> Талын товч + Дуу нэмэх товчийг зэрэг дарна уу.<br>
+      <b>Android:</b> Асаах товч + Дуу хасах товчийг зэрэг дарна уу.
+    </p>
+    <p style="font-weight:900; color:#1f2f45;">Дараа нь багш руугаа илгээнэ үү.</p>
+    <button class="btn btnGray" onclick="closeModal()">Хаах</button>
+  </div>
+</div>
+
+<script>
+/* Google Apps Script */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
+
+/* 1A · 5-р хичээл (PDF 정답지 기반 40개) */
+const rawWords = [
+  { kor:"일", mon:"нэг", pos:"n" },
+  { kor:"이", mon:"хоёр", pos:"n" },
+  { kor:"삼", mon:"гурав", pos:"n" },
+  { kor:"사", mon:"дөрөв", pos:"n" },
+  { kor:"오", mon:"тав", pos:"n" },
+  { kor:"육", mon:"зургаа", pos:"n" },
+  { kor:"칠", mon:"долоо", pos:"n" },
+  { kor:"팔", mon:"найм", pos:"n" },
+  { kor:"구", mon:"ес", pos:"n" },
+  { kor:"십", mon:"арав", pos:"n" },
+
+  { kor:"월요일", mon:"Даваа гараг", pos:"n" },
+  { kor:"화요일", mon:"Мягмар гараг", pos:"n" },
+  { kor:"수요일", mon:"Лхагва гараг", pos:"n" },
+  { kor:"목요일", mon:"Пүрэв гараг", pos:"n" },
+  { kor:"금요일", mon:"Баасан гараг", pos:"n" },
+  { kor:"토요일", mon:"Бямба гараг", pos:"n" },
+  { kor:"일요일", mon:"Ням гараг", pos:"n" },
+
+  { kor:"주말", mon:"амралтын өдөр (амралтын өдрүүд)", pos:"n" },
+  { kor:"생일", mon:"төрсөн өдөр", pos:"n" },
+  { kor:"약속", mon:"уулзах цаг (амлалт)", pos:"n" },
+
+  { kor:"어제", mon:"өчигдөр", pos:"o" },
+  { kor:"내일", mon:"маргааш", pos:"o" },
+
+  { kor:"쇼핑하다", mon:"дэлгүүр хэсэх", pos:"v" },
+  { kor:"산책하다", mon:"салхилах (алхах)", pos:"v" },
+  { kor:"사진을 찍다", mon:"зураг авах", pos:"v" },
+  { kor:"같이", mon:"хамт", pos:"o" },
+  { kor:"세수하다", mon:"нүүрээ угаах", pos:"v" },
+  { kor:"이를 닦다", mon:"шүдээ угаах", pos:"v" },
+
+  { kor:"선물", mon:"бэлэг", pos:"n" },
+  { kor:"파티", mon:"үдэшлэг", pos:"n" },
+  { kor:"명절", mon:"баярын өдөр", pos:"n" },
+  { kor:"음력", mon:"билгийн тоолол", pos:"n" },
+  { kor:"양력", mon:"аргын тоолол", pos:"n" },
+
+  { kor:"며칠", mon:"хэд хоног", pos:"o" },
+  { kor:"언제", mon:"хэзээ", pos:"o" },
+  { kor:"그래서", mon:"тиймээс", pos:"o" },
+
+  { kor:"공항", mon:"нисэх онгоцны буудал", pos:"n" },
+  { kor:"은행", mon:"банк", pos:"n" },
+  { kor:"가게", mon:"дэлгүүр", pos:"n" },
+  { kor:"기념품", mon:"бэлэг дурсгалын зүйл", pos:"n" }
+];
+
+/* Utils */
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function jsonp(url){
+  return new Promise((resolve,reject)=>{
+    const cb="cb_"+Date.now()+"_"+Math.floor(Math.random()*10000);
+    window[cb]=(data)=>{ resolve(data); script.remove(); delete window[cb]; };
+    const script=document.createElement("script");
+    script.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
+    script.onerror=()=>{ reject(new Error("jsonp_error")); script.remove(); delete window[cb]; };
+    document.body.appendChild(script);
+  });
+}
+function getDeviceId(){
+  const k="kquiz_deviceId";
+  let id=localStorage.getItem(k);
+  if(!id){
+    id=(crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now()+"_"+Math.random()).replace(".","");
+    localStorage.setItem(k,id);
+  }
+  return id;
+}
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+
+/* Always 4 choices */
+function buildChoices({answer, type, pos}){
+  const pick = (w) => (type==="kor" ? w.mon : w.kor);
+  const samePos = rawWords.filter(w => w.pos === pos);
+  const candSame = samePos.map(pick).filter(x => x && x !== answer);
+  const candAll  = rawWords.map(pick).filter(x => x && x !== answer);
+
+  const set = new Set([answer]);
+  for(const c of shuffle(candSame)){ set.add(c); if(set.size>=4) break; }
+  if(set.size<4){
+    for(const c of shuffle(candAll)){ set.add(c); if(set.size>=4) break; }
+  }
+  let list=Array.from(set);
+  while(list.length<4) list.push(answer);
+  return shuffle(list.slice(0,4));
+}
+
+/* State */
+const lessonId = "SNU-1A-lesson05";
+let name="", klass="", token="", deviceId="";
+let attempts=0;
+let questions=[], idx=0, score=0, wrong=[];
+
+/* DOM */
+const studentNameEl = document.getElementById("studentName");
+const klassNameEl = document.getElementById("klassName");
+const errorSection = document.getElementById("errorSection");
+const quizSection = document.getElementById("quizSection");
+const reviewSection = document.getElementById("reviewSection");
+const resultSection = document.getElementById("resultSection");
+const qnoEl = document.getElementById("qno");
+const instEl = document.getElementById("inst");
+const qtextEl = document.getElementById("qtext");
+const choicesEl = document.getElementById("choices");
+const reviewScoreEl = document.getElementById("reviewScore");
+const wrongListEl = document.getElementById("wrongList");
+const attemptInfoEl = document.getElementById("attemptInfo");
+const resultLine1El = document.getElementById("resultLine1");
+const finalScoreEl = document.getElementById("finalScore");
+const resultLine2El = document.getElementById("resultLine2");
+const resultDateEl = document.getElementById("resultDate");
+const logStatusEl = document.getElementById("logStatus");
+const overlay = document.getElementById("overlay");
+
+/* Helpers */
+function showError(msg){
+  errorSection.textContent = msg;
+  errorSection.classList.remove("hidden");
+  quizSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+}
+function getParams(){
+  const p = new URLSearchParams(location.search);
+  return {
+    name:(p.get("name")||"").trim(),
+    klass:(p.get("klass")||"").trim(),
+    token:(p.get("token")||"").trim()
+  };
+}
+async function validateToken(){
+  const cached = sessionStorage.getItem("result_"+token);
+  if(cached) return true;
+  const url = `${SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}&deviceId=${encodeURIComponent(deviceId)}&klass=${encodeURIComponent(klass)}&name=${encodeURIComponent(name)}`;
+  const res = await jsonp(url);
+  return !!(res && res.ok);
+}
+
+/* Attempts (per student) */
+function loadAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  attempts = parseInt(localStorage.getItem(k)||"0",10) || 0;
+}
+function saveAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  localStorage.setItem(k, String(attempts));
+}
+function clearAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  localStorage.removeItem(k);
+}
+
+/* Quiz */
+function prepareQuestions(){
+  const shuffled = shuffle(rawWords);
+  questions = shuffled.map(w=>{
+    const isKorQuestion = Math.random()<0.5;
+    const q = isKorQuestion ? w.kor : w.mon;
+    const a = isKorQuestion ? w.mon : w.kor;
+    const type = isKorQuestion ? "kor" : "mon";
+    return { q,a,type,pos:w.pos, choices: buildChoices({answer:a, type, pos:w.pos}) };
+  });
+  idx=0; score=0; wrong=[];
+}
+function showQuiz(){
+  errorSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+  quizSection.classList.remove("hidden");
+  showQuestion();
+}
+function showQuestion(){
+  if(idx>=questions.length){ finish(); return; }
+  const item = questions[idx];
+  qnoEl.textContent = `${idx+1} / ${questions.length}`;
+  instEl.textContent = (item.type==="kor") ? "Зөв монгол утгыг сонгоно уу." : "Зөв солонгос үгийг сонгоно уу.";
+  qtextEl.textContent = item.q;
+  choicesEl.innerHTML="";
+  item.choices.forEach(c=>{
+    const btn=document.createElement("button");
+    btn.className="choice";
+    btn.textContent=c;
+    btn.onclick=()=>answer(c);
+    choicesEl.appendChild(btn);
+  });
+}
+function answer(choice){
+  const item=questions[idx];
+  if(choice===item.a){ score += (100/questions.length); }
+  else{ wrong.push(item); }
+  idx++;
+  showQuestion();
+}
+function finish(){
+  attempts++;
+  saveAttempts();
+  const finalScore=Math.round(score);
+  if(finalScore>=80 || attempts>=5) showResult(finalScore);
+  else showReview(finalScore);
+}
+function showReview(finalScore){
+  quizSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+  reviewSection.classList.remove("hidden");
+  reviewScoreEl.innerHTML = `Таны дүн: <b style="color:var(--bad);">${finalScore} оноо</b>`;
+  attemptInfoEl.textContent = `Оролдлого: ${attempts} (5 удаа хүрвэл автоматаар тэнцэнэ)`;
+  wrongListEl.innerHTML="";
+  wrong.forEach(w=>{
+    const div=document.createElement("div");
+    div.className="wrongItem";
+    div.innerHTML = `❓ <b>${escapeHtml(w.q)}</b> → ✅ <b>${escapeHtml(w.a)}</b>`;
+    wrongListEl.appendChild(div);
+  });
+}
+
+/* Log to sheet */
+async function sendLog(finalScore){
+  try{
+    const ua = navigator.userAgent || "";
+    const url =
+      `${SCRIPT_URL}?action=log` +
+      `&token=${encodeURIComponent(token)}` +
+      `&deviceId=${encodeURIComponent(deviceId)}` +
+      `&book=${encodeURIComponent("SNU")}` +
+      `&lesson=${encodeURIComponent("1A-lesson05")}` +
+      `&score=${encodeURIComponent(String(finalScore))}` +
+      `&attempts=${encodeURIComponent(String(attempts))}` +
+      `&ua=${encodeURIComponent(ua)}`;
+    const res = await jsonp(url);
+    if(res && res.ok){
+      logStatusEl.textContent = "Бүртгэл амжилттай илгээгдлээ.";
+      sessionStorage.setItem("result_"+token, JSON.stringify({ name, klass, finalScore, attempts, t: Date.now() }));
+    }else{
+      logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+    }
+  }catch(e){
+    logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+  }
+}
+
+async function showResult(finalScore){
+  quizSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.remove("hidden");
+  clearAttempts();
+
+  resultLine1El.textContent = `${name}, баяр хүргэе!`;
+  finalScoreEl.textContent = `Дүн: ${finalScore} оноо`;
+  resultLine2El.textContent = `Оролдлого: ${attempts}`;
+
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  resultDateEl.textContent = `Огноо: ${fmt.format(now)}`;
+
+  logStatusEl.textContent = "Бүртгэл илгээж байна...";
+  await sendLog(finalScore);
+}
+
+/* Buttons */
+function retry(){ prepareQuestions(); showQuiz(); }
+function goHome(){ location.href = `index.html?v=${Date.now()}`; }
+
+/* Screenshot help */
+function openScreenshotHelp(){ overlay.style.display="flex"; }
+function closeModal(e){
+  if(e && e.target && e.target !== overlay) return;
+  overlay.style.display="none";
+}
+
+/* Init */
+(async function init(){
+  const p=getParams();
+  name=p.name; klass=p.klass; token=p.token;
+  deviceId=getDeviceId();
+
+  studentNameEl.textContent = name || "—";
+  klassNameEl.textContent = klass || "—";
+
+  if(!name || !klass || !token){
+    showError("Нэвтрэх мэдээлэл дутуу байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+    return;
+  }
+
+  const cached = sessionStorage.getItem("result_"+token);
+  if(cached){
+    try{
+      const obj = JSON.parse(cached);
+      attempts = obj.attempts || 0;
+      await showResult(obj.finalScore || 0);
+      return;
+    }catch(e){}
+  }
+
+  try{
+    const ok = await validateToken();
+    if(!ok){
+      showError("Энэ холбоос хүчинтэй биш байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+      return;
+    }
+  }catch(e){
+    showError("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.");
+    return;
+  }
+
+  loadAttempts();
+  prepareQuestions();
+  showQuiz();
+})();
+</script>
+</body>
+</html>
