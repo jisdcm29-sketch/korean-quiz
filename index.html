@@ -1,121 +1,43 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="mn">
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>한국어 단어 퀴즈</title>
+    <title>Солонгос хэлний хичээл</title>
     <style>
-        body { font-family: 'Malgun Gothic', sans-serif; text-align: center; background-color: #f4f7f6; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 15px; box-shadow: 0 4px 6px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; }
-        input { width: 80%; padding: 10px; margin: 10px 0; border: 1px solid #ddd; border-radius: 5px; }
-        button { background-color: #4CAF50; color: white; padding: 12px 24px; border: none; border-radius: 5px; cursor: pointer; font-size: 16px; margin-top: 10px; }
-        .choice-btn { display: block; width: 100%; margin: 8px 0; background-color: #e7f3ff; color: #333; text-align: left; }
-        .choice-btn:hover { background-color: #d1e9ff; }
-        #quiz-section, #result-section { display: none; }
+        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 30px; }
+        .lesson-list { display: grid; gap: 15px; }
+        .lesson-card { 
+            background-color: #ffffff; 
+            border: 2px solid #3498db; 
+            padding: 20px; 
+            border-radius: 12px; 
+            text-decoration: none; 
+            color: #2c3e50; 
+            font-weight: bold; 
+            font-size: 18px; 
+            transition: 0.3s;
+        }
+        .lesson-card:hover { background-color: #3498db; color: white; transform: translateY(-3px); }
+        .info { font-size: 14px; color: #7f8c8d; margin-top: 20px; }
     </style>
 </head>
 <body>
 
 <div class="container">
-    <div id="start-section">
-        <h2>한국어 단어 연습 (Үгийн сангийн тест)</h2>
-        <p>이름을 입력하세요 (Нэрээ оруулна уу)</p>
-        <input type="text" id="userName" placeholder="이름 (Нэр)">
-        <br>
-        <button onclick="startQuiz()">시작 (Эхлэх)</button>
-    </div>
+    <h1>Солонгос хэлний үгсийн сан</h1>
+    <p class="info">Сурах бүлгээ сонгоно уу.<br>(공부할 과를 선택하세요.)</p>
+    
+    <div class="lesson-list">
+        <a href="lesson1.html" class="lesson-card">1-р хичээл (1과 단어)</a>
+        <a href="lesson2.html" class="lesson-card">2-р хичээл (2과 단어)</a>
+        <a href="lesson3.html" class="lesson-card">3-р хичээл (3과 단어)</a>
+        </div>
 
-    <div id="quiz-section">
-        <h3 id="question-number"></h3>
-        <p id="question-text" style="font-size: 24px; font-weight: bold;"></p>
-        <div id="choices"></div>
-    </div>
-
-    <div id="result-section">
-        <h2 id="result-title"></h2>
-        <p id="result-msg" style="font-size: 18px; line-height: 1.6;"></p>
-        <button id="retry-btn" onclick="retryQuiz()" style="display:none;">다시 시도 (Дахин оролдох)</button>
-    </div>
+    <p class="info" style="margin-top:40px;">Ulaanbaatar 2 Sejong Institute</p>
 </div>
 
-<script>
-    // 선생님이 수정하실 단어 목록 (한국어: '뜻')
-    const wordList = [
-        { q: "학교", a: "Сургууль", choices: ["Сургууль", "Гэр", "Номын сан", "Цэцэрлэг"] },
-        { q: "선생님", a: "Багш", choices: ["Багш", "Оюутан", "Эмч", "Жолооч"] },
-        { q: "학생", a: "Оюутан", choices: ["Оюутан", "Багш", "Найз", "Аав"] },
-        { q: "책상", a: "Ширээ", choices: ["Ширээ", "Сандал", "Цонх", "Хаалга"] },
-        { q: "의자", a: "Сандал", choices: ["Сандал", "Ширээ", "Ор", "Толь"] }
-    ];
-
-    let currentIdx = 0;
-    let score = 0;
-    let attempts = localStorage.getItem('attempts') ? parseInt(localStorage.getItem('attempts')) : 0;
-    let name = "";
-
-    function startQuiz() {
-        name = document.getElementById('userName').value;
-        if (!name) { alert("이름을 입력해주세요!"); return; }
-        document.getElementById('start-section').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        showQuestion();
-    }
-
-    function showQuestion() {
-        if (currentIdx < wordList.length) {
-            const item = wordList[currentIdx];
-            document.getElementById('question-number').innerText = `문제 ${currentIdx + 1} / ${wordList.length}`;
-            document.getElementById('question-text').innerText = item.q;
-            const choicesDiv = document.getElementById('choices');
-            choicesDiv.innerHTML = "";
-            item.choices.forEach(c => {
-                const btn = document.createElement('button');
-                btn.className = 'button choice-btn';
-                btn.innerText = c;
-                btn.onclick = () => checkAnswer(c);
-                choicesDiv.appendChild(btn);
-            });
-        } else {
-            finishQuiz();
-        }
-    }
-
-    function checkAnswer(answer) {
-        if (answer === wordList[currentIdx].a) score += (100 / wordList.length);
-        currentIdx++;
-        showQuestion();
-    }
-
-    function finishQuiz() {
-        attempts++;
-        localStorage.setItem('attempts', attempts);
-        document.getElementById('quiz-section').style.display = 'none';
-        document.getElementById('result-section').style.display = 'block';
-        
-        const finalScore = Math.round(score);
-        const resultTitle = document.getElementById('result-title');
-        const resultMsg = document.getElementById('result-msg');
-        const retryBtn = document.getElementById('retry-btn');
-
-        if (finalScore >= 80 || attempts >= 5) {
-            resultTitle.innerText = "🎉 합격! (Тэнцлээ!)";
-            resultMsg.innerHTML = `${name} 님, 수고하셨습니다!<br>점수: ${finalScore}점 / 시도 횟수: ${attempts}회<br><br><b>이 화면을 캡처해서 선생님께 보내주세요.</b>`;
-            retryBtn.style.display = 'none';
-            localStorage.removeItem('attempts'); // 합격 시 횟수 초기화
-        } else {
-            resultTitle.innerText = "⏳ 다시 시도하세요 (Дахин оролдох)";
-            resultMsg.innerHTML = `${name} 님, 조금 더 노력해봐요!<br>점수: ${finalScore}점<br>(현재 ${attempts}회 시도 중)`;
-            retryBtn.style.display = 'inline-block';
-        }
-    }
-
-    function retryQuiz() {
-        currentIdx = 0; score = 0;
-        document.getElementById('result-section').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        showQuestion();
-    }
-</script>
 </body>
 </html>
