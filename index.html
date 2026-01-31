@@ -1,302 +1,70 @@
 <!DOCTYPE html>
 <html lang="mn">
 <head>
-  <meta charset="UTF-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-
-  <!-- 캐시 최소화(카톡/아이폰에서 구버전 뜨는 문제 예방) -->
-  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
-  <meta http-equiv="Pragma" content="no-cache" />
-  <meta http-equiv="Expires" content="0" />
-
-  <title>Үгийн сангийн тест · Эхлэл</title>
-
-  <style>
-    :root{
-      --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5;
-      --text:#223047; --muted:#6a7a8e; --line:#d9e4f5;
-      --warnbg:#fff5f5; --warnline:#feb2b2;
-    }
-    *{box-sizing:border-box}
-    body{margin:0; padding:20px; font-family:Arial,sans-serif; background:var(--bg); color:var(--text); text-align:center;}
-    .container{max-width:680px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
-    h2{margin:0; font-size:22px; color:#1f2f45;}
-    .sub{margin:10px 0 0; color:var(--muted); font-size:15px; line-height:1.45;}
-    input{width:92%; padding:14px; margin:10px 0; border:2px solid #e0e0e0; border-radius:12px; font-size:18px; text-align:center; outline:none;}
-    input:focus{border-color:#b7cdfd; box-shadow:0 0 0 4px rgba(45,108,223,0.12);}
-    .btn{width:100%; background:var(--primary); color:#fff; padding:15px 16px; border:none; border-radius:12px; cursor:pointer; font-size:18px; font-weight:900; transition:.2s;}
-    .btn:hover{background:var(--primary2);}
-    .btn-gray{background:#eef2f7; color:#2c3e50; border:1px solid #d7dee7;}
-    .btn-gray:hover{background:#e2e8f0;}
-    .row{display:flex; gap:10px; margin-top:12px;}
-    .row .btn{width:50%;}
-    .meta{color:var(--muted); font-size:13px; margin-top:10px; line-height:1.45;}
-    .panel{margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:14px; background:#fff; text-align:left;}
-    .grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:12px;}
-    @media (max-width:540px){ .grid{grid-template-columns:1fr;} }
-    .lessonBtn{
-      width:100%;
-      background:#ffffff;
-      color:var(--text);
-      border:2px solid var(--primary);
-      border-radius:12px;
-      padding:14px;
-      font-size:18px;
-      font-weight:900;
-      cursor:pointer;
-      transition:.15s;
-      text-align:center;
-    }
-    .lessonBtn:hover{background:var(--primary); color:#fff;}
-    .warn{margin-top:14px; background:var(--warnbg); border:1px solid var(--warnline); border-radius:12px; padding:12px; color:#7a1f1f; font-size:14px; line-height:1.45;}
-    .tag{display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #d7dee7; background:#f6f9ff; font-size:12px; color:#2c3e50; font-weight:900;}
-    .ok{color:#0f7a3d; font-weight:900;}
-  </style>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Солонгос хэлний хичээл</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; }
+        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; }
+        #login-box { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 10px; }
+        input { width: 80%; padding: 15px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; }
+        .login-btn { background-color: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 90%; }
+        .lesson-list { display: grid; gap: 15px; margin-top: 20px; }
+        .lesson-card { background-color: #ffffff; border: 2px solid #3498db; padding: 20px; border-radius: 12px; text-decoration: none; color: #2c3e50; font-weight: bold; font-size: 18px; transition: 0.3s; }
+        .lesson-card:hover { background-color: #3498db; color: white; transform: translateY(-3px); }
+    </style>
 </head>
-
 <body>
-  <div class="container">
-    <h2>Үгийн сангийн тест · Эхлэл</h2>
-    <p class="sub">
-      1) Нууц үгээ оруулна уу<br>
-      2) Нэрээ оруулаад <b>Эхлэх</b> дарна уу
-    </p>
 
-    <!-- ✅ 비밀번호 -->
-    <input id="pin" type="password" inputmode="numeric" placeholder="Нууц үг" />
+<div id="login-box">
+    <h1>Нэвтрэх код</h1>
+    <p style="color: #7f8c8d; margin-bottom: 20px;">Нууц үгээ оруулна уу.</p>
+    <input type="password" id="passwordInput" placeholder="Password">
+    <button class="login-btn" onclick="checkPassword()">Орох (확인)</button>
+</div>
 
-    <!-- ✅ 이름 -->
-    <input id="name" type="text" placeholder="Таны нэр" autocomplete="name" />
-
-    <div class="row">
-      <button class="btn btn-gray" onclick="reloadLessons()">Дахин унших</button>
-      <button class="btn" onclick="startNow()">Эхлэх</button>
+<div id="main-container" class="container">
+    <h1>Солонгос хэлний хичээл</h1>
+    <p style="color: #7f8c8d;">Сурах бүлгээ сонгоно уу.</p>
+    <div id="lesson-container" class="lesson-list">
+        <p>Уншиж байна...</p>
     </div>
-
-    <div class="meta" id="status">Файлуудыг уншиж байна...</div>
-
-    <div class="panel">
-      <div style="font-weight:900; color:#1f2f45;">
-        Олдсон хичээлүүд <span class="tag" id="count">0</span>
-      </div>
-      <div class="grid" id="grid"></div>
-
-      <div class="warn" id="warnBox" style="display:none;"></div>
-
-      <div class="meta" style="margin-top:10px;">
-        Зөвлөгөө: холбоосоо илгээхдээ <b>?v=1</b> нэмвэл кэш багасна.<br>
-        Жишээ: index.html?v=1
-      </div>
-    </div>
-  </div>
+</div>
 
 <script>
-/** =========================================================
- * ✅ 사장님이 여기만 바꾸면 됩니다(1회)
- * ========================================================= */
-const ACCESS_PIN = "1234";   // ← 사장님이 쓰는 비밀번호로 바꾸세요
+    const correctPassword = "sejong123";
+    const username = "jisdcm29-sketch";
+    const repo = "korean-quiz";
 
-// (선택) 과 파일이 특정 폴더 안에 있다면 예: "lessons/"
-const LESSON_DIR = "";       // 예: "lessons/"
-
-// (선택) 보통은 lesson으로 시작하는 html을 과 파일로 봅니다.
-// 없으면 html 전체를 보여줍니다.
-const PREFERRED_PREFIX = "lesson";
-
-/** =========================================================
- * 내부 저장 키
- * ========================================================= */
-const NAME_STORE_KEY = "student_name_global";
-const PIN_STORE_KEY  = "access_pin_global";
-
-/** =========================================================
- * DOM
- * ========================================================= */
-const elPin = document.getElementById("pin");
-const elName = document.getElementById("name");
-const elStatus = document.getElementById("status");
-const elCount = document.getElementById("count");
-const elGrid = document.getElementById("grid");
-const elWarn = document.getElementById("warnBox");
-
-elPin.value = localStorage.getItem(PIN_STORE_KEY) || "";
-elName.value = localStorage.getItem(NAME_STORE_KEY) || "";
-
-elPin.addEventListener("input", ()=> localStorage.setItem(PIN_STORE_KEY, elPin.value.trim()));
-elName.addEventListener("input", ()=> localStorage.setItem(NAME_STORE_KEY, elName.value.trim()));
-
-elName.addEventListener("keydown", (e)=> { if (e.key==="Enter") startNow(); });
-elPin.addEventListener("keydown", (e)=> { if (e.key==="Enter") startNow(); });
-
-/** =========================================================
- * GitHub Pages에서 repo 정보 추출
- * - user site: https://user.github.io/  -> repo = user.github.io
- * - project:   https://user.github.io/repo/ -> repo = repo
- * ========================================================= */
-function getGitHubRepoInfo(){
-  const host = location.hostname;
-  if (!host.endsWith(".github.io")) return null;
-
-  const owner = host.replace(".github.io", "");
-  const pathParts = location.pathname.split("/").filter(Boolean);
-
-  // user site: /
-  if (pathParts.length === 0) {
-    return { owner, repo: `${owner}.github.io` };
-  }
-
-  // project site: /repo/...
-  return { owner, repo: pathParts[0] };
-}
-
-/** =========================================================
- * GitHub API로 html 파일 목록 읽기(가장 안정적)
- * ========================================================= */
-async function listHtmlFilesViaGitHubAPI(){
-  const info = getGitHubRepoInfo();
-  if (!info) return null;
-
-  const { owner, repo } = info;
-
-  // GitHub API: contents
-  const apiUrl = `https://api.github.com/repos/${owner}/${repo}/contents/${encodeURIComponent(LESSON_DIR)}`;
-  const r = await fetch(apiUrl, { cache: "no-store" });
-  if (!r.ok) return null;
-
-  const data = await r.json();
-  if (!Array.isArray(data)) return null;
-
-  // 파일만, html만
-  const files = data
-    .filter(x => x && x.type === "file" && typeof x.name === "string")
-    .map(x => x.name)
-    .filter(name => name.toLowerCase().endsWith(".html"));
-
-  return files;
-}
-
-/** =========================================================
- * 과 파일 후보 추리기
- * 1) lesson으로 시작하는 html 우선
- * 2) 없으면 index.html 제외한 html 전체
- * ========================================================= */
-function pickLessonFiles(htmlFiles){
-  const lower = htmlFiles.map(f => f);
-  const preferred = lower
-    .filter(f => f.toLowerCase().startsWith(PREFERRED_PREFIX.toLowerCase()))
-    .filter(f => f.toLowerCase() !== "index.html");
-
-  const fallback = lower
-    .filter(f => f.toLowerCase() !== "index.html")
-    .filter(f => f.toLowerCase() !== "404.html");
-
-  return (preferred.length > 0) ? preferred.sort() : fallback.sort();
-}
-
-/** =========================================================
- * 화면 렌더
- * ========================================================= */
-let lessonFiles = [];
-
-function render(){
-  elGrid.innerHTML = "";
-  elCount.textContent = String(lessonFiles.length);
-
-  if (lessonFiles.length === 0){
-    elStatus.textContent = "Хичээл олдсонгүй.";
-    elWarn.style.display = "block";
-    elWarn.innerHTML =
-      `<b>Анхаар!</b><br>` +
-      `Хичээлийн html файл олдсонгүй.<br><br>` +
-      `✅ Шалгах зүйл:<br>` +
-      `• Хичээлийн файлууд GitHub дээр байгаа эсэх<br>` +
-      `• Хэрэв файлууд тусдаа хавтсанд байвал, index.html дээр <b>LESSON_DIR</b>-г зөв тохируулна уу.<br>` +
-      `• Хэрэв файлын нэр lesson-оор эхлэхгүй бол, html бүх файлуудаас index.html-ээс бусдыг харуулна.`;
-    return;
-  }
-
-  elWarn.style.display = "none";
-  elStatus.innerHTML = `<span class="ok">Бэлэн.</span> Эхлэх дарж шууд орно уу.`;
-
-  lessonFiles.forEach((fileName, idx) => {
-    const btn = document.createElement("button");
-    btn.className = "lessonBtn";
-    // 버튼 라벨: lesson01.html -> "lesson01"
-    const label = fileName.replace(/\.html$/i, "");
-    btn.textContent = label;
-    btn.onclick = () => openLesson(fileName);
-    elGrid.appendChild(btn);
-  });
-}
-
-/** =========================================================
- * 비밀번호/이름 체크 + 이동
- * ========================================================= */
-function ensureInputs(){
-  const pin = (elPin.value || "").trim();
-  const name = (elName.value || "").trim();
-
-  if (!pin){ alert("Нууц үгээ оруулна уу!"); return null; }
-  if (pin !== ACCESS_PIN){ alert("Нууц үг буруу байна!"); return null; }
-
-  if (!name){ alert("Нэрээ оруулна уу!"); return null; }
-
-  localStorage.setItem(NAME_STORE_KEY, name);
-  return { name };
-}
-
-function openLesson(fileName){
-  const ok = ensureInputs();
-  if (!ok) return;
-
-  // 과 파일이 폴더 안에 있으면 LESSON_DIR 적용
-  const path = (LESSON_DIR ? `${LESSON_DIR.replace(/\/?$/, "/")}` : "");
-  const url = `${path}${fileName}?name=${encodeURIComponent(ok.name)}&v=${Date.now()}`;
-  location.href = url;
-}
-
-function startNow(){
-  const ok = ensureInputs();
-  if (!ok) return;
-
-  // ✅ “바로 실행”: 첫 번째 과로 이동
-  if (lessonFiles.length > 0){
-    openLesson(lessonFiles[0]);
-  } else {
-    alert("Хичээл олдсонгүй. Доорх жагсаалтыг дахин уншина уу.");
-  }
-}
-
-/** =========================================================
- * 로딩
- * ========================================================= */
-async function reloadLessons(){
-  elStatus.textContent = "Файлуудыг уншиж байна...";
-  lessonFiles = [];
-  render();
-
-  try{
-    const htmlFiles = await listHtmlFilesViaGitHubAPI();
-    if (!htmlFiles){
-      elStatus.textContent = "Файлын жагсаалтыг уншиж чадсангүй.";
-      elWarn.style.display = "block";
-      elWarn.innerHTML =
-        `<b>Алдаа</b><br>` +
-        `GitHub API уншиж чадсангүй.<br>` +
-        `Энэ тохиолдолд: hostname нь github.io мөн эсэхийг шалгана уу.`;
-      return;
+    function checkPassword() {
+        if (document.getElementById('passwordInput').value === correctPassword) {
+            document.getElementById('login-box').style.display = 'none';
+            document.getElementById('main-container').style.display = 'block';
+            loadLessons();
+        } else { alert("Нууц үг буруу байна!"); }
     }
 
-    lessonFiles = pickLessonFiles(htmlFiles);
-    render();
-  } catch(e){
-    elStatus.textContent = "Алдаа гарлаа.";
-    elWarn.style.display = "block";
-    elWarn.textContent = String(e);
-  }
-}
+    async function loadLessons() {
+        try {
+            const res = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/`);
+            const files = await res.json();
+            const container = document.getElementById('lesson-container');
+            container.innerHTML = "";
 
-reloadLessons();
+            // .html로 끝나고 index.html이 아닌 모든 파일을 찾아 버튼으로 만듭니다
+            files.filter(f => f.name.endsWith('.html') && f.name !== 'index.html')
+                 .sort((a,b) => a.name.localeCompare(b.name))
+                 .forEach(file => {
+                    const a = document.createElement('a');
+                    a.href = file.name;
+                    a.className = 'lesson-card';
+                    a.innerText = file.name.replace('.html', '').replace(/-/g, ' ');
+                    container.appendChild(a);
+                 });
+        } catch (e) { container.innerHTML = "Алдаа гарлаа."; }
+    }
 </script>
 </body>
 </html>
