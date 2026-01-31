@@ -1,198 +1,375 @@
 <!DOCTYPE html>
 <html lang="mn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1A-1과 단어 테스트 (정밀 교정본)</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; color: #333; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        h2 { color: #2c3e50; font-size: 22px; }
-        input { width: 85%; padding: 15px; margin: 15px 0; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 18px; text-align: center; }
-        button { background-color: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.3s; }
-        button:hover { background-color: #2980b9; }
-        .choice-btn { display: block; width: 100%; margin: 12px 0; background-color: #ffffff; color: #333; text-align: center; border: 2px solid #3498db; padding: 15px; font-size: 18px; }
-        .choice-btn:hover { background-color: #3498db; color: white; }
-        #quiz-section, #result-section, #review-section { display: none; }
-        .wrong-list { text-align: left; background: #fff5f5; padding: 15px; border-radius: 10px; margin: 20px 0; border: 1px solid #feb2b2; max-height: 300px; overflow-y: auto; }
-        .wrong-item { margin-bottom: 10px; font-size: 16px; border-bottom: 1px dashed #feb2b2; padding-bottom: 5px; }
-        .score-text { font-size: 24px; font-weight: bold; color: #e74c3c; margin: 10px 0; }
-        .instruction { font-size: 15px; color: #666; margin-bottom: 20px; background: #eef2f7; padding: 10px; border-radius: 5px; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>1A-1-р хичээл · Үгийн сангийн тест</title>
+  <style>
+    body { font-family: Arial, sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; color: #333; }
+    .container { max-width: 520px; margin: 0 auto; background: white; padding: 26px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
+    h2 { color: #2c3e50; font-size: 22px; margin-top: 0; }
+    input { width: 90%; padding: 14px; margin: 14px 0; border: 2px solid #e0e0e0; border-radius: 10px; font-size: 18px; text-align: center; }
+    button { background-color: #3498db; color: white; padding: 15px 16px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.2s; }
+    button:hover { background-color: #2980b9; }
+    .choice-btn {
+      display: block; width: 100%; margin: 12px 0;
+      background-color: #ffffff; color: #333; text-align: center;
+      border: 2px solid #3498db; padding: 15px; font-size: 18px; border-radius: 10px;
+    }
+    .choice-btn:hover { background-color: #3498db; color: white; }
+    #quiz-section, #result-section, #review-section { display: none; }
+    .wrong-list { text-align: left; background: #fff5f5; padding: 15px; border-radius: 10px; margin: 18px 0; border: 1px solid #feb2b2; max-height: 320px; overflow-y: auto; }
+    .wrong-item { margin-bottom: 10px; font-size: 16px; border-bottom: 1px dashed #feb2b2; padding-bottom: 6px; }
+    .score-text { font-size: 24px; font-weight: bold; color: #e74c3c; margin: 10px 0; }
+    .instruction { font-size: 15px; color: #666; margin-bottom: 14px; background: #eef2f7; padding: 10px; border-radius: 8px; }
+    .meta { font-size: 13px; color: #7f8c8d; margin-top: 6px; }
+    .note {
+      margin-top: 14px;
+      background: #eaf3ff;
+      border: 1px solid #b9d7ff;
+      border-radius: 10px;
+      padding: 12px;
+      color: #0f3f7a;
+      font-weight: 800;
+      line-height: 1.4;
+    }
+    .row { display:flex; gap:10px; margin-top:12px; }
+    .row button { width: 50%; }
+    .btn-orange { background-color: #e67e22; }
+    .btn-orange:hover { background-color: #cf6b12; }
+    .btn-gray { background-color: #eef2f7; color:#2c3e50; border:1px solid #d7dee7; }
+    .btn-gray:hover { background-color: #e2e8f0; }
+  </style>
 </head>
 <body>
-
-<div class="container">
+  <div class="container">
     <div id="start-section">
-        <h2>1A: 1-р хичээл<br>Үгсийн сангийн тест</h2>
-        <p style="color: #7f8c8d;">Нэрээ оруулаад эхэлнэ үү.</p>
-        <input type="text" id="userName" placeholder="Таны нэр">
-        <br><br>
-        <button onclick="startQuiz()">Эхлэх</button>
+      <h2>1A: 1-р хичээл<br>Үгсийн сангийн тест</h2>
+      <p style="color:#7f8c8d; margin: 6px 0 0;">Нэрээ оруулаад эхэлнэ үү.</p>
+      <input type="text" id="userName" placeholder="Таны нэр" autocomplete="name" />
+      <button id="startBtn" onclick="startQuiz()">Эхлэх</button>
+      <div class="meta" id="vocabCount"></div>
     </div>
 
     <div id="quiz-section">
-        <h3 id="question-number" style="color: #3498db;"></h3>
-        <p id="question-instruction" class="instruction"></p>
-        <p id="question-text" style="font-size: 32px; font-weight: bold; margin: 25px 0; color: #2c3e50;"></p>
-        <div id="choices"></div>
+      <h3 id="question-number" style="color:#3498db; margin: 0;"></h3>
+      <p id="question-instruction" class="instruction"></p>
+      <p id="question-text" style="font-size:32px; font-weight:bold; margin: 18px 0; color:#2c3e50;"></p>
+      <div id="choices"></div>
+      <div class="row">
+        <button class="btn-gray" onclick="goHome()">Эхлэл</button>
+        <button class="btn-gray" onclick="restartAttempt()">Дахин эхлэх</button>
+      </div>
     </div>
 
     <div id="review-section">
-        <h2 style="color: #e67e22;">Алдаагаа шалгана уу</h2>
-        <p>Эдгээр үгсийг цээжлээд дахин оролдоно уу.</p>
-        <div id="wrong-answers-container" class="wrong-list"></div>
-        <button onclick="retryQuiz()" style="background-color: #e67e22;">Ойлголоо, дахин эхлэх</button>
+      <h2 style="color:#e67e22;">Алдаагаа шалгана уу</h2>
+      <p style="margin-top: 6px;">Эдгээр үгсийг цээжлээд дахин оролдоно уу.</p>
+      <div id="wrong-answers-container" class="wrong-list"></div>
+      <button class="btn-orange" onclick="retryQuiz()">Ойлголоо, дахин эхлэх</button>
+      <div class="meta" id="attemptMetaReview"></div>
     </div>
 
     <div id="result-section">
-        <h2 id="result-title" style="color: #27ae60;">🎉 Тэнцлээ!</h2>
-        <div id="result-content">
-            <p id="result-msg" style="font-size: 18px; line-height: 1.8; margin: 20px 0;"></p>
+      <h2 id="result-title" style="color:#27ae60;">🎉 Тэнцлээ!</h2>
+      <div id="result-content">
+        <p id="result-msg" style="font-size:18px; line-height: 1.8; margin: 16px 0;"></p>
+        <div class="note">Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү!</div>
+        <div class="row">
+          <button onclick="restartAttempt()">Дахин хийх</button>
+          <button class="btn-gray" onclick="resetAll()">Шинэ нэрээр</button>
         </div>
+      </div>
     </div>
-</div>
+  </div>
 
 <script>
-    // 몽골어 철자 전수 검증 완료 (PDF 데이터 기반) 
-    const rawWords = [
-        { kor: "공항", mon: "нисэх онгоцны буудал", pos: "n" }, { kor: "시장", mon: "зах", pos: "n" }, 
-        { kor: "가다", mon: "явах", pos: "v" }, { kor: "영국", mon: "британ", pos: "n" }, 
-        { kor: "책상", mon: "ширээ", pos: "n" }, { kor: "학교", mon: "сургууль", pos: "n" },
-        { kor: "마시다", mon: "уух", pos: "v" }, { kor: "먹다", mon: "идэх", pos: "v" }, 
-        { kor: "주스", mon: "жүүс", pos: "n" }, { kor: "호주", mon: "австрали", pos: "n" }, 
-        { kor: "집", mon: "гэр", pos: "n" }, { kor: "의사", mon: "эмч", pos: "n" },
-        { kor: "미국", mon: "америк", pos: "n" }, { kor: "회사원", mon: "компанийн ажилтан", pos: "n" }, 
-        { kor: "사다", mon: "худалдаж авах", pos: "v" }, { kor: "프랑스", mon: "ф란ц", pos: "n" }, 
-        { kor: "오다", mon: "ирэх", pos: "v" }, { kor: "피자", mon: "пицца", pos: "n" },
-        { kor: "도서관", mon: "노мын сан", pos: "n" }, { kor: "몽골", mon: "монгол", pos: "n" }, 
-        { kor: "읽다", mon: "унших", pos: "v" }, { kor: "한국", mon: "солонгос", pos: "n" }, 
-        { kor: "선생님", mon: "багш", pos: "n" }, { kor: "기자", mon: "сэтгүүлч", pos: "n" },
-        { kor: "식당", mon: "хоолны газар", pos: "n" }, { kor: "요리사", mon: "тогооч", pos: "n" }, 
-        { kor: "요리하다", mon: "хоол хийх", pos: "v" }, { kor: "주다", mon: "өгөх", pos: "v" }, 
-        { kor: "중국", mon: "хятад", pos: "n" }, { kor: "사람", mon: "хүн", pos: "n" },
-        { kor: "일본", mon: "япон", pos: "n" }, { kor: "군인", mon: "цэрэг", pos: "n" }, 
-        { kor: "가수", mon: "дуучин", pos: "n" }, { kor: "어느", mon: "аль", pos: "o" }, 
-        { kor: "의자", mon: "сандал", pos: "n" }, { kor: "운동하다", mon: "дасгал хийх", pos: "v" },
-        { kor: "마트", mon: "дэлгүүр", pos: "n" }, { kor: "학생", mon: "оюутан", pos: "n" }, 
-        { kor: "백화점", mon: "их дэлгүүр", pos: "n" }, { kor: "독일", mon: "герман", pos: "n" }
-    ];
+  // 단어 데이터 (질문/보기 교차: kor→mon / mon→kor)
+  // 철자 1곳 수정: "노мын сан" -> "номын сан"
+  const rawWords = [
+    { kor: "공항", mon: "нисэх онгоцны буудал", pos: "n" },
+    { kor: "시장", mon: "зах", pos: "n" },
+    { kor: "가다", mon: "явах", pos: "v" },
+    { kor: "영국", mon: "Британ", pos: "n" },
+    { kor: "책상", mon: "ширээ", pos: "n" },
+    { kor: "학교", mon: "сургууль", pos: "n" },
+    { kor: "마시다", mon: "уух", pos: "v" },
+    { kor: "먹다", mon: "идэх", pos: "v" },
+    { kor: "주스", mon: "жүүс", pos: "n" },
+    { kor: "호주", mon: "Австрали", pos: "n" },
+    { kor: "집", mon: "гэр", pos: "n" },
+    { kor: "의사", mon: "эмч", pos: "n" },
+    { kor: "미국", mon: "Америк", pos: "n" },
+    { kor: "회사원", mon: "компанийн ажилтан", pos: "n" },
+    { kor: "사다", mon: "худалдаж авах", pos: "v" },
+    { kor: "프랑스", mon: "Франц", pos: "n" },
+    { kor: "오다", mon: "ирэх", pos: "v" },
+    { kor: "피자", mon: "пицца", pos: "n" },
+    { kor: "도서관", mon: "номын сан", pos: "n" },
+    { kor: "몽골", mon: "Монгол", pos: "n" },
+    { kor: "읽다", mon: "унших", pos: "v" },
+    { kor: "한국", mon: "Солонгос", pos: "n" },
+    { kor: "선생님", mon: "багш", pos: "n" },
+    { kor: "기자", mon: "сэтгүүлч", pos: "n" },
+    { kor: "식당", mon: "хоолны газар", pos: "n" },
+    { kor: "요리사", mon: "тогооч", pos: "n" },
+    { kor: "요리하다", mon: "хоол хийх", pos: "v" },
+    { kor: "주다", mon: "өгөх", pos: "v" },
+    { kor: "중국", mon: "Хятад", pos: "n" },
+    { kor: "사람", mon: "хүн", pos: "n" },
+    { kor: "일본", mon: "Япон", pos: "n" },
+    { kor: "군인", mon: "цэрэг", pos: "n" },
+    { kor: "가수", mon: "дуучин", pos: "n" },
+    { kor: "어느", mon: "аль", pos: "o" },
+    { kor: "의자", mon: "сандал", pos: "n" },
+    { kor: "운동하다", mon: "дасгал хийх", pos: "v" },
+    { kor: "마트", mon: "дэлгүүр", pos: "n" },
+    { kor: "학생", mon: "оюутан", pos: "n" },
+    { kor: "백화점", mon: "их дэлгүүр", pos: "n" },
+    { kor: "독일", mon: "Герман", pos: "n" }
+  ];
 
-    let wordList = [];
-    let currentIdx = 0;
-    let score = 0;
-    let attempts = localStorage.getItem('attempts_1A1') ? parseInt(localStorage.getItem('attempts_1A1')) : 0;
-    let name = "";
-    let wrongWords = [];
+  // 상태값
+  let wordList = [];
+  let currentIdx = 0;
+  let score = 0;
+  let wrongWords = [];
+  let name = "";
 
-    function prepareQuestions() {
-        const shuffled = [...rawWords].sort(() => 0.5 - Math.random());
-        wordList = shuffled.map((w, index) => {
-            const isKorQuestion = Math.random() < 0.5;
-            return {
-                q: isKorQuestion ? w.kor : w.mon,
-                a: isKorQuestion ? w.mon : w.kor,
-                type: isKorQuestion ? "kor" : "mon",
-                pos: w.pos
-            };
-        });
+  // 시도 횟수 (로컬 저장)
+  const STORE_KEY = "attempts_1A1";
+  let attempts = localStorage.getItem(STORE_KEY) ? parseInt(localStorage.getItem(STORE_KEY), 10) : 0;
 
-        wordList.forEach(w => {
-            let pool = rawWords.filter(item => item.pos === w.pos || w.pos === 'o');
-            let choicePool = w.type === "kor" ? pool.map(i => i.mon) : pool.map(i => i.kor);
-            let choices = [w.a];
-            let distractors = choicePool.filter(p => p !== w.a);
-            distractors.sort(() => 0.5 - Math.random());
-            if (distractors.length < 3) {
-                let backupPool = w.type === "kor" ? rawWords.map(i => i.mon) : rawWords.map(i => i.kor);
-                backupPool = backupPool.filter(p => p !== w.a && !distractors.includes(p));
-                backupPool.sort(() => 0.5 - Math.random());
-                distractors.push(...backupPool.slice(0, 3 - distractors.length));
-            }
-            choices.push(...distractors.slice(0, 3));
-            w.choices = [...new Set(choices)].sort(() => 0.5 - Math.random());
-        });
+  // 설정
+  const PASS_SCORE = 80;
+  const MAX_FAILS_BEFORE_PASS = 5;
+
+  // 초기 표시
+  document.getElementById("vocabCount").innerText = `Үгийн тоо: ${rawWords.length}`;
+  document.getElementById("userName").addEventListener("keydown", (e) => {
+    if (e.key === "Enter") startQuiz();
+  });
+
+  // 유틸
+  function shuffle(arr){
+    const a = arr.slice();
+    for (let i=a.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function unique(arr){
+    const seen = new Set();
+    const out = [];
+    for (const x of arr){
+      if (!seen.has(x)){
+        seen.add(x);
+        out.push(x);
+      }
+    }
+    return out;
+  }
+
+  // 핵심: 같은 품사 우선 오답 3개 생성 + 중복 방지 + 항상 4지 유지
+  function buildChoices(correctAnswer, type, pos){
+    // type: "kor"(질문이 한국어) => 보기 몽골어, "mon"(질문이 몽골어) => 보기 한국어
+    const getVal = (w) => (type === "kor" ? w.mon : w.kor);
+
+    const samePos = rawWords.filter(w => w.pos === pos).map(getVal).filter(v => v && v !== correctAnswer);
+    const anyPos  = rawWords.map(getVal).filter(v => v && v !== correctAnswer);
+
+    let distractors = [];
+    if (pos === "o") {
+      // '어느/аль' 같은 경우 전체에서 고르게
+      distractors = shuffle(anyPos);
+    } else {
+      // 같은 품사 우선
+      distractors = shuffle(samePos).concat(shuffle(anyPos));
     }
 
-    function startQuiz() {
-        name = document.getElementById('userName').value;
-        if (!name) { alert("Нэрээ оруулна уу!"); return; }
-        prepareQuestions();
-        document.getElementById('start-section').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        showQuestion();
+    const picked = [];
+    for (const d of distractors){
+      if (d !== correctAnswer && !picked.includes(d)) picked.push(d);
+      if (picked.length >= 3) break;
     }
 
-    function showQuestion() {
-        if (currentIdx < wordList.length) {
-            const item = wordList[currentIdx];
-            document.getElementById('question-number').innerText = `${currentIdx + 1} / ${wordList.length}`;
-            document.getElementById('question-instruction').innerText = 
-                item.type === "kor" ? "Зөв монгол утгыг сонгоно уу." : "Зөв солонгос үгийг сонгоно уу.";
-            document.getElementById('question-text').innerText = item.q;
-            const choicesDiv = document.getElementById('choices');
-            choicesDiv.innerHTML = "";
-            item.choices.forEach(c => {
-                const btn = document.createElement('button');
-                btn.className = 'choice-btn';
-                btn.innerText = c;
-                btn.onclick = () => checkAnswer(c);
-                choicesDiv.appendChild(btn);
-            });
-        } else {
-            finishQuiz();
-        }
+    const choices = unique([correctAnswer, ...picked]);
+    // 혹시라도 4개 미만이면(데이터 중복 등) 전체 풀에서 추가로 채움
+    if (choices.length < 4){
+      for (const d of shuffle(anyPos)){
+        if (!choices.includes(d)) choices.push(d);
+        if (choices.length >= 4) break;
+      }
     }
 
-    function checkAnswer(answer) {
-        const item = wordList[currentIdx];
-        if (answer === item.a) {
-            score += (100 / wordList.length);
-        } else {
-            wrongWords.push(item);
-        }
-        currentIdx++;
-        showQuestion();
-    }
+    return shuffle(choices.slice(0,4));
+  }
 
-    function finishQuiz() {
-        attempts++;
-        localStorage.setItem('attempts_1A1', attempts);
-        const finalScore = Math.round(score);
+  function prepareQuestions() {
+    const shuffled = shuffle(rawWords);
+    wordList = shuffled.map((w) => {
+      const isKorQuestion = Math.random() < 0.5;
+      const q = isKorQuestion ? w.kor : w.mon;
+      const a = isKorQuestion ? w.mon : w.kor;
+      const type = isKorQuestion ? "kor" : "mon";
 
-        if (finalScore >= 80 || attempts >= 5) {
-            document.getElementById('quiz-section').style.display = 'none';
-            document.getElementById('result-section').style.display = 'block';
-            document.getElementById('result-msg').innerHTML = 
-                `<b>${name}</b>, Баяр хүргэе!<br><span class="score-text">Дүн: ${finalScore} оноо</span><br>` +
-                `Оролдлого: ${attempts}<br><br><b>Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.</b>`;
-            localStorage.removeItem('attempts_1A1');
-        } else {
-            showReview(finalScore);
-        }
-    }
+      const choices = buildChoices(a, type, w.pos);
 
-    function showReview(finalScore) {
-        document.getElementById('quiz-section').style.display = 'none';
-        document.getElementById('review-section').style.display = 'block';
-        const container = document.getElementById('wrong-answers-container');
-        container.innerHTML = `<p style="font-weight:bold; color:#e74c3c;">Таны дүн: ${finalScore} оноо</p>`;
-        
-        wrongWords.forEach(w => {
-            const div = document.createElement('div');
-            div.className = 'wrong-item';
-            div.innerHTML = `❓ <b>${w.q}</b> → ✅ Зөв: <b>${w.a}</b>`;
-            container.appendChild(div);
-        });
-    }
+      return { q, a, type, pos: w.pos, choices };
+    });
+  }
 
-    function retryQuiz() {
-        currentIdx = 0; score = 0; wrongWords = [];
-        prepareQuestions();
-        document.getElementById('review-section').style.display = 'none';
-        document.getElementById('quiz-section').style.display = 'block';
-        showQuestion();
+  function startQuiz() {
+    name = (document.getElementById("userName").value || "").trim();
+    if (!name) { alert("Нэрээ оруулна уу!"); return; }
+
+    attempts = localStorage.getItem(STORE_KEY) ? parseInt(localStorage.getItem(STORE_KEY), 10) : attempts;
+    currentIdx = 0;
+    score = 0;
+    wrongWords = [];
+
+    prepareQuestions();
+    document.getElementById("start-section").style.display = "none";
+    document.getElementById("review-section").style.display = "none";
+    document.getElementById("result-section").style.display = "none";
+    document.getElementById("quiz-section").style.display = "block";
+    showQuestion();
+  }
+
+  function showQuestion() {
+    if (currentIdx < wordList.length) {
+      const item = wordList[currentIdx];
+
+      document.getElementById("question-number").innerText = `${currentIdx + 1} / ${wordList.length}`;
+      document.getElementById("question-instruction").innerText =
+        item.type === "kor" ? "Зөв Монгол орчуулгыг сонгоно уу." : "Зөв Солонгос үгийг сонгоно уу.";
+      document.getElementById("question-text").innerText = item.q;
+
+      const choicesDiv = document.getElementById("choices");
+      choicesDiv.innerHTML = "";
+
+      // 연속 클릭 방지
+      let locked = false;
+
+      item.choices.forEach((c) => {
+        const btn = document.createElement("button");
+        btn.className = "choice-btn";
+        btn.innerText = c;
+        btn.onclick = () => {
+          if (locked) return;
+          locked = true;
+          checkAnswer(c);
+        };
+        choicesDiv.appendChild(btn);
+      });
+    } else {
+      finishQuiz();
     }
+  }
+
+  function checkAnswer(answer) {
+    const item = wordList[currentIdx];
+    if (answer === item.a) {
+      score += (100 / wordList.length);
+    } else {
+      wrongWords.push(item); // {q, a} 형태 그대로 저장
+    }
+    currentIdx++;
+    showQuestion();
+  }
+
+  function finishQuiz() {
+    attempts++;
+    localStorage.setItem(STORE_KEY, String(attempts));
+
+    const finalScore = Math.round(score);
+
+    if (finalScore >= PASS_SCORE || attempts >= MAX_FAILS_BEFORE_PASS) {
+      document.getElementById("quiz-section").style.display = "none";
+      document.getElementById("review-section").style.display = "none";
+      document.getElementById("result-section").style.display = "block";
+
+      const forced = (attempts >= MAX_FAILS_BEFORE_PASS && finalScore < PASS_SCORE);
+      document.getElementById("result-title").innerText = forced ? "💪 Тэнцлээ!" : "🎉 Тэнцлээ!";
+
+      document.getElementById("result-msg").innerHTML =
+        `<b>${name}</b><br>` +
+        (forced ? `Та олон удаа хичээллэсэн тул урамшуулж тэнцүүллээ.<br>` : `Баяр хүргэе! Та тэнцлээ.<br>`) +
+        `<span class="score-text">Дүн: ${finalScore} оноо</span><br>` +
+        `Оролдлого: ${attempts}`;
+
+      // 통과 후 시도횟수 초기화
+      localStorage.removeItem(STORE_KEY);
+      attempts = 0;
+
+    } else {
+      showReview(finalScore);
+    }
+  }
+
+  function showReview(finalScore) {
+    document.getElementById("quiz-section").style.display = "none";
+    document.getElementById("result-section").style.display = "none";
+    document.getElementById("review-section").style.display = "block";
+
+    document.getElementById("attemptMetaReview").innerText =
+      `Оролдлого: ${attempts} / ${MAX_FAILS_BEFORE_PASS}`;
+
+    const container = document.getElementById("wrong-answers-container");
+    container.innerHTML = `<p style="font-weight:900; color:#e74c3c;">Таны дүн: ${finalScore} оноо</p>`;
+
+    wrongWords.forEach(w => {
+      const div = document.createElement("div");
+      div.className = "wrong-item";
+      // w.q = 틀린 질문(한국어 or 몽골어), w.a = 정답(반대 언어)
+      div.innerHTML = `❓ <b>${w.q}</b> → ✅ Зөв: <b>${w.a}</b>`;
+      container.appendChild(div);
+    });
+  }
+
+  function retryQuiz() {
+    currentIdx = 0;
+    score = 0;
+    wrongWords = [];
+    prepareQuestions();
+    document.getElementById("review-section").style.display = "none";
+    document.getElementById("quiz-section").style.display = "block";
+    showQuestion();
+  }
+
+  function restartAttempt(){
+    // 같은 이름으로 1회차 다시 시작 (시도횟수는 유지)
+    currentIdx = 0;
+    score = 0;
+    wrongWords = [];
+    prepareQuestions();
+    document.getElementById("start-section").style.display = "none";
+    document.getElementById("review-section").style.display = "none";
+    document.getElementById("result-section").style.display = "none";
+    document.getElementById("quiz-section").style.display = "block";
+    showQuestion();
+  }
+
+  function goHome(){
+    document.getElementById("quiz-section").style.display = "none";
+    document.getElementById("review-section").style.display = "none";
+    document.getElementById("result-section").style.display = "none";
+    document.getElementById("start-section").style.display = "block";
+  }
+
+  function resetAll(){
+    // 새 이름으로 시작 + 시도횟수 초기화
+    localStorage.removeItem(STORE_KEY);
+    attempts = 0;
+    currentIdx = 0;
+    score = 0;
+    wrongWords = [];
+    name = "";
+    document.getElementById("userName").value = "";
+    goHome();
+  }
 </script>
 </body>
 </html>
