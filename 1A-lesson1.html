@@ -30,7 +30,7 @@
       border-radius: 10px;
       padding: 12px;
       color: #0f3f7a;
-      font-weight: 800;
+      font-weight: 900;
       line-height: 1.4;
     }
     .row { display:flex; gap:10px; margin-top:12px; }
@@ -39,6 +39,8 @@
     .btn-orange:hover { background-color: #cf6b12; }
     .btn-gray { background-color: #eef2f7; color:#2c3e50; border:1px solid #d7dee7; }
     .btn-gray:hover { background-color: #e2e8f0; }
+    .langline{ font-size:13px; color:#6b7b8c; margin-top:6px; }
+    .tag{ display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #d7dee7; background:#f6f9ff; font-size:12px; color:#2c3e50; font-weight:800; }
   </style>
 </head>
 <body>
@@ -47,7 +49,7 @@
       <h2>1A: 1-р хичээл<br>Үгсийн сангийн тест</h2>
       <p style="color:#7f8c8d; margin: 6px 0 0;">Нэрээ оруулаад эхэлнэ үү.</p>
       <input type="text" id="userName" placeholder="Таны нэр" autocomplete="name" />
-      <button id="startBtn" onclick="startQuiz()">Эхлэх</button>
+      <button onclick="startQuiz()">Эхлэх</button>
       <div class="meta" id="vocabCount"></div>
     </div>
 
@@ -72,20 +74,16 @@
 
     <div id="result-section">
       <h2 id="result-title" style="color:#27ae60;">🎉 Тэнцлээ!</h2>
-      <div id="result-content">
-        <p id="result-msg" style="font-size:18px; line-height: 1.8; margin: 16px 0;"></p>
-        <div class="note">Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү!</div>
-        <div class="row">
-          <button onclick="restartAttempt()">Дахин хийх</button>
-          <button class="btn-gray" onclick="resetAll()">Шинэ нэрээр</button>
-        </div>
+      <p id="result-msg" style="font-size:18px; line-height: 1.8; margin: 16px 0;"></p>
+      <div class="note">Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү!</div>
+      <div class="row">
+        <button onclick="restartAttempt()">Дахин хийх</button>
+        <button class="btn-gray" onclick="resetAll()">Шинэ нэрээр</button>
       </div>
     </div>
   </div>
 
 <script>
-  // 단어 데이터 (질문/보기 교차: kor→mon / mon→kor)
-  // 철자 1곳 수정: "노мын сан" -> "номын сан"
   const rawWords = [
     { kor: "공항", mon: "нисэх онгоцны буудал", pos: "n" },
     { kor: "시장", mon: "зах", pos: "n" },
@@ -129,28 +127,23 @@
     { kor: "독일", mon: "Герман", pos: "n" }
   ];
 
-  // 상태값
   let wordList = [];
   let currentIdx = 0;
   let score = 0;
   let wrongWords = [];
   let name = "";
 
-  // 시도 횟수 (로컬 저장)
   const STORE_KEY = "attempts_1A1";
   let attempts = localStorage.getItem(STORE_KEY) ? parseInt(localStorage.getItem(STORE_KEY), 10) : 0;
 
-  // 설정
   const PASS_SCORE = 80;
   const MAX_FAILS_BEFORE_PASS = 5;
 
-  // 초기 표시
   document.getElementById("vocabCount").innerText = `Үгийн тоо: ${rawWords.length}`;
   document.getElementById("userName").addEventListener("keydown", (e) => {
     if (e.key === "Enter") startQuiz();
   });
 
-  // 유틸
   function shuffle(arr){
     const a = arr.slice();
     for (let i=a.length-1; i>0; i--){
@@ -160,32 +153,24 @@
     return a;
   }
 
-  function unique(arr){
-    const seen = new Set();
-    const out = [];
-    for (const x of arr){
-      if (!seen.has(x)){
-        seen.add(x);
-        out.push(x);
-      }
-    }
-    return out;
-  }
+  function buildChoices(correctAnswer, dir, pos){
+    // dir: "K2M" => choices are Mongolian
+    // dir: "M2K" => choices are Korean
+    const getVal = (w) => (dir === "K2M" ? w.mon : w.kor);
 
-  // 핵심: 같은 품사 우선 오답 3개 생성 + 중복 방지 + 항상 4지 유지
-  function buildChoices(correctAnswer, type, pos){
-    // type: "kor"(질문이 한국어) => 보기 몽골어, "mon"(질문이 몽골어) => 보기 한국어
-    const getVal = (w) => (type === "kor" ? w.mon : w.kor);
+    const samePos = rawWords
+      .filter(w => w.pos === pos)
+      .map(getVal)
+      .filter(v => v && v !== correctAnswer);
 
-    const samePos = rawWords.filter(w => w.pos === pos).map(getVal).filter(v => v && v !== correctAnswer);
-    const anyPos  = rawWords.map(getVal).filter(v => v && v !== correctAnswer);
+    const anyPos = rawWords
+      .map(getVal)
+      .filter(v => v && v !== correctAnswer);
 
     let distractors = [];
     if (pos === "o") {
-      // '어느/аль' 같은 경우 전체에서 고르게
       distractors = shuffle(anyPos);
     } else {
-      // 같은 품사 우선
       distractors = shuffle(samePos).concat(shuffle(anyPos));
     }
 
@@ -195,8 +180,21 @@
       if (picked.length >= 3) break;
     }
 
-    const choices = unique([correctAnswer, ...picked]);
-    // 혹시라도 4개 미만이면(데이터 중복 등) 전체 풀에서 추가로 채움
+    let choices = [correctAnswer, ...picked];
+
+    // 항상 4개 보장
+    if (choices.length < 4){
+      for (const d of shuffle(anyPos)){
+        if (!choices.includes(d)) choices.push(d);
+        if (choices.length >= 4) break;
+      }
+    }
+
+    // 혹시 중복 등으로 4 미만이면, 마지막 안전장치
+    while (choices.length < 4) choices.push(correctAnswer);
+
+    // 중복 제거 후 4개 유지(부득이하게 동일하면 전체 풀로 채움)
+    choices = Array.from(new Set(choices));
     if (choices.length < 4){
       for (const d of shuffle(anyPos)){
         if (!choices.includes(d)) choices.push(d);
@@ -210,14 +208,18 @@
   function prepareQuestions() {
     const shuffled = shuffle(rawWords);
     wordList = shuffled.map((w) => {
-      const isKorQuestion = Math.random() < 0.5;
-      const q = isKorQuestion ? w.kor : w.mon;
-      const a = isKorQuestion ? w.mon : w.kor;
-      const type = isKorQuestion ? "kor" : "mon";
+      const dir = Math.random() < 0.5 ? "K2M" : "M2K";
+      const q = (dir === "K2M") ? w.kor : w.mon;
+      const a = (dir === "K2M") ? w.mon : w.kor;
 
-      const choices = buildChoices(a, type, w.pos);
-
-      return { q, a, type, pos: w.pos, choices };
+      return {
+        dir,
+        pos: w.pos,
+        q, a,
+        kor: w.kor,
+        mon: w.mon,
+        choices: buildChoices(a, dir, w.pos)
+      };
     });
   }
 
@@ -226,56 +228,58 @@
     if (!name) { alert("Нэрээ оруулна уу!"); return; }
 
     attempts = localStorage.getItem(STORE_KEY) ? parseInt(localStorage.getItem(STORE_KEY), 10) : attempts;
+
     currentIdx = 0;
     score = 0;
     wrongWords = [];
 
     prepareQuestions();
+
     document.getElementById("start-section").style.display = "none";
     document.getElementById("review-section").style.display = "none";
     document.getElementById("result-section").style.display = "none";
     document.getElementById("quiz-section").style.display = "block";
+
     showQuestion();
   }
 
   function showQuestion() {
-    if (currentIdx < wordList.length) {
-      const item = wordList[currentIdx];
+    if (currentIdx >= wordList.length) return finishQuiz();
 
-      document.getElementById("question-number").innerText = `${currentIdx + 1} / ${wordList.length}`;
-      document.getElementById("question-instruction").innerText =
-        item.type === "kor" ? "Зөв Монгол орчуулгыг сонгоно уу." : "Зөв Солонгос үгийг сонгоно уу.";
-      document.getElementById("question-text").innerText = item.q;
+    const item = wordList[currentIdx];
+    document.getElementById("question-number").innerText = `${currentIdx + 1} / ${wordList.length}`;
 
-      const choicesDiv = document.getElementById("choices");
-      choicesDiv.innerHTML = "";
+    const qLang = (item.dir === "K2M") ? "Солонгос" : "Монгол";
+    const cLang = (item.dir === "K2M") ? "Монгол" : "Солонгос";
 
-      // 연속 클릭 방지
-      let locked = false;
+    document.getElementById("question-instruction").innerHTML =
+      `Асуулт: <span class="tag">${qLang}</span> · Сонголт: <span class="tag">${cLang}</span><br>` +
+      (item.dir === "K2M" ? "Зөв Монгол орчуулгыг сонгоно уу." : "Зөв Солонгос үгийг сонгоно уу.");
 
-      item.choices.forEach((c) => {
-        const btn = document.createElement("button");
-        btn.className = "choice-btn";
-        btn.innerText = c;
-        btn.onclick = () => {
-          if (locked) return;
-          locked = true;
-          checkAnswer(c);
-        };
-        choicesDiv.appendChild(btn);
-      });
-    } else {
-      finishQuiz();
-    }
+    document.getElementById("question-text").innerText = item.q;
+
+    const choicesDiv = document.getElementById("choices");
+    choicesDiv.innerHTML = "";
+
+    let locked = false;
+    item.choices.forEach((c) => {
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.innerText = c;
+      btn.onclick = () => {
+        if (locked) return;
+        locked = true;
+        checkAnswer(c);
+      };
+      choicesDiv.appendChild(btn);
+    });
   }
 
   function checkAnswer(answer) {
     const item = wordList[currentIdx];
-    if (answer === item.a) {
-      score += (100 / wordList.length);
-    } else {
-      wrongWords.push(item); // {q, a} 형태 그대로 저장
-    }
+    if (answer === item.a) score += (100 / wordList.length);
+    else wrongWords.push(item);
+
     currentIdx++;
     showQuestion();
   }
@@ -287,20 +291,19 @@
     const finalScore = Math.round(score);
 
     if (finalScore >= PASS_SCORE || attempts >= MAX_FAILS_BEFORE_PASS) {
+      const forced = (attempts >= MAX_FAILS_BEFORE_PASS && finalScore < PASS_SCORE);
+
       document.getElementById("quiz-section").style.display = "none";
       document.getElementById("review-section").style.display = "none";
       document.getElementById("result-section").style.display = "block";
 
-      const forced = (attempts >= MAX_FAILS_BEFORE_PASS && finalScore < PASS_SCORE);
       document.getElementById("result-title").innerText = forced ? "💪 Тэнцлээ!" : "🎉 Тэнцлээ!";
-
       document.getElementById("result-msg").innerHTML =
         `<b>${name}</b><br>` +
         (forced ? `Та олон удаа хичээллэсэн тул урамшуулж тэнцүүллээ.<br>` : `Баяр хүргэе! Та тэнцлээ.<br>`) +
         `<span class="score-text">Дүн: ${finalScore} оноо</span><br>` +
         `Оролдлого: ${attempts}`;
 
-      // 통과 후 시도횟수 초기화
       localStorage.removeItem(STORE_KEY);
       attempts = 0;
 
@@ -321,10 +324,15 @@
     container.innerHTML = `<p style="font-weight:900; color:#e74c3c;">Таны дүн: ${finalScore} оноо</p>`;
 
     wrongWords.forEach(w => {
+      const qLang = (w.dir === "K2M") ? "Солонгос" : "Монгол";
+      const aLang = (w.dir === "K2M") ? "Монгол" : "Солонгос";
+
       const div = document.createElement("div");
       div.className = "wrong-item";
-      // w.q = 틀린 질문(한국어 or 몽골어), w.a = 정답(반대 언어)
-      div.innerHTML = `❓ <b>${w.q}</b> → ✅ Зөв: <b>${w.a}</b>`;
+      div.innerHTML =
+        `❓ <span class="tag">${qLang}</span> <b>${w.q}</b><br>` +
+        `✅ <span class="tag">${aLang}</span> <b>${w.a}</b>` +
+        `<div class="langline">KO: ${w.kor} · MN: ${w.mon}</div>`;
       container.appendChild(div);
     });
   }
@@ -340,7 +348,6 @@
   }
 
   function restartAttempt(){
-    // 같은 이름으로 1회차 다시 시작 (시도횟수는 유지)
     currentIdx = 0;
     score = 0;
     wrongWords = [];
@@ -360,7 +367,6 @@
   }
 
   function resetAll(){
-    // 새 이름으로 시작 + 시도횟수 초기화
     localStorage.removeItem(STORE_KEY);
     attempts = 0;
     currentIdx = 0;
