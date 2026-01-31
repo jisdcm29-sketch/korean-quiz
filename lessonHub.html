@@ -1,0 +1,213 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Хичээл сонгох</title>
+
+  <style>
+    :root{
+      --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5; --line:#d9e4f5;
+      --text:#223047; --muted:#6a7a8e;
+      --warnbg:#fff5f5; --warnline:#feb2b2; --warntext:#7a1f1f;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; padding:20px; background:var(--bg); font-family:Arial,sans-serif; text-align:center; color:var(--text);}
+    .container{max-width:680px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
+    h1{margin:0; font-size:22px;}
+    .sub{margin:10px 0 0; color:var(--muted); font-size:14px; line-height:1.45;}
+    .top{
+      display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:12px;
+      flex-wrap:wrap;
+    }
+    .badge{
+      display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid #d7dee7;
+      background:#f6f9ff; font-size:12px; font-weight:900; color:#2c3e50;
+    }
+    .btn{
+      padding:12px 14px; border-radius:12px; border:none; cursor:pointer;
+      background:var(--primary); color:#fff; font-weight:900; font-size:14px;
+    }
+    .btn:hover{background:var(--primary2);}
+    .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
+    .btnGray:hover{background:#e2e8f0;}
+    .grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:16px;}
+    @media (max-width:560px){ .grid{grid-template-columns:1fr;} }
+
+    .cardBtn{
+      padding:16px 12px; border-radius:14px; border:2px solid var(--primary);
+      background:#fff; font-weight:900; cursor:pointer; font-size:16px;
+    }
+    .cardBtn:hover{background:var(--primary); color:#fff;}
+    .warn{
+      margin-top:14px; padding:12px; border-radius:12px; background:var(--warnbg);
+      border:1px solid var(--warnline); color:var(--warntext);
+      font-size:14px; line-height:1.45; text-align:left;
+    }
+    .hidden{display:none;}
+    .meta{margin-top:10px; text-align:left; color:#4b5b6f; font-size:14px;}
+    .meta b{color:#1f2f45;}
+    .small{font-size:12px; color:var(--muted); margin-top:8px; text-align:left;}
+  </style>
+</head>
+<body>
+<div class="container">
+  <h1>Хичээл сонгох</h1>
+  <p class="sub">Доорх хичээлээс сонгоно уу.</p>
+
+  <div class="top">
+    <div>
+      <span class="badge" id="badge">—</span>
+    </div>
+    <div style="display:flex; gap:10px;">
+      <button class="btn btnGray" onclick="goBack()">Буцах</button>
+      <button class="btn" onclick="goHome()">Эхлэл</button>
+    </div>
+  </div>
+
+  <div class="meta">
+    Нэр: <b id="studentName">—</b><br/>
+    Анги: <b id="klassName">—</b>
+  </div>
+
+  <div id="warn" class="warn hidden"></div>
+
+  <div id="list" class="grid"></div>
+
+  <div class="small">
+    Санамж: Хэрэв хичээлийн жагсаалт харагдахгүй бол, GitHub Pages шинэчлэл удааширсан байж болно. Түр хүлээгээд дахин оролдоно уу.
+  </div>
+</div>
+
+<script>
+  // ✅ GitHub 저장소 정보 (사장님 계정/저장소로 바꿔야 합니다)
+  // 현재는 "예시" 입니다. 아래 두 줄을 사장님 값으로만 바꾸면 됩니다.
+  const GITHUB_USERNAME = "jisdcm29-sketch";
+  const GITHUB_REPO = "korean-quiz";
+
+  function showWarn(msg){
+    const w = document.getElementById("warn");
+    w.textContent = msg;
+    w.classList.remove("hidden");
+  }
+  function clearWarn(){
+    document.getElementById("warn").classList.add("hidden");
+  }
+
+  function goHome(){
+    location.href = "index.html?v=" + Date.now();
+  }
+  function goBack(){
+    history.back();
+  }
+
+  function getState(){
+    const s = sessionStorage.getItem("kquiz_state");
+    if(!s) return null;
+    try{ return JSON.parse(s); }catch(e){ return null; }
+  }
+
+  function getParams(){
+    const p = new URLSearchParams(location.search);
+    return {
+      book: (p.get("book") || "").trim(),   // SNU / TOPIK
+      level:(p.get("level")|| "").trim()    // 1A / 1B / 2A / 2B / 1 / 2
+    };
+  }
+
+  function buildPrefix(book, level){
+    // 파일명 규칙:
+    // 서울대: SNU-1A-lesson01.html
+    // TOPIK:  TOPIK-1-lesson01.html  (사장님이 이렇게 올릴 예정이라고 가정)
+    if(book === "SNU") return `SNU-${level}-lesson`;
+    if(book === "TOPIK") return `TOPIK-${level}-lesson`;
+    return "";
+  }
+
+  function prettyTitle(book, level){
+    if(book === "SNU") return `서울대 · ${level}`;
+    if(book === "TOPIK") return `TOPIK · ${level}`;
+    return "—";
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;").replaceAll("<","&lt;")
+      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
+
+  async function loadLessons(){
+    clearWarn();
+
+    const st = getState();
+    if(!st || !st.token || !st.name || !st.klass){
+      showWarn("Нэвтрэх мэдээлэл олдсонгүй. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+      return;
+    }
+
+    document.getElementById("studentName").textContent = st.name;
+    document.getElementById("klassName").textContent = st.klass;
+
+    const {book, level} = getParams();
+    const prefix = buildPrefix(book, level);
+    document.getElementById("badge").textContent = prettyTitle(book, level);
+
+    if(!prefix){
+      showWarn("Буруу хандалт байна. Эхлэл хуудас руу орж зөв сонголт хийнэ үү.");
+      return;
+    }
+
+    const api = `https://api.github.com/repos/${encodeURIComponent(GITHUB_USERNAME)}/${encodeURIComponent(GITHUB_REPO)}/contents/`;
+    const listDiv = document.getElementById("list");
+    listDiv.innerHTML = "";
+
+    try{
+      const res = await fetch(api, { cache:"no-store" });
+      const files = await res.json();
+
+      if(!Array.isArray(files)){
+        showWarn("GitHub-аас файлын жагсаалт авч чадсангүй.");
+        return;
+      }
+
+      // 해당 prefix로 시작하는 html 파일만 찾기
+      const lessonFiles = files
+        .filter(f => f && f.name && f.name.endsWith(".html") && f.name.startsWith(prefix))
+        .sort((a,b) => a.name.localeCompare(b.name));
+
+      if(lessonFiles.length === 0){
+        showWarn("Энэ түвшний хичээлийн файл олдсонгүй. Файлын нэрийг шалгана уу.");
+        return;
+      }
+
+      lessonFiles.forEach(f => {
+        const btn = document.createElement("button");
+        btn.className = "cardBtn";
+
+        // 표시: lesson01 -> 1-р хичээл
+        const m = f.name.match(/lesson(\d+)\.html$/);
+        const num = m ? parseInt(m[1],10) : null;
+        btn.textContent = num ? `${num}-р хичээл` : f.name.replace(".html","");
+
+        btn.onclick = () => {
+          // ✅ 과 파일로 name/klass/token 전달
+          const url =
+            `${f.name}?name=${encodeURIComponent(st.name)}&klass=${encodeURIComponent(st.klass)}&token=${encodeURIComponent(st.token)}`;
+          location.href = url;
+        };
+        listDiv.appendChild(btn);
+      });
+
+    }catch(e){
+      showWarn("Алдаа гарлаа. Дахин оролдоно уу.");
+    }
+  }
+
+  loadLessons();
+</script>
+</body>
+</html>
