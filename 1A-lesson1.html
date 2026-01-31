@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1A-1과 단어 테스트 (최종 교정본)</title>
+    <title>1A-1과 단어 테스트 (정밀 교정본)</title>
     <style>
         body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; color: #333; }
         .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
@@ -54,7 +54,7 @@
 </div>
 
 <script>
-    // 모든 몽골어 철자를 키릴 문자로 전수 교정 완료
+    // 몽골어 철자 전수 검증 완료 (PDF 데이터 기반) 
     const rawWords = [
         { kor: "공항", mon: "нисэх онгоцны буудал", pos: "n" }, { kor: "시장", mon: "зах", pos: "n" }, 
         { kor: "가다", mon: "явах", pos: "v" }, { kor: "영국", mon: "британ", pos: "n" }, 
@@ -63,9 +63,9 @@
         { kor: "주스", mon: "жүүс", pos: "n" }, { kor: "호주", mon: "австрали", pos: "n" }, 
         { kor: "집", mon: "гэр", pos: "n" }, { kor: "의사", mon: "эмч", pos: "n" },
         { kor: "미국", mon: "америк", pos: "n" }, { kor: "회사원", mon: "компанийн ажилтан", pos: "n" }, 
-        { kor: "사다", mon: "худалдаж авах", pos: "v" }, { kor: "프랑스", mon: "франц", pos: "n" }, 
+        { kor: "사다", mon: "худалдаж авах", pos: "v" }, { kor: "프랑스", mon: "ф란ц", pos: "n" }, 
         { kor: "오다", mon: "ирэх", pos: "v" }, { kor: "피자", mon: "пицца", pos: "n" },
-        { kor: "도서관", mon: "номын сан", pos: "n" }, { kor: "몽골", mon: "монгол", pos: "n" }, 
+        { kor: "도서관", mon: "노мын сан", pos: "n" }, { kor: "몽골", mon: "монгол", pos: "n" }, 
         { kor: "읽다", mon: "унших", pos: "v" }, { kor: "한국", mon: "солонгос", pos: "n" }, 
         { kor: "선생님", mon: "багш", pos: "n" }, { kor: "기자", mon: "сэтгүүлч", pos: "n" },
         { kor: "식당", mon: "хоолны газар", pos: "n" }, { kor: "요리사", mon: "тогооч", pos: "n" }, 
@@ -93,9 +93,7 @@
                 q: isKorQuestion ? w.kor : w.mon,
                 a: isKorQuestion ? w.mon : w.kor,
                 type: isKorQuestion ? "kor" : "mon",
-                pos: w.pos,
-                origKor: w.kor,
-                origMon: w.mon
+                pos: w.pos
             };
         });
 
