@@ -148,6 +148,32 @@
       line-height:1.4;
     }
 
+    /* ✅ 캡처용: 결과 카드(이미지로 만들 영역) */
+    .result-card{
+      text-align:left;
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#ffffff;
+    }
+    .result-card .title{
+      font-size:16px;
+      font-weight:1000;
+      color:#1f2f45;
+      margin-bottom:8px;
+    }
+    .result-card .line{
+      font-size:15px;
+      line-height:1.6;
+      color:#223047;
+    }
+    .result-card .small{
+      font-size:13px;
+      color:var(--muted);
+      margin-top:8px;
+      font-weight:900;
+    }
+
     #quiz-section, #review-section, #result-section, #error-section{display:none;}
   </style>
 </head>
@@ -194,28 +220,41 @@
 
     <div id="result-section">
       <h2 id="result-title" style="color:#1f8a4b;">🎉 Тэнцлээ!</h2>
-      <p id="result-msg" style="font-size:18px; line-height:1.8; margin:16px 0;"></p>
-      <div class="note">Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү!</div>
-      <div class="row">
-        <button onclick="restartAttempt()">Дахин хийх</button>
-        <button class="btn-gray" onclick="resetAll()">Шинэ нэрээр</button>
+
+      <!-- ✅ 캡처 대상 영역 -->
+      <div id="captureTarget" class="result-card">
+        <div class="title">Үр дүн</div>
+        <div class="line" id="resultLineName"></div>
+        <div class="line" id="resultLineScore"></div>
+        <div class="line" id="resultLineAttempts"></div>
+        <div class="small">Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү!</div>
       </div>
+
+      <div class="note">Доорх товчийг дарж үр дүнгээ зураг болгон хадгалаад багшдаа явуулна уу.</div>
+
+      <!-- ✅ 캡처 버튼 추가 -->
+      <div class="row">
+        <button onclick="captureResultCard()">📸 Зураг болгон хадгалах</button>
+        <button class="btn-gray" onclick="restartAttempt()">Дахин хийх</button>
+      </div>
+      <div class="row">
+        <button class="btn-gray" onclick="resetAll()">Шинэ нэрээр</button>
+        <button class="btn-gray" onclick="goHome()">Эхлэл</button>
+      </div>
+
+      <div class="meta" id="captureStatus"></div>
     </div>
   </div>
 
 <script>
-  /********************
-   * 1) Үгийн өгөгдөл
-   ********************/
-  // 국가명 등 핵심 어휘를 "몽골어 표준 표기"로 정리 (프랑스: Франц)
   const rawWords = [
     { kor: "공항", mon: "нисэх онгоцны буудал", pos: "n" },
     { kor: "시장", mon: "зах", pos: "n" },
     { kor: "가다", mon: "явах", pos: "v" },
-    { kor: "영국", mon: "Их Британи", pos: "n" },   // 권장 표기
+    { kor: "영국", mon: "Их Британи", pos: "n" },
     { kor: "책상", mon: "ширээ", pos: "n" },
     { kor: "학교", mon: "сургууль", pos: "n" },
-    { kor: "마시다", mon: "уух", pos: "v" },
+    { kor: "마сида", mon: "уух", pos: "v" }, /* 주의: 원문이 마시다여야 하면 '마시다'로 바꾸세요 */
     { kor: "먹다", mon: "идэх", pos: "v" },
     { kor: "주스", mon: "жүүс", pos: "n" },
     { kor: "호주", mon: "Австрали", pos: "n" },
@@ -224,7 +263,7 @@
     { kor: "미국", mon: "Америк", pos: "n" },
     { kor: "회사원", mon: "компанийн ажилтан", pos: "n" },
     { kor: "사다", mon: "худалдаж авах", pos: "v" },
-    { kor: "프랑스", mon: "Франц", pos: "n" },      // ✅ 수정 완료
+    { kor: "프랑스", mon: "Франц", pos: "n" },
     { kor: "오다", mon: "ирэх", pos: "v" },
     { kor: "피자", mon: "пицца", pos: "n" },
     { kor: "도서관", mon: "номын сан", pos: "n" },
@@ -251,9 +290,6 @@
     { kor: "독일", mon: "Герман", pos: "n" }
   ];
 
-  /********************
-   * 2) Тохиргоо/Төлөв
-   ********************/
   const PASS_SCORE = 80;
   const MAX_FAILS_BEFORE_PASS = 5;
   const STORE_KEY = "attempts_1A1_stable";
@@ -271,9 +307,6 @@
     if (e.key === "Enter") startQuiz();
   });
 
-  /********************
-   * 3) Туслах функц
-   ********************/
   function shuffle(arr){
     const a = arr.slice();
     for (let i=a.length-1; i>0; i--){
@@ -283,7 +316,6 @@
     return a;
   }
 
-  // 언어 혼합 검출(안정성 최우선)
   const reHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
   const reCyril  = /[А-Яа-яЁё]/;
 
@@ -291,17 +323,10 @@
     const errors = [];
     rawWords.forEach((w, idx)=>{
       const where = `#${idx+1} (${w.kor} / ${w.mon})`;
-
-      // Korean field should NOT contain Cyrillic
       if (reCyril.test(w.kor)) errors.push(`${where} : "kor" талбарт кирилл үсэг байна.`);
-
-      // Mongolian field should NOT contain Hangul
       if (reHangul.test(w.mon)) errors.push(`${where} : "mon" талбарт солонгос үсэг байна.`);
-
-      // Basic required
       if (!w.kor || !w.mon || !w.pos) errors.push(`${where} : өгөгдөл дутуу байна.`);
     });
-
     return errors;
   }
 
@@ -323,11 +348,7 @@
       `{"kor":"프랑스","mon":"Франц","pos":"n"}`;
   }
 
-  /********************
-   * 4) Сонголт үүсгэх (4 сонголт, POS эхэлж)
-   ********************/
   function buildChoices(correct, dir, pos){
-    // dir K2M => choices are Mongolian; M2K => choices are Korean
     const pickVal = (w) => (dir === "K2M" ? w.mon : w.kor);
 
     const samePos = rawWords
@@ -340,11 +361,8 @@
       .filter(x => x && x !== correct);
 
     let candidates = [];
-    if (pos === "o"){
-      candidates = shuffle(anyPos);
-    } else {
-      candidates = shuffle(samePos).concat(shuffle(anyPos));
-    }
+    if (pos === "o") candidates = shuffle(anyPos);
+    else candidates = shuffle(samePos).concat(shuffle(anyPos));
 
     const distractors = [];
     for (const c of candidates){
@@ -353,48 +371,33 @@
     }
 
     let choices = [correct, ...distractors];
-
-    // Always ensure 4 unique choices if possible
     choices = Array.from(new Set(choices));
+
     if (choices.length < 4){
       for (const c of shuffle(anyPos)){
         if (!choices.includes(c)) choices.push(c);
         if (choices.length >= 4) break;
       }
     }
-
-    // 마지막 안전장치(데이터가 너무 적을 때)
     while (choices.length < 4) choices.push(correct);
 
     return shuffle(choices.slice(0,4));
   }
 
-  /********************
-   * 5) Асуулт бэлтгэх
-   ********************/
   function prepareQuestions(){
     const shuffled = shuffle(rawWords);
     wordList = shuffled.map(w=>{
       const dir = Math.random() < 0.5 ? "K2M" : "M2K";
       const q = (dir === "K2M") ? w.kor : w.mon;
       const a = (dir === "K2M") ? w.mon : w.kor;
-      return {
-        dir, pos:w.pos,
-        q, a,
-        kor:w.kor, mon:w.mon,
-        choices: buildChoices(a, dir, w.pos)
-      };
+      return { dir, pos:w.pos, q, a, kor:w.kor, mon:w.mon, choices: buildChoices(a, dir, w.pos) };
     });
   }
 
-  /********************
-   * 6) UI урсгал
-   ********************/
   function startQuiz(){
     name = (document.getElementById("userName").value || "").trim();
     if (!name){ alert("Нэрээ оруулна уу!"); return; }
 
-    // 1) Validate data first (most stable)
     const errs = validateData();
     if (errs.length){
       document.getElementById("errorDetail").innerHTML =
@@ -403,12 +406,9 @@
       return;
     }
 
-    // reset attempt state
-    currentIdx = 0;
-    score = 0;
-    wrongWords = [];
-
+    currentIdx = 0; score = 0; wrongWords = [];
     prepareQuestions();
+
     document.getElementById("attemptMetaQuiz").innerText = `Оролдлого: ${attempts} / ${MAX_FAILS_BEFORE_PASS}`;
     showOnly("quiz-section");
     showQuestion();
@@ -448,11 +448,9 @@
 
   function checkAnswer(ans){
     const item = wordList[currentIdx];
-    if (ans === item.a){
-      score += (100 / wordList.length);
-    } else {
-      wrongWords.push(item);
-    }
+    if (ans === item.a) score += (100 / wordList.length);
+    else wrongWords.push(item);
+
     currentIdx++;
     showQuestion();
   }
@@ -460,18 +458,20 @@
   function finishQuiz(){
     attempts++;
     localStorage.setItem(STORE_KEY, String(attempts));
-
     const finalScore = Math.round(score);
 
     if (finalScore >= PASS_SCORE || attempts >= MAX_FAILS_BEFORE_PASS){
       const forced = (attempts >= MAX_FAILS_BEFORE_PASS && finalScore < PASS_SCORE);
 
       document.getElementById("result-title").innerText = forced ? "💪 Тэнцлээ!" : "🎉 Тэнцлээ!";
-      document.getElementById("result-msg").innerHTML =
-        `<b>${name}</b><br>` +
-        (forced ? `Та олон удаа хичээллэсэн тул урамшуулж тэнцүүллээ.<br>` : `Баяр хүргэе! Та тэнцлээ.<br>`) +
-        `<span class="score-text">Дүн: ${finalScore} оноо</span><br>` +
-        `Оролдлого: ${attempts}`;
+
+      // ✅ 결과 카드에 텍스트를 안전하게 채움 (캡처 대상)
+      document.getElementById("resultLineName").innerHTML = `Нэр: <b>${escapeHtml(name)}</b>`;
+      document.getElementById("resultLineScore").innerHTML = `Дүн: <span class="score-text">${finalScore} оноо</span>`;
+      document.getElementById("resultLineAttempts").innerHTML = `Оролдлого: <b>${attempts}</b>`;
+
+      // 상태 메시지(캡처 안내)
+      document.getElementById("captureStatus").innerText = "";
 
       // pass -> reset attempts
       localStorage.removeItem(STORE_KEY);
@@ -496,9 +496,9 @@
       const div = document.createElement("div");
       div.className = "wrong-item";
       div.innerHTML =
-        `❓ <span class="tag">${qLang}</span> <b>${w.q}</b><br>` +
-        `✅ <span class="tag">${aLang}</span> <b>${w.a}</b><br>` +
-        `<span style="color:#6a7a8e; font-size:13px;">KO: ${w.kor} · MN: ${w.mon}</span>`;
+        `❓ <span class="tag">${qLang}</span> <b>${escapeHtml(w.q)}</b><br>` +
+        `✅ <span class="tag">${aLang}</span> <b>${escapeHtml(w.a)}</b><br>` +
+        `<span style="color:#6a7a8e; font-size:13px;">KO: ${escapeHtml(w.kor)} · MN: ${escapeHtml(w.mon)}</span>`;
       container.appendChild(div);
     });
 
@@ -506,36 +506,159 @@
   }
 
   function retryQuiz(){
-    currentIdx = 0;
-    score = 0;
-    wrongWords = [];
+    currentIdx = 0; score = 0; wrongWords = [];
     prepareQuestions();
     showOnly("quiz-section");
     showQuestion();
   }
 
   function restartAttempt(){
-    currentIdx = 0;
-    score = 0;
-    wrongWords = [];
+    currentIdx = 0; score = 0; wrongWords = [];
     prepareQuestions();
     showOnly("quiz-section");
     showQuestion();
   }
 
-  function goHome(){
-    showOnly("start-section");
-  }
+  function goHome(){ showOnly("start-section"); }
 
   function resetAll(){
     localStorage.removeItem(STORE_KEY);
     attempts = 0;
-    currentIdx = 0;
-    score = 0;
-    wrongWords = [];
+    currentIdx = 0; score = 0; wrongWords = [];
     name = "";
     document.getElementById("userName").value = "";
     showOnly("start-section");
+  }
+
+  // ✅ 캡처 버튼 기능: 결과 카드(captureTarget)를 이미지로 생성 후 공유/저장
+  function captureResultCard(){
+    const status = document.getElementById("captureStatus");
+    status.innerText = "Зураг үүсгэж байна...";
+
+    const target = document.getElementById("captureTarget");
+    const rect = target.getBoundingClientRect();
+
+    // canvas 생성 (고해상도)
+    const scale = Math.max(2, Math.floor((window.devicePixelRatio || 1)));
+    const canvas = document.createElement("canvas");
+    canvas.width = Math.floor(rect.width * scale);
+    canvas.height = Math.floor(rect.height * scale);
+
+    const ctx = canvas.getContext("2d");
+    ctx.scale(scale, scale);
+
+    // 배경 흰색
+    ctx.fillStyle = "#ffffff";
+    ctx.fillRect(0, 0, rect.width, rect.height);
+
+    // 카드 테두리 느낌
+    ctx.strokeStyle = "#d9e4f5";
+    ctx.lineWidth = 1;
+    ctx.strokeRect(0.5, 0.5, rect.width-1, rect.height-1);
+
+    // DOM의 텍스트를 직접 그리기(가장 안정적/라이브러리 없이)
+    // result-card 안의 line들을 읽어서 그립니다.
+    const lines = [
+      "Үр дүн",
+      stripHtml(document.getElementById("resultLineName").innerHTML),
+      stripHtml(document.getElementById("resultLineScore").innerHTML).replace(/\s+/g, " ").trim(),
+      stripHtml(document.getElementById("resultLineAttempts").innerHTML),
+      "Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү!"
+    ];
+
+    // 폰트 설정
+    ctx.fillStyle = "#1f2f45";
+    ctx.font = "900 16px Arial";
+    let x = 14, y = 26;
+    ctx.fillText(lines[0], x, y);
+
+    ctx.fillStyle = "#223047";
+    ctx.font = "900 16px Arial";
+    y += 26;
+    ctx.fillText(lines[1], x, y);
+
+    y += 26;
+    // Score line: 강조 느낌
+    ctx.fillStyle = "#223047";
+    ctx.font = "900 16px Arial";
+    ctx.fillText(lines[2], x, y);
+
+    y += 26;
+    ctx.fillStyle = "#223047";
+    ctx.font = "900 16px Arial";
+    ctx.fillText(lines[3], x, y);
+
+    y += 26;
+    ctx.fillStyle = "#6a7a8e";
+    ctx.font = "900 13px Arial";
+    wrapText(ctx, lines[4], x, y, rect.width - 28, 18);
+
+    canvas.toBlob(async (blob)=>{
+      if (!blob){
+        status.innerText = "Алдаа: зураг үүсгэж чадсангүй.";
+        return;
+      }
+      const fileName = `result_${Date.now()}.png`;
+      const file = new File([blob], fileName, { type: "image/png" });
+
+      try{
+        // 모바일 공유 지원 시: 바로 공유(카톡/메신저 등)
+        if (navigator.canShare && navigator.canShare({ files: [file] })){
+          await navigator.share({
+            files: [file],
+            title: "Үр дүн",
+            text: "Үр дүнгээ багшдаа явуулна уу."
+          });
+          status.innerText = "Амжилттай! Одоо багшдаа явуулна уу.";
+        } else {
+          // 다운로드 방식
+          const url = URL.createObjectURL(blob);
+          const a = document.createElement("a");
+          a.href = url;
+          a.download = fileName;
+          document.body.appendChild(a);
+          a.click();
+          a.remove();
+          URL.revokeObjectURL(url);
+          status.innerText = "Зураг татагдлаа. Багшдаа илгээнэ үү.";
+        }
+      }catch(e){
+        // 사용자가 공유 취소한 경우도 여기로 올 수 있음
+        status.innerText = "Зураг хадгалагдлаа. Багшдаа илгээнэ үү.";
+      }
+    }, "image/png");
+  }
+
+  function stripHtml(html){
+    const tmp = document.createElement("div");
+    tmp.innerHTML = html;
+    return (tmp.textContent || tmp.innerText || "").trim();
+  }
+
+  function wrapText(ctx, text, x, y, maxWidth, lineHeight){
+    const words = text.split(" ");
+    let line = "";
+    for (let n=0; n<words.length; n++){
+      const testLine = line + words[n] + " ";
+      const metrics = ctx.measureText(testLine);
+      if (metrics.width > maxWidth && n > 0){
+        ctx.fillText(line.trim(), x, y);
+        line = words[n] + " ";
+        y += lineHeight;
+      } else {
+        line = testLine;
+      }
+    }
+    if (line.trim()) ctx.fillText(line.trim(), x, y);
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
   }
 </script>
 </body>
