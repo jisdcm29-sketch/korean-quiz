@@ -1,85 +1,324 @@
 <!DOCTYPE html>
 <html lang="mn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Солонгос хэлний хичээл</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; } /* 처음엔 숨김 */
-        
-        /* 암호 입력창 디자인 */
-        #login-box { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 10px; }
-        input { width: 80%; padding: 15px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; }
-        .login-btn { background-color: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 90%; }
-        
-        .sub-title { color: #7f8c8d; margin-bottom: 30px; font-size: 16px; }
-        .lesson-list { display: grid; gap: 15px; }
-        .lesson-card { background-color: #ffffff; border: 2px solid #3498db; padding: 20px; border-radius: 12px; text-decoration: none; color: #2c3e50; font-weight: bold; font-size: 18px; transition: 0.3s; }
-        .lesson-card:hover { background-color: #3498db; color: white; transform: translateY(-3px); }
-        .loading { color: #3498db; font-weight: bold; }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>Үгийн сангийн тест (Скриншот хувилбар)</title>
+  <style>
+    :root{
+      --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5;
+      --text:#223047; --muted:#6a7a8e; --line:#d9e4f5;
+      --warnbg:#fff5f5; --warnline:#feb2b2;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; padding:20px; font-family:Arial,sans-serif; background:var(--bg); color:var(--text); text-align:center;}
+    .container{max-width:560px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
+    h2{margin:0; font-size:22px; color:#1f2f45;}
+    .sub{margin:10px 0 0; color:var(--muted); font-size:15px;}
+    input{width:92%; padding:14px; margin:14px 0 10px; border:2px solid #e0e0e0; border-radius:12px; font-size:18px; text-align:center; outline:none;}
+    input:focus{border-color:#b7cdfd; box-shadow:0 0 0 4px rgba(45,108,223,0.12);}
+    button{width:100%; background:var(--primary); color:#fff; padding:15px 16px; border:none; border-radius:12px; cursor:pointer; font-size:18px; font-weight:900; transition:.2s;}
+    button:hover{background:var(--primary2);}
+    .choice-btn{display:block; width:100%; margin:12px 0; background:#fff; color:var(--text); border:2px solid var(--primary); border-radius:12px; padding:15px; font-size:18px; font-weight:900; cursor:pointer; transition:.15s;}
+    .choice-btn:hover{background:var(--primary); color:#fff;}
+    .row{display:flex; gap:10px; margin-top:12px;}
+    .row button{width:50%;}
+    .btn-gray{background:#eef2f7; color:#2c3e50; border:1px solid #d7dee7;}
+    .btn-gray:hover{background:#e2e8f0;}
+    .btn-orange{background:#e67e22;}
+    .btn-orange:hover{background:#cf6b12;}
+    .tag{display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #d7dee7; background:#f6f9ff; font-size:12px; color:#2c3e50; font-weight:900;}
+    .instruction{margin:14px 0 12px; background:#eef2f7; border-radius:10px; padding:10px; color:#4b5b6f; font-size:14px; line-height:1.35;}
+    .qtext{font-size:34px; font-weight:1000; margin:16px 0 10px; color:#1e2f44; word-break:break-word;}
+    .meta{color:var(--muted); font-size:13px; margin-top:8px;}
+    .box-warn{text-align:left; margin-top:14px; background:var(--warnbg); border:1px solid var(--warnline); border-radius:12px; padding:12px; color:#7a1f1f; font-size:14px; line-height:1.45;}
+    .wrong-list{text-align:left; background:var(--warnbg); padding:15px; border-radius:12px; margin:18px 0; border:1px solid var(--warnline); max-height:340px; overflow-y:auto;}
+    .wrong-item{margin-bottom:10px; border-bottom:1px dashed var(--warnline); padding-bottom:8px; font-size:15px;}
+    .score-text{font-size:28px; font-weight:1000; color:#d33; margin:10px 0;}
+    .note{margin-top:14px; background:#eaf3ff; border:1px solid #b9d7ff; border-radius:12px; padding:12px; color:#0f3f7a; font-weight:1000; line-height:1.45;}
+    .result-card{
+      text-align:left;
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      background:#fff;
+    }
+    .result-card .title{font-size:18px; font-weight:1000; color:#1f2f45; margin-bottom:10px;}
+    .result-card .line{font-size:17px; line-height:1.65; color:#223047; font-weight:900;}
+    .result-card .small{font-size:14px; color:var(--muted); margin-top:10px; font-weight:1000;}
+
+    /* ✅ 캡처 모드: 불필요한 버튼 숨기고 카드 크게 */
+    .shotmode .hide-on-shot{display:none !important;}
+    .shotmode .container{max-width:620px;}
+    .shotmode .result-card{border:2px solid #b9d7ff; padding:18px;}
+    .shotmode .score-text{font-size:34px;}
+    .shotmode body{background:#ffffff;}
+    #quiz-section,#review-section,#result-section,#error-section{display:none;}
+  </style>
 </head>
 <body>
-
-<div id="login-box">
-    <h1>Нэвтрэх код</h1>
-    <p style="color: #7f8c8d; margin-bottom: 20px;">Нууц үгээ оруулна уу.<br>(암호를 입력하세요.)</p>
-    <input type="password" id="passwordInput" placeholder="Password">
-    <button class="login-btn" onclick="checkPassword()">Орох (확인)</button>
-</div>
-
-<div id="main-container" class="container">
-    <h1>Солонгос хэлний үгсийн сан</h1>
-    <p class="sub-title">Сурах бүлгээ сонгоно уу.</p>
-    <div id="lesson-container" class="lesson-list">
-        <p class="loading">Уншиж байна...</p>
+  <div class="container">
+    <div id="start-section">
+      <h2>Үгсийн сангийн тест</h2>
+      <p class="sub">Нэрээ оруулаад эхэлнэ үү.</p>
+      <input id="userName" type="text" placeholder="Таны нэр" autocomplete="name" />
+      <button onclick="startQuiz()">Эхлэх</button>
+      <div class="meta" id="vocabCount"></div>
     </div>
-    <p style="margin-top:40px; font-size: 14px; color: #bdc3c7;">Ulaanbaatar 2 Sejong Institute</p>
-</div>
+
+    <div id="quiz-section">
+      <h3 id="question-number" style="color:var(--primary); margin:0;"></h3>
+      <div id="question-instruction" class="instruction"></div>
+      <div id="question-text" class="qtext"></div>
+      <div id="choices"></div>
+      <div class="row hide-on-shot">
+        <button class="btn-gray" onclick="goHome()">Эхлэл</button>
+        <button class="btn-gray" onclick="restartAttempt()">Дахин эхлэх</button>
+      </div>
+    </div>
+
+    <div id="review-section">
+      <h2 style="color:#e67e22;">Алдаагаа шалгана уу</h2>
+      <p class="sub">Эдгээр үгсийг цээжлээд дахин оролдоно уу.</p>
+      <div id="wrong-answers-container" class="wrong-list"></div>
+      <button class="btn-orange hide-on-shot" onclick="retryQuiz()">Ойлголоо, дахин эхлэх</button>
+    </div>
+
+    <!-- ✅ 결과 화면(스크린샷 전용) -->
+    <div id="result-section">
+      <h2 id="result-title" style="color:#1f8a4b;">🎉 Тэнцлээ!</h2>
+
+      <div id="captureTarget" class="result-card">
+        <div class="title">Үр дүн</div>
+        <div class="line" id="resultLineName"></div>
+        <div class="line" id="resultLineScore"></div>
+        <div class="line" id="resultLineAttempts"></div>
+        <div class="small" style="margin-top:14px;">
+          <b style="color:#0f3f7a;">Энэ дэлгэцийг скриншот</b> хийж багш руугаа илгээнэ үү!
+        </div>
+      </div>
+
+      <div class="note">
+        1) Доорх <b>“📸 Скриншот горим”</b> товчийг дарна уу.<br>
+        2) Дэлгэцийн <b>скриншот</b> аваад багшдаа явуулна уу.
+      </div>
+
+      <!-- ✅ 다운로드/공유 삭제, 캡처모드만 -->
+      <div class="row hide-on-shot">
+        <button onclick="enterShotMode()">📸 Скриншот горим</button>
+        <button class="btn-gray" onclick="exitShotMode()">Гарах</button>
+      </div>
+
+      <div class="row hide-on-shot">
+        <button class="btn-gray" onclick="restartAttempt()">Дахин хийх</button>
+        <button class="btn-gray" onclick="resetAll()">Шинэ нэрээр</button>
+      </div>
+
+      <div class="meta hide-on-shot" id="shotHelp"></div>
+    </div>
+  </div>
 
 <script>
-    const correctPassword = "jungtae123"; // 선생님, 여기서 암호를 바꾸실 수 있습니다!
-    const username = "jisdcm29-sketch";
-    const repo = "korean-quiz";
+  /***************
+   * ✅ 예시 데이터(여기에 1과/2과 rawWords를 넣어 쓰면 됩니다)
+   ***************/
+  const rawWords = [
+    { kor: "마시다", mon: "уух", pos: "v" },
+    { kor: "먹다", mon: "идэх", pos: "v" },
+    { kor: "학교", mon: "сургууль", pos: "n" },
+    { kor: "책", mon: "ном", pos: "n" }
+  ];
 
-    function checkPassword() {
-        const input = document.getElementById('passwordInput').value;
-        if (input === correctPassword) {
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('main-container').style.display = 'block';
-            loadLessons(); // 암호가 맞으면 목록을 불러옵니다
-        } else {
-            alert("Нууц үг буруу байна! (암호가 틀렸습니다!)");
-        }
+  const PASS_SCORE = 80;
+  const MAX_FAILS_BEFORE_PASS = 5;
+  const STORE_KEY = "attempts_shot_mode";
+
+  let attempts = localStorage.getItem(STORE_KEY) ? parseInt(localStorage.getItem(STORE_KEY), 10) : 0;
+  let wordList = [], currentIdx = 0, score = 0, wrongWords = [], name = "";
+
+  document.getElementById("vocabCount").innerText = `Үгийн тоо: ${rawWords.length}`;
+
+  function shuffle(arr){
+    const a = arr.slice();
+    for (let i=a.length-1; i>0; i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+
+  function buildChoices(correct, dir, pos){
+    const pickVal = (w) => (dir === "K2M" ? w.mon : w.kor);
+    const samePos = rawWords.filter(w => w.pos === pos).map(pickVal).filter(x => x && x !== correct);
+    const anyPos  = rawWords.map(pickVal).filter(x => x && x !== correct);
+    let candidates = shuffle(samePos).concat(shuffle(anyPos));
+
+    const distractors = [];
+    for (const c of candidates){
+      if (c !== correct && !distractors.includes(c)) distractors.push(c);
+      if (distractors.length >= 3) break;
     }
 
-    async function loadLessons() {
-        try {
-            const response = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/`);
-            const files = await response.json();
-            const container = document.getElementById('lesson-container');
-            container.innerHTML = "";
-
-            const htmlFiles = files.filter(file => 
-                file.name.endsWith('.html') && file.name !== 'index.html'
-            );
-
-            htmlFiles.sort((a, b) => a.name.localeCompare(b.name));
-            htmlFiles.forEach(file => {
-                const link = document.createElement('a');
-                link.href = file.name;
-                link.className = 'lesson-card';
-                const displayName = file.name.replace('.html', '').replace('-', ' - ');
-                link.innerText = displayName;
-                container.appendChild(link);
-            });
-        } catch (error) {
-            console.error("Error:", error);
-        }
+    let choices = Array.from(new Set([correct, ...distractors]));
+    if (choices.length < 4){
+      for (const c of shuffle(anyPos)){
+        if (!choices.includes(c)) choices.push(c);
+        if (choices.length >= 4) break;
+      }
     }
+    while (choices.length < 4) choices.push(correct);
+
+    return shuffle(choices.slice(0,4));
+  }
+
+  function prepareQuestions(){
+    const shuffled = shuffle(rawWords);
+    wordList = shuffled.map(w=>{
+      const dir = Math.random() < 0.5 ? "K2M" : "M2K";
+      const q = (dir === "K2M") ? w.kor : w.mon;
+      const a = (dir === "K2M") ? w.mon : w.kor;
+      return { dir, pos:w.pos, q, a, kor:w.kor, mon:w.mon, choices: buildChoices(a, dir, w.pos) };
+    });
+  }
+
+  function showOnly(id){
+    ["start-section","quiz-section","review-section","result-section"].forEach(s=>{
+      document.getElementById(s).style.display = (s === id) ? "block" : "none";
+    });
+  }
+
+  function startQuiz(){
+    exitShotMode();
+    name = (document.getElementById("userName").value || "").trim();
+    if (!name){ alert("Нэрээ оруулна уу!"); return; }
+
+    currentIdx = 0; score = 0; wrongWords = [];
+    prepareQuestions();
+    showOnly("quiz-section");
+    showQuestion();
+  }
+
+  function showQuestion(){
+    if (currentIdx >= wordList.length) return finishQuiz();
+    const item = wordList[currentIdx];
+
+    document.getElementById("question-number").innerText = `${currentIdx+1} / ${wordList.length}`;
+
+    const qLang = (item.dir === "K2M") ? "Солонгос" : "Монгол";
+    const cLang = (item.dir === "K2M") ? "Монгол" : "Солонгос";
+    document.getElementById("question-instruction").innerHTML =
+      `Асуулт: <span class="tag">${qLang}</span> · Сонголт: <span class="tag">${cLang}</span><br>` +
+      (item.dir === "K2M" ? "Зөв Монгол орчуулгыг сонгоно уу." : "Зөв Солонгос үгийг сонгоно уу.");
+
+    document.getElementById("question-text").innerText = item.q;
+
+    const choicesDiv = document.getElementById("choices");
+    choicesDiv.innerHTML = "";
+    let locked = false;
+
+    item.choices.forEach(choice=>{
+      const btn = document.createElement("button");
+      btn.className = "choice-btn";
+      btn.innerText = choice;
+      btn.onclick = ()=>{
+        if (locked) return;
+        locked = true;
+        if (choice === item.a) score += (100 / wordList.length);
+        else wrongWords.push(item);
+        currentIdx++;
+        showQuestion();
+      };
+      choicesDiv.appendChild(btn);
+    });
+  }
+
+  function finishQuiz(){
+    attempts++;
+    localStorage.setItem(STORE_KEY, String(attempts));
+    const finalScore = Math.round(score);
+
+    if (finalScore >= PASS_SCORE || attempts >= MAX_FAILS_BEFORE_PASS){
+      const forced = (attempts >= MAX_FAILS_BEFORE_PASS && finalScore < PASS_SCORE);
+      document.getElementById("result-title").innerText = forced ? "💪 Тэнцлээ!" : "🎉 Тэнцлээ!";
+
+      document.getElementById("resultLineName").innerHTML = `Нэр: <b>${escapeHtml(name)}</b>`;
+      document.getElementById("resultLineScore").innerHTML = `Дүн: <span class="score-text">${finalScore} оноо</span>`;
+      document.getElementById("resultLineAttempts").innerHTML = `Оролдлого: <b>${attempts}</b>`;
+
+      localStorage.removeItem(STORE_KEY);
+      attempts = 0;
+
+      // ✅ 스크린샷 안내(기종별)
+      document.getElementById("shotHelp").innerHTML =
+        `iPhone: <b>Side + Volume Up</b> (эсвэл Home + Power)<br>` +
+        `Android: <b>Power + Volume Down</b>`;
+
+      showOnly("result-section");
+    } else {
+      showReview(finalScore);
+    }
+  }
+
+  function showReview(finalScore){
+    const container = document.getElementById("wrong-answers-container");
+    container.innerHTML = `<div style="font-weight:1000; color:#d33;">Таны дүн: ${finalScore} оноо</div>`;
+    wrongWords.forEach(w=>{
+      const div = document.createElement("div");
+      div.className = "wrong-item";
+      div.innerHTML = `❓ <b>${escapeHtml(w.q)}</b> → ✅ <b>${escapeHtml(w.a)}</b>`;
+      container.appendChild(div);
+    });
+    showOnly("review-section");
+  }
+
+  function retryQuiz(){
+    exitShotMode();
+    currentIdx = 0; score = 0; wrongWords = [];
+    prepareQuestions();
+    showOnly("quiz-section");
+    showQuestion();
+  }
+
+  function restartAttempt(){
+    exitShotMode();
+    currentIdx = 0; score = 0; wrongWords = [];
+    prepareQuestions();
+    showOnly("quiz-section");
+    showQuestion();
+  }
+
+  function resetAll(){
+    exitShotMode();
+    localStorage.removeItem(STORE_KEY);
+    attempts = 0; currentIdx = 0; score = 0; wrongWords = []; name = "";
+    document.getElementById("userName").value = "";
+    showOnly("start-section");
+  }
+
+  // ✅ 스크린샷 모드(캡처하기 좋은 화면으로 변경)
+  function enterShotMode(){
+    document.documentElement.classList.add("shotmode");
+    document.getElementById("shotHelp").innerHTML =
+      `Одоо <b>скриншот</b> аваад багшдаа явуулна уу.`;
+    // 맨 위로 스크롤(아이폰에서 버튼이 잘리면 안 됨)
+    window.scrollTo({ top: 0, behavior: "smooth" });
+  }
+
+  function exitShotMode(){
+    document.documentElement.classList.remove("shotmode");
+  }
+
+  function escapeHtml(s){
+    return String(s)
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
+  }
 </script>
-
 </body>
 </html>
