@@ -3,7 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>1A-1과 단어 테스트 (품사별 분류)</title>
+    <title>1A-1과 단어 테스트</title>
     <style>
         body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; color: #333; }
         .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
@@ -54,18 +54,18 @@
 </div>
 
 <script>
-    // 품사별로 분류된 단어 리스트 (n: 명사, v: 동사, o: 기타)
+    // 품사 분류: n(명사), v(동사/형용사), o(기타) 
     const rawWords = [
-        { kor: "공항", mon: "нисэх онгоцны буудал", pos: "n" }, { kor: "시장", mon: "зах", pos: "n" }, 
+        { kor: "공항", mon: "нисэх он고цны буудал", pos: "n" }, { kor: "시장", mon: "зах", pos: "n" }, 
         { kor: "가다", mon: "явах", pos: "v" }, { kor: "영국", mon: "британ", pos: "n" }, 
         { kor: "책상", mon: "ширээ", pos: "n" }, { kor: "학교", mon: "сургууль", pos: "n" },
         { kor: "마시다", mon: "уух", pos: "v" }, { kor: "먹다", mon: "идэх", pos: "v" }, 
         { kor: "주스", mon: "жүүс", pos: "n" }, { kor: "호주", mon: "австрали", pos: "n" }, 
         { kor: "집", mon: "гэр", pos: "n" }, { kor: "의사", mon: "эмч", pos: "n" },
         { kor: "미국", mon: "америк", pos: "n" }, { kor: "회사원", mon: "компанийн ажилтан", pos: "n" }, 
-        { kor: "사다", mon: "авах", pos: "v" }, { kor: "프랑스", mon: "франц", pos: "n" }, 
+        { kor: "사다", mon: "худалдаж авах", pos: "v" }, { kor: "프랑스", mon: "франц", pos: "n" }, 
         { kor: "오다", mon: "ирэх", pos: "v" }, { kor: "피자", mon: "пицца", pos: "n" },
-        { kor: "도서관", mon: "номын сан", pos: "n" }, { kor: "몽골", mon: "монгол", pos: "n" }, 
+        { kor: "도서관", mon: "노мын сан", pos: "n" }, { kor: "몽골", mon: "монгол", pos: "n" }, 
         { kor: "읽다", mon: "унших", pos: "v" }, { kor: "한국", mon: "солонгос", pos: "n" }, 
         { kor: "선생님", mon: "багш", pos: "n" }, { kor: "기자", mon: "сэтгүүлч", pos: "n" },
         { kor: "식당", mon: "хоолны газар", pos: "n" }, { kor: "요리사", mon: "тогооч", pos: "n" }, 
@@ -98,7 +98,6 @@
         });
 
         wordList.forEach(w => {
-            // 같은 품사(pos)를 가진 단어들 중에서 오답 후보를 선택
             let pool = rawWords.filter(item => item.pos === w.pos || w.pos === 'o');
             let choicePool = w.type === "kor" ? pool.map(i => i.mon) : pool.map(i => i.kor);
             
@@ -106,7 +105,6 @@
             let distractors = choicePool.filter(p => p !== w.a);
             distractors.sort(() => 0.5 - Math.random());
             
-            // 만약 같은 품사 단어가 부족하면 전체에서 보충
             if (distractors.length < 3) {
                 let backupPool = w.type === "kor" ? rawWords.map(i => i.mon) : rawWords.map(i => i.kor);
                 backupPool = backupPool.filter(p => p !== w.a && !distractors.includes(p));
