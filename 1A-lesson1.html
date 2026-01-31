@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Сөүлийн Үндэсний Их Сургууль 1A - 1-р хичээл</title>
+    <style>
+        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f4f7f9; padding: 20px; color: #333; }
+        .container { max-width: 600px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 25px rgba(0,0,0,0.1); }
+        h2 { color: #1a5276; font-size: 24px; margin-bottom: 10px; }
+        input { width: 85%; padding: 15px; margin: 15px 0; border: 2px solid #d5dbdb; border-radius: 10px; font-size: 18px; text-align: center; }
+        button { background-color: #2980b9; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 100%; transition: 0.2s; }
+        button:hover { background-color: #21618c; }
+        .choice-btn { display: block; width: 100%; margin: 10px 0; background-color: #fff; color: #2c3e50; text-align: center; border: 2px solid #3498db; padding: 12px; font-size: 18px; border-radius: 8px; }
+        .choice-btn:hover { background-color: #ebf5fb; }
+        #quiz-section, #result-section { display: none; }
+        .score-text { font-size: 22px; font-weight: bold; color: #2ecc71; margin: 15px 0; }
+        .retry-btn { background-color: #e67e22; margin-top: 20px; }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="start-section">
+        <h2>1A 1-р хичээлийн үгсийн сан</h2>
+        <p style="color: #7f8c8d;">Нэрээ оруулаад эхэлнэ үү.</p>
+        <input type="text" id="userName" placeholder="Таны нэр">
+        <br><br>
+        <button onclick="startQuiz()">Эхлэх</button>
+    </div>
+
+    <div id="quiz-section">
+        <h3 id="question-number" style="color: #3498db;"></h3>
+        <p id="question-instruction" style="font-size: 16px; color: #5d6d7e; margin-bottom: 15px;"></p>
+        <p id="question-text" style="font-size: 30px; font-weight: bold; margin: 20px 0; color: #283747;"></p>
+        <div id="choices"></div>
+    </div>
+
+    <div id="result-section">
+        <h2 id="result-title"></h2>
+        <div id="result-content">
+            <p id="result-msg" style="font-size: 19px; line-height: 1.8;"></p>
+        </div>
+        <button id="retry-btn" class="retry-btn" onclick="retryQuiz()" style="display:none;">Дахин оролдох</button>
+    </div>
+</div>
+
+<script>
+    // PDF 데이터 기반 40개 단어 목록 
+    const wordList = [
+        { q: "공항", a: "нисэх онгоцны буудал", choices: ["нисэх онгоцны буудал", "зах", "сургууль", "гэр"], type: "kor" },
+        { q: "시장", a: "зах", choices: ["зах", "хоолны газар", "их дэлгүүр", "супермаркет"], type: "kor" },
+        { q: "явах", a: "가다", choices: ["가다", "오다", "사다", "주다"], type: "mon" },
+        { q: "영국", a: "британ", choices: ["британ", "солонгос", "хятад", "франц"], type: "kor" },
+        { q: "ширээ", a: "책상", choices: ["책상", "의자", "집", "학교"], type: "mon" },
+        { q: "학교", a: "сургууль", choices: ["сургууль", "номын сан", "хоолны газар", "зах"], type: "kor" },
+        { q: "yyx", a: "마시다", choices: ["마시다", "먹다", "읽다", "주다"], type: "mon" },
+        { q: "먹다", a: "идэх", choices: ["идэх", "уух", "явах", "ирэх"], type: "kor" },
+        { q: "жүүс", a: "주스", choices: ["주스", "피자", "시장", "마트"], type: "mon" },
+        { q: "호주", a: "австрали", choices: ["австрали", "герман", "япон", "америк"], type: "kor" },
+        { q: "гэр", a: "집", choices: ["집", "학교", "식당", "마트"], type: "mon" },
+        { q: "의사", a: "эмч", choices: ["эмч", "багш", "цэрэг", "тогооч"], type: "kor" },
+        { q: "америк", a: "미국", choices: ["미국", "영국", "중국", "몽골"], type: "mon" },
+        { q: "회사원", a: "компанийн ажилтан", choices: ["компанийн ажилтан", "сэтгүүлч", "тогооч", "дуучин"], type: "kor" },
+        { q: "авах", a: "사다", choices: ["사다", "주다", "오다", "가다"], type: "mon" },
+        { q: "프랑스", a: "ф랑ц", choices: ["ф랑ц", "монгол", "герман", "япон"], type: "kor" },
+        { q: "ирэх", a: "오다", choices: ["오다", "явах", "идэх", "уух"], type: "mon" },
+        { q: "피자", a: "пицца", choices: ["пицца", "жүүс", "хоол", "зах"], type: "kor" },
+        { q: "номын сан", a: "도서관", choices: ["도서관", "학교", "식당", "백화점"], type: "mon" },
+        { q: "몽골", a: "монгол", choices: ["монгол", "солонгос", "хятад", "япон"], type: "kor" },
+        { q: "унших", a: "읽다", choices: ["읽다", "요리하다", "운동하다", "쓰다"], type: "mon" },
+        { q: "한국", a: "солонгос", choices: ["солонгос", "хятад", "япон", "америк"], type: "kor" },
+        { q: "багш", a: "선생님", choices: ["선생님", "학생", "의사", "기자"], type: "mon" },
+        { q: "기자", a: "сэтгүүлч", choices: ["сэтгүүлч", "тогооч", "дуучин", "군인"], type: "kor" },
+        { q: "хоолны газар", a: "식당", choices: ["식당", "시장", "백화점", "공항"], type: "mon" },
+        { q: "요리사", a: "тогооч", choices: ["тогооч", "эмч", "багш", "가수"], type: "kor" },
+        { q: "хоол хийх", a: "요리하다", choices: ["요리하다", "운동하다", "읽다", "먹다"], type: "mon" },
+        { q: "주다", a: "өгөх", choices: ["өгөх", "авах", "явах", "ирэх"], type: "kor" },
+        { q: "хятад", a: "중국", choices: ["중국", "일본", "미국", "몽골"], type: "mon" },
+        { q: "사람", a: "хүн", choices: ["хүн", "багш", "оюутан", "цэрэг"], type: "kor" },
+        { q: "япон", a: "일본", choices: ["일본", "중국", "독일", "프랑스"], type: "mon" },
+        { q: "군인", a: "цэрэг", choices: ["цэрэг", "기자", "의사", "가수"], type: "kor" },
+        { q: "дуучин", a: "가수", choices: ["가수", "요리사", "선생님", "기자"], type: "mon" },
+        { q: "어느", a: "аль", choices: ["аль", "хэн", "юу", "хаана"], type: "kor" },
+        { q: "сандал", a: "의자", choices: ["의자", "책상", "창문", "문"], type: "mon" },
+        { q: "운동하다", a: "дасгал хийх", choices: ["дасгал хийх", "요리하다", "읽다", "자다"], type: "kor" },
+        { q: "супермаркет", a: "마트", choices: ["마트", "시장", "백화점", "식당"], type: "mon" },
+        { q: "학생", a: "оюутан", choices: ["оюутан", "багш", "회사원", "기자"], type: "kor" },
+        { q: "их дэлгүүр", a: "백화점", choices: ["백화점", "시장", "공항", "도서관"], type: "mon" },
+        { q: "독일", a: "герман", choices: ["герман", "프랑스", "호주", "미국"], type: "kor" }
+    ];
+
+    let currentIdx = 0;
+    let score = 0;
+    let attempts = localStorage.getItem('snul1_attempts') ? parseInt(localStorage.getItem('snul1_attempts')) : 0;
+    let name = "";
+
+    function startQuiz() {
+        name = document.getElementById('userName').value;
+        if (!name) { alert("Нэрээ оруулна уу!"); return; }
+        document.getElementById('start-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        showQuestion();
+    }
+
+    function showQuestion() {
+        if (currentIdx < wordList.length) {
+            const item = wordList[currentIdx];
+            document.getElementById('question-number').innerText = `Асуулт ${currentIdx + 1} / ${wordList.length}`;
+            document.getElementById('question-instruction').innerText = item.type === "kor" ? "Зөв монгол утгыг сонгоно уу." : "Зөв солонгос үгийг сонгоно уу.";
+            document.getElementById('question-text').innerText = item.q;
+            
+            const choicesDiv = document.getElementById('choices');
+            choicesDiv.innerHTML = "";
+            
+            // 보기를 무작위로 섞음
+            const shuffledChoices = [...item.choices].sort(() => Math.random() - 0.5);
+            shuffledChoices.forEach(c => {
+                const btn = document.createElement('button');
+                btn.className = 'choice-btn';
+                btn.innerText = c;
+                btn.onclick = () => checkAnswer(c);
+                choicesDiv.appendChild(btn);
+            });
+        } else {
+            finishQuiz();
+        }
+    }
+
+    function checkAnswer(answer) {
+        if (answer === wordList[currentIdx].a) score += (100 / wordList.length);
+        currentIdx++;
+        showQuestion();
+    }
+
+    function finishQuiz() {
+        attempts++;
+        localStorage.setItem('snul1_attempts', attempts);
+        document.getElementById('quiz-section').style.display = 'none';
+        document.getElementById('result-section').style.display = 'block';
+        
+        const finalScore = Math.round(score);
+        const resultTitle = document.getElementById('result-title');
+        const resultMsg = document.getElementById('result-msg');
+        const retryBtn = document.getElementById('retry-btn');
+
+        if (finalScore >= 80 || attempts >= 5) {
+            resultTitle.innerText = "🎉 Тэнцлээ!";
+            resultMsg.innerHTML = `<b>${name}</b>, Баяр хүргэе!<br><div class="score-text">Дүн: ${finalScore} оноо</div>Оролдлого: ${attempts}<br><br><span style="color: #e74c3c; font-weight: bold;">Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.</span>`;
+            retryBtn.style.display = 'none';
+            localStorage.removeItem('snul1_attempts');
+        } else {
+            resultTitle.innerText = "⏳ Тэнцсэнгүй";
+            resultMsg.innerHTML = `<b>${name}</b>, Дахин оролдож үзээрэй.<br><div class="score-text">Дүн: ${finalScore} оноо</div>(Одоогийн оролдлого: ${attempts})`;
+            retryBtn.style.display = 'block';
+        }
+    }
+
+    function retryQuiz() {
+        currentIdx = 0; score = 0;
+        document.getElementById('result-section').style.display = 'none';
+        document.getElementById('quiz-section').style.display = 'block';
+        showQuestion();
+    }
+</script>
+</body>
+</html>
