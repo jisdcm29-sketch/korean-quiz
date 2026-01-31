@@ -1,70 +1,524 @@
 <!DOCTYPE html>
 <html lang="mn">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Солонгос хэлний хичээл</title>
-    <style>
-        body { font-family: 'Arial', sans-serif; text-align: center; background-color: #f0f4f8; padding: 20px; }
-        .container { max-width: 500px; margin: 0 auto; background: white; padding: 30px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); display: none; }
-        #login-box { max-width: 400px; margin: 100px auto; background: white; padding: 40px; border-radius: 20px; box-shadow: 0 10px 20px rgba(0,0,0,0.1); }
-        h1 { color: #2c3e50; font-size: 24px; margin-bottom: 10px; }
-        input { width: 80%; padding: 15px; margin-bottom: 20px; border: 2px solid #ddd; border-radius: 10px; font-size: 18px; text-align: center; }
-        .login-btn { background-color: #3498db; color: white; padding: 15px 30px; border: none; border-radius: 10px; cursor: pointer; font-size: 18px; font-weight: bold; width: 90%; }
-        .lesson-list { display: grid; gap: 15px; margin-top: 20px; }
-        .lesson-card { background-color: #ffffff; border: 2px solid #3498db; padding: 20px; border-radius: 12px; text-decoration: none; color: #2c3e50; font-weight: bold; font-size: 18px; transition: 0.3s; }
-        .lesson-card:hover { background-color: #3498db; color: white; transform: translateY(-3px); }
-    </style>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+
+  <!-- iPhone/카톡 캐시 최소화 -->
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+
+  <title>Үгийн сангийн тест</title>
+
+  <style>
+    :root{
+      --bg:#f0f4f8; --card:#ffffff; --primary:#2d6cdf; --primary2:#1f4ea5;
+      --text:#223047; --muted:#6a7a8e; --line:#d9e4f5;
+      --warnbg:#fff5f5; --warnline:#feb2b2;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; padding:20px; font-family:Arial,sans-serif; background:var(--bg); color:var(--text); text-align:center;}
+    .container{max-width:760px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
+    h1{margin:0; font-size:24px; color:#1f2f45;}
+    .sub{margin:10px 0 0; color:var(--muted); font-size:15px; line-height:1.45;}
+    input{width:92%; padding:14px; margin:10px 0; border:2px solid #e0e0e0; border-radius:12px; font-size:18px; text-align:center; outline:none;}
+    input:focus{border-color:#b7cdfd; box-shadow:0 0 0 4px rgba(45,108,223,0.12);}
+    .btn{width:100%; background:var(--primary); color:#fff; padding:15px 16px; border:none; border-radius:12px; cursor:pointer; font-size:18px; font-weight:900; transition:.2s;}
+    .btn:hover{background:var(--primary2);}
+    .btn-gray{background:#eef2f7; color:#2c3e50; border:1px solid #d7dee7;}
+    .btn-gray:hover{background:#e2e8f0;}
+    .topbar{display:flex; gap:10px; margin-top:14px;}
+    .topbar .btn{width:33.33%;}
+    .panel{margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:14px; background:#fff; text-align:left;}
+    .grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:12px;}
+    @media (max-width:560px){ .grid{grid-template-columns:1fr;} }
+    .cardBtn{
+      width:100%; background:#fff; color:var(--text);
+      border:2px solid var(--primary); border-radius:12px;
+      padding:14px; font-size:18px; font-weight:900; cursor:pointer;
+      transition:.15s; text-align:center;
+    }
+    .cardBtn:hover{background:var(--primary); color:#fff; transform:translateY(-1px);}
+    .meta{margin-top:10px; color:var(--muted); font-size:13px; line-height:1.45;}
+    .tag{display:inline-block; padding:2px 8px; border-radius:999px; border:1px solid #d7dee7; background:#f6f9ff; font-size:12px; color:#2c3e50; font-weight:900;}
+    .warn{margin-top:14px; background:var(--warnbg); border:1px solid var(--warnline); border-radius:12px; padding:12px; color:#7a1f1f; font-size:14px; line-height:1.45;}
+    .ok{color:#0f7a3d; font-weight:900;}
+    .crumb{margin-top:12px; color:#4b5b6f; font-size:14px;}
+    .crumb b{color:#1f2f45;}
+    .hidden{display:none;}
+  </style>
 </head>
+
 <body>
+  <div class="container">
 
-<div id="login-box">
-    <h1>Нэвтрэх код</h1>
-    <p style="color: #7f8c8d; margin-bottom: 20px;">Нууц үгээ оруулна уу.</p>
-    <input type="password" id="passwordInput" placeholder="Password">
-    <button class="login-btn" onclick="checkPassword()">Орох (확인)</button>
-</div>
+    <!-- 0) Автомат нэвтрэх -->
+    <div id="scr-login">
+      <h1>Үгийн сангийн тест</h1>
+      <p class="sub">
+        Нууц үг оруулаад, дараа нь нэрээ бичнэ үү.<br>
+        (Зөв бол автоматаар үргэлжилнэ.)
+      </p>
 
-<div id="main-container" class="container">
-    <h1>Солонгос хэлний хичээл</h1>
-    <p style="color: #7f8c8d;">Сурах бүлгээ сонгоно уу.</p>
-    <div id="lesson-container" class="lesson-list">
-        <p>Уншиж байна...</p>
+      <input id="pinInput" type="password" inputmode="numeric" placeholder="Нууц үг" />
+      <input id="nameInput" type="text" placeholder="Таны нэр" autocomplete="name" />
+
+      <button class="btn btn-gray" onclick="clearSaved()">Оруулсан мэдээллийг цэвэрлэх</button>
+      <div class="meta" id="loginHint">Нэвтрэхийн тулд хоёр талбарыг бөглөнө үү.</div>
     </div>
-</div>
+
+    <!-- 1) Ангилал сонгох -->
+    <div id="scr-cat" class="hidden">
+      <h1>Ангилал сонгох</h1>
+      <p class="sub">Юу сурахаа сонгоно уу.</p>
+
+      <div class="topbar">
+        <button class="btn btn-gray" onclick="goLogin()">Буцах</button>
+        <button class="btn btn-gray" onclick="reloadFiles()">Дахин унших</button>
+        <button class="btn" onclick="startFirst()">Эхний хичээл</button>
+      </div>
+
+      <div class="panel">
+        <div style="font-weight:900; color:#1f2f45;">Сонголт</div>
+        <div class="grid" style="margin-top:12px;">
+          <button class="cardBtn" onclick="goSnuBooks()">서울대 교재</button>
+          <button class="cardBtn" onclick="goTopikLevels()">TOPIK</button>
+        </div>
+
+        <div class="meta" id="statusText">Файлуудыг уншиж байна...</div>
+        <div class="warn hidden" id="warnBox"></div>
+      </div>
+    </div>
+
+    <!-- 2) 서울대 교재 сонгох -->
+    <div id="scr-snu" class="hidden">
+      <h1>서울대 교재</h1>
+      <p class="sub">Номоо сонгоно уу. (1A, 1B, 2A, 2B ...)</p>
+
+      <div class="topbar">
+        <button class="btn btn-gray" onclick="goCat()">Буцах</button>
+        <button class="btn btn-gray" onclick="reloadFiles()">Дахин унших</button>
+        <button class="btn" onclick="startFirst()">Эхний хичээл</button>
+      </div>
+
+      <div class="panel">
+        <div style="font-weight:900; color:#1f2f45;">Олдсон номууд: <span class="tag" id="snuBookCount">0</span></div>
+        <div class="meta" id="snuStatus">Бэлэн.</div>
+        <div class="grid" id="snuBookGrid"></div>
+        <div class="warn hidden" id="snuWarn"></div>
+      </div>
+    </div>
+
+    <!-- 3) TOPIK түвшин сонгох -->
+    <div id="scr-topik" class="hidden">
+      <h1>TOPIK</h1>
+      <p class="sub">Түвшнээ сонгоно уу.</p>
+
+      <div class="topbar">
+        <button class="btn btn-gray" onclick="goCat()">Буцах</button>
+        <button class="btn btn-gray" onclick="reloadFiles()">Дахин унших</button>
+        <button class="btn" onclick="startFirst()">Эхний хичээл</button>
+      </div>
+
+      <div class="panel">
+        <div style="font-weight:900; color:#1f2f45;">Сонголт</div>
+        <div class="grid" style="margin-top:12px;">
+          <button class="cardBtn" onclick="goTopikLessons('TOPIK1')">TOPIK 1</button>
+          <button class="cardBtn" onclick="goTopikLessons('TOPIK2')">TOPIK 2</button>
+        </div>
+
+        <div class="meta" id="topikStatus">Бэлэн.</div>
+        <div class="warn hidden" id="topikWarn"></div>
+      </div>
+    </div>
+
+    <!-- 4) Хичээл сонгох -->
+    <div id="scr-lessons" class="hidden">
+      <h1>Хичээл сонгох</h1>
+      <p class="sub">Сонгосон бүлгийн хичээлүүд</p>
+
+      <div class="topbar">
+        <button class="btn btn-gray" onclick="backFromLessons()">Буцах</button>
+        <button class="btn btn-gray" onclick="reloadFiles()">Дахин унших</button>
+        <button class="btn" onclick="startFirst()">Эхний хичээл</button>
+      </div>
+
+      <div class="crumb" id="crumb"></div>
+
+      <div class="panel">
+        <div style="font-weight:900; color:#1f2f45;">Олдсон хичээлүүд: <span class="tag" id="lessonCount">0</span></div>
+        <div class="meta" id="lessonStatus">Бэлэн.</div>
+        <div class="grid" id="lessonGrid"></div>
+        <div class="warn hidden" id="lessonWarn"></div>
+      </div>
+    </div>
+
+  </div>
 
 <script>
-    const correctPassword = "sejong123";
-    const username = "jisdcm29-sketch";
-    const repo = "korean-quiz";
+/* ===============================
+   Тохиргоо (сахиж өөрчилнө)
+   =============================== */
+const CORRECT_PASSWORD = "sejong123";
+const LESSON_DIR = ""; // жишээ: "lessons"
 
-    function checkPassword() {
-        if (document.getElementById('passwordInput').value === correctPassword) {
-            document.getElementById('login-box').style.display = 'none';
-            document.getElementById('main-container').style.display = 'block';
-            loadLessons();
-        } else { alert("Нууц үг буруу байна!"); }
+/* Файл нэрийн дүрэм
+   1) 서울대: SNU-1A-lesson01.html
+   2) TOPIK : TOPIK1-lesson01.html / TOPIK2-lesson01.html
+*/
+const RE_SNU   = /^SNU-([0-9]+[A-Za-z])-lesson(\d{1,3})\.html$/i;
+const RE_TOPIK = /^TOPIK([12])-lesson(\d{1,3})\.html$/i;
+
+/* хадгалалт */
+const KEY_PIN  = "kq_pin";
+const KEY_NAME = "kq_name";
+
+/* DOM */
+const scrLogin   = document.getElementById("scr-login");
+const scrCat     = document.getElementById("scr-cat");
+const scrSnu     = document.getElementById("scr-snu");
+const scrTopik   = document.getElementById("scr-topik");
+const scrLessons = document.getElementById("scr-lessons");
+
+const pinInput  = document.getElementById("pinInput");
+const nameInput = document.getElementById("nameInput");
+const loginHint = document.getElementById("loginHint");
+
+const statusText = document.getElementById("statusText");
+const warnBox = document.getElementById("warnBox");
+
+const snuBookCount = document.getElementById("snuBookCount");
+const snuStatus = document.getElementById("snuStatus");
+const snuBookGrid = document.getElementById("snuBookGrid");
+const snuWarn = document.getElementById("snuWarn");
+
+const topikStatus = document.getElementById("topikStatus");
+const topikWarn = document.getElementById("topikWarn");
+
+const crumb = document.getElementById("crumb");
+const lessonCount = document.getElementById("lessonCount");
+const lessonStatus = document.getElementById("lessonStatus");
+const lessonGrid = document.getElementById("lessonGrid");
+const lessonWarn = document.getElementById("lessonWarn");
+
+/* 상태 */
+let parsed = { SNU: [], TOPIK1: [], TOPIK2: [] };
+let snuBooks = [];
+let currentGroup = null; // {type:"SNU_BOOK", book:"1A"} or {type:"TOPIK", level:"TOPIK1"}
+let lastScreenBeforeLessons = "CAT";
+
+/* util */
+function show(el){ el.classList.remove("hidden"); }
+function hide(el){ el.classList.add("hidden"); }
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+function lessonPathPrefix(){
+  if (!LESSON_DIR) return "";
+  return LESSON_DIR.replace(/\/+$/,"") + "/";
+}
+function getRepoInfo(){
+  const host = location.hostname;
+  if (!host.endsWith(".github.io")) return null;
+  const owner = host.replace(".github.io", "");
+  const parts = location.pathname.split("/").filter(Boolean);
+  if (parts.length === 0) return { owner, repo: owner + ".github.io" };
+  return { owner, repo: parts[0] };
+}
+
+/* 자동 진행 로직 */
+pinInput.value  = localStorage.getItem(KEY_PIN) || "";
+nameInput.value = localStorage.getItem(KEY_NAME) || "";
+
+pinInput.addEventListener("input", ()=> { localStorage.setItem(KEY_PIN, pinInput.value); autoAdvance(); });
+nameInput.addEventListener("input", ()=> { localStorage.setItem(KEY_NAME, nameInput.value.trim()); autoAdvance(); });
+
+nameInput.addEventListener("keydown", (e)=> { if (e.key === "Enter") autoAdvance(true); });
+pinInput.addEventListener("keydown", (e)=> { if (e.key === "Enter") autoAdvance(true); });
+
+function clearSaved(){
+  localStorage.removeItem(KEY_PIN);
+  localStorage.removeItem(KEY_NAME);
+  pinInput.value = "";
+  nameInput.value = "";
+  loginHint.textContent = "Нэвтрэхийн тулд хоёр талбарыг бөглөнө үү.";
+}
+
+function ensureLogin(silent=false){
+  const pw = (pinInput.value || "").trim();
+  const nm = (nameInput.value || "").trim();
+
+  if (!pw || !nm){
+    if (!silent) alert("Нууц үг ба нэрээ оруулна уу!");
+    return null;
+  }
+  if (pw !== CORRECT_PASSWORD){
+    if (!silent) alert("Нууц үг буруу байна!");
+    return null;
+  }
+  localStorage.setItem(KEY_NAME, nm);
+  return { name: nm };
+}
+
+async function autoAdvance(force=false){
+  // 이미 다음 화면이면 자동 이동 금지
+  if (!scrLogin.classList.contains("hidden")) {
+    const ok = ensureLogin(true);
+    if (!ok){
+      loginHint.textContent = "Нэвтрэхийн тулд хоёр талбарыг бөглөнө үү.";
+      return;
+    }
+    loginHint.innerHTML = "<span style='font-weight:900; color:#0f7a3d;'>Зөв байна.</span> Түр хүлээнэ үү...";
+    // 로그인 성공 -> 바로 다음(카테고리)로 이동 + 파일 읽기
+    goCat();
+    await reloadFiles();
+  }
+}
+
+/* 화면 이동 */
+function goLogin(){
+  hide(scrCat); hide(scrSnu); hide(scrTopik); hide(scrLessons);
+  show(scrLogin);
+}
+function goCat(){
+  hide(scrLogin); hide(scrSnu); hide(scrTopik); hide(scrLessons);
+  show(scrCat);
+}
+function goSnuBooks(){
+  lastScreenBeforeLessons = "SNU";
+  hide(scrLogin); hide(scrCat); hide(scrTopik); hide(scrLessons);
+  show(scrSnu);
+  renderSnuBooks();
+}
+function goTopikLevels(){
+  lastScreenBeforeLessons = "TOPIK";
+  hide(scrLogin); hide(scrCat); hide(scrSnu); hide(scrLessons);
+  show(scrTopik);
+  renderTopikInfo();
+}
+function backFromLessons(){
+  hide(scrLessons);
+  if (lastScreenBeforeLessons === "SNU") show(scrSnu);
+  else if (lastScreenBeforeLessons === "TOPIK") show(scrTopik);
+  else show(scrCat);
+}
+
+/* GitHub API */
+async function fetchContents(){
+  const info = getRepoInfo();
+  if (!info) throw new Error("github.io домэйн биш байна.");
+
+  const dir = LESSON_DIR ? LESSON_DIR.replace(/^\/+|\/+$/g,"") : "";
+  const apiUrl = `https://api.github.com/repos/${info.owner}/${info.repo}/contents/${encodeURIComponent(dir)}`;
+
+  const res = await fetch(apiUrl, { cache:"no-store" });
+  if (!res.ok) throw new Error("GitHub API уншиж чадсангүй. (" + res.status + ")");
+  const data = await res.json();
+  if (!Array.isArray(data)) throw new Error("Файлын жагсаалт буруу байна.");
+  return data;
+}
+
+function parseFiles(items){
+  const out = { SNU: [], TOPIK1: [], TOPIK2: [] };
+
+  items.forEach(it=>{
+    if (!it || it.type !== "file" || typeof it.name !== "string") return;
+    const name = it.name;
+    if (!name.toLowerCase().endsWith(".html")) return;
+    if (name.toLowerCase() === "index.html") return;
+    if (name.toLowerCase() === "404.html") return;
+
+    let m = name.match(RE_SNU);
+    if (m){
+      out.SNU.push({ file:name, book:m[1].toUpperCase(), num:parseInt(m[2],10) });
+      return;
     }
 
-    async function loadLessons() {
-        try {
-            const res = await fetch(`https://api.github.com/repos/${username}/${repo}/contents/`);
-            const files = await res.json();
-            const container = document.getElementById('lesson-container');
-            container.innerHTML = "";
-
-            // .html로 끝나고 index.html이 아닌 모든 파일을 찾아 버튼으로 만듭니다
-            files.filter(f => f.name.endsWith('.html') && f.name !== 'index.html')
-                 .sort((a,b) => a.name.localeCompare(b.name))
-                 .forEach(file => {
-                    const a = document.createElement('a');
-                    a.href = file.name;
-                    a.className = 'lesson-card';
-                    a.innerText = file.name.replace('.html', '').replace(/-/g, ' ');
-                    container.appendChild(a);
-                 });
-        } catch (e) { container.innerHTML = "Алдаа гарлаа."; }
+    m = name.match(RE_TOPIK);
+    if (m){
+      const level = (m[1] === "1") ? "TOPIK1" : "TOPIK2";
+      out[level].push({ file:name, level, num:parseInt(m[2],10) });
+      return;
     }
+  });
+
+  out.SNU.sort((a,b)=> a.book.localeCompare(b.book) || (a.num-b.num));
+  out.TOPIK1.sort((a,b)=> a.num-b.num);
+  out.TOPIK2.sort((a,b)=> a.num-b.num);
+  return out;
+}
+
+/* 렌더 */
+function renderSnuBooks(){
+  const set = new Set(parsed.SNU.map(x=>x.book));
+  snuBooks = Array.from(set).sort((a,b)=> a.localeCompare(b));
+  snuBookGrid.innerHTML = "";
+  snuBookCount.textContent = String(snuBooks.length);
+  snuWarn.classList.add("hidden");
+
+  if (snuBooks.length === 0){
+    snuStatus.textContent = "Ном олдсонгүй.";
+    snuWarn.innerHTML =
+      `<b>Анхаар!</b><br>`+
+      `서울대 файлууд олдсонгүй.<br><br>`+
+      `✅ Жишээ:<br>`+
+      `• SNU-1A-lesson01.html<br>`+
+      `• SNU-2B-lesson10.html`;
+    snuWarn.classList.remove("hidden");
+    return;
+  }
+
+  snuStatus.innerHTML = `<span class="ok">Бэлэн.</span> Номоо сонгоно уу.`;
+  snuBooks.forEach(book=>{
+    const btn = document.createElement("button");
+    btn.className = "cardBtn";
+    btn.textContent = book;
+    btn.onclick = ()=> goSnuLessons(book);
+    snuBookGrid.appendChild(btn);
+  });
+}
+
+function renderTopikInfo(){
+  topikWarn.classList.add("hidden");
+  const c1 = parsed.TOPIK1.length;
+  const c2 = parsed.TOPIK2.length;
+  topikStatus.innerHTML = `<span class="ok">Бэлэн.</span> TOPIK 1: ${c1} · TOPIK 2: ${c2}`;
+}
+
+function goSnuLessons(book){
+  currentGroup = { type:"SNU_BOOK", book };
+  lastScreenBeforeLessons = "SNU";
+  showLessons();
+}
+
+function goTopikLessons(level){
+  currentGroup = { type:"TOPIK", level };
+  lastScreenBeforeLessons = "TOPIK";
+  showLessons();
+}
+
+function showLessons(){
+  hide(scrLogin); hide(scrCat); hide(scrSnu); hide(scrTopik);
+  show(scrLessons);
+
+  lessonGrid.innerHTML = "";
+  lessonWarn.classList.add("hidden");
+
+  let list = [];
+  let title = "";
+
+  if (currentGroup.type === "SNU_BOOK"){
+    list = parsed.SNU.filter(x=>x.book===currentGroup.book).sort((a,b)=>a.num-b.num);
+    title = `서울대 · ${currentGroup.book}`;
+  } else {
+    list = parsed[currentGroup.level].slice().sort((a,b)=>a.num-b.num);
+    title = `TOPIK · ${currentGroup.level === "TOPIK1" ? "1" : "2"}`;
+  }
+
+  crumb.innerHTML = `Сонголт: <b>${escapeHtml(title)}</b>`;
+  lessonCount.textContent = String(list.length);
+
+  if (list.length === 0){
+    lessonStatus.textContent = "Хичээл олдсонгүй.";
+    lessonWarn.innerHTML = `<b>Анхаар!</b><br>Файл олдсонгүй. Файл нэрийн дүрмээ шалгана уу.`;
+    lessonWarn.classList.remove("hidden");
+    return;
+  }
+
+  lessonStatus.innerHTML = `<span class="ok">Бэлэн.</span> Хичээлээ сонгоно уу.`;
+  list.forEach(item=>{
+    const btn = document.createElement("button");
+    btn.className = "cardBtn";
+    btn.textContent = `${item.num}-р хичээл`;
+    btn.onclick = ()=> openLesson(item.file);
+    lessonGrid.appendChild(btn);
+  });
+}
+
+function openLesson(fileName){
+  const ok = ensureLogin(false);
+  if (!ok) { goLogin(); return; }
+
+  const prefix = lessonPathPrefix();
+  const group = currentGroup.type === "SNU_BOOK" ? `SNU-${currentGroup.book}` : currentGroup.level;
+  const url = `${prefix}${fileName}?name=${encodeURIComponent(ok.name)}&group=${encodeURIComponent(group)}&v=${Date.now()}`;
+  location.href = url;
+}
+
+function startFirst(){
+  const ok = ensureLogin(false);
+  if (!ok) { goLogin(); return; }
+
+  // 현재 그룹이 있으면 그 그룹의 첫 과
+  if (currentGroup){
+    if (currentGroup.type === "SNU_BOOK"){
+      const first = parsed.SNU.filter(x=>x.book===currentGroup.book).sort((a,b)=>a.num-b.num)[0];
+      if (first){ openLesson(first.file); return; }
+    } else {
+      const first = parsed[currentGroup.level].slice().sort((a,b)=>a.num-b.num)[0];
+      if (first){ openLesson(first.file); return; }
+    }
+  }
+
+  // 없으면 전체에서 첫 과
+  const firstSnu = parsed.SNU.slice().sort((a,b)=>a.book.localeCompare(b.book) || (a.num-b.num))[0];
+  if (firstSnu){
+    currentGroup = { type:"SNU_BOOK", book:firstSnu.book };
+    lastScreenBeforeLessons = "SNU";
+    openLesson(firstSnu.file);
+    return;
+  }
+  const firstT1 = parsed.TOPIK1.slice().sort((a,b)=>a.num-b.num)[0];
+  if (firstT1){
+    currentGroup = { type:"TOPIK", level:"TOPIK1" };
+    lastScreenBeforeLessons = "TOPIK";
+    openLesson(firstT1.file);
+    return;
+  }
+  const firstT2 = parsed.TOPIK2.slice().sort((a,b)=>a.num-b.num)[0];
+  if (firstT2){
+    currentGroup = { type:"TOPIK", level:"TOPIK2" };
+    lastScreenBeforeLessons = "TOPIK";
+    openLesson(firstT2.file);
+    return;
+  }
+
+  alert("Хичээл олдсонгүй. Файлаа шалгана уу.");
+}
+
+async function reloadFiles(){
+  statusText.textContent = "Файлуудыг уншиж байна...";
+  warnBox.classList.add("hidden");
+
+  try{
+    const items = await fetchContents();
+    parsed = parseFiles(items);
+
+    const total = parsed.SNU.length + parsed.TOPIK1.length + parsed.TOPIK2.length;
+    statusText.innerHTML = `<span class="ok">Бэлэн.</span> Нийт: ${total} файл`;
+
+    // 화면에 따라 갱신
+    if (!scrSnu.classList.contains("hidden")) renderSnuBooks();
+    if (!scrTopik.classList.contains("hidden")) renderTopikInfo();
+
+  }catch(err){
+    statusText.textContent = "Алдаа гарлаа.";
+    warnBox.textContent = String(err && err.message ? err.message : err);
+    warnBox.classList.remove("hidden");
+  }
+}
+
+/* 초기 화면 */
+(function init(){
+  show(scrLogin); hide(scrCat); hide(scrSnu); hide(scrTopik); hide(scrLessons);
+
+  // 저장된 값이 이미 맞으면 자동 진행
+  autoAdvance(true);
+})();
 </script>
 </body>
 </html>
