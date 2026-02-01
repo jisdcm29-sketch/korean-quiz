@@ -1,942 +1,478 @@
-<!doctype html>
-<html lang="ko">
+<!DOCTYPE html>
+<html lang="mn">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
-  <meta name="theme-color" content="#111827" />
-  <title>SNU-1B-lesson12</title>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>1B · 12-р хичээл · Үгийн тест</title>
+
   <style>
     :root{
-      --bg:#0b1220;
-      --card:#111827;
-      --card2:#0f172a;
-      --muted:#9ca3af;
-      --text:#e5e7eb;
-      --accent:#22c55e;
-      --danger:#ef4444;
-      --warn:#f59e0b;
-      --btn:#1f2937;
-      --btn2:#0b1020;
-      --line:#243042;
-      --shadow: 0 10px 30px rgba(0,0,0,.35);
-      --radius:18px;
+      --bg:#f0f4f8; --card:#ffffff; --primary:#2d6cdf; --primary2:#1f4ea5;
+      --text:#223047; --muted:#6a7a8e; --line:#d9e4f5;
+      --warnbg:#fff5f5; --warnline:#feb2b2; --warntext:#7a1f1f;
+      --ok:#0f7a3d; --bad:#c0392b; --orange:#e67e22;
     }
     *{box-sizing:border-box}
-    body{
-      margin:0;
-      font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Apple SD Gothic Neo, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
-      background: radial-gradient(1200px 600px at 20% 0%, #14213a 0%, var(--bg) 55%, #050812 100%);
-      color:var(--text);
-      min-height:100vh;
-      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+    body{margin:0; padding:20px; font-family:Arial,sans-serif; background:var(--bg); color:var(--text); text-align:center;}
+    .container{max-width:560px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
+    h1{margin:0; font-size:22px; color:#1f2f45;}
+    .topline{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;}
+    .badge{display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid #d7dee7; background:#f6f9ff; font-size:12px; font-weight:900; color:#2c3e50;}
+    .nameBox{font-size:14px; color:#4b5b6f; text-align:left;}
+    .nameBox b{color:#1f2f45;}
+    .btn{width:100%; background:var(--primary); color:#fff; padding:14px 12px; border:none; border-radius:12px; cursor:pointer; font-size:16px; font-weight:900; transition:.2s;}
+    .btn:hover{background:var(--primary2);}
+    .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
+    .btnGray:hover{background:#e2e8f0;}
+    .btnRow{display:flex; gap:10px; margin-top:14px;}
+    .qno{margin-top:14px; color:var(--primary); font-weight:900; font-size:15px;}
+    .inst{margin-top:10px; background:#eef2f7; border:1px solid #d7dee7; padding:10px; border-radius:10px; color:#223047; font-size:14px;}
+    .question{margin:18px 0 10px; font-size:34px; font-weight:900; color:#1f2f45; word-break:keep-all;}
+    .choice{
+      width:100%; margin:10px 0; padding:14px 12px; border-radius:12px;
+      border:2px solid var(--primary); background:#fff; color:#223047;
+      font-size:18px; font-weight:900; cursor:pointer; transition:.15s;
     }
-    .wrap{max-width:980px;margin:0 auto}
-    header{
-      display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
-      margin: 10px 0 14px;
-    }
-    .title{
-      display:flex;flex-direction:column;gap:4px;
-    }
-    h1{
-      margin:0;
-      font-size:18px;
-      letter-spacing:.2px;
-      font-weight:800;
-    }
-    .sub{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.3;
-    }
-    .pillrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
-    .pill{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.08);
-      padding: 6px 10px;
-      border-radius: 999px;
-      font-size:12px;
-      color: var(--text);
-      display:flex;gap:6px;align-items:center;
-      user-select:none;
-    }
-    .pill b{font-weight:800}
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.09);
-      box-shadow: var(--shadow);
-      border-radius: var(--radius);
-      overflow:hidden;
-    }
-    .cardHead{
-      padding: 14px 16px;
-      background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,0));
-      border-bottom:1px solid rgba(255,255,255,.08);
-      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
-    }
-    .cardHead .left{
-      display:flex;flex-direction:column;gap:6px;
-    }
-    .badge{
-      display:inline-flex;align-items:center;gap:6px;
-      font-size:12px;
-      color: var(--muted);
-    }
-    .badge span{
-      width:8px;height:8px;border-radius:999px;background:var(--warn);
-      display:inline-block;
-    }
-    .qbox{
-      padding: 16px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .qtitle{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
-      gap:10px;
-      flex-wrap:wrap;
-    }
-    .qtitle .q{
-      font-size:20px;
-      font-weight:900;
-      line-height:1.15;
-      word-break:keep-all;
-    }
-    .qtitle .meta{
-      color:var(--muted);
-      font-size:12px;
-      line-height:1.4;
-      text-align:right;
-      min-width: 140px;
-    }
-    .choices{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
-    @media (min-width:720px){
-      .choices{grid-template-columns:1fr 1fr}
-    }
-    button.choice{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.10);
-      color: var(--text);
-      padding: 14px 12px;
-      border-radius: 14px;
-      text-align:left;
-      font-size:16px;
-      font-weight:700;
-      cursor:pointer;
-      transition: transform .06s ease, border-color .15s ease, background .15s ease;
-      min-height: 52px;
-      word-break:keep-all;
-    }
-    button.choice:active{transform: scale(.99)}
-    button.choice[disabled]{opacity:.92; cursor:default}
-    .ok{border-color: rgba(34,197,94,.7)!important; background: rgba(34,197,94,.12)!important}
-    .no{border-color: rgba(239,68,68,.7)!important; background: rgba(239,68,68,.12)!important}
-    .actions{
-      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
-      padding: 0 16px 16px;
-    }
-    .btn{
-      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
-      border: 1px solid rgba(255,255,255,.12);
-      color: var(--text);
-      padding: 10px 12px;
-      border-radius: 12px;
-      font-weight:800;
-      cursor:pointer;
-      font-size:14px;
-      display:inline-flex;gap:8px;align-items:center;
-      user-select:none;
-    }
-    .btn:active{transform: scale(.99)}
-    .btn.secondary{background: rgba(255,255,255,.04)}
-    .btn.danger{border-color: rgba(239,68,68,.45)}
-    .btn.accent{border-color: rgba(34,197,94,.55)}
-    .small{
-      font-size:12px;color:var(--muted);
-      padding: 0 16px 16px;
-      line-height:1.5;
-    }
-    .result{
-      padding: 16px;
-      display:flex;
-      flex-direction:column;
-      gap:12px;
-    }
-    .big{
-      font-size:22px;
-      font-weight:950;
-      letter-spacing:.2px;
-      line-height:1.15;
-      margin:0;
-    }
-    .scoreline{
-      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
-      color:var(--muted);
-      font-size:13px;
-      line-height:1.4;
-    }
-    .scorebox{
-      display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
-      padding: 14px;
-      border-radius: 16px;
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-    }
-    .scorebox .n{
-      font-size:34px;
-      font-weight:1000;
-      color: var(--text);
-    }
-    .pass{color: var(--accent); font-weight:900}
-    .fail{color: var(--danger); font-weight:900}
-    .review{
-      padding: 0 16px 16px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .revItem{
-      background: rgba(0,0,0,.18);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 14px;
-      padding: 12px;
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-    }
-    .revItem .k{font-weight:900;font-size:14px}
-    .revItem .m{font-weight:800;color:#d1d5db;font-size:14px}
-    .revItem .you{color:var(--muted);font-size:12px}
-    .warnBox{
-      background: rgba(245,158,11,.10);
-      border: 1px solid rgba(245,158,11,.35);
-      border-radius: 14px;
-      padding: 12px;
-      color: #fcd34d;
-      font-weight:800;
-      line-height:1.45;
-    }
-    .strongBox{
-      background: rgba(34,197,94,.10);
-      border: 1px solid rgba(34,197,94,.35);
-      border-radius: 14px;
-      padding: 12px;
-      color: #bbf7d0;
-      font-weight:900;
-      line-height:1.45;
-    }
-    .dangerBox{
-      background: rgba(239,68,68,.10);
-      border: 1px solid rgba(239,68,68,.35);
-      border-radius: 14px;
-      padding: 12px;
-      color: #fecaca;
-      font-weight:900;
-      line-height:1.45;
-    }
-    .mutebox{
-      background: rgba(255,255,255,.04);
-      border: 1px solid rgba(255,255,255,.08);
-      border-radius: 14px;
-      padding: 12px;
-      color: var(--muted);
-      line-height:1.45;
-      font-size:12px;
-    }
-    .capRow{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
-    a{color:#93c5fd}
+    .choice:hover{background:var(--primary); color:#fff;}
+    .hidden{display:none;}
+    .warn{margin-top:14px; background:var(--warnbg); border:1px solid var(--warnline); border-radius:12px; padding:12px; color:var(--warntext); font-size:14px; line-height:1.45; text-align:left;}
+    .panel{margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:14px; background:#fff; text-align:left;}
+    .score{font-size:26px; font-weight:900; color:var(--bad); margin:10px 0;}
+    .wrongList{max-height:300px; overflow:auto; padding:12px; border-radius:12px; border:1px solid var(--warnline); background:var(--warnbg);}
+    .wrongItem{padding:8px 0; border-bottom:1px dashed var(--warnline); font-size:15px;}
+    .wrongItem:last-child{border-bottom:none;}
+    .note{margin-top:10px; color:var(--muted); font-size:13px; line-height:1.45;}
+    .resultCard{border:2px solid #cfe0ff; background:#f6f9ff; border-radius:14px; padding:14px; margin-top:14px; text-align:left;}
+    .resultCard p{margin:8px 0; font-size:15px; line-height:1.55;}
+    .bigMsg{font-size:18px; font-weight:900;}
+    .center{text-align:center;}
+    .overlay{position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; padding:18px;}
+    .modal{max-width:560px; width:100%; background:#fff; border-radius:16px; padding:16px; border:1px solid #d7dee7; box-shadow:0 10px 25px rgba(0,0,0,0.18); text-align:left;}
+    .modal h2{margin:0; font-size:18px; color:#1f2f45;}
+    .modal p{margin:10px 0; color:#223047; line-height:1.55; font-size:14px;}
   </style>
 </head>
+
 <body>
-<div class="wrap">
-  <header>
-    <div class="title">
-      <h1>SNU 1B · Lesson 12 · Word Quiz</h1>
-      <div class="sub">4지선다 · 교차형(질문 언어 ↔ 보기 언어) · 80점 합격(Тэнцлээ!) · 5회 이상 실패 시 자동 합격</div>
+<div class="container">
+  <div class="topline">
+    <div class="nameBox">
+      <div><span class="badge">1B · 12-р хичээл</span></div>
+      <div style="margin-top:6px;">Нэр: <b id="studentName">—</b></div>
+      <div>Анги: <b id="klassName">—</b></div>
     </div>
-    <div class="pillrow">
-      <div class="pill">Name: <b id="pillName">-</b></div>
-      <div class="pill">Class: <b id="pillKlass">-</b></div>
-      <div class="pill">Try: <b id="pillTry">0</b></div>
-      <div class="pill">Token: <b class="mono" id="pillToken">-</b></div>
-    </div>
-  </header>
+    <button class="btn btnGray" onclick="goHome()">Эхлэл</button>
+  </div>
 
-  <section class="card" id="mainCard" aria-live="polite">
-    <div class="cardHead">
-      <div class="left">
-        <div style="font-weight:900">퀴즈 진행</div>
-        <div class="badge"><span></span><span id="badgeText">준비 중…</span></div>
-      </div>
-      <div style="display:flex;gap:8px;flex-wrap:wrap">
-        <button class="btn secondary" id="btnRestart" type="button">⟲ 다시 시작</button>
-      </div>
-    </div>
+  <div id="errorSection" class="warn hidden"></div>
 
-    <!-- QUIZ VIEW -->
-    <div class="qbox" id="quizView" style="display:none">
-      <div class="qtitle">
-        <div>
-          <div style="color:var(--muted);font-size:12px;margin-bottom:6px" id="qLabel">Q</div>
-          <div class="q" id="qText">-</div>
-        </div>
-        <div class="meta">
-          <div><b id="qIndex">1</b> / <b id="qTotal">40</b></div>
-          <div>현재 점수: <b id="liveScore">0</b></div>
-        </div>
-      </div>
-      <div class="choices" id="choices"></div>
-    </div>
+  <div id="quizSection" class="hidden">
+    <div class="qno" id="qno"></div>
+    <div class="inst" id="inst"></div>
+    <div class="question" id="qtext"></div>
+    <div id="choices"></div>
+    <div class="note">Санамж: Алдаа гаргасан үгсийг төгсгөлд нь дахин харуулна.</div>
+  </div>
 
-    <!-- RESULT VIEW -->
-    <div class="result" id="resultView" style="display:none">
-      <p class="big" id="resultTitle">결과</p>
+  <div id="reviewSection" class="hidden">
+    <h1 style="color:var(--orange);">Алдаагаа шалгана уу</h1>
+    <p class="note">Эдгээр үгсийг дахин хараад, дараа нь дахин оролдоно уу.</p>
 
-      <div class="scorebox">
-        <div class="n" id="finalScore">0</div>
-        <div style="display:flex;flex-direction:column;gap:4px">
-          <div class="scoreline">
-            <span>Name: <b id="rName">-</b></span>
-            <span>Class: <b id="rKlass">-</b></span>
-          </div>
-          <div class="scoreline">
-            <span>Try: <b id="rTry">0</b></span>
-            <span>Date: <b id="rDate">-</b></span>
-          </div>
-          <div class="scoreline">
-            <span>Token: <b class="mono" id="rToken">-</b></span>
-          </div>
-          <div class="scoreline" id="passFailLine"></div>
-        </div>
-      </div>
+    <div class="panel">
+      <div class="score" id="reviewScore"></div>
+      <div class="wrongList" id="wrongList"></div>
+      <div class="note" id="attemptInfo"></div>
 
-      <div id="reviewFirst" style="display:none">
-        <div class="dangerBox">Review: буруу хариулсан асуултуудын зөв хариулт (эхлээд үүнийг харна)</div>
-      </div>
-
-      <div id="reviewList" class="review" style="display:none"></div>
-
-      <div id="teacherMsg" class="strongBox">
-        <span style="font-size:16px">⚠️ <b>Дэлгэцийн зураг авч багшдаа явуулаарай!</b></span>
-      </div>
-
-      <div class="capRow">
-        <button class="btn accent" id="btnCapture" type="button">📸 Капчер</button>
-        <button class="btn secondary" id="btnStartOver" type="button">⟲ 다시 풀기</button>
-      </div>
-
-      <div class="mutebox" id="capHelp">
-        • “Капчер” товчийг дарвал боломжтой төхөөрөмж дээр <b>share</b>-ийг эхлээд оролдоно.<br/>
-        • Хэрэв share ажиллахгүй бол дэлгэцийн зураг авах аргыг зааж өгнө.
+      <div class="btnRow">
+        <button class="btn" style="background:var(--orange);" onclick="retry()">Дахин оролдох</button>
+        <button class="btn btnGray" onclick="goHome()">Эхлэл</button>
       </div>
     </div>
+  </div>
 
-    <div class="small" id="footNote"></div>
-  </section>
+  <div id="resultSection" class="hidden">
+    <h1 style="color:var(--ok);">Тэнцлээ!</h1>
+
+    <div class="resultCard">
+      <p class="bigMsg" id="resultLine1"></p>
+      <p class="center"><span class="score" id="finalScore"></span></p>
+      <p id="resultLine2"></p>
+      <p id="resultDate"></p>
+      <p style="margin-top:12px; font-weight:900; color:#1f2f45;">
+        Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.
+      </p>
+      <p class="note" id="logStatus"></p>
+    </div>
+
+    <div class="btnRow">
+      <button class="btn" style="background:var(--ok);" onclick="captureOrHelp()">Капчер</button>
+      <button class="btn btnGray" onclick="goHome()">Эхлэл</button>
+    </div>
+  </div>
+</div>
+
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h2>Капчер/Скриншот хийх арга</h2>
+    <p>
+      <b>iPhone:</b> Талын товч + Дуу нэмэх товчийг зэрэг дарна уу.<br>
+      <b>Android:</b> Асаах товч + Дуу хасах товчийг зэрэг дарна уу.
+    </p>
+    <p style="font-weight:900; color:#1f2f45;">Дараа нь багш руугаа илгээнэ үү.</p>
+    <button class="btn btnGray" onclick="closeModal()">Хаах</button>
+  </div>
 </div>
 
 <script>
-/**
- * SNU-1B Lesson 12 (PDF 1페이지 "정답지(암기용)" 40쌍 그대로)
- * - 언어 섞임 방지: ko, mn 각각 분리 데이터
- * - 4지선다 항상 보장: 중복 제거 + 풀에서 추가 보충
- * - 교차형: 질문이 한국어면 보기=몽골어 / 질문이 몽골어면 보기=한국어
- * - 100점 만점, 80점 이상 "Тэнцлээ!"
- * - 5회 이상 실패 시 점수 무관 합격
- * - 캡처 버튼: Web Share API 가능하면 공유 시도, 불가하면 스크린샷 안내
- * - 외부 통신 없음(기종 안정). 필요 시 JSONP 형태로 붙일 수 있도록 hook 제공.
- */
+/* Google Apps Script (샘플과 동일 구조 유지) */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
 
-// === URL params from index.html/lessonHub.html ===
-function getParam(name){
-  const u = new URL(location.href);
-  return u.searchParams.get(name) || "";
-}
-const user = {
-  name: getParam("name"),
-  klass: getParam("klass"),
-  token: getParam("token")
-};
+/* 1B · 12-р хичээл (PDF 정답지 기반 40개: 표기 그대로) */
+const rawWords = [
+  { kor:"여보세요", mon:"Байна уу?", pos:"o" },
+  { kor:"실례지만", mon:"Уучлаарай, гэхдээ", pos:"o" },
+  { kor:"누구세요", mon:"Хэн бэ?", pos:"o" },
+  { kor:"전화번호", mon:"утасны дугаар", pos:"n" },
+  { kor:"휴대폰", mon:"гар утас", pos:"n" },
+  { kor:"공(숫자 0)", mon:"тэг (0)", pos:"n" },
+  { kor:"사무실", mon:"оффис", pos:"n" },
+  { kor:"사장님", mon:"захирал", pos:"n" },
+  { kor:"(전화/문자를) 받다", mon:"утас/мессеж авах", pos:"v" },
+  { kor:"(문자를) 보내다", mon:"мессеж илгээх", pos:"v" },
+  { kor:"잘 지내다", mon:"сайн явах (сайн байх)", pos:"v" },
+  { kor:"무슨 일", mon:"юу болсон бэ", pos:"o" },
+  { kor:"요리하다", mon:"хоол хийх", pos:"v" },
+  { kor:"못", mon:"чадахгүй (못~)", pos:"o" },
+  { kor:"감기", mon:"ханиад", pos:"n" },
+  { kor:"기침", mon:"ханиалга", pos:"n" },
+  { kor:"열", mon:"халууралт", pos:"n" },
+  { kor:"콧물", mon:"нус", pos:"n" },
+  { kor:"아프다", mon:"өвдөх", pos:"v" },
+  { kor:"낫다", mon:"эдгэх", pos:"v" },
 
-// === Required: do NOT ask name again ===
-const safeName  = user.name  || "-";
-const safeKlass = user.klass || "-";
-const safeToken = user.token || "-";
+  { kor:"머리", mon:"толгой", pos:"n" },
+  { kor:"어깨", mon:"мөр", pos:"n" },
+  { kor:"배", mon:"гэдэс", pos:"n" },
+  { kor:"무릎", mon:"өвдөг", pos:"n" },
+  { kor:"다리", mon:"хөл", pos:"n" },
+  { kor:"얼굴", mon:"нүүр", pos:"n" },
 
-document.getElementById("pillName").textContent  = safeName;
-document.getElementById("pillKlass").textContent = safeKlass;
-document.getElementById("pillToken").textContent = safeToken;
+  { kor:"오전", mon:"үдийн өмнө", pos:"n" },
+  { kor:"오후", mon:"үдийн хойно", pos:"n" },
+  { kor:"새벽", mon:"үүрээр", pos:"n" },
+  { kor:"아침", mon:"өглөө", pos:"n" },
+  { kor:"점심", mon:"үдийн хоол", pos:"n" },
+  { kor:"저녁", mon:"оройн хоол", pos:"n" },
 
-// === Vocabulary pairs (EXACT spellings from PDF page 1 "정답지(암기용)") ===
-const PAIRS = [
-  { ko:"여보세요", mn:"Байна уу?" },
-  { ko:"실례지만", mn:"Уучлаарай, гэхдээ" },
-  { ko:"누구세요", mn:"Хэн бэ?" },
-  { ko:"전화번호", mn:"утасны дугаар" },
-  { ko:"휴대폰", mn:"гар утас" },
-  { ko:"공(숫자 0)", mn:"тэг (0)" },
-  { ko:"사무실", mn:"оффис" },
-  { ko:"사장님", mn:"захирал" },
-  { ko:"(전화/문자를) 받다", mn:"утас/мессеж авах" },
-  { ko:"(문자를) 보내다", mn:"мессеж илгээх" },
-  { ko:"잘 지내다", mn:"сайн явах (сайн байх)" },
-  { ko:"무슨 일", mn:"юу болсон бэ" },
-  { ko:"요리하다", mn:"хоол хийх" },
-  { ko:"못", mn:"чадахгүй (못~)" },
-  { ko:"감기", mn:"ханиад" },
-  { ko:"기침", mn:"ханиалга" },
-  { ko:"열", mn:"халууралт" },
-  { ko:"콧물", mn:"нус" },
-  { ko:"아프다", mn:"өвдөх" },
-  { ko:"낫다", mn:"эдгэх" },
-  { ko:"머리", mn:"толгой" },
-  { ko:"어깨", mn:"мөр" },
-  { ko:"배", mn:"гэдэс" },
-  { ko:"무릎", mn:"өвдөг" },
-  { ko:"다리", mn:"хөл" },
-  { ko:"얼굴", mn:"нүүр" },
-  { ko:"오전", mn:"үдийн өмнө" },
-  { ko:"오후", mn:"үдийн хойно" },
-  { ko:"새벽", mn:"үүрээр" },
-  { ko:"아침", mn:"өглөө" },
-  { ko:"점심", mn:"үдийн хоол" },
-  { ko:"저녁", mn:"оройн хоол" },
-  { ko:"일어나다", mn:"сэрэх" },
-  { ko:"세수하다", mn:"нүүрээ угаах" },
-  { ko:"닦다", mn:"арчих (угаах)" },
-  { ko:"샤워하다", mn:"шүршүүрт орох" },
-  { ko:"회의하다", mn:"хурал хийх" },
-  { ko:"청소하다", mn:"цэвэрлэх" },
-  { ko:"빨래하다", mn:"хувцас угаах" },
-  { ko:"숙제하다", mn:"гэрийн даалгавар хийх" }
+  { kor:"일어나다", mon:"сэрэх", pos:"v" },
+  { kor:"세수하다", mon:"нүүрээ угаах", pos:"v" },
+  { kor:"닦다", mon:"арчих (угаах)", pos:"v" },
+  { kor:"샤워하다", mon:"шүршүүрт орох", pos:"v" },
+  { kor:"회의하다", mon:"хурал хийх", pos:"v" },
+  { kor:"청소하다", mon:"цэвэрлэх", pos:"v" },
+  { kor:"빨래하다", mon:"хувцас угаах", pos:"v" },
+  { kor:"숙제하다", mon:"гэрийн даалгавар хийх", pos:"v" }
 ];
 
-// === Language safety checks (best-effort guard) ===
-const reKorean = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
-const reCyrillic = /[\u0400-\u04FF]/;
-
-// Ensure: mn field does not contain Korean, ko field does not contain Cyrillic
-for(const p of PAIRS){
-  if(reKorean.test(p.mn)){
-    console.warn("MN contains Korean (not allowed):", p);
-  }
-  if(reCyrillic.test(p.ko)){
-    console.warn("KO contains Cyrillic (not allowed):", p);
-  }
-}
-
-// === Quiz config ===
-const TOTAL = PAIRS.length; // 40
-const PASS_SCORE = 80;
-const MAX_FAIL_AUTO_PASS = 5; // "5번 이상 실패하면 점수와 관계없이 합격"
-const POINT_PER_Q = 100 / TOTAL;
-
-let tryCount = 0;
-let currentIndex = 0;
-let score = 0;
-let questions = [];
-let wrongLog = []; // {q, correct, your, mode}
-
-// --- UI elements ---
-const badgeText = document.getElementById("badgeText");
-const quizView = document.getElementById("quizView");
-const resultView = document.getElementById("resultView");
-const qText = document.getElementById("qText");
-const qIndex = document.getElementById("qIndex");
-const qTotal = document.getElementById("qTotal");
-const liveScore = document.getElementById("liveScore");
-const choicesEl = document.getElementById("choices");
-const qLabel = document.getElementById("qLabel");
-
-const btnRestart = document.getElementById("btnRestart");
-const btnStartOver = document.getElementById("btnStartOver");
-const btnCapture = document.getElementById("btnCapture");
-
-const footNote = document.getElementById("footNote");
-
-// result fields
-const rName = document.getElementById("rName");
-const rKlass = document.getElementById("rKlass");
-const rTry = document.getElementById("rTry");
-const rDate = document.getElementById("rDate");
-const rToken = document.getElementById("rToken");
-const finalScore = document.getElementById("finalScore");
-const passFailLine = document.getElementById("passFailLine");
-
-const reviewFirst = document.getElementById("reviewFirst");
-const reviewList = document.getElementById("reviewList");
-
-qTotal.textContent = String(TOTAL);
-
-// === Utilities ===
+/* Utils */
 function shuffle(arr){
-  const a = arr.slice();
+  const a=[...arr];
   for(let i=a.length-1;i>0;i--){
-    const j = Math.floor(Math.random()*(i+1));
+    const j=Math.floor(Math.random()*(i+1));
     [a[i],a[j]]=[a[j],a[i]];
   }
   return a;
 }
-
-function uniq(arr){
-  const seen = new Set();
-  const out = [];
-  for(const x of arr){
-    if(!seen.has(x)){
-      seen.add(x);
-      out.push(x);
-    }
-  }
-  return out;
-}
-
-function todayStr(){
-  const d = new Date();
-  const yyyy = d.getFullYear();
-  const mm = String(d.getMonth()+1).padStart(2,"0");
-  const dd = String(d.getDate()).padStart(2,"0");
-  const hh = String(d.getHours()).padStart(2,"0");
-  const mi = String(d.getMinutes()).padStart(2,"0");
-  return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
-}
-
-// Mode: "KOQ" => question is Korean, options are Mongolian
-// Mode: "MNQ" => question is Mongolian, options are Korean
-function buildQuestions(){
-  const base = PAIRS.map((p, idx)=>({ ...p, id: idx }));
-  // 랜덤으로 KOQ/MNQ 섞기(교차형 자동)
-  return shuffle(base).map(item=>{
-    const mode = Math.random() < 0.5 ? "KOQ" : "MNQ";
-    return { ...item, mode };
+function jsonp(url){
+  return new Promise((resolve,reject)=>{
+    const cb="cb_"+Date.now()+"_"+Math.floor(Math.random()*10000);
+    window[cb]=(data)=>{ resolve(data); script.remove(); delete window[cb]; };
+    const script=document.createElement("script");
+    script.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
+    script.onerror=()=>{ reject(new Error("jsonp_error")); script.remove(); delete window[cb]; };
+    document.body.appendChild(script);
   });
 }
-
-function poolAnswers(mode){
-  // returns answer pool in the option language
-  if(mode === "KOQ") return PAIRS.map(p=>p.mn);
-  return PAIRS.map(p=>p.ko);
+function getDeviceId(){
+  const k="kquiz_deviceId";
+  let id=localStorage.getItem(k);
+  if(!id){
+    id=(crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now()+"_"+Math.random()).replace(".","");
+    localStorage.setItem(k,id);
+  }
+  return id;
 }
-
-function correctAnswerFor(q){
-  return (q.mode === "KOQ") ? q.mn : q.ko;
-}
-
-function questionTextFor(q){
-  return (q.mode === "KOQ") ? q.ko : q.mn;
-}
-
-// Always guarantee 4 unique options including correct.
-// If insufficient after filtering, refill from full pool.
-function makeOptions(q){
-  const correct = correctAnswerFor(q);
-  const mode = q.mode;
-  const pool = poolAnswers(mode);
-
-  // candidates excluding the correct
-  let wrongCandidates = pool.filter(x => x !== correct);
-
-  // pick 3 wrongs
-  wrongCandidates = shuffle(wrongCandidates);
-  let picked = wrongCandidates.slice(0, 3);
-
-  // In case duplicates (shouldn't) or weird pool shortage, enforce uniqueness
-  picked = uniq(picked).filter(x => x !== correct);
-
-  // Refill if fewer than 3
-  if(picked.length < 3){
-    const refill = shuffle(wrongCandidates);
-    for(const x of refill){
-      if(picked.length >= 3) break;
-      if(x !== correct && !picked.includes(x)){
-        picked.push(x);
-      }
-    }
-  }
-
-  // Final safety: if still fewer than 3 (extremely unlikely), fallback by cycling pool
-  if(picked.length < 3){
-    for(const x of pool){
-      if(picked.length >= 3) break;
-      if(x !== correct && !picked.includes(x)){
-        picked.push(x);
-      }
-    }
-  }
-
-  const options = shuffle([correct, ...picked].slice(0,4));
-  // Ensure exactly 4 unique
-  const final = uniq(options);
-  // If uniq reduced length, pad again from pool
-  if(final.length < 4){
-    for(const x of shuffle(pool)){
-      if(final.length >= 4) break;
-      if(!final.includes(x)){
-        final.push(x);
-      }
-    }
-  }
-  return final.slice(0,4);
-}
-
-function setBadge(text, color){
-  badgeText.textContent = text;
-  const dot = badgeText.previousElementSibling;
-  if(dot){
-    dot.style.background = color || "var(--warn)";
-  }
-}
-
-// === Quiz Flow ===
-function startQuiz(){
-  tryCount += 1;
-  document.getElementById("pillTry").textContent = String(tryCount);
-
-  currentIndex = 0;
-  score = 0;
-  wrongLog = [];
-  questions = buildQuestions();
-
-  quizView.style.display = "";
-  resultView.style.display = "none";
-  setBadge("진행 중…", "var(--warn)");
-  renderQuestion();
-}
-
-function renderQuestion(){
-  const q = questions[currentIndex];
-  const qNum = currentIndex + 1;
-
-  qIndex.textContent = String(qNum);
-  liveScore.textContent = String(Math.round(score));
-
-  const modeLabel = (q.mode === "KOQ")
-    ? "질문: 한국어 / 보기: 몽골어"
-    : "질문: 몽골어 / 보기: 한국어";
-  qLabel.textContent = `Q${qNum} · ${modeLabel}`;
-
-  qText.textContent = questionTextFor(q);
-
-  // build choices
-  choicesEl.innerHTML = "";
-  const opts = makeOptions(q);
-
-  // Extra language-mix guard: filter out any option that contains forbidden script for that option language
-  // KO options must not contain Cyrillic; MN options must not contain Korean
-  const filtered = [];
-  for(const opt of opts){
-    if(q.mode === "KOQ"){
-      // options are Mongolian: must not contain Korean
-      if(reKorean.test(opt)) continue;
-    }else{
-      // options are Korean: must not contain Cyrillic
-      if(reCyrillic.test(opt)) continue;
-    }
-    filtered.push(opt);
-  }
-
-  // If filtering reduced options, refill from pool safely
-  let safeOpts = filtered;
-  if(safeOpts.length < 4){
-    const pool = poolAnswers(q.mode);
-    for(const cand of shuffle(pool)){
-      if(safeOpts.length >= 4) break;
-      if(!safeOpts.includes(cand)){
-        if(q.mode === "KOQ" && reKorean.test(cand)) continue;
-        if(q.mode === "MNQ" && reCyrillic.test(cand)) continue;
-        safeOpts.push(cand);
-      }
-    }
-  }
-  safeOpts = uniq(safeOpts).slice(0,4);
-
-  // Final fallback: if still <4, rebuild without filter (but should not happen with clean data)
-  if(safeOpts.length < 4){
-    safeOpts = makeOptions(q);
-  }
-
-  for(const opt of safeOpts){
-    const btn = document.createElement("button");
-    btn.type = "button";
-    btn.className = "choice";
-    btn.textContent = opt;
-    btn.addEventListener("click", ()=> chooseAnswer(opt, btn));
-    choicesEl.appendChild(btn);
-  }
-}
-
-function chooseAnswer(selected, btnEl){
-  // disable all
-  const buttons = Array.from(document.querySelectorAll("button.choice"));
-  buttons.forEach(b => b.disabled = true);
-
-  const q = questions[currentIndex];
-  const correct = correctAnswerFor(q);
-
-  const isCorrect = (selected === correct);
-  if(isCorrect){
-    score += POINT_PER_Q;
-    btnEl.classList.add("ok");
-  }else{
-    btnEl.classList.add("no");
-    // mark correct button
-    const correctBtn = buttons.find(b => b.textContent === correct);
-    if(correctBtn) correctBtn.classList.add("ok");
-    wrongLog.push({
-      mode: q.mode,
-      q: questionTextFor(q),
-      correct: correct,
-      your: selected
-    });
-  }
-
-  liveScore.textContent = String(Math.round(score));
-
-  setTimeout(()=>{
-    currentIndex += 1;
-    if(currentIndex >= TOTAL){
-      finishQuiz();
-    }else{
-      renderQuestion();
-    }
-  }, 520);
-}
-
-function finishQuiz(){
-  quizView.style.display = "none";
-  resultView.style.display = "";
-
-  const rawScore = Math.round(score);
-  const passByScore = rawScore >= PASS_SCORE;
-  const failedSoFar = countFailsBeforeThisTry(passByScore);
-  // After incrementing tryCount in startQuiz, tryCount is current attempt count
-  // "5번 이상 실패하면 점수와 관계없이 합격" => if (fails >= 5) force pass.
-  const forcePass = (failedSoFar >= MAX_FAIL_AUTO_PASS);
-
-  // display
-  rName.textContent = safeName;
-  rKlass.textContent = safeKlass;
-  rTry.textContent = String(tryCount);
-  rDate.textContent = todayStr();
-  rToken.textContent = safeToken;
-
-  // Determine final pass/fail
-  const finalPass = forcePass ? true : passByScore;
-  finalScore.textContent = String(rawScore);
-
-  const passFail = document.createElement("div");
-  passFail.innerHTML = "";
-  if(finalPass){
-    const msg = forcePass
-      ? `<span class="pass">Тэнцлээ!</span> <span style="color:var(--muted)">(5+ удаа унасан тул автоматаар тэнцүүлэв)</span>`
-      : `<span class="pass">Тэнцлээ!</span> <span style="color:var(--muted)">(80+)</span>`;
-    passFailLine.innerHTML = msg;
-    setBadge("완료 · 합격", "var(--accent)");
-  }else{
-    passFailLine.innerHTML = `<span class="fail">Унасан</span> <span style="color:var(--muted)">(80-аас доош)</span>`;
-    setBadge("완료 · 불합격", "var(--danger)");
-  }
-
-  // Review rule: if <80, show Review first
-  if(!finalPass){
-    reviewFirst.style.display = "";
-    renderReview();
-  }else{
-    // if passed, show review only if there were wrong answers (optional)
-    if(wrongLog.length > 0){
-      reviewFirst.style.display = "none";
-      renderReview(true);
-    }else{
-      reviewFirst.style.display = "none";
-      reviewList.style.display = "none";
-    }
-  }
-
-  // Footer
-  footNote.innerHTML = `
-    • 합격 기준: ${PASS_SCORE}점 · 실패 누적 5회 이상이면 자동 합격<br/>
-    • 이 파일은 외부 통신 없이 동작합니다. (기종 안정)<br/>
-    • 필요 시 JSONP 방식 전송 hook(미사용) 제공: <span class="mono">window.__SEND_RESULT_JSONP__</span>
-  `;
-
-  // Attempt JSONP-like send if host page provides a hook (optional).
-  // For stability, we do NOTHING unless a host defines window.__SEND_RESULT_JSONP__(payload).
-  trySendResultJSONP({
-    lesson: "SNU-1B-lesson12",
-    name: safeName,
-    klass: safeKlass,
-    token: safeToken,
-    score: rawScore,
-    tryCount: tryCount,
-    pass: finalPass,
-    date: todayStr(),
-    wrongCount: wrongLog.length
-  });
-}
-
-// Count fails before this attempt (based on localStorage)
-function countFailsBeforeThisTry(passByScore){
-  const key = storageKey();
-  const data = loadState(key);
-  // data.fails counts previous fails
-  return data.fails || 0;
-}
-
-function storageKey(){
-  // token 우선, 없으면 name+klass로
-  const t = user.token ? `t:${user.token}` : `nk:${safeName}|${safeKlass}`;
-  return `SNU1B12:${t}`;
-}
-
-function loadState(key){
-  try{
-    const raw = localStorage.getItem(key);
-    return raw ? JSON.parse(raw) : { fails:0 };
-  }catch(e){
-    return { fails:0 };
-  }
-}
-
-function saveState(key, patch){
-  const cur = loadState(key);
-  const next = { ...cur, ...patch };
-  try{
-    localStorage.setItem(key, JSON.stringify(next));
-  }catch(e){}
-}
-
-function renderReview(showEvenIfPass=false){
-  // Update fail counter if not pass by score
-  const key = storageKey();
-  const rawScore = Math.round(score);
-  const passByScore = rawScore >= PASS_SCORE;
-
-  // Only count fail when score < 80
-  if(!passByScore){
-    const st = loadState(key);
-    saveState(key, { fails: (st.fails||0) + 1 });
-  }
-
-  if(wrongLog.length === 0){
-    if(showEvenIfPass){
-      reviewList.style.display = "";
-      reviewList.innerHTML = `<div class="strongBox">Бүгд зөв! (алдаа байхгүй)</div>`;
-    }else{
-      reviewList.style.display = "none";
-      reviewList.innerHTML = "";
-    }
-    return;
-  }
-
-  reviewList.style.display = "";
-  reviewList.innerHTML = "";
-  for(const item of wrongLog){
-    const div = document.createElement("div");
-    div.className = "revItem";
-    // item.mode determines which is question language, but we show both correct pairing
-    const label = (item.mode === "KOQ")
-      ? "질문(한국어) → 정답(몽골어)"
-      : "질문(몽골어) → 정답(한국어)";
-    div.innerHTML = `
-      <div class="you">${label}</div>
-      <div class="k">${escapeHTML(item.q)}</div>
-      <div class="m">✅ ${escapeHTML(item.correct)}</div>
-      <div class="you">❌ Таны хариулт: ${escapeHTML(item.your)}</div>
-    `;
-    reviewList.appendChild(div);
-  }
-
-  // also show fails info
-  const st = loadState(key);
-  const failsNow = st.fails || 0;
-  if(failsNow >= MAX_FAIL_AUTO_PASS){
-    const box = document.createElement("div");
-    box.className = "warnBox";
-    box.innerHTML = `Анхаар: унасны тоо <b>${failsNow}</b>. Дараагийн оролдлогод онооноос үл хамааран <b>автоматаар тэнцүүлнэ</b>.`;
-    reviewList.prepend(box);
-  }
-}
-
-function escapeHTML(s){
+function escapeHtml(s){
   return String(s)
-    .replaceAll("&","&amp;")
-    .replaceAll("<","&lt;")
-    .replaceAll(">","&gt;")
-    .replaceAll('"',"&quot;")
-    .replaceAll("'","&#039;");
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
 }
 
-// Optional JSONP-like hook for maximum device stability (NO network by default).
-function trySendResultJSONP(payload){
-  if(typeof window.__SEND_RESULT_JSONP__ === "function"){
-    try{ window.__SEND_RESULT_JSONP__(payload); }catch(e){}
+/* Always 4 choices (샘플 로직 그대로) */
+function buildChoices({answer, type, pos}){
+  const pick = (w) => (type==="kor" ? w.mon : w.kor);
+  const samePos = rawWords.filter(w => w.pos === pos);
+  const candSame = samePos.map(pick).filter(x => x && x !== answer);
+  const candAll  = rawWords.map(pick).filter(x => x && x !== answer);
+
+  const set = new Set([answer]);
+  for(const c of shuffle(candSame)){ set.add(c); if(set.size>=4) break; }
+  if(set.size<4){
+    for(const c of shuffle(candAll)){ set.add(c); if(set.size>=4) break; }
+  }
+  let list=Array.from(set);
+  while(list.length<4) list.push(answer);
+  return shuffle(list.slice(0,4));
+}
+
+/* State */
+const lessonId = "SNU-1B-lesson12";
+let name="", klass="", token="", deviceId="";
+let attempts=0;
+let questions=[], idx=0, score=0, wrong=[];
+
+/* DOM */
+const studentNameEl = document.getElementById("studentName");
+const klassNameEl = document.getElementById("klassName");
+const errorSection = document.getElementById("errorSection");
+const quizSection = document.getElementById("quizSection");
+const reviewSection = document.getElementById("reviewSection");
+const resultSection = document.getElementById("resultSection");
+const qnoEl = document.getElementById("qno");
+const instEl = document.getElementById("inst");
+const qtextEl = document.getElementById("qtext");
+const choicesEl = document.getElementById("choices");
+const reviewScoreEl = document.getElementById("reviewScore");
+const wrongListEl = document.getElementById("wrongList");
+const attemptInfoEl = document.getElementById("attemptInfo");
+const resultLine1El = document.getElementById("resultLine1");
+const finalScoreEl = document.getElementById("finalScore");
+const resultLine2El = document.getElementById("resultLine2");
+const resultDateEl = document.getElementById("resultDate");
+const logStatusEl = document.getElementById("logStatus");
+const overlay = document.getElementById("overlay");
+
+/* Helpers */
+function showError(msg){
+  errorSection.textContent = msg;
+  errorSection.classList.remove("hidden");
+  quizSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+}
+function getParams(){
+  const p = new URLSearchParams(location.search);
+  return {
+    name:(p.get("name")||"").trim(),
+    klass:(p.get("klass")||"").trim(),
+    token:(p.get("token")||"").trim()
+  };
+}
+async function validateToken(){
+  const cached = sessionStorage.getItem("result_"+token);
+  if(cached) return true;
+  const url = `${SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}&deviceId=${encodeURIComponent(deviceId)}&klass=${encodeURIComponent(klass)}&name=${encodeURIComponent(name)}`;
+  const res = await jsonp(url);
+  return !!(res && res.ok);
+}
+
+/* Attempts (per student) */
+function loadAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  attempts = parseInt(localStorage.getItem(k)||"0",10) || 0;
+}
+function saveAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  localStorage.setItem(k, String(attempts));
+}
+function clearAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  localStorage.removeItem(k);
+}
+
+/* Quiz */
+function prepareQuestions(){
+  const shuffled = shuffle(rawWords);
+  questions = shuffled.map(w=>{
+    const isKorQuestion = Math.random()<0.5;
+    const q = isKorQuestion ? w.kor : w.mon;
+    const a = isKorQuestion ? w.mon : w.kor;
+    const type = isKorQuestion ? "kor" : "mon";
+    return { q,a,type,pos:w.pos, choices: buildChoices({answer:a, type, pos:w.pos}) };
+  });
+  idx=0; score=0; wrong=[];
+}
+function showQuiz(){
+  errorSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+  quizSection.classList.remove("hidden");
+  showQuestion();
+}
+function showQuestion(){
+  if(idx>=questions.length){ finish(); return; }
+  const item = questions[idx];
+  qnoEl.textContent = `${idx+1} / ${questions.length}`;
+  instEl.textContent = (item.type==="kor") ? "Зөв монгол утгыг сонгоно уу." : "Зөв солонгос үгийг сонгоно уу.";
+  qtextEl.textContent = item.q;
+  choicesEl.innerHTML="";
+  item.choices.forEach(c=>{
+    const btn=document.createElement("button");
+    btn.className="choice";
+    btn.textContent=c;
+    btn.onclick=()=>answer(c);
+    choicesEl.appendChild(btn);
+  });
+}
+function answer(choice){
+  const item=questions[idx];
+  if(choice===item.a){ score += (100/questions.length); }
+  else{ wrong.push(item); }
+  idx++;
+  showQuestion();
+}
+function finish(){
+  attempts++;
+  saveAttempts();
+  const finalScore=Math.round(score);
+  if(finalScore>=80 || attempts>=5) showResult(finalScore);
+  else showReview(finalScore);
+}
+function showReview(finalScore){
+  quizSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+  reviewSection.classList.remove("hidden");
+  reviewScoreEl.innerHTML = `Таны дүн: <b style="color:var(--bad);">${finalScore} оноо</b>`;
+  attemptInfoEl.textContent = `Оролдлого: ${attempts} (5 удаа хүрвэл автоматаар тэнцэнэ)`;
+  wrongListEl.innerHTML="";
+  wrong.forEach(w=>{
+    const div=document.createElement("div");
+    div.className="wrongItem";
+    div.innerHTML = `❓ <b>${escapeHtml(w.q)}</b> → ✅ <b>${escapeHtml(w.a)}</b>`;
+    wrongListEl.appendChild(div);
+  });
+}
+
+/* Log to sheet (샘플과 동일 JSONP 방식) */
+async function sendLog(finalScore){
+  try{
+    const ua = navigator.userAgent || "";
+    const url =
+      `${SCRIPT_URL}?action=log` +
+      `&token=${encodeURIComponent(token)}` +
+      `&deviceId=${encodeURIComponent(deviceId)}` +
+      `&book=${encodeURIComponent("SNU")}` +
+      `&lesson=${encodeURIComponent("1B-lesson12")}` +
+      `&score=${encodeURIComponent(String(finalScore))}` +
+      `&attempts=${encodeURIComponent(String(attempts))}` +
+      `&ua=${encodeURIComponent(ua)}`;
+    const res = await jsonp(url);
+    if(res && res.ok){
+      logStatusEl.textContent = "Бүртгэл амжилттай илгээгдлээ.";
+      sessionStorage.setItem("result_"+token, JSON.stringify({ name, klass, finalScore, attempts, t: Date.now() }));
+    }else{
+      logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+    }
+  }catch(e){
+    logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
   }
 }
 
-// === Capture / Share ===
-async function doCaptureShare(){
-  // We cannot guarantee full-page render-to-image without external libs.
-  // Best effort: try Web Share with a text summary, and guide screenshot if not possible.
-  const rawScore = Math.round(score);
+async function showResult(finalScore){
+  quizSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.remove("hidden");
+  clearAttempts();
+
+  resultLine1El.textContent = `${name}, баяр хүргэе!`;
+  finalScoreEl.textContent = `Дүн: ${finalScore} оноо`;
+  resultLine2El.textContent = `Оролдлого: ${attempts}`;
+
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  resultDateEl.textContent = `Огноо: ${fmt.format(now)}`;
+
+  logStatusEl.textContent = "Бүртгэл илгээж байна...";
+  await sendLog(finalScore);
+}
+
+/* Buttons */
+function retry(){ prepareQuestions(); showQuiz(); }
+function goHome(){ location.href = `index.html?v=${Date.now()}`; }
+
+/* Capture (share -> fallback modal) */
+async function captureOrHelp(){
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
   const summary =
 `[SNU-1B-lesson12]
-Name: ${safeName}
-Class: ${safeKlass}
-Score: ${rawScore}
-Try: ${tryCount}
-Date: ${todayStr()}
-Token: ${safeToken}`;
+Name: ${name}
+Class: ${klass}
+Score: ${Math.round(score)}
+Attempts: ${attempts}
+Date: ${fmt.format(now)}
+Token: ${token}`;
 
-  // Try share (text) first (stable across devices; iOS/Android vary)
   if(navigator.share){
     try{
       await navigator.share({ text: summary });
-      alert("Share амжилттай. Одоо багш руу явуулаарай!");
       return;
     }catch(e){
-      // fallthrough to screenshot guide
+      // fall through
     }
   }
-
-  // Screenshot guide
-  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
-  const isAndroid = /Android/i.test(navigator.userAgent);
-
-  let msg = "Share ажиллахгүй байна.\n\n";
-  if(isIOS){
-    msg += "iPhone: Side товч + Volume Up товчийг зэрэг дарж дэлгэцийн зураг аваарай.\n(Дараа нь зураг/Photos-оос багшдаа явуулна.)";
-  }else if(isAndroid){
-    msg += "Android: Power товч + Volume Down товчийг зэрэг дарж дэлгэцийн зураг аваарай.\n(Дараа нь Gallery-оос багшдаа явуулна.)";
-  }else{
-    msg += "컴퓨터: 키보드의 Print Screen(PrtSc) 또는 캡처 도구를 사용하세요.";
-  }
-  alert(msg);
+  openScreenshotHelp();
 }
 
-// === Button bindings ===
-btnRestart.addEventListener("click", ()=>{
-  // Reset local fail count? NO. Keep fail count as required for 5 fails rule.
-  startQuiz();
-});
-btnStartOver.addEventListener("click", ()=>{
-  startQuiz();
-});
-btnCapture.addEventListener("click", ()=>{
-  doCaptureShare();
-});
+/* Screenshot help modal (샘플 구조 유지) */
+function openScreenshotHelp(){ overlay.style.display="flex"; }
+function closeModal(e){
+  if(e && e.target && e.target !== overlay) return;
+  overlay.style.display="none";
+}
 
-// === Boot ===
-(function init(){
-  // 안내: params가 없으면(테스트용) 그래도 동작
-  setBadge("시작 준비 완료", "var(--warn)");
-  startQuiz();
+/* Init */
+(async function init(){
+  const p=getParams();
+  name=p.name; klass=p.klass; token=p.token;
+  deviceId=getDeviceId();
+
+  studentNameEl.textContent = name || "—";
+  klassNameEl.textContent = klass || "—";
+
+  if(!name || !klass || !token){
+    showError("Нэвтрэх мэдээлэл дутуу байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+    return;
+  }
+
+  const cached = sessionStorage.getItem("result_"+token);
+  if(cached){
+    try{
+      const obj = JSON.parse(cached);
+      attempts = obj.attempts || 0;
+      await showResult(obj.finalScore || 0);
+      return;
+    }catch(e){}
+  }
+
+  try{
+    const ok = await validateToken();
+    if(!ok){
+      showError("Энэ холбоос хүчинтэй биш байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+      return;
+    }
+  }catch(e){
+    showError("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.");
+    return;
+  }
+
+  loadAttempts();
+  prepareQuestions();
+  showQuiz();
 })();
 </script>
 </body>
