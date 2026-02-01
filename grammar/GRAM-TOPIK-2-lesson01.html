@@ -86,6 +86,8 @@
       <div class="wrongList" id="wrongList"></div>
       <div class="note" id="attemptInfo"></div>
 
+      <div class="note" id="logStatusReview" style="font-weight:900;"></div>
+
       <div class="btnRow">
         <button class="btn" style="background:var(--orange);" onclick="retry()">Дахин оролдох</button>
         <button class="btn btnGray" onclick="goBack()">Буцах</button>
@@ -185,6 +187,8 @@ function getDeviceId(){
 let name="", klass="", token="", deviceId="";
 let attempts=0;
 let questions=[], idx=0, score=0, wrong=[];
+let lastFinalScore=0;
+let lastPassed=false;
 
 /* DOM */
 const studentNameEl = document.getElementById("studentName");
@@ -205,6 +209,7 @@ const finalScoreEl = document.getElementById("finalScore");
 const resultLine2El = document.getElementById("resultLine2");
 const resultDateEl = document.getElementById("resultDate");
 const logStatusEl = document.getElementById("logStatus");
+const logStatusReviewEl = document.getElementById("logStatusReview");
 const overlay = document.getElementById("overlay");
 
 /* UI helpers */
@@ -233,9 +238,12 @@ function getParams(){
   };
 }
 async function validateToken(){
-  const cached = sessionStorage.getItem("result_"+token);
-  if(cached) return true;
-  const url = `${SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}&deviceId=${encodeURIComponent(deviceId)}&klass=${encodeURIComponent(klass)}&name=${encodeURIComponent(name)}`;
+  const url = `${SCRIPT_URL}?action=validate`
+    + `&token=${encodeURIComponent(token)}`
+    + `&deviceId=${encodeURIComponent(deviceId)}`
+    + `&klass=${encodeURIComponent(klass)}`
+    + `&name=${encodeURIComponent(name)}`
+    + `&t=${Date.now()}`;
   const res = await jsonp(url);
   return !!(res && res.ok);
 }
@@ -284,17 +292,28 @@ function answer(choice){
   idx++;
   showQuestion();
 }
-function finish(){
+
+/* ✅ 여기서부터 핵심 수정: 끝나는 순간 무조건 기록 */
+async function finish(){
   attempts++;
   saveAttempts();
-  const finalScore=Math.round(score);
 
-  if(finalScore>=80 || attempts>=5){
+  const finalScore = Math.round(score);
+  const passed = (finalScore>=80 || attempts>=5);
+
+  lastFinalScore = finalScore;
+  lastPassed = passed;
+
+  // 기록 먼저 보냄(합격/불합격 상관없음)
+  await sendLog(finalScore, passed);
+
+  if(passed){
     showResult(finalScore);
   }else{
     showReview(finalScore);
   }
 }
+
 function showReview(finalScore){
   quizSection.classList.add("hidden");
   resultSection.classList.add("hidden");
@@ -312,35 +331,65 @@ function showReview(finalScore){
   });
 }
 
-/* Log */
-async function sendLog(finalScore){
+/* Log (cache-bust + name/klass 포함 + lesson별 캐시 키 분리) */
+async function sendLog(finalScore, passed){
+  const key = `result_${token}_${lessonId}`;
+  const cached = sessionStorage.getItem(key);
+  if(cached){
+    // 이미 이 레슨/이 토큰으로 기록한 적이 있으면 다시 안 보냄(중복 방지)
+    try{
+      const obj = JSON.parse(cached);
+      if(obj && obj.sent) {
+        if(logStatusEl) logStatusEl.textContent = "Бүртгэл (өмнө нь) илгээгдсэн байна.";
+        if(logStatusReviewEl) logStatusReviewEl.textContent = "Бүртгэл (өмнө нь) илгээгдсэн байна.";
+        return;
+      }
+    }catch(e){}
+  }
+
+  const setStatus = (msg)=>{
+    if(logStatusEl) logStatusEl.textContent = msg;
+    if(logStatusReviewEl) logStatusReviewEl.textContent = msg;
+  };
+
   try{
     const ua = navigator.userAgent || "";
+    setStatus("Бүртгэл илгээж байна...");
+
     const url =
       `${SCRIPT_URL}?action=log` +
       `&token=${encodeURIComponent(token)}` +
       `&deviceId=${encodeURIComponent(deviceId)}` +
       `&book=${encodeURIComponent("GRAMMAR")}` +
       `&lesson=${encodeURIComponent(lessonId)}` +
+      `&name=${encodeURIComponent(name)}` +
+      `&klass=${encodeURIComponent(klass)}` +
       `&score=${encodeURIComponent(String(finalScore))}` +
       `&attempts=${encodeURIComponent(String(attempts))}` +
-      `&ua=${encodeURIComponent(ua)}`;
+      `&passed=${encodeURIComponent(passed ? "1" : "0")}` +
+      `&ua=${encodeURIComponent(ua)}` +
+      `&t=${Date.now()}`;
+
     const res = await jsonp(url);
     if(res && res.ok){
-      logStatusEl.textContent = "Бүртгэл амжилттай илгээгдлээ.";
-      sessionStorage.setItem("result_"+token, JSON.stringify({ name, klass, finalScore, attempts, t: Date.now() }));
+      setStatus("Бүртгэл амжилттай илгээгдлээ.");
+      sessionStorage.setItem(key, JSON.stringify({ sent:true, name, klass, finalScore, attempts, passed, t:Date.now() }));
     }else{
-      logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+      setStatus("Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.");
     }
   }catch(e){
-    logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+    const msg = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+    if(logStatusEl) logStatusEl.textContent = msg;
+    if(logStatusReviewEl) logStatusReviewEl.textContent = msg;
   }
 }
 
-async function showResult(finalScore){
+function showResult(finalScore){
   quizSection.classList.add("hidden");
   reviewSection.classList.add("hidden");
   resultSection.classList.remove("hidden");
+
+  // 합격하면 attempts 초기화는 유지
   clearAttempts();
 
   resultLine1El.textContent = `${name}, баяр хүргэе!`;
@@ -351,11 +400,11 @@ async function showResult(finalScore){
   const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
   resultDateEl.textContent = `Огноо: ${fmt.format(now)}`;
 
-  logStatusEl.textContent = "Бүртгэл илгээж байна...";
-  await sendLog(finalScore);
+  // finish()에서 이미 로그 전송 완료/실패가 표시됨
 }
 
-/* Back */
+/* Buttons */
+function retry(){ prepareQuestions(); showQuiz(); }
 function goBack(){
   const qs =
     `?name=${encodeURIComponent(name)}` +
@@ -369,8 +418,8 @@ async function tryShareText(){
   const text =
     `Нэр: ${name}\n` +
     `Анги: ${klass}\n` +
-    `${finalScoreEl.textContent}\n` +
-    `${resultDateEl.textContent}\n` +
+    `Дүн: ${lastFinalScore} оноо\n` +
+    `Оролдлого: ${attempts}\n` +
     `Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.`;
   try{
     if(navigator.share){
@@ -401,16 +450,6 @@ function closeModal(e){
   if(!name || !klass || !token){
     showError("Нэвтрэх мэдээлэл дутуу байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
     return;
-  }
-
-  const cached = sessionStorage.getItem("result_"+token);
-  if(cached){
-    try{
-      const obj = JSON.parse(cached);
-      attempts = obj.attempts || 0;
-      await showResult(obj.finalScore || 0);
-      return;
-    }catch(e){}
   }
 
   try{
