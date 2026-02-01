@@ -1,12 +1,12 @@
 <!DOCTYPE html>
-<html lang="ko">
+<html lang="mn">
 <head>
   <meta charset="UTF-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1.0" />
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>GRAM · TOPIK 2 · Lesson01 (Sample)</title>
+  <title>GRAM · TOPIK 2 · lesson01 · Grammar Test</title>
 
   <style>
     :root{
@@ -30,7 +30,7 @@
     .btnRow{display:flex; gap:10px; margin-top:14px;}
     .qno{margin-top:14px; color:var(--primary); font-weight:900; font-size:15px;}
     .inst{margin-top:10px; background:#eef2f7; border:1px solid #d7dee7; padding:10px; border-radius:10px; color:#223047; font-size:14px;}
-    .question{margin:18px 0 10px; font-size:22px; font-weight:900; color:#1f2f45; line-height:1.35;}
+    .question{margin:18px 0 10px; font-size:22px; font-weight:900; color:#1f2f45; line-height:1.35; word-break:keep-all;}
     .choice{
       width:100%; margin:10px 0; padding:14px 12px; border-radius:12px;
       border:2px solid var(--primary); background:#fff; color:#223047;
@@ -49,6 +49,10 @@
     .resultCard p{margin:8px 0; font-size:15px; line-height:1.55;}
     .bigMsg{font-size:18px; font-weight:900;}
     .center{text-align:center;}
+    .overlay{position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; padding:18px;}
+    .modal{max-width:560px; width:100%; background:#fff; border-radius:16px; padding:16px; border:1px solid #d7dee7; box-shadow:0 10px 25px rgba(0,0,0,0.18); text-align:left;}
+    .modal h2{margin:0; font-size:18px; color:#1f2f45;}
+    .modal p{margin:10px 0; color:#223047; line-height:1.55; font-size:14px;}
   </style>
 </head>
 
@@ -57,10 +61,10 @@
   <div class="topline">
     <div class="nameBox">
       <div><span class="badge">GRAM · TOPIK 2 · lesson01</span></div>
-      <div style="margin-top:6px;">이름: <b id="studentName">—</b></div>
-      <div>반: <b id="klassName">—</b></div>
+      <div style="margin-top:6px;">Нэр: <b id="studentName">—</b></div>
+      <div>Анги: <b id="klassName">—</b></div>
     </div>
-    <button class="btn btnGray" onclick="goBack()">레슨 목록</button>
+    <button class="btn btnGray" onclick="goBack()">Буцах</button>
   </div>
 
   <div id="errorSection" class="warn hidden"></div>
@@ -70,12 +74,12 @@
     <div class="inst" id="inst"></div>
     <div class="question" id="qtext"></div>
     <div id="choices"></div>
-    <div class="note">※ 80점 이상 합격, 5번 이상 실패하면 자동 합격(샘플).</div>
+    <div class="note">Санамж: Алдаа гаргасан асуултуудыг төгсгөлд нь зөв хариутай нь харуулна.</div>
   </div>
 
   <div id="reviewSection" class="hidden">
-    <h1 style="color:var(--orange);">Review</h1>
-    <p class="note">틀린 문제 → 정답을 먼저 확인하고 다시 시도하세요.</p>
+    <h1 style="color:var(--orange);">Алдаагаа шалгана уу</h1>
+    <p class="note">Эхлээд зөв хариуг хараад, дараа нь дахин оролдоно уу.</p>
 
     <div class="panel">
       <div class="score" id="reviewScore"></div>
@@ -83,200 +87,347 @@
       <div class="note" id="attemptInfo"></div>
 
       <div class="btnRow">
-        <button class="btn" style="background:var(--orange);" onclick="retry()">다시 도전</button>
-        <button class="btn btnGray" onclick="goBack()">레슨 목록</button>
+        <button class="btn" style="background:var(--orange);" onclick="retry()">Дахин оролдох</button>
+        <button class="btn btnGray" onclick="goBack()">Буцах</button>
       </div>
     </div>
   </div>
 
   <div id="resultSection" class="hidden">
-    <h1 style="color:var(--ok);">합격!</h1>
+    <h1 style="color:var(--ok);">Тэнцлээ!</h1>
 
     <div class="resultCard">
       <p class="bigMsg" id="resultLine1"></p>
       <p class="center"><span class="score" id="finalScore"></span></p>
       <p id="resultLine2"></p>
       <p id="resultDate"></p>
+
+      <p style="margin-top:12px; font-weight:900; color:#1f2f45;">
+        Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.
+      </p>
+      <p class="note" id="logStatus"></p>
     </div>
 
     <div class="btnRow">
-      <button class="btn" style="background:var(--ok);" onclick="retry()">다시 풀기</button>
-      <button class="btn btnGray" onclick="goBack()">레슨 목록</button>
+      <button class="btn" style="background:var(--ok);" onclick="openScreenshotHelp()">Капчер</button>
+      <button class="btn btnGray" onclick="goBack()">Буцах</button>
     </div>
   </div>
 </div>
 
+<div class="overlay" id="overlay" onclick="closeModal(event)">
+  <div class="modal">
+    <h2>Скриншот / Хуваалцах</h2>
+    <p>
+      <b>iPhone:</b> Талын товч + Дуу нэмэх товчийг зэрэг дарна уу.<br>
+      <b>Android:</b> Асаах товч + Дуу хасах товчийг зэрэг дарна уу.
+    </p>
+    <p class="note">
+      Хэрэв “share” (хуваалцах) ажиллавал шууд багш руугаа илгээж болно.
+    </p>
+    <button class="btn btnGray" onclick="closeModal()">Хаах</button>
+  </div>
+</div>
+
 <script>
+/* Google Apps Script */
+const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
+
+/* Lesson ID */
+const lessonId = "GRAM-TOPIK-2-lesson01";
+
+/* Sample TOPIK2 questions (editable later) */
+const rawQ = [
+  { q:"‘-(으)니까’는 보통 어떤 의미인가요?", a:"이유/원인", c:["대조", "선택", "나열"] },
+  { q:"‘-(으)면’은 어떤 의미인가요?", a:"조건", c:["과거", "부정", "인과"] },
+  { q:"‘-아/어 보다’는 어떤 의미인가요?", a:"경험(해 보다)", c:["의무", "추측", "약속"] },
+  { q:"‘-기 때문에’는 어떤 의미인가요?", a:"이유/원인", c:["대조", "첨가", "선택"] },
+  { q:"‘-(으)ㄹ 수 있다’는 어떤 의미인가요?", a:"가능/능력", c:["의무", "과거", "부정"] },
+  { q:"‘-(으)려고 하다’는 어떤 의미인가요?", a:"의도/계획", c:["완료", "추측", "대조"] }
+];
+
+/* Utils */
+function shuffle(arr){
+  const a=[...arr];
+  for(let i=a.length-1;i>0;i--){
+    const j=Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+function escapeHtml(s){
+  return String(s)
+    .replaceAll("&","&amp;").replaceAll("<","&lt;")
+    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll("'","&#39;");
+}
+function jsonp(url){
+  return new Promise((resolve,reject)=>{
+    const cb="cb_"+Date.now()+"_"+Math.floor(Math.random()*10000);
+    window[cb]=(data)=>{ resolve(data); script.remove(); delete window[cb]; };
+    const script=document.createElement("script");
+    script.src=url+(url.includes("?")?"&":"?")+"callback="+cb;
+    script.onerror=()=>{ reject(new Error("jsonp_error")); script.remove(); delete window[cb]; };
+    document.body.appendChild(script);
+  });
+}
+function getDeviceId(){
+  const k="kquiz_deviceId";
+  let id=localStorage.getItem(k);
+  if(!id){
+    id=(crypto&&crypto.randomUUID)?crypto.randomUUID():(Date.now()+"_"+Math.random()).replace(".","");
+    localStorage.setItem(k,id);
+  }
+  return id;
+}
+
+/* State */
+let name="", klass="", token="", deviceId="";
+let attempts=0;
+let questions=[], idx=0, score=0, wrong=[];
+
+/* DOM */
+const studentNameEl = document.getElementById("studentName");
+const klassNameEl = document.getElementById("klassName");
+const errorSection = document.getElementById("errorSection");
+const quizSection = document.getElementById("quizSection");
+const reviewSection = document.getElementById("reviewSection");
+const resultSection = document.getElementById("resultSection");
+const qnoEl = document.getElementById("qno");
+const instEl = document.getElementById("inst");
+const qtextEl = document.getElementById("qtext");
+const choicesEl = document.getElementById("choices");
+const reviewScoreEl = document.getElementById("reviewScore");
+const wrongListEl = document.getElementById("wrongList");
+const attemptInfoEl = document.getElementById("attemptInfo");
+const resultLine1El = document.getElementById("resultLine1");
+const finalScoreEl = document.getElementById("finalScore");
+const resultLine2El = document.getElementById("resultLine2");
+const resultDateEl = document.getElementById("resultDate");
+const logStatusEl = document.getElementById("logStatus");
+const overlay = document.getElementById("overlay");
+
+/* UI helpers */
+function showError(msg){
+  errorSection.textContent = msg;
+  errorSection.classList.remove("hidden");
+  quizSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+}
+function showQuiz(){
+  errorSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+  quizSection.classList.remove("hidden");
+  showQuestion();
+}
+
+/* Params / Token */
+function getParams(){
   const p = new URLSearchParams(location.search);
-  const name = (p.get("name")||"").trim();
-  const klass = (p.get("klass")||"").trim();
-  const token = (p.get("token")||"").trim();
+  return {
+    name:(p.get("name")||"").trim(),
+    klass:(p.get("klass")||"").trim(),
+    token:(p.get("token")||"").trim()
+  };
+}
+async function validateToken(){
+  const cached = sessionStorage.getItem("result_"+token);
+  if(cached) return true;
+  const url = `${SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}&deviceId=${encodeURIComponent(deviceId)}&klass=${encodeURIComponent(klass)}&name=${encodeURIComponent(name)}`;
+  const res = await jsonp(url);
+  return !!(res && res.ok);
+}
 
-  const lessonId = "GRAM-TOPIK-2-lesson01";
-  let attempts = 0;
+/* Attempts */
+function loadAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  attempts = parseInt(localStorage.getItem(k)||"0",10) || 0;
+}
+function saveAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  localStorage.setItem(k, String(attempts));
+}
+function clearAttempts(){
+  const k = `attempts_${lessonId}_${name}`;
+  localStorage.removeItem(k);
+}
 
-  const rawQ = [
-    { q:"‘-(으)니까’는 보통 어떤 의미인가요?", a:"이유/원인", c:["대조", "선택", "나열"] },
-    { q:"‘-(으)면’은 어떤 의미인가요?", a:"조건", c:["과거", "부정", "인과"] },
-    { q:"‘-아/어 보다’는 어떤 의미인가요?", a:"경험(해 보다)", c:["의무", "추측", "약속"] },
-    { q:"‘-기 때문에’는 어떤 의미인가요?", a:"이유/원인", c:["대조", "첨가", "선택"] }
-  ];
+/* Quiz */
+function prepareQuestions(){
+  questions = shuffle(rawQ).map(item=>{
+    const choices = shuffle([item.a, ...item.c]).slice(0,4);
+    return { q:item.q, a:item.a, choices };
+  });
+  idx=0; score=0; wrong=[];
+}
+function showQuestion(){
+  if(idx>=questions.length){ finish(); return; }
+  const item = questions[idx];
+  qnoEl.textContent = `${idx+1} / ${questions.length}`;
+  instEl.textContent = "Зөв хариуг сонгоно уу.";
+  qtextEl.textContent = item.q;
+  choicesEl.innerHTML="";
+  item.choices.forEach(c=>{
+    const btn=document.createElement("button");
+    btn.className="choice";
+    btn.textContent=c;
+    btn.onclick=()=>answer(c);
+    choicesEl.appendChild(btn);
+  });
+}
+function answer(choice){
+  const item=questions[idx];
+  if(choice===item.a){ score += (100/questions.length); }
+  else{ wrong.push(item); }
+  idx++;
+  showQuestion();
+}
+function finish(){
+  attempts++;
+  saveAttempts();
+  const finalScore=Math.round(score);
 
-  const studentNameEl = document.getElementById("studentName");
-  const klassNameEl = document.getElementById("klassName");
-  const errorSection = document.getElementById("errorSection");
-  const quizSection = document.getElementById("quizSection");
-  const reviewSection = document.getElementById("reviewSection");
-  const resultSection = document.getElementById("resultSection");
-  const qnoEl = document.getElementById("qno");
-  const instEl = document.getElementById("inst");
-  const qtextEl = document.getElementById("qtext");
-  const choicesEl = document.getElementById("choices");
-  const reviewScoreEl = document.getElementById("reviewScore");
-  const wrongListEl = document.getElementById("wrongList");
-  const attemptInfoEl = document.getElementById("attemptInfo");
-  const resultLine1El = document.getElementById("resultLine1");
-  const finalScoreEl = document.getElementById("finalScore");
-  const resultLine2El = document.getElementById("resultLine2");
-  const resultDateEl = document.getElementById("resultDate");
-
-  function shuffle(arr){
-    const a=[...arr];
-    for(let i=a.length-1;i>0;i--){
-      const j=Math.floor(Math.random()*(i+1));
-      [a[i],a[j]]=[a[j],a[i]];
-    }
-    return a;
+  if(finalScore>=80 || attempts>=5){
+    showResult(finalScore);
+  }else{
+    showReview(finalScore);
   }
-  function showError(msg){
-    errorSection.textContent = msg;
-    errorSection.classList.remove("hidden");
-    quizSection.classList.add("hidden");
-    reviewSection.classList.add("hidden");
-    resultSection.classList.add("hidden");
-  }
+}
+function showReview(finalScore){
+  quizSection.classList.add("hidden");
+  resultSection.classList.add("hidden");
+  reviewSection.classList.remove("hidden");
 
-  function loadAttempts(){
-    const k = `attempts_${lessonId}_${name}`;
-    attempts = parseInt(localStorage.getItem(k)||"0",10) || 0;
-  }
-  function saveAttempts(){
-    const k = `attempts_${lessonId}_${name}`;
-    localStorage.setItem(k, String(attempts));
-  }
-  function clearAttempts(){
-    const k = `attempts_${lessonId}_${name}`;
-    localStorage.removeItem(k);
-  }
+  reviewScoreEl.innerHTML = `Таны дүн: <b style="color:var(--bad);">${finalScore} оноо</b>`;
+  attemptInfoEl.textContent = `Оролдлого: ${attempts} (5 удаа хүрвэл автоматаар тэнцэнэ)`;
 
-  let questions=[], idx=0, score=0, wrong=[];
+  wrongListEl.innerHTML="";
+  wrong.forEach(w=>{
+    const div=document.createElement("div");
+    div.className="wrongItem";
+    div.innerHTML = `❓ <b>${escapeHtml(w.q)}</b><br>✅ <b>${escapeHtml(w.a)}</b>`;
+    wrongListEl.appendChild(div);
+  });
+}
 
-  function prepareQuestions(){
-    questions = shuffle(rawQ).map(item=>{
-      const choices = shuffle([item.a, ...item.c]).slice(0,4);
-      return { q:item.q, a:item.a, choices };
-    });
-    idx=0; score=0; wrong=[];
-  }
-
-  function showQuiz(){
-    errorSection.classList.add("hidden");
-    reviewSection.classList.add("hidden");
-    resultSection.classList.add("hidden");
-    quizSection.classList.remove("hidden");
-    showQuestion();
-  }
-
-  function showQuestion(){
-    if(idx>=questions.length){ finish(); return; }
-    const item = questions[idx];
-    qnoEl.textContent = `${idx+1} / ${questions.length}`;
-    instEl.textContent = "정답을 고르세요.";
-    qtextEl.textContent = item.q;
-    choicesEl.innerHTML="";
-    item.choices.forEach(c=>{
-      const btn=document.createElement("button");
-      btn.className="choice";
-      btn.textContent=c;
-      btn.onclick=()=>answer(c);
-      choicesEl.appendChild(btn);
-    });
-  }
-
-  function answer(choice){
-    const item=questions[idx];
-    if(choice===item.a){ score += (100/questions.length); }
-    else{ wrong.push(item); }
-    idx++;
-    showQuestion();
-  }
-
-  function finish(){
-    attempts++;
-    saveAttempts();
-    const finalScore=Math.round(score);
-
-    if(finalScore>=80 || attempts>=5){
-      showResult(finalScore);
+/* Log */
+async function sendLog(finalScore){
+  try{
+    const ua = navigator.userAgent || "";
+    const url =
+      `${SCRIPT_URL}?action=log` +
+      `&token=${encodeURIComponent(token)}` +
+      `&deviceId=${encodeURIComponent(deviceId)}` +
+      `&book=${encodeURIComponent("GRAMMAR")}` +
+      `&lesson=${encodeURIComponent(lessonId)}` +
+      `&score=${encodeURIComponent(String(finalScore))}` +
+      `&attempts=${encodeURIComponent(String(attempts))}` +
+      `&ua=${encodeURIComponent(ua)}`;
+    const res = await jsonp(url);
+    if(res && res.ok){
+      logStatusEl.textContent = "Бүртгэл амжилттай илгээгдлээ.";
+      sessionStorage.setItem("result_"+token, JSON.stringify({ name, klass, finalScore, attempts, t: Date.now() }));
     }else{
-      showReview(finalScore);
+      logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
     }
+  }catch(e){
+    logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+  }
+}
+
+async function showResult(finalScore){
+  quizSection.classList.add("hidden");
+  reviewSection.classList.add("hidden");
+  resultSection.classList.remove("hidden");
+  clearAttempts();
+
+  resultLine1El.textContent = `${name}, баяр хүргэе!`;
+  finalScoreEl.textContent = `Дүн: ${finalScore} оноо`;
+  resultLine2El.textContent = `Оролдлого: ${attempts}`;
+
+  const now = new Date();
+  const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+  resultDateEl.textContent = `Огноо: ${fmt.format(now)}`;
+
+  logStatusEl.textContent = "Бүртгэл илгээж байна...";
+  await sendLog(finalScore);
+}
+
+/* Back */
+function goBack(){
+  const qs =
+    `?name=${encodeURIComponent(name)}` +
+    `&klass=${encodeURIComponent(klass)}` +
+    `&token=${encodeURIComponent(token)}`;
+  location.href = "GRAM-TOPIK-2-hub.html" + qs;
+}
+
+/* Screenshot / Share */
+async function tryShareText(){
+  const text =
+    `Нэр: ${name}\n` +
+    `Анги: ${klass}\n` +
+    `${finalScoreEl.textContent}\n` +
+    `${resultDateEl.textContent}\n` +
+    `Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.`;
+  try{
+    if(navigator.share){
+      await navigator.share({ text });
+      return true;
+    }
+  }catch(e){}
+  return false;
+}
+async function openScreenshotHelp(){
+  await tryShareText();
+  overlay.style.display="flex";
+}
+function closeModal(e){
+  if(e && e.target && e.target !== overlay) return;
+  overlay.style.display="none";
+}
+
+/* Init */
+(async function init(){
+  const p=getParams();
+  name=p.name; klass=p.klass; token=p.token;
+  deviceId=getDeviceId();
+
+  studentNameEl.textContent = name || "—";
+  klassNameEl.textContent = klass || "—";
+
+  if(!name || !klass || !token){
+    showError("Нэвтрэх мэдээлэл дутуу байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+    return;
   }
 
-  function showReview(finalScore){
-    quizSection.classList.add("hidden");
-    resultSection.classList.add("hidden");
-    reviewSection.classList.remove("hidden");
-
-    reviewScoreEl.innerHTML = `점수: <b style="color:var(--bad);">${finalScore}점</b>`;
-    attemptInfoEl.textContent = `시도횟수: ${attempts} (5회 이상이면 자동 합격 처리)`;
-
-    wrongListEl.innerHTML="";
-    wrong.forEach(w=>{
-      const div=document.createElement("div");
-      div.className="wrongItem";
-      div.innerHTML = `❓ <b>${w.q}</b><br>✅ <b>${w.a}</b>`;
-      wrongListEl.appendChild(div);
-    });
+  const cached = sessionStorage.getItem("result_"+token);
+  if(cached){
+    try{
+      const obj = JSON.parse(cached);
+      attempts = obj.attempts || 0;
+      await showResult(obj.finalScore || 0);
+      return;
+    }catch(e){}
   }
 
-  function showResult(finalScore){
-    quizSection.classList.add("hidden");
-    reviewSection.classList.add("hidden");
-    resultSection.classList.remove("hidden");
-    clearAttempts();
-
-    resultLine1El.textContent = `${name || "학생"}님, 합격입니다!`;
-    finalScoreEl.textContent = `점수: ${finalScore}점`;
-    resultLine2El.textContent = `시도횟수: ${attempts}`;
-
-    const now = new Date();
-    const fmt = new Intl.DateTimeFormat("ko-KR", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
-    resultDateEl.textContent = `날짜: ${fmt.format(now)}`;
-  }
-
-  function retry(){ prepareQuestions(); showQuiz(); }
-
-  function goBack(){
-    const qs =
-      `?name=${encodeURIComponent(name)}` +
-      `&klass=${encodeURIComponent(klass)}` +
-      `&token=${encodeURIComponent(token)}`;
-    location.href = "GRAM-TOPIK-2-hub.html" + qs;
-  }
-
-  (function init(){
-    studentNameEl.textContent = name || "—";
-    klassNameEl.textContent = klass || "—";
-
-    if(!name || !klass || !token){
-      showError("접속 정보(name/klass/token)가 없습니다. 메인에서 다시 들어오세요.");
+  try{
+    const ok = await validateToken();
+    if(!ok){
+      showError("Энэ холбоос хүчинтэй биш байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
       return;
     }
-    loadAttempts();
-    prepareQuestions();
-    showQuiz();
-  })();
+  }catch(e){
+    showError("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.");
+    return;
+  }
+
+  loadAttempts();
+  prepareQuestions();
+  showQuiz();
+})();
 </script>
 </body>
 </html>
