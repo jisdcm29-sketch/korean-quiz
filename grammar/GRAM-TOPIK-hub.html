@@ -1,0 +1,77 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>GRAM · TOPIK · Level Hub</title>
+  <style>
+    body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f0f4f8;color:#223047}
+    .wrap{max-width:720px;margin:0 auto;background:#fff;border:1px solid #d9e4f5;border-radius:16px;padding:18px;box-shadow:0 10px 20px rgba(0,0,0,.08);text-align:center}
+    h1{margin:0 0 10px 0;font-size:22px}
+    .meta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;color:#4b5b6f;font-size:14px}
+    .meta b{color:#1f2f45}
+    .grid{display:flex;gap:12px;flex-wrap:wrap;justify-content:center;margin-top:12px}
+    .btn{display:inline-block;padding:16px 14px;border-radius:14px;border:2px solid #2d6cdf;background:#fff;font-weight:900;cursor:pointer;min-width:240px}
+    .btn:hover{background:#2d6cdf;color:#fff}
+    .row{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+    .small{display:inline-block;padding:12px 14px;border-radius:12px;border:1px solid #d7dee7;background:#eef2f7;color:#223047;text-decoration:none;font-weight:900}
+    .note{margin-top:10px;color:#6a7a8e;font-size:13px;line-height:1.5}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>문법 · TOPIK · 레벨 선택</h1>
+
+    <div class="meta">
+      <div>이름: <b id="studentName">—</b></div>
+      <div>반: <b id="klassName">—</b></div>
+      <div>Token: <b id="tokenView">—</b></div>
+    </div>
+
+    <div class="grid">
+      <button class="btn" id="goT1">TOPIK 1</button>
+      <button class="btn" id="goT2">TOPIK 2</button>
+    </div>
+
+    <div class="row">
+      <a class="small" id="backMain" href="#">뒤로(문법 메인)</a>
+      <a class="small" id="goMain" href="#">메인으로</a>
+      <a class="small" id="goWord" href="#">단어로</a>
+    </div>
+
+    <div class="note">
+      ※ 이 페이지는 <b>name/klass/token</b>을 URL에서 그대로 받아서 다음 단계로 전달합니다.
+    </div>
+  </div>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const name = (p.get("name")||"").trim();
+  const klass = (p.get("klass")||"").trim();
+  const token = (p.get("token")||"").trim();
+
+  document.getElementById("studentName").textContent = name || "—";
+  document.getElementById("klassName").textContent = klass || "—";
+  document.getElementById("tokenView").textContent = token || "—";
+
+  const qs =
+    `?name=${encodeURIComponent(name)}` +
+    `&klass=${encodeURIComponent(klass)}` +
+    `&token=${encodeURIComponent(token)}`;
+
+  // 뒤로(문법 메인)
+  document.getElementById("backMain").href = "index.html" + qs;
+
+  // 루트 메인/단어
+  document.getElementById("goMain").href = "../index.html" + qs;
+  document.getElementById("goWord").href = "../lessonHub.html" + qs;
+
+  // 다음 단계(레슨 목록 허브)로
+  document.getElementById("goT1").onclick = ()=> location.href = "GRAM-TOPIK-1-hub.html" + qs;
+  document.getElementById("goT2").onclick = ()=> location.href = "GRAM-TOPIK-2-hub.html" + qs;
+</script>
+</body>
+</html>
