@@ -1,0 +1,282 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>GRAM · SNU 1A · Lesson01 (Sample)</title>
+
+  <style>
+    :root{
+      --bg:#f0f4f8; --card:#ffffff; --primary:#2d6cdf; --primary2:#1f4ea5;
+      --text:#223047; --muted:#6a7a8e; --line:#d9e4f5;
+      --warnbg:#fff5f5; --warnline:#feb2b2; --warntext:#7a1f1f;
+      --ok:#0f7a3d; --bad:#c0392b; --orange:#e67e22;
+    }
+    *{box-sizing:border-box}
+    body{margin:0; padding:20px; font-family:Arial,sans-serif; background:var(--bg); color:var(--text); text-align:center;}
+    .container{max-width:560px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
+    h1{margin:0; font-size:22px; color:#1f2f45;}
+    .topline{display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:10px; flex-wrap:wrap;}
+    .badge{display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid #d7dee7; background:#f6f9ff; font-size:12px; font-weight:900; color:#2c3e50;}
+    .nameBox{font-size:14px; color:#4b5b6f; text-align:left;}
+    .nameBox b{color:#1f2f45;}
+    .btn{width:100%; background:var(--primary); color:#fff; padding:14px 12px; border:none; border-radius:12px; cursor:pointer; font-size:16px; font-weight:900; transition:.2s;}
+    .btn:hover{background:var(--primary2);}
+    .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
+    .btnGray:hover{background:#e2e8f0;}
+    .btnRow{display:flex; gap:10px; margin-top:14px;}
+    .qno{margin-top:14px; color:var(--primary); font-weight:900; font-size:15px;}
+    .inst{margin-top:10px; background:#eef2f7; border:1px solid #d7dee7; padding:10px; border-radius:10px; color:#223047; font-size:14px;}
+    .question{margin:18px 0 10px; font-size:22px; font-weight:900; color:#1f2f45; line-height:1.35;}
+    .choice{
+      width:100%; margin:10px 0; padding:14px 12px; border-radius:12px;
+      border:2px solid var(--primary); background:#fff; color:#223047;
+      font-size:16px; font-weight:900; cursor:pointer; transition:.15s; text-align:left;
+    }
+    .choice:hover{background:var(--primary); color:#fff;}
+    .hidden{display:none;}
+    .warn{margin-top:14px; background:var(--warnbg); border:1px solid var(--warnline); border-radius:12px; padding:12px; color:var(--warntext); font-size:14px; line-height:1.45; text-align:left;}
+    .panel{margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:14px; background:#fff; text-align:left;}
+    .score{font-size:26px; font-weight:900; color:var(--bad); margin:10px 0;}
+    .wrongList{max-height:300px; overflow:auto; padding:12px; border-radius:12px; border:1px solid var(--warnline); background:var(--warnbg);}
+    .wrongItem{padding:8px 0; border-bottom:1px dashed var(--warnline); font-size:15px;}
+    .wrongItem:last-child{border-bottom:none;}
+    .note{margin-top:10px; color:var(--muted); font-size:13px; line-height:1.45;}
+    .resultCard{border:2px solid #cfe0ff; background:#f6f9ff; border-radius:14px; padding:14px; margin-top:14px; text-align:left;}
+    .resultCard p{margin:8px 0; font-size:15px; line-height:1.55;}
+    .bigMsg{font-size:18px; font-weight:900;}
+    .center{text-align:center;}
+  </style>
+</head>
+
+<body>
+<div class="container">
+  <div class="topline">
+    <div class="nameBox">
+      <div><span class="badge">GRAM · SNU · 1A · lesson01</span></div>
+      <div style="margin-top:6px;">이름: <b id="studentName">—</b></div>
+      <div>반: <b id="klassName">—</b></div>
+    </div>
+    <button class="btn btnGray" onclick="goBack()">레슨 목록</button>
+  </div>
+
+  <div id="errorSection" class="warn hidden"></div>
+
+  <div id="quizSection" class="hidden">
+    <div class="qno" id="qno"></div>
+    <div class="inst" id="inst"></div>
+    <div class="question" id="qtext"></div>
+    <div id="choices"></div>
+    <div class="note">※ 80점 이상 합격, 5번 이상 실패하면 자동 합격(샘플).</div>
+  </div>
+
+  <div id="reviewSection" class="hidden">
+    <h1 style="color:var(--orange);">Review</h1>
+    <p class="note">틀린 문제 → 정답을 먼저 확인하고 다시 시도하세요.</p>
+
+    <div class="panel">
+      <div class="score" id="reviewScore"></div>
+      <div class="wrongList" id="wrongList"></div>
+      <div class="note" id="attemptInfo"></div>
+
+      <div class="btnRow">
+        <button class="btn" style="background:var(--orange);" onclick="retry()">다시 도전</button>
+        <button class="btn btnGray" onclick="goBack()">레슨 목록</button>
+      </div>
+    </div>
+  </div>
+
+  <div id="resultSection" class="hidden">
+    <h1 style="color:var(--ok);">합격!</h1>
+
+    <div class="resultCard">
+      <p class="bigMsg" id="resultLine1"></p>
+      <p class="center"><span class="score" id="finalScore"></span></p>
+      <p id="resultLine2"></p>
+      <p id="resultDate"></p>
+    </div>
+
+    <div class="btnRow">
+      <button class="btn" style="background:var(--ok);" onclick="retry()">다시 풀기</button>
+      <button class="btn btnGray" onclick="goBack()">레슨 목록</button>
+    </div>
+  </div>
+</div>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const name = (p.get("name")||"").trim();
+  const klass = (p.get("klass")||"").trim();
+  const token = (p.get("token")||"").trim();
+
+  const lessonId = "GRAM-SNU-1A-lesson01";
+  let attempts = 0;
+
+  const rawQ = [
+    { q:"‘-는데/-(으)ㄴ데’는 주로 무엇을 나타내나요?", a:"배경 설명/대조", c:["인과", "선택", "추측"] },
+    { q:"‘-거나’는 어떤 뜻인가요?", a:"선택(둘 이상 중 하나)", c:["시간", "목적", "원인"] },
+    { q:"‘그래서’는 어떤 관계인가요?", a:"원인→결과", c:["대조", "첨가", "조건"] },
+    { q:"‘또한’은 어떤 기능인가요?", a:"첨가(덧붙임)", c:["대조", "인과", "선택"] }
+  ];
+
+  const studentNameEl = document.getElementById("studentName");
+  const klassNameEl = document.getElementById("klassName");
+  const errorSection = document.getElementById("errorSection");
+  const quizSection = document.getElementById("quizSection");
+  const reviewSection = document.getElementById("reviewSection");
+  const resultSection = document.getElementById("resultSection");
+  const qnoEl = document.getElementById("qno");
+  const instEl = document.getElementById("inst");
+  const qtextEl = document.getElementById("qtext");
+  const choicesEl = document.getElementById("choices");
+  const reviewScoreEl = document.getElementById("reviewScore");
+  const wrongListEl = document.getElementById("wrongList");
+  const attemptInfoEl = document.getElementById("attemptInfo");
+  const resultLine1El = document.getElementById("resultLine1");
+  const finalScoreEl = document.getElementById("finalScore");
+  const resultLine2El = document.getElementById("resultLine2");
+  const resultDateEl = document.getElementById("resultDate");
+
+  function shuffle(arr){
+    const a=[...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j=Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+  function showError(msg){
+    errorSection.textContent = msg;
+    errorSection.classList.remove("hidden");
+    quizSection.classList.add("hidden");
+    reviewSection.classList.add("hidden");
+    resultSection.classList.add("hidden");
+  }
+
+  function loadAttempts(){
+    const k = `attempts_${lessonId}_${name}`;
+    attempts = parseInt(localStorage.getItem(k)||"0",10) || 0;
+  }
+  function saveAttempts(){
+    const k = `attempts_${lessonId}_${name}`;
+    localStorage.setItem(k, String(attempts));
+  }
+  function clearAttempts(){
+    const k = `attempts_${lessonId}_${name}`;
+    localStorage.removeItem(k);
+  }
+
+  let questions=[], idx=0, score=0, wrong=[];
+
+  function prepareQuestions(){
+    questions = shuffle(rawQ).map(item=>{
+      const choices = shuffle([item.a, ...item.c]).slice(0,4);
+      return { q:item.q, a:item.a, choices };
+    });
+    idx=0; score=0; wrong=[];
+  }
+
+  function showQuiz(){
+    errorSection.classList.add("hidden");
+    reviewSection.classList.add("hidden");
+    resultSection.classList.add("hidden");
+    quizSection.classList.remove("hidden");
+    showQuestion();
+  }
+
+  function showQuestion(){
+    if(idx>=questions.length){ finish(); return; }
+    const item = questions[idx];
+    qnoEl.textContent = `${idx+1} / ${questions.length}`;
+    instEl.textContent = "정답을 고르세요.";
+    qtextEl.textContent = item.q;
+    choicesEl.innerHTML="";
+    item.choices.forEach(c=>{
+      const btn=document.createElement("button");
+      btn.className="choice";
+      btn.textContent=c;
+      btn.onclick=()=>answer(c);
+      choicesEl.appendChild(btn);
+    });
+  }
+
+  function answer(choice){
+    const item=questions[idx];
+    if(choice===item.a){ score += (100/questions.length); }
+    else{ wrong.push(item); }
+    idx++;
+    showQuestion();
+  }
+
+  function finish(){
+    attempts++;
+    saveAttempts();
+    const finalScore=Math.round(score);
+
+    if(finalScore>=80 || attempts>=5){
+      showResult(finalScore);
+    }else{
+      showReview(finalScore);
+    }
+  }
+
+  function showReview(finalScore){
+    quizSection.classList.add("hidden");
+    resultSection.classList.add("hidden");
+    reviewSection.classList.remove("hidden");
+
+    reviewScoreEl.innerHTML = `점수: <b style="color:var(--bad);">${finalScore}점</b>`;
+    attemptInfoEl.textContent = `시도횟수: ${attempts} (5회 이상이면 자동 합격 처리)`;
+
+    wrongListEl.innerHTML="";
+    wrong.forEach(w=>{
+      const div=document.createElement("div");
+      div.className="wrongItem";
+      div.innerHTML = `❓ <b>${w.q}</b><br>✅ <b>${w.a}</b>`;
+      wrongListEl.appendChild(div);
+    });
+  }
+
+  function showResult(finalScore){
+    quizSection.classList.add("hidden");
+    reviewSection.classList.add("hidden");
+    resultSection.classList.remove("hidden");
+    clearAttempts();
+
+    resultLine1El.textContent = `${name || "학생"}님, 합격입니다!`;
+    finalScoreEl.textContent = `점수: ${finalScore}점`;
+    resultLine2El.textContent = `시도횟수: ${attempts}`;
+
+    const now = new Date();
+    const fmt = new Intl.DateTimeFormat("ko-KR", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
+    resultDateEl.textContent = `날짜: ${fmt.format(now)}`;
+  }
+
+  function retry(){ prepareQuestions(); showQuiz(); }
+
+  function goBack(){
+    const qs =
+      `?name=${encodeURIComponent(name)}` +
+      `&klass=${encodeURIComponent(klass)}` +
+      `&token=${encodeURIComponent(token)}`;
+    location.href = "GRAM-SNU-1A-hub.html" + qs;
+  }
+
+  (function init(){
+    studentNameEl.textContent = name || "—";
+    klassNameEl.textContent = klass || "—";
+
+    if(!name || !klass || !token){
+      showError("접속 정보(name/klass/token)가 없습니다. 메인에서 다시 들어오세요.");
+      return;
+    }
+    loadAttempts();
+    prepareQuestions();
+    showQuiz();
+  })();
+</script>
+</body>
+</html>
