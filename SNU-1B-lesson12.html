@@ -1,0 +1,943 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover" />
+  <meta name="theme-color" content="#111827" />
+  <title>SNU-1B-lesson12</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111827;
+      --card2:#0f172a;
+      --muted:#9ca3af;
+      --text:#e5e7eb;
+      --accent:#22c55e;
+      --danger:#ef4444;
+      --warn:#f59e0b;
+      --btn:#1f2937;
+      --btn2:#0b1020;
+      --line:#243042;
+      --shadow: 0 10px 30px rgba(0,0,0,.35);
+      --radius:18px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, Noto Sans KR, Apple SD Gothic Neo, Helvetica, Arial, "Apple Color Emoji","Segoe UI Emoji";
+      background: radial-gradient(1200px 600px at 20% 0%, #14213a 0%, var(--bg) 55%, #050812 100%);
+      color:var(--text);
+      min-height:100vh;
+      padding: max(14px, env(safe-area-inset-top)) 14px max(14px, env(safe-area-inset-bottom));
+    }
+    .wrap{max-width:980px;margin:0 auto}
+    header{
+      display:flex; gap:12px; align-items:flex-start; justify-content:space-between;
+      margin: 10px 0 14px;
+    }
+    .title{
+      display:flex;flex-direction:column;gap:4px;
+    }
+    h1{
+      margin:0;
+      font-size:18px;
+      letter-spacing:.2px;
+      font-weight:800;
+    }
+    .sub{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.3;
+    }
+    .pillrow{display:flex;gap:8px;flex-wrap:wrap;justify-content:flex-end}
+    .pill{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.08);
+      padding: 6px 10px;
+      border-radius: 999px;
+      font-size:12px;
+      color: var(--text);
+      display:flex;gap:6px;align-items:center;
+      user-select:none;
+    }
+    .pill b{font-weight:800}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.09);
+      box-shadow: var(--shadow);
+      border-radius: var(--radius);
+      overflow:hidden;
+    }
+    .cardHead{
+      padding: 14px 16px;
+      background: linear-gradient(180deg, rgba(0,0,0,.2), rgba(0,0,0,0));
+      border-bottom:1px solid rgba(255,255,255,.08);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;
+    }
+    .cardHead .left{
+      display:flex;flex-direction:column;gap:6px;
+    }
+    .badge{
+      display:inline-flex;align-items:center;gap:6px;
+      font-size:12px;
+      color: var(--muted);
+    }
+    .badge span{
+      width:8px;height:8px;border-radius:999px;background:var(--warn);
+      display:inline-block;
+    }
+    .qbox{
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .qtitle{
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:10px;
+      flex-wrap:wrap;
+    }
+    .qtitle .q{
+      font-size:20px;
+      font-weight:900;
+      line-height:1.15;
+      word-break:keep-all;
+    }
+    .qtitle .meta{
+      color:var(--muted);
+      font-size:12px;
+      line-height:1.4;
+      text-align:right;
+      min-width: 140px;
+    }
+    .choices{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    @media (min-width:720px){
+      .choices{grid-template-columns:1fr 1fr}
+    }
+    button.choice{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.10);
+      color: var(--text);
+      padding: 14px 12px;
+      border-radius: 14px;
+      text-align:left;
+      font-size:16px;
+      font-weight:700;
+      cursor:pointer;
+      transition: transform .06s ease, border-color .15s ease, background .15s ease;
+      min-height: 52px;
+      word-break:keep-all;
+    }
+    button.choice:active{transform: scale(.99)}
+    button.choice[disabled]{opacity:.92; cursor:default}
+    .ok{border-color: rgba(34,197,94,.7)!important; background: rgba(34,197,94,.12)!important}
+    .no{border-color: rgba(239,68,68,.7)!important; background: rgba(239,68,68,.12)!important}
+    .actions{
+      display:flex; gap:10px; flex-wrap:wrap; justify-content:flex-end;
+      padding: 0 16px 16px;
+    }
+    .btn{
+      background: linear-gradient(180deg, rgba(255,255,255,.07), rgba(255,255,255,.03));
+      border: 1px solid rgba(255,255,255,.12);
+      color: var(--text);
+      padding: 10px 12px;
+      border-radius: 12px;
+      font-weight:800;
+      cursor:pointer;
+      font-size:14px;
+      display:inline-flex;gap:8px;align-items:center;
+      user-select:none;
+    }
+    .btn:active{transform: scale(.99)}
+    .btn.secondary{background: rgba(255,255,255,.04)}
+    .btn.danger{border-color: rgba(239,68,68,.45)}
+    .btn.accent{border-color: rgba(34,197,94,.55)}
+    .small{
+      font-size:12px;color:var(--muted);
+      padding: 0 16px 16px;
+      line-height:1.5;
+    }
+    .result{
+      padding: 16px;
+      display:flex;
+      flex-direction:column;
+      gap:12px;
+    }
+    .big{
+      font-size:22px;
+      font-weight:950;
+      letter-spacing:.2px;
+      line-height:1.15;
+      margin:0;
+    }
+    .scoreline{
+      display:flex; gap:10px; flex-wrap:wrap; align-items:center;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.4;
+    }
+    .scorebox{
+      display:flex;align-items:baseline;gap:10px;flex-wrap:wrap;
+      padding: 14px;
+      border-radius: 16px;
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+    }
+    .scorebox .n{
+      font-size:34px;
+      font-weight:1000;
+      color: var(--text);
+    }
+    .pass{color: var(--accent); font-weight:900}
+    .fail{color: var(--danger); font-weight:900}
+    .review{
+      padding: 0 16px 16px;
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+    }
+    .revItem{
+      background: rgba(0,0,0,.18);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 12px;
+      display:flex;
+      flex-direction:column;
+      gap:6px;
+    }
+    .revItem .k{font-weight:900;font-size:14px}
+    .revItem .m{font-weight:800;color:#d1d5db;font-size:14px}
+    .revItem .you{color:var(--muted);font-size:12px}
+    .warnBox{
+      background: rgba(245,158,11,.10);
+      border: 1px solid rgba(245,158,11,.35);
+      border-radius: 14px;
+      padding: 12px;
+      color: #fcd34d;
+      font-weight:800;
+      line-height:1.45;
+    }
+    .strongBox{
+      background: rgba(34,197,94,.10);
+      border: 1px solid rgba(34,197,94,.35);
+      border-radius: 14px;
+      padding: 12px;
+      color: #bbf7d0;
+      font-weight:900;
+      line-height:1.45;
+    }
+    .dangerBox{
+      background: rgba(239,68,68,.10);
+      border: 1px solid rgba(239,68,68,.35);
+      border-radius: 14px;
+      padding: 12px;
+      color: #fecaca;
+      font-weight:900;
+      line-height:1.45;
+    }
+    .mutebox{
+      background: rgba(255,255,255,.04);
+      border: 1px solid rgba(255,255,255,.08);
+      border-radius: 14px;
+      padding: 12px;
+      color: var(--muted);
+      line-height:1.45;
+      font-size:12px;
+    }
+    .capRow{display:flex;gap:10px;flex-wrap:wrap;justify-content:flex-end}
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;}
+    a{color:#93c5fd}
+  </style>
+</head>
+<body>
+<div class="wrap">
+  <header>
+    <div class="title">
+      <h1>SNU 1B · Lesson 12 · Word Quiz</h1>
+      <div class="sub">4지선다 · 교차형(질문 언어 ↔ 보기 언어) · 80점 합격(Тэнцлээ!) · 5회 이상 실패 시 자동 합격</div>
+    </div>
+    <div class="pillrow">
+      <div class="pill">Name: <b id="pillName">-</b></div>
+      <div class="pill">Class: <b id="pillKlass">-</b></div>
+      <div class="pill">Try: <b id="pillTry">0</b></div>
+      <div class="pill">Token: <b class="mono" id="pillToken">-</b></div>
+    </div>
+  </header>
+
+  <section class="card" id="mainCard" aria-live="polite">
+    <div class="cardHead">
+      <div class="left">
+        <div style="font-weight:900">퀴즈 진행</div>
+        <div class="badge"><span></span><span id="badgeText">준비 중…</span></div>
+      </div>
+      <div style="display:flex;gap:8px;flex-wrap:wrap">
+        <button class="btn secondary" id="btnRestart" type="button">⟲ 다시 시작</button>
+      </div>
+    </div>
+
+    <!-- QUIZ VIEW -->
+    <div class="qbox" id="quizView" style="display:none">
+      <div class="qtitle">
+        <div>
+          <div style="color:var(--muted);font-size:12px;margin-bottom:6px" id="qLabel">Q</div>
+          <div class="q" id="qText">-</div>
+        </div>
+        <div class="meta">
+          <div><b id="qIndex">1</b> / <b id="qTotal">40</b></div>
+          <div>현재 점수: <b id="liveScore">0</b></div>
+        </div>
+      </div>
+      <div class="choices" id="choices"></div>
+    </div>
+
+    <!-- RESULT VIEW -->
+    <div class="result" id="resultView" style="display:none">
+      <p class="big" id="resultTitle">결과</p>
+
+      <div class="scorebox">
+        <div class="n" id="finalScore">0</div>
+        <div style="display:flex;flex-direction:column;gap:4px">
+          <div class="scoreline">
+            <span>Name: <b id="rName">-</b></span>
+            <span>Class: <b id="rKlass">-</b></span>
+          </div>
+          <div class="scoreline">
+            <span>Try: <b id="rTry">0</b></span>
+            <span>Date: <b id="rDate">-</b></span>
+          </div>
+          <div class="scoreline">
+            <span>Token: <b class="mono" id="rToken">-</b></span>
+          </div>
+          <div class="scoreline" id="passFailLine"></div>
+        </div>
+      </div>
+
+      <div id="reviewFirst" style="display:none">
+        <div class="dangerBox">Review: буруу хариулсан асуултуудын зөв хариулт (эхлээд үүнийг харна)</div>
+      </div>
+
+      <div id="reviewList" class="review" style="display:none"></div>
+
+      <div id="teacherMsg" class="strongBox">
+        <span style="font-size:16px">⚠️ <b>Дэлгэцийн зураг авч багшдаа явуулаарай!</b></span>
+      </div>
+
+      <div class="capRow">
+        <button class="btn accent" id="btnCapture" type="button">📸 Капчер</button>
+        <button class="btn secondary" id="btnStartOver" type="button">⟲ 다시 풀기</button>
+      </div>
+
+      <div class="mutebox" id="capHelp">
+        • “Капчер” товчийг дарвал боломжтой төхөөрөмж дээр <b>share</b>-ийг эхлээд оролдоно.<br/>
+        • Хэрэв share ажиллахгүй бол дэлгэцийн зураг авах аргыг зааж өгнө.
+      </div>
+    </div>
+
+    <div class="small" id="footNote"></div>
+  </section>
+</div>
+
+<script>
+/**
+ * SNU-1B Lesson 12 (PDF 1페이지 "정답지(암기용)" 40쌍 그대로)
+ * - 언어 섞임 방지: ko, mn 각각 분리 데이터
+ * - 4지선다 항상 보장: 중복 제거 + 풀에서 추가 보충
+ * - 교차형: 질문이 한국어면 보기=몽골어 / 질문이 몽골어면 보기=한국어
+ * - 100점 만점, 80점 이상 "Тэнцлээ!"
+ * - 5회 이상 실패 시 점수 무관 합격
+ * - 캡처 버튼: Web Share API 가능하면 공유 시도, 불가하면 스크린샷 안내
+ * - 외부 통신 없음(기종 안정). 필요 시 JSONP 형태로 붙일 수 있도록 hook 제공.
+ */
+
+// === URL params from index.html/lessonHub.html ===
+function getParam(name){
+  const u = new URL(location.href);
+  return u.searchParams.get(name) || "";
+}
+const user = {
+  name: getParam("name"),
+  klass: getParam("klass"),
+  token: getParam("token")
+};
+
+// === Required: do NOT ask name again ===
+const safeName  = user.name  || "-";
+const safeKlass = user.klass || "-";
+const safeToken = user.token || "-";
+
+document.getElementById("pillName").textContent  = safeName;
+document.getElementById("pillKlass").textContent = safeKlass;
+document.getElementById("pillToken").textContent = safeToken;
+
+// === Vocabulary pairs (EXACT spellings from PDF page 1 "정답지(암기용)") ===
+const PAIRS = [
+  { ko:"여보세요", mn:"Байна уу?" },
+  { ko:"실례지만", mn:"Уучлаарай, гэхдээ" },
+  { ko:"누구세요", mn:"Хэн бэ?" },
+  { ko:"전화번호", mn:"утасны дугаар" },
+  { ko:"휴대폰", mn:"гар утас" },
+  { ko:"공(숫자 0)", mn:"тэг (0)" },
+  { ko:"사무실", mn:"оффис" },
+  { ko:"사장님", mn:"захирал" },
+  { ko:"(전화/문자를) 받다", mn:"утас/мессеж авах" },
+  { ko:"(문자를) 보내다", mn:"мессеж илгээх" },
+  { ko:"잘 지내다", mn:"сайн явах (сайн байх)" },
+  { ko:"무슨 일", mn:"юу болсон бэ" },
+  { ko:"요리하다", mn:"хоол хийх" },
+  { ko:"못", mn:"чадахгүй (못~)" },
+  { ko:"감기", mn:"ханиад" },
+  { ko:"기침", mn:"ханиалга" },
+  { ko:"열", mn:"халууралт" },
+  { ko:"콧물", mn:"нус" },
+  { ko:"아프다", mn:"өвдөх" },
+  { ko:"낫다", mn:"эдгэх" },
+  { ko:"머리", mn:"толгой" },
+  { ko:"어깨", mn:"мөр" },
+  { ko:"배", mn:"гэдэс" },
+  { ko:"무릎", mn:"өвдөг" },
+  { ko:"다리", mn:"хөл" },
+  { ko:"얼굴", mn:"нүүр" },
+  { ko:"오전", mn:"үдийн өмнө" },
+  { ko:"오후", mn:"үдийн хойно" },
+  { ko:"새벽", mn:"үүрээр" },
+  { ko:"아침", mn:"өглөө" },
+  { ko:"점심", mn:"үдийн хоол" },
+  { ko:"저녁", mn:"оройн хоол" },
+  { ko:"일어나다", mn:"сэрэх" },
+  { ko:"세수하다", mn:"нүүрээ угаах" },
+  { ko:"닦다", mn:"арчих (угаах)" },
+  { ko:"샤워하다", mn:"шүршүүрт орох" },
+  { ko:"회의하다", mn:"хурал хийх" },
+  { ko:"청소하다", mn:"цэвэрлэх" },
+  { ko:"빨래하다", mn:"хувцас угаах" },
+  { ko:"숙제하다", mn:"гэрийн даалгавар хийх" }
+];
+
+// === Language safety checks (best-effort guard) ===
+const reKorean = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
+const reCyrillic = /[\u0400-\u04FF]/;
+
+// Ensure: mn field does not contain Korean, ko field does not contain Cyrillic
+for(const p of PAIRS){
+  if(reKorean.test(p.mn)){
+    console.warn("MN contains Korean (not allowed):", p);
+  }
+  if(reCyrillic.test(p.ko)){
+    console.warn("KO contains Cyrillic (not allowed):", p);
+  }
+}
+
+// === Quiz config ===
+const TOTAL = PAIRS.length; // 40
+const PASS_SCORE = 80;
+const MAX_FAIL_AUTO_PASS = 5; // "5번 이상 실패하면 점수와 관계없이 합격"
+const POINT_PER_Q = 100 / TOTAL;
+
+let tryCount = 0;
+let currentIndex = 0;
+let score = 0;
+let questions = [];
+let wrongLog = []; // {q, correct, your, mode}
+
+// --- UI elements ---
+const badgeText = document.getElementById("badgeText");
+const quizView = document.getElementById("quizView");
+const resultView = document.getElementById("resultView");
+const qText = document.getElementById("qText");
+const qIndex = document.getElementById("qIndex");
+const qTotal = document.getElementById("qTotal");
+const liveScore = document.getElementById("liveScore");
+const choicesEl = document.getElementById("choices");
+const qLabel = document.getElementById("qLabel");
+
+const btnRestart = document.getElementById("btnRestart");
+const btnStartOver = document.getElementById("btnStartOver");
+const btnCapture = document.getElementById("btnCapture");
+
+const footNote = document.getElementById("footNote");
+
+// result fields
+const rName = document.getElementById("rName");
+const rKlass = document.getElementById("rKlass");
+const rTry = document.getElementById("rTry");
+const rDate = document.getElementById("rDate");
+const rToken = document.getElementById("rToken");
+const finalScore = document.getElementById("finalScore");
+const passFailLine = document.getElementById("passFailLine");
+
+const reviewFirst = document.getElementById("reviewFirst");
+const reviewList = document.getElementById("reviewList");
+
+qTotal.textContent = String(TOTAL);
+
+// === Utilities ===
+function shuffle(arr){
+  const a = arr.slice();
+  for(let i=a.length-1;i>0;i--){
+    const j = Math.floor(Math.random()*(i+1));
+    [a[i],a[j]]=[a[j],a[i]];
+  }
+  return a;
+}
+
+function uniq(arr){
+  const seen = new Set();
+  const out = [];
+  for(const x of arr){
+    if(!seen.has(x)){
+      seen.add(x);
+      out.push(x);
+    }
+  }
+  return out;
+}
+
+function todayStr(){
+  const d = new Date();
+  const yyyy = d.getFullYear();
+  const mm = String(d.getMonth()+1).padStart(2,"0");
+  const dd = String(d.getDate()).padStart(2,"0");
+  const hh = String(d.getHours()).padStart(2,"0");
+  const mi = String(d.getMinutes()).padStart(2,"0");
+  return `${yyyy}-${mm}-${dd} ${hh}:${mi}`;
+}
+
+// Mode: "KOQ" => question is Korean, options are Mongolian
+// Mode: "MNQ" => question is Mongolian, options are Korean
+function buildQuestions(){
+  const base = PAIRS.map((p, idx)=>({ ...p, id: idx }));
+  // 랜덤으로 KOQ/MNQ 섞기(교차형 자동)
+  return shuffle(base).map(item=>{
+    const mode = Math.random() < 0.5 ? "KOQ" : "MNQ";
+    return { ...item, mode };
+  });
+}
+
+function poolAnswers(mode){
+  // returns answer pool in the option language
+  if(mode === "KOQ") return PAIRS.map(p=>p.mn);
+  return PAIRS.map(p=>p.ko);
+}
+
+function correctAnswerFor(q){
+  return (q.mode === "KOQ") ? q.mn : q.ko;
+}
+
+function questionTextFor(q){
+  return (q.mode === "KOQ") ? q.ko : q.mn;
+}
+
+// Always guarantee 4 unique options including correct.
+// If insufficient after filtering, refill from full pool.
+function makeOptions(q){
+  const correct = correctAnswerFor(q);
+  const mode = q.mode;
+  const pool = poolAnswers(mode);
+
+  // candidates excluding the correct
+  let wrongCandidates = pool.filter(x => x !== correct);
+
+  // pick 3 wrongs
+  wrongCandidates = shuffle(wrongCandidates);
+  let picked = wrongCandidates.slice(0, 3);
+
+  // In case duplicates (shouldn't) or weird pool shortage, enforce uniqueness
+  picked = uniq(picked).filter(x => x !== correct);
+
+  // Refill if fewer than 3
+  if(picked.length < 3){
+    const refill = shuffle(wrongCandidates);
+    for(const x of refill){
+      if(picked.length >= 3) break;
+      if(x !== correct && !picked.includes(x)){
+        picked.push(x);
+      }
+    }
+  }
+
+  // Final safety: if still fewer than 3 (extremely unlikely), fallback by cycling pool
+  if(picked.length < 3){
+    for(const x of pool){
+      if(picked.length >= 3) break;
+      if(x !== correct && !picked.includes(x)){
+        picked.push(x);
+      }
+    }
+  }
+
+  const options = shuffle([correct, ...picked].slice(0,4));
+  // Ensure exactly 4 unique
+  const final = uniq(options);
+  // If uniq reduced length, pad again from pool
+  if(final.length < 4){
+    for(const x of shuffle(pool)){
+      if(final.length >= 4) break;
+      if(!final.includes(x)){
+        final.push(x);
+      }
+    }
+  }
+  return final.slice(0,4);
+}
+
+function setBadge(text, color){
+  badgeText.textContent = text;
+  const dot = badgeText.previousElementSibling;
+  if(dot){
+    dot.style.background = color || "var(--warn)";
+  }
+}
+
+// === Quiz Flow ===
+function startQuiz(){
+  tryCount += 1;
+  document.getElementById("pillTry").textContent = String(tryCount);
+
+  currentIndex = 0;
+  score = 0;
+  wrongLog = [];
+  questions = buildQuestions();
+
+  quizView.style.display = "";
+  resultView.style.display = "none";
+  setBadge("진행 중…", "var(--warn)");
+  renderQuestion();
+}
+
+function renderQuestion(){
+  const q = questions[currentIndex];
+  const qNum = currentIndex + 1;
+
+  qIndex.textContent = String(qNum);
+  liveScore.textContent = String(Math.round(score));
+
+  const modeLabel = (q.mode === "KOQ")
+    ? "질문: 한국어 / 보기: 몽골어"
+    : "질문: 몽골어 / 보기: 한국어";
+  qLabel.textContent = `Q${qNum} · ${modeLabel}`;
+
+  qText.textContent = questionTextFor(q);
+
+  // build choices
+  choicesEl.innerHTML = "";
+  const opts = makeOptions(q);
+
+  // Extra language-mix guard: filter out any option that contains forbidden script for that option language
+  // KO options must not contain Cyrillic; MN options must not contain Korean
+  const filtered = [];
+  for(const opt of opts){
+    if(q.mode === "KOQ"){
+      // options are Mongolian: must not contain Korean
+      if(reKorean.test(opt)) continue;
+    }else{
+      // options are Korean: must not contain Cyrillic
+      if(reCyrillic.test(opt)) continue;
+    }
+    filtered.push(opt);
+  }
+
+  // If filtering reduced options, refill from pool safely
+  let safeOpts = filtered;
+  if(safeOpts.length < 4){
+    const pool = poolAnswers(q.mode);
+    for(const cand of shuffle(pool)){
+      if(safeOpts.length >= 4) break;
+      if(!safeOpts.includes(cand)){
+        if(q.mode === "KOQ" && reKorean.test(cand)) continue;
+        if(q.mode === "MNQ" && reCyrillic.test(cand)) continue;
+        safeOpts.push(cand);
+      }
+    }
+  }
+  safeOpts = uniq(safeOpts).slice(0,4);
+
+  // Final fallback: if still <4, rebuild without filter (but should not happen with clean data)
+  if(safeOpts.length < 4){
+    safeOpts = makeOptions(q);
+  }
+
+  for(const opt of safeOpts){
+    const btn = document.createElement("button");
+    btn.type = "button";
+    btn.className = "choice";
+    btn.textContent = opt;
+    btn.addEventListener("click", ()=> chooseAnswer(opt, btn));
+    choicesEl.appendChild(btn);
+  }
+}
+
+function chooseAnswer(selected, btnEl){
+  // disable all
+  const buttons = Array.from(document.querySelectorAll("button.choice"));
+  buttons.forEach(b => b.disabled = true);
+
+  const q = questions[currentIndex];
+  const correct = correctAnswerFor(q);
+
+  const isCorrect = (selected === correct);
+  if(isCorrect){
+    score += POINT_PER_Q;
+    btnEl.classList.add("ok");
+  }else{
+    btnEl.classList.add("no");
+    // mark correct button
+    const correctBtn = buttons.find(b => b.textContent === correct);
+    if(correctBtn) correctBtn.classList.add("ok");
+    wrongLog.push({
+      mode: q.mode,
+      q: questionTextFor(q),
+      correct: correct,
+      your: selected
+    });
+  }
+
+  liveScore.textContent = String(Math.round(score));
+
+  setTimeout(()=>{
+    currentIndex += 1;
+    if(currentIndex >= TOTAL){
+      finishQuiz();
+    }else{
+      renderQuestion();
+    }
+  }, 520);
+}
+
+function finishQuiz(){
+  quizView.style.display = "none";
+  resultView.style.display = "";
+
+  const rawScore = Math.round(score);
+  const passByScore = rawScore >= PASS_SCORE;
+  const failedSoFar = countFailsBeforeThisTry(passByScore);
+  // After incrementing tryCount in startQuiz, tryCount is current attempt count
+  // "5번 이상 실패하면 점수와 관계없이 합격" => if (fails >= 5) force pass.
+  const forcePass = (failedSoFar >= MAX_FAIL_AUTO_PASS);
+
+  // display
+  rName.textContent = safeName;
+  rKlass.textContent = safeKlass;
+  rTry.textContent = String(tryCount);
+  rDate.textContent = todayStr();
+  rToken.textContent = safeToken;
+
+  // Determine final pass/fail
+  const finalPass = forcePass ? true : passByScore;
+  finalScore.textContent = String(rawScore);
+
+  const passFail = document.createElement("div");
+  passFail.innerHTML = "";
+  if(finalPass){
+    const msg = forcePass
+      ? `<span class="pass">Тэнцлээ!</span> <span style="color:var(--muted)">(5+ удаа унасан тул автоматаар тэнцүүлэв)</span>`
+      : `<span class="pass">Тэнцлээ!</span> <span style="color:var(--muted)">(80+)</span>`;
+    passFailLine.innerHTML = msg;
+    setBadge("완료 · 합격", "var(--accent)");
+  }else{
+    passFailLine.innerHTML = `<span class="fail">Унасан</span> <span style="color:var(--muted)">(80-аас доош)</span>`;
+    setBadge("완료 · 불합격", "var(--danger)");
+  }
+
+  // Review rule: if <80, show Review first
+  if(!finalPass){
+    reviewFirst.style.display = "";
+    renderReview();
+  }else{
+    // if passed, show review only if there were wrong answers (optional)
+    if(wrongLog.length > 0){
+      reviewFirst.style.display = "none";
+      renderReview(true);
+    }else{
+      reviewFirst.style.display = "none";
+      reviewList.style.display = "none";
+    }
+  }
+
+  // Footer
+  footNote.innerHTML = `
+    • 합격 기준: ${PASS_SCORE}점 · 실패 누적 5회 이상이면 자동 합격<br/>
+    • 이 파일은 외부 통신 없이 동작합니다. (기종 안정)<br/>
+    • 필요 시 JSONP 방식 전송 hook(미사용) 제공: <span class="mono">window.__SEND_RESULT_JSONP__</span>
+  `;
+
+  // Attempt JSONP-like send if host page provides a hook (optional).
+  // For stability, we do NOTHING unless a host defines window.__SEND_RESULT_JSONP__(payload).
+  trySendResultJSONP({
+    lesson: "SNU-1B-lesson12",
+    name: safeName,
+    klass: safeKlass,
+    token: safeToken,
+    score: rawScore,
+    tryCount: tryCount,
+    pass: finalPass,
+    date: todayStr(),
+    wrongCount: wrongLog.length
+  });
+}
+
+// Count fails before this attempt (based on localStorage)
+function countFailsBeforeThisTry(passByScore){
+  const key = storageKey();
+  const data = loadState(key);
+  // data.fails counts previous fails
+  return data.fails || 0;
+}
+
+function storageKey(){
+  // token 우선, 없으면 name+klass로
+  const t = user.token ? `t:${user.token}` : `nk:${safeName}|${safeKlass}`;
+  return `SNU1B12:${t}`;
+}
+
+function loadState(key){
+  try{
+    const raw = localStorage.getItem(key);
+    return raw ? JSON.parse(raw) : { fails:0 };
+  }catch(e){
+    return { fails:0 };
+  }
+}
+
+function saveState(key, patch){
+  const cur = loadState(key);
+  const next = { ...cur, ...patch };
+  try{
+    localStorage.setItem(key, JSON.stringify(next));
+  }catch(e){}
+}
+
+function renderReview(showEvenIfPass=false){
+  // Update fail counter if not pass by score
+  const key = storageKey();
+  const rawScore = Math.round(score);
+  const passByScore = rawScore >= PASS_SCORE;
+
+  // Only count fail when score < 80
+  if(!passByScore){
+    const st = loadState(key);
+    saveState(key, { fails: (st.fails||0) + 1 });
+  }
+
+  if(wrongLog.length === 0){
+    if(showEvenIfPass){
+      reviewList.style.display = "";
+      reviewList.innerHTML = `<div class="strongBox">Бүгд зөв! (алдаа байхгүй)</div>`;
+    }else{
+      reviewList.style.display = "none";
+      reviewList.innerHTML = "";
+    }
+    return;
+  }
+
+  reviewList.style.display = "";
+  reviewList.innerHTML = "";
+  for(const item of wrongLog){
+    const div = document.createElement("div");
+    div.className = "revItem";
+    // item.mode determines which is question language, but we show both correct pairing
+    const label = (item.mode === "KOQ")
+      ? "질문(한국어) → 정답(몽골어)"
+      : "질문(몽골어) → 정답(한국어)";
+    div.innerHTML = `
+      <div class="you">${label}</div>
+      <div class="k">${escapeHTML(item.q)}</div>
+      <div class="m">✅ ${escapeHTML(item.correct)}</div>
+      <div class="you">❌ Таны хариулт: ${escapeHTML(item.your)}</div>
+    `;
+    reviewList.appendChild(div);
+  }
+
+  // also show fails info
+  const st = loadState(key);
+  const failsNow = st.fails || 0;
+  if(failsNow >= MAX_FAIL_AUTO_PASS){
+    const box = document.createElement("div");
+    box.className = "warnBox";
+    box.innerHTML = `Анхаар: унасны тоо <b>${failsNow}</b>. Дараагийн оролдлогод онооноос үл хамааран <b>автоматаар тэнцүүлнэ</b>.`;
+    reviewList.prepend(box);
+  }
+}
+
+function escapeHTML(s){
+  return String(s)
+    .replaceAll("&","&amp;")
+    .replaceAll("<","&lt;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
+    .replaceAll("'","&#039;");
+}
+
+// Optional JSONP-like hook for maximum device stability (NO network by default).
+function trySendResultJSONP(payload){
+  if(typeof window.__SEND_RESULT_JSONP__ === "function"){
+    try{ window.__SEND_RESULT_JSONP__(payload); }catch(e){}
+  }
+}
+
+// === Capture / Share ===
+async function doCaptureShare(){
+  // We cannot guarantee full-page render-to-image without external libs.
+  // Best effort: try Web Share with a text summary, and guide screenshot if not possible.
+  const rawScore = Math.round(score);
+  const summary =
+`[SNU-1B-lesson12]
+Name: ${safeName}
+Class: ${safeKlass}
+Score: ${rawScore}
+Try: ${tryCount}
+Date: ${todayStr()}
+Token: ${safeToken}`;
+
+  // Try share (text) first (stable across devices; iOS/Android vary)
+  if(navigator.share){
+    try{
+      await navigator.share({ text: summary });
+      alert("Share амжилттай. Одоо багш руу явуулаарай!");
+      return;
+    }catch(e){
+      // fallthrough to screenshot guide
+    }
+  }
+
+  // Screenshot guide
+  const isIOS = /iPhone|iPad|iPod/i.test(navigator.userAgent);
+  const isAndroid = /Android/i.test(navigator.userAgent);
+
+  let msg = "Share ажиллахгүй байна.\n\n";
+  if(isIOS){
+    msg += "iPhone: Side товч + Volume Up товчийг зэрэг дарж дэлгэцийн зураг аваарай.\n(Дараа нь зураг/Photos-оос багшдаа явуулна.)";
+  }else if(isAndroid){
+    msg += "Android: Power товч + Volume Down товчийг зэрэг дарж дэлгэцийн зураг аваарай.\n(Дараа нь Gallery-оос багшдаа явуулна.)";
+  }else{
+    msg += "컴퓨터: 키보드의 Print Screen(PrtSc) 또는 캡처 도구를 사용하세요.";
+  }
+  alert(msg);
+}
+
+// === Button bindings ===
+btnRestart.addEventListener("click", ()=>{
+  // Reset local fail count? NO. Keep fail count as required for 5 fails rule.
+  startQuiz();
+});
+btnStartOver.addEventListener("click", ()=>{
+  startQuiz();
+});
+btnCapture.addEventListener("click", ()=>{
+  doCaptureShare();
+});
+
+// === Boot ===
+(function init(){
+  // 안내: params가 없으면(테스트용) 그래도 동작
+  setBadge("시작 준비 완료", "var(--warn)");
+  startQuiz();
+})();
+</script>
+</body>
+</html>
