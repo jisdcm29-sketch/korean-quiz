@@ -1,0 +1,673 @@
+<!DOCTYPE html>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>SNU 1B · 9-р хичээл · Үгийн тест</title>
+
+  <!-- (Сонголт) Дүнгийн дэлгэцийг товчоор зураг болгох -->
+  <script src="https://cdn.jsdelivr.net/npm/html2canvas@1.4.1/dist/html2canvas.min.js"></script>
+
+  <style>
+    :root{
+      --blue:#2f6fe4;
+      --blue2:#1e56c9;
+      --bg:#f3f6fb;
+      --card:#ffffff;
+      --text:#1f2d3d;
+      --muted:#6b7a90;
+      --bad:#e74c3c;
+      --warn:#f39c12;
+      --ok:#1f9d55;
+      --line:#e6edf7;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0; padding:20px;
+      font-family: Arial, sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      display:flex;
+      justify-content:center;
+    }
+    .wrap{ width:100%; max-width:560px; }
+    .card{
+      background:var(--card);
+      border-radius:18px;
+      box-shadow:0 10px 22px rgba(25,42,70,.10);
+      padding:22px;
+      border:1px solid var(--line);
+    }
+    .hidden{ display:none !important; }
+
+    h1,h2,h3{ margin:0 0 10px 0; }
+    h1{ font-size:22px; }
+    h2{ font-size:20px; }
+    .sub{ color:var(--muted); font-size:14px; line-height:1.4; }
+
+    .pillrow{ display:flex; gap:10px; justify-content:center; flex-wrap:wrap; margin:10px 0 0;}
+    .pill{
+      background:#eef4ff;
+      color:var(--blue2);
+      border:1px solid #d7e5ff;
+      padding:8px 10px;
+      border-radius:999px;
+      font-size:13px;
+      font-weight:700;
+    }
+
+    .topline{
+      display:flex; justify-content:space-between; align-items:center;
+      gap:10px; flex-wrap:wrap;
+      margin-top:8px;
+      color:var(--muted);
+      font-size:13px;
+    }
+
+    .qbox{
+      margin:16px 0 12px;
+      padding:14px;
+      border:1px solid var(--line);
+      border-radius:14px;
+      background:#fbfdff;
+    }
+    .qmeta{
+      color:var(--muted);
+      font-size:13px;
+      margin-bottom:8px;
+    }
+    .qtext{
+      font-size:34px;
+      font-weight:800;
+      letter-spacing:.2px;
+      margin:6px 0 0;
+      word-break:keep-all;
+    }
+    .choices{ display:grid; gap:12px; margin-top:14px; }
+    button{
+      width:100%;
+      border:0;
+      border-radius:14px;
+      padding:14px 14px;
+      font-size:18px;
+      font-weight:800;
+      cursor:pointer;
+    }
+    .btn-primary{ background:var(--blue); color:#fff; }
+    .btn-primary:hover{ background:var(--blue2); }
+    .btn-outline{
+      background:#fff;
+      color:var(--text);
+      border:2px solid var(--blue);
+    }
+    .btn-outline:hover{ background:var(--blue); color:#fff; }
+    .btn-warn{ background:var(--warn); color:#fff; }
+    .btn-warn:hover{ filter:brightness(.95); }
+    .btn-gray{
+      background:#eef2f7;
+      color:#233;
+      border:1px solid #dde6f2;
+    }
+    .btn-row{ display:flex; gap:12px; margin-top:14px; }
+    .btn-row button{ flex:1; }
+
+    .score{
+      font-size:30px;
+      font-weight:900;
+      margin:10px 0;
+      color:var(--bad);
+    }
+
+    .notice{
+      background:#fff3f3;
+      border:1px solid #ffd0d0;
+      color:#8a1f1f;
+      padding:12px;
+      border-radius:12px;
+      margin-top:12px;
+      font-size:14px;
+      line-height:1.4;
+    }
+    .good{
+      background:#effff5;
+      border:1px solid #bfe9cf;
+      color:#0d5f33;
+    }
+
+    .wronglist{
+      max-height:320px;
+      overflow:auto;
+      border:1px solid #ffd0d0;
+      background:#fff5f5;
+      border-radius:12px;
+      padding:12px;
+      margin-top:12px;
+      text-align:left;
+    }
+    .wrongitem{
+      padding:10px 0;
+      border-bottom:1px dashed #f3b3b3;
+      font-size:15px;
+      line-height:1.35;
+    }
+    .wrongitem:last-child{ border-bottom:0; }
+    .tagQ{ color:#555; font-weight:800; }
+    .tagA{ color:#0d5f33; font-weight:900; }
+
+    /* 결과 카드 캡처 영역 */
+    #captureArea{
+      border:1px solid var(--line);
+      border-radius:14px;
+      padding:14px;
+      background:#fbfdff;
+      margin-top:12px;
+    }
+    .capTitle{
+      font-weight:900;
+      color:var(--ok);
+      font-size:22px;
+      margin-bottom:6px;
+    }
+    .capBig{
+      font-size:18px;
+      line-height:1.55;
+    }
+    .capStrong{
+      margin-top:10px;
+      padding:10px;
+      border-radius:12px;
+      background:#eef4ff;
+      border:1px solid #d7e5ff;
+      font-weight:900;
+      color:#0b2f7a;
+      text-align:center;
+    }
+
+    footer{
+      margin-top:10px;
+      text-align:center;
+      color:var(--muted);
+      font-size:12px;
+    }
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+
+      <!-- 시작 -->
+      <div id="start">
+        <h1>Үгийн сангийн тест</h1>
+        <div class="sub">SNU 1B · 9-р хичээл</div>
+
+        <div class="pillrow">
+          <div class="pill" id="pillName">Нэр: -</div>
+          <div class="pill" id="pillClass">Анги: -</div>
+        </div>
+
+        <div class="notice" id="startWarn">
+          Энэ хичээл нь нэвтрэлтийн мэдээллийг index.html/lessonHub.html-ээс автоматаар авна.
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="begin()">Эхлэх</button>
+          <button class="btn-gray" onclick="goBack()">Буцах</button>
+        </div>
+      </div>
+
+      <!-- 퀴즈 -->
+      <div id="quiz" class="hidden">
+        <div class="topline">
+          <div><b id="progress">1 / 46</b></div>
+          <div>Оролдлого: <b id="attemptsView">1</b></div>
+        </div>
+
+        <div class="qbox">
+          <div class="qmeta" id="qmeta">Зөв хариуг сонгоно уу.</div>
+          <div class="qtext" id="qtext">-</div>
+        </div>
+
+        <div class="choices" id="choices"></div>
+      </div>
+
+      <!-- 오답 리뷰 -->
+      <div id="review" class="hidden">
+        <h2 style="color:var(--warn)">Алдаагаа шалгана уу</h2>
+        <div class="sub">Дахин оролдохоос өмнө зөв хариуг хараад цээжлээрэй.</div>
+        <div class="score" id="reviewScore">0</div>
+        <div class="wronglist" id="wrongList"></div>
+        <div class="btn-row">
+          <button class="btn-warn" onclick="retry()">Дахин эхлэх</button>
+          <button class="btn-gray" onclick="goBack()">Буцах</button>
+        </div>
+      </div>
+
+      <!-- 결과 -->
+      <div id="result" class="hidden">
+        <h2 id="resultTitle" style="color:var(--ok)">Тэнцлээ!</h2>
+
+        <div id="captureArea">
+          <div class="capTitle" id="capTitle">Тэнцлээ!</div>
+          <div class="capBig" id="capText"></div>
+          <div class="capStrong">
+            Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.
+          </div>
+        </div>
+
+        <div class="btn-row">
+          <button class="btn-primary" onclick="capture()">Капчер</button>
+          <button class="btn-gray" onclick="goBack()">Буцах</button>
+        </div>
+
+        <div class="sub" style="margin-top:10px">
+          Тайлбар: “Капчер” нь зураг үүсгээд <b>Share</b> (боломжтой бол) нээхийг оролдоно.
+          Хэрэв ажиллахгүй бол гар утасныхаа ердийн скриншотыг ашиглана уу.
+        </div>
+      </div>
+
+      <footer>© Korean Quiz</footer>
+    </div>
+  </div>
+
+<script>
+  /* ========= Тохиргоо ========= */
+  // ✅ таны Apps Script веб апп URL (index.html-д ашиглаж байгаа URL-тэй ижил байвал хамгийн сайн)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
+
+  // Хичээлийн мэдээлэл
+  const META = { book:"SNU", level:"1B", lesson:"09", title:"SNU 1B · 9-р хичээл" };
+
+  /* ========= Үгс (PDF-ээс шууд) ========= */
+  // Эх сурвалж: 1B 9과 단어 암기 тест - 정답지(암기용) (46개) :contentReference[oaicite:1]{index=1}
+  const rawWords = [
+    { kor:"가족", mon:"гэр бүл", pos:"n" },
+    { kor:"할머니", mon:"эмээ", pos:"n" },
+    { kor:"할아버지", mon:"өвөө", pos:"n" },
+    { kor:"누나", mon:"эгч (эрэгтэй хүнээс)", pos:"n" },
+    { kor:"형", mon:"ах (эрэгтэй хүнээс)", pos:"n" },
+    { kor:"언니", mon:"эгч (эмэгтэй хүнээс)", pos:"n" },
+    { kor:"여동생", mon:"дүү охин", pos:"n" },
+    { kor:"남동생", mon:"дүү хүү", pos:"n" },
+    { kor:"아내", mon:"эхнэр", pos:"n" },
+    { kor:"남편", mon:"нөхөр", pos:"n" },
+    { kor:"딸", mon:"охин", pos:"n" },
+    { kor:"아들", mon:"хүү", pos:"n" },
+
+    { kor:"살(나이 단위)", mon:"настай (насны нэгж)", pos:"ctr" },
+    { kor:"스물", mon:"хорин", pos:"num" },
+    { kor:"서른", mon:"гучин", pos:"num" },
+    { kor:"마흔", mon:"дөчин", pos:"num" },
+    { kor:"쉰", mon:"тавин", pos:"num" },
+    { kor:"예순", mon:"жаран", pos:"num" },
+    { kor:"일흔", mon:"далан", pos:"num" },
+    { kor:"여든", mon:"наян", pos:"num" },
+    { kor:"아흔", mon:"ерэн", pos:"num" },
+    { kor:"백", mon:"зуу", pos:"num" },
+    { kor:"나이", mon:"нас", pos:"n" },
+    { kor:"연세", mon:"нас (хүндэтгэлийн)", pos:"n" },
+
+    { kor:"드시다", mon:"идэх/уух (хүндэтгэлийн)", pos:"v" },
+    { kor:"분(사람 단위)", mon:"хүн (тоо хэмжүүр)", pos:"ctr" },
+    { kor:"성함", mon:"нэр (хүндэтгэлийн)", pos:"n" },
+    { kor:"계시다", mon:"байх (хүндэтгэлийн)", pos:"v" },
+    { kor:"주무시다", mon:"унтах (хүндэтгэлийн)", pos:"v" },
+    { kor:"댁", mon:"гэр (хүндэтгэлийн)", pos:"n" },
+
+    { kor:"쪽(방향)", mon:"тал (чиглэл)", pos:"n" },
+    { kor:"동아리", mon:"дугуйлан (клуб)", pos:"n" },
+    { kor:"같은 과", mon:"ижил анги/салбар", pos:"n" },
+    { kor:"역사", mon:"түүх", pos:"n" },
+    { kor:"수영", mon:"усанд сэлэлт", pos:"n" },
+    { kor:"회사에 다니다", mon:"компанид ажилдаа явах (ажиллах)", pos:"v" },
+    { kor:"신문사", mon:"сонины газар (хэвлэлийн газар)", pos:"n" },
+    { kor:"중학교", mon:"дунд сургууль", pos:"n" },
+    { kor:"소개하다", mon:"танилцуулах", pos:"v" },
+    { kor:"모두", mon:"бүгд", pos:"adv" },
+    { kor:"항상", mon:"үргэлж", pos:"adv" },
+    { kor:"웃으시다", mon:"инээх (хүндэтгэлийн)", pos:"v" },
+    { kor:"친절하다", mon:"найрсаг", pos:"adj" },
+    { kor:"대학생", mon:"их сургуулийн оюутан", pos:"n" },
+    { kor:"사랑하다", mon:"хайрлах", pos:"v" },
+    { kor:"주부", mon:"гэрийн эзэгтэй", pos:"n" }
+  ];
+
+  /* ========= Төлөв ========= */
+  let STATE = { name:"", klass:"", token:"", deviceId:"" };
+  let questions = [];
+  let idx = 0;
+  let score = 0;
+  let wrong = [];
+  let attempts = 0;
+
+  /* ========= Туслах ========= */
+  function qs(k){
+    const u = new URL(location.href);
+    return u.searchParams.get(k) || "";
+  }
+  function safeKey(s){ return (s||"").toString().replace(/[^a-zA-Z0-9_\-]+/g,"_"); }
+
+  function getDeviceId(){
+    const k = "kquiz_deviceId";
+    let id = localStorage.getItem(k);
+    if(!id){
+      id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+"_"+Math.random()).replace(".","");
+      localStorage.setItem(k, id);
+    }
+    return id;
+  }
+
+  // JSONP (iPhone/Android тогтвортой)
+  function jsonp(url){
+    return new Promise((resolve, reject)=>{
+      const cb = "cb_" + Date.now() + "_" + Math.floor(Math.random()*10000);
+      window[cb] = (data)=>{
+        resolve(data);
+        script.remove();
+        delete window[cb];
+      };
+      const script = document.createElement("script");
+      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + cb;
+      script.onerror = ()=>{ reject(new Error("jsonp_error")); script.remove(); delete window[cb]; };
+      document.body.appendChild(script);
+    });
+  }
+
+  function shuffle(arr){
+    const a = [...arr];
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]] = [a[j],a[i]];
+    }
+    return a;
+  }
+
+  function ensure4Unique(choices, fallbackPool, answer){
+    let uniq = [...new Set(choices)].filter(Boolean);
+    // хариуг заавал багтаана
+    if(!uniq.includes(answer)) uniq.unshift(answer);
+    // 4 хүргэж нөхнө
+    const fb = shuffle(fallbackPool.filter(x => x !== answer));
+    for(const x of fb){
+      if(uniq.length >= 4) break;
+      if(!uniq.includes(x)) uniq.push(x);
+    }
+    // хэрэв ямар нэг шалтгаанаар 4 хүрэхгүй бол (онолын хувьд бараг байхгүй)
+    while(uniq.length < 4){
+      uniq.push("—");
+    }
+    return shuffle(uniq.slice(0,4));
+  }
+
+  function buildQuestions(){
+    const base = shuffle(rawWords);
+
+    questions = base.map(w=>{
+      const isKorQ = Math.random() < 0.5; // Korean question or Mongolian question
+      return {
+        q: isKorQ ? w.kor : w.mon,
+        a: isKorQ ? w.mon : w.kor,
+        dir: isKorQ ? "K2M" : "M2K",
+        pos: w.pos
+      };
+    });
+
+    for(const q of questions){
+      // POS same pool first
+      const same = rawWords.filter(x => x.pos === q.pos);
+      const poolPrimary = q.dir === "K2M" ? same.map(x=>x.mon) : same.map(x=>x.kor);
+      const poolAll = q.dir === "K2M" ? rawWords.map(x=>x.mon) : rawWords.map(x=>x.kor);
+
+      const distract = shuffle(poolPrimary.filter(x => x !== q.a)).slice(0, 3);
+      const preliminary = [q.a, ...distract];
+      q.choices = ensure4Unique(preliminary, poolAll, q.a);
+    }
+  }
+
+  function setView(id){
+    for(const sec of ["start","quiz","review","result"]){
+      document.getElementById(sec).classList.toggle("hidden", sec !== id);
+    }
+  }
+
+  function updateStartPills(){
+    document.getElementById("pillName").textContent = "Нэр: " + (STATE.name || "-");
+    document.getElementById("pillClass").textContent = "Анги: " + (STATE.klass || "-");
+  }
+
+  function attemptsKey(){
+    return "kquiz_attempts_" + META.book + "_" + META.level + "_" + META.lesson + "_" + safeKey(STATE.klass) + "_" + safeKey(STATE.name);
+  }
+
+  function loadAttempts(){
+    const v = localStorage.getItem(attemptsKey());
+    attempts = v ? parseInt(v,10) : 0;
+    if(!Number.isFinite(attempts)) attempts = 0;
+  }
+
+  function saveAttempts(){
+    localStorage.setItem(attemptsKey(), String(attempts));
+  }
+
+  function resetForRetry(){
+    idx = 0;
+    score = 0;
+    wrong = [];
+    buildQuestions();
+  }
+
+  function showQuestion(){
+    const total = questions.length;
+    document.getElementById("progress").textContent = (idx+1) + " / " + total;
+    document.getElementById("attemptsView").textContent = String(attempts);
+
+    const q = questions[idx];
+    document.getElementById("qmeta").textContent =
+      (q.dir === "K2M")
+      ? "Асуулт: Солонгос · Сонголт: Монгол"
+      : "Асуулт: Монгол · Сонголт: Солонгос";
+
+    document.getElementById("qtext").textContent = q.q;
+
+    const box = document.getElementById("choices");
+    box.innerHTML = "";
+    q.choices.forEach(ch=>{
+      const b = document.createElement("button");
+      b.className = "btn-outline";
+      b.textContent = ch;
+      b.onclick = ()=> choose(ch);
+      box.appendChild(b);
+    });
+  }
+
+  function choose(ch){
+    const q = questions[idx];
+    if(ch === q.a){
+      score += 100 / questions.length;
+    }else{
+      wrong.push(q);
+    }
+    idx++;
+    if(idx >= questions.length) finish();
+    else showQuestion();
+  }
+
+  function finish(){
+    attempts += 1;
+    saveAttempts();
+
+    const finalScore = Math.round(score);
+    const passed = (finalScore >= 80) || (attempts >= 5);
+
+    if(passed){
+      setResult(finalScore);
+      // Амжилттай үед оролдлогын тоог цэвэрлэнэ (дахин шалгахдаа шинээр эхэлнэ)
+      localStorage.removeItem(attemptsKey());
+      // Сервер рүү илгээхийг оролдоно (алдаатай байсан ч дэлгэц харуулна)
+      sendRecord(finalScore).catch(()=>{});
+      setView("result");
+    }else{
+      showReview(finalScore);
+      setView("review");
+    }
+  }
+
+  function showReview(finalScore){
+    document.getElementById("reviewScore").textContent = "Дүн: " + finalScore + " оноо";
+    const wl = document.getElementById("wrongList");
+    wl.innerHTML = "";
+    if(wrong.length === 0){
+      wl.innerHTML = "<div class='wrongitem'>Алдаа байхгүй байна.</div>";
+      return;
+    }
+    wrong.forEach(item=>{
+      const div = document.createElement("div");
+      div.className = "wrongitem";
+      div.innerHTML = `❓ <span class="tagQ">${escapeHtml(item.q)}</span><br/>✅ <span class="tagA">${escapeHtml(item.a)}</span>`;
+      wl.appendChild(div);
+    });
+  }
+
+  function setResult(finalScore){
+    const title = (finalScore >= 80 || attempts >= 5) ? "Тэнцлээ!" : "Дууслаа!";
+    document.getElementById("resultTitle").textContent = title;
+    document.getElementById("capTitle").textContent = title;
+
+    const now = new Date();
+    const dt = now.getFullYear() + "-" + pad2(now.getMonth()+1) + "-" + pad2(now.getDate()) +
+               " " + pad2(now.getHours()) + ":" + pad2(now.getMinutes());
+
+    document.getElementById("capText").innerHTML =
+      `<b>${escapeHtml(STATE.name)}</b><br/>` +
+      `Анги: <b>${escapeHtml(STATE.klass)}</b><br/>` +
+      `Хичээл: <b>${escapeHtml(META.title)}</b><br/>` +
+      `Дүн: <b>${finalScore}</b> оноо<br/>` +
+      `Оролдлого: <b>${attempts}</b><br/>` +
+      `Огноо: <b>${dt}</b>`;
+  }
+
+  function pad2(n){ return String(n).padStart(2,"0"); }
+
+  function escapeHtml(s){
+    return (s||"").toString()
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#039;");
+  }
+
+  async function sendRecord(finalScore){
+    // index.html/lessonHub.html-ээс token авч ашиглана (байвал)
+    if(!STATE.token) return;
+
+    const now = new Date();
+    const iso = now.toISOString();
+
+    const url =
+      `${SCRIPT_URL}?action=log` +
+      `&token=${encodeURIComponent(STATE.token)}` +
+      `&name=${encodeURIComponent(STATE.name)}` +
+      `&klass=${encodeURIComponent(STATE.klass)}` +
+      `&deviceId=${encodeURIComponent(STATE.deviceId)}` +
+      `&book=${encodeURIComponent(META.book)}` +
+      `&level=${encodeURIComponent(META.level)}` +
+      `&lesson=${encodeURIComponent(META.lesson)}` +
+      `&score=${encodeURIComponent(finalScore)}` +
+      `&attempt=${encodeURIComponent(attempts)}` +
+      `&time=${encodeURIComponent(iso)}`;
+
+    await jsonp(url);
+  }
+
+  async function capture(){
+    const area = document.getElementById("captureArea");
+
+    // html2canvas байхгүй бол гарын авлага
+    if(typeof html2canvas !== "function"){
+      alert("Таны төхөөрөмж дээр капчер үүсгэх боломжгүй байна. Гар утасныхаа ердийн скриншотыг ашиглана уу.");
+      return;
+    }
+
+    const canvas = await html2canvas(area, { scale: 2, backgroundColor: "#ffffff" });
+    canvas.toBlob(async (blob)=>{
+      if(!blob){
+        alert("Капчер үүсгэж чадсангүй. Скриншот ашиглана уу.");
+        return;
+      }
+
+      const file = new File([blob], `result_${META.level}_${META.lesson}.png`, { type:"image/png" });
+
+      // Share боломжтой бол share sheet нээнэ (iOS/Android)
+      if(navigator.share && navigator.canShare && navigator.canShare({ files:[file] })){
+        try{
+          await navigator.share({ files:[file], title:"Дүн", text:"Тестийн дүн" });
+          return;
+        }catch(e){
+          // хэрэглэгч хааж болно
+        }
+      }
+
+      // Share боломжгүй бол шинэ tab дээр нээнэ (хадгалах/илгээх)
+      const url = URL.createObjectURL(blob);
+      const w = window.open(url, "_blank");
+      if(!w){
+        alert("Поп-ап хаалттай байна. Скриншот ашиглана уу.");
+      }
+      setTimeout(()=> URL.revokeObjectURL(url), 30000);
+    }, "image/png");
+  }
+
+  function begin(){
+    loadAttempts();
+    resetForRetry();
+    setView("quiz");
+    showQuestion();
+  }
+
+  function retry(){
+    resetForRetry();
+    setView("quiz");
+    showQuestion();
+  }
+
+  function goBack(){
+    // lessonHub руу буцах (байвал)
+    const hub = "lessonHub.html";
+    // token/name/class-аа хадгална
+    sessionStorage.setItem("kquiz_state", JSON.stringify(STATE));
+    location.href = hub;
+  }
+
+  /* ========= Init ========= */
+  (function init(){
+    // 1) querystring
+    const qName = qs("name");
+    const qKlass = qs("klass");
+    const qToken = qs("token");
+
+    // 2) sessionStorage fallback
+    const ss = sessionStorage.getItem("kquiz_state");
+    let sObj = {};
+    if(ss){
+      try{ sObj = JSON.parse(ss) || {}; }catch(e){}
+    }
+
+    STATE.name = qName || sObj.name || "";
+    STATE.klass = qKlass || sObj.klass || "";
+    STATE.token = qToken || sObj.token || "";
+    STATE.deviceId = getDeviceId();
+
+    updateStartPills();
+
+    // 시작 경고 문구 조정
+    const sw = document.getElementById("startWarn");
+    if(STATE.name && STATE.klass){
+      sw.classList.add("good");
+      sw.textContent = "Бэлэн. Эхлэх товчийг дарна уу.";
+    }else{
+      sw.textContent = "Нэр/анги мэдээлэл алга байна. index.html-ээр нэвтэрч орно уу.";
+    }
+  })();
+</script>
+</body>
+</html>
