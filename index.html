@@ -6,33 +6,63 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Үгийн сангийн тест · Эхлэл</title>
+  <title>Сонголт · Үг / Дүрэм</title>
 
   <style>
     :root{
       --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5; --line:#d9e4f5;
-      --text:#223047; --muted:#6a7a8e;
+      --text:#223047; --muted:#6a7a8e; --ok:#0f7a3d; --bad:#c0392b;
     }
     *{box-sizing:border-box}
     body{margin:0; padding:20px; background:var(--bg); font-family:Arial,sans-serif; text-align:center; color:var(--text);}
     .container{max-width:560px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
     h1{margin:0; font-size:22px;}
     .sub{margin:10px 0 0; color:var(--muted); font-size:14px; line-height:1.45;}
-    input, select{width:100%; padding:14px 12px; margin-top:12px; border:2px solid #d7dee7; border-radius:12px; font-size:16px; text-align:center;}
-    .btn{width:100%; padding:14px 12px; margin-top:12px; border:none; border-radius:12px; background:var(--primary); color:#fff; font-size:16px; font-weight:900; cursor:pointer;}
+
+    input, select{
+      width:100%; padding:14px 12px; margin-top:12px;
+      border:2px solid #d7dee7; border-radius:12px;
+      font-size:16px; text-align:center;
+    }
+
+    .btn{
+      width:100%; padding:14px 12px; margin-top:12px;
+      border:none; border-radius:12px;
+      background:var(--primary); color:#fff;
+      font-size:16px; font-weight:900; cursor:pointer;
+      transition:.2s;
+    }
     .btn:hover{background:var(--primary2);}
     .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
     .btnGray:hover{background:#e2e8f0;}
+
     .grid{display:grid; gap:10px; margin-top:16px;}
-    .cardBtn{padding:16px 12px; border-radius:14px; border:2px solid var(--primary); background:#fff; font-weight:900; cursor:pointer;}
+    .cardBtn{
+      padding:16px 12px; border-radius:14px;
+      border:2px solid var(--primary); background:#fff;
+      font-weight:900; cursor:pointer;
+      transition:.15s;
+    }
     .cardBtn:hover{background:var(--primary); color:#fff;}
+    .cardOk{border-color:var(--ok);}
+    .cardOk:hover{background:var(--ok); color:#fff;}
+
     .hidden{display:none;}
-    .warn{margin-top:14px; padding:12px; border-radius:12px; background:#fff5f5; border:1px solid #feb2b2; color:#7a1f1f; font-size:14px; line-height:1.45; text-align:left;}
+    .warn{
+      margin-top:14px; padding:12px; border-radius:12px;
+      background:#fff5f5; border:1px solid #feb2b2;
+      color:#7a1f1f; font-size:14px; line-height:1.45; text-align:left;
+    }
+    .okbox{
+      margin-top:14px; padding:12px; border-radius:12px;
+      background:#f0fff4; border:1px solid #b7f0c7;
+      color:#0f7a3d; font-size:14px; line-height:1.45; text-align:left;
+    }
   </style>
 </head>
 <body>
 <div class="container">
-  <h1>Үгийн сангийн тест</h1>
+  <h1>Сургалтын тест</h1>
   <p class="sub">Нууц үг, нэр, ангиа оруулаад үргэлжлүүлнэ үү.</p>
 
   <input id="pass" type="password" placeholder="Нууц үг"/>
@@ -46,42 +76,67 @@
 
   <button class="btn" onclick="login()">Үргэлжлүүлэх</button>
 
+  <!-- Step 2: Word / Grammar 선택 -->
   <div id="step2" class="hidden">
+    <p class="sub" style="margin-top:16px;">Тестийн төрлөө сонгоно уу.</p>
+    <div class="grid">
+      <div class="cardBtn" onclick="selectType('WORD')">Үг (단어)</div>
+      <div class="cardBtn cardOk" onclick="selectType('GRAMMAR')">Дүрэм (문법)</div>
+    </div>
+    <button class="btn btnGray" onclick="backToLogin()">Буцах</button>
+  </div>
+
+  <!-- Step 3: WORD -> 기존 분기 유지 (SNU/TOPIK) -->
+  <div id="stepWordMain" class="hidden">
     <p class="sub" style="margin-top:16px;">Төрөл сонгоно уу.</p>
     <div class="grid">
-      <div class="cardBtn" onclick="selectMain('SNU')">서울대 교재</div>
-      <div class="cardBtn" onclick="selectMain('TOPIK')">TOPIK</div>
+      <div class="cardBtn" onclick="selectWordMain('SNU')">서울대 교재</div>
+      <div class="cardBtn" onclick="selectWordMain('TOPIK')">TOPIK</div>
     </div>
+    <button class="btn btnGray" onclick="backToType()">Буцах</button>
   </div>
 
   <div id="stepSnu" class="hidden">
     <p class="sub" style="margin-top:16px;">교재 сонгоно уу.</p>
     <div class="grid">
-      <div class="cardBtn" onclick="goHub('SNU','1A')">1A</div>
-      <div class="cardBtn" onclick="goHub('SNU','1B')">1B</div>
-      <div class="cardBtn" onclick="goHub('SNU','2A')">2A</div>
-      <div class="cardBtn" onclick="goHub('SNU','2B')">2B</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','1A')">1A</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','1B')">1B</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','2A')">2A</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','2B')">2B</div>
     </div>
-    <button class="btn btnGray" onclick="backToMain()">Буцах</button>
+    <button class="btn btnGray" onclick="backToWordMain()">Буцах</button>
   </div>
 
   <div id="stepTopik" class="hidden">
     <p class="sub" style="margin-top:16px;">TOPIK сонгоно уу.</p>
     <div class="grid">
-      <div class="cardBtn" onclick="goHub('TOPIK','1')">TOPIK 1</div>
-      <div class="cardBtn" onclick="goHub('TOPIK','2')">TOPIK 2</div>
+      <div class="cardBtn" onclick="goWordHub('TOPIK','1')">TOPIK 1</div>
+      <div class="cardBtn" onclick="goWordHub('TOPIK','2')">TOPIK 2</div>
     </div>
-    <button class="btn btnGray" onclick="backToMain()">Буцах</button>
+    <button class="btn btnGray" onclick="backToWordMain()">Буцах</button>
+  </div>
+
+  <!-- Step 3: GRAMMAR -> grammar/lessonHub.html 로 이동 -->
+  <div id="stepGrammar" class="hidden">
+    <p class="sub" style="margin-top:16px;">Дүрмийн тест рүү орно.</p>
+    <div class="okbox">
+      ✅ Бэлэн. Доорх товчийг дарна уу.<br>
+      (name/klass/token автоматаар дамжина.)
+    </div>
+    <button class="btn" style="background:var(--ok);" onclick="goGrammarHub()">Дүрэм рүү орох</button>
+    <button class="btn btnGray" onclick="backToType()">Буцах</button>
   </div>
 
   <div id="warn" class="warn hidden"></div>
 </div>
 
 <script>
-  // ✅ 사장님이 복사한 Apps Script 웹앱 URL
+  // ✅ Apps Script 웹앱 URL (그대로 유지)
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
 
   let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"" };
+
+  function $(id){ return document.getElementById(id); }
 
   function getDeviceId(){
     const k = "kquiz_deviceId";
@@ -94,12 +149,18 @@
   }
 
   function showWarn(msg){
-    const w = document.getElementById("warn");
+    const w = $("warn");
     w.textContent = msg;
     w.classList.remove("hidden");
   }
-  function clearWarn(){
-    document.getElementById("warn").classList.add("hidden");
+  function clearWarn(){ $("warn").classList.add("hidden"); }
+
+  function hideAllSteps(){
+    $("step2").classList.add("hidden");
+    $("stepWordMain").classList.add("hidden");
+    $("stepSnu").classList.add("hidden");
+    $("stepTopik").classList.add("hidden");
+    $("stepGrammar").classList.add("hidden");
   }
 
   // JSONP helper (iPhone/Android 모두 안정적으로)
@@ -120,9 +181,10 @@
 
   async function login(){
     clearWarn();
-    const pass = document.getElementById("pass").value.trim();
-    const name = document.getElementById("name").value.trim();
-    const klass = document.getElementById("klass").value.trim();
+    const pass = $("pass").value.trim();
+    const name = $("name").value.trim();
+    const klass = $("klass").value.trim();
+
     if(!pass || !name || !klass){
       showWarn("Нууц үг, нэр, анги гурвыг бүгдийг нь оруулна уу.");
       return;
@@ -134,57 +196,114 @@
     const url = `${SCRIPT_URL}?action=issue&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}&klass=${encodeURIComponent(klass)}&deviceId=${encodeURIComponent(deviceId)}`;
     try{
       const res = await jsonp(url, "cb");
-      if(!res || !res.ok){
+      if(!res || !res.ok || !res.token){
         showWarn("Нэвтрэх боломжгүй байна. (Нууц үг буруу эсвэл сервер алдаа)");
         return;
       }
+
       STATE = { pass, name, klass, deviceId, token: res.token };
       sessionStorage.setItem("kquiz_state", JSON.stringify(STATE));
 
-      document.getElementById("step2").classList.remove("hidden");
-      showWarn("Амжилттай. Одоо төрөл сонгоно уу.");
+      hideAllSteps();
+      $("step2").classList.remove("hidden");
+      showWarn("Амжилттай. Одоо тестийн төрлөө сонгоно уу.");
     }catch(e){
       showWarn("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.");
     }
   }
 
-  function selectMain(type){
+  function loadState(){
+    const s = sessionStorage.getItem("kquiz_state");
+    if(s){
+      try{ STATE = JSON.parse(s) || STATE; }catch(e){}
+    }
+  }
+
+  // Step controls
+  function backToLogin(){
+    hideAllSteps();
     clearWarn();
-    const s = sessionStorage.getItem("kquiz_state");
-    if(s) STATE = JSON.parse(s);
+  }
 
+  function selectType(type){
+    clearWarn();
+    loadState();
     if(!STATE.token){
       showWarn("Эхлээд нэвтэрнэ үү.");
       return;
     }
 
-    if(type==="SNU"){
-      document.getElementById("stepSnu").classList.remove("hidden");
-      document.getElementById("stepTopik").classList.add("hidden");
+    hideAllSteps();
+    if(type === "WORD"){
+      $("stepWordMain").classList.remove("hidden");
     }else{
-      document.getElementById("stepTopik").classList.remove("hidden");
-      document.getElementById("stepSnu").classList.add("hidden");
+      $("stepGrammar").classList.remove("hidden");
     }
   }
 
-  function backToMain(){
-    document.getElementById("stepSnu").classList.add("hidden");
-    document.getElementById("stepTopik").classList.add("hidden");
+  function backToType(){
+    hideAllSteps();
+    $("step2").classList.remove("hidden");
+    clearWarn();
   }
 
-  // ✅ 다음 화면(과 목록 화면)으로 이동: lessonHub.html을 사용할 예정
-  function goHub(book, level){
-    const s = sessionStorage.getItem("kquiz_state");
-    if(s) STATE = JSON.parse(s);
-
+  // WORD branch
+  function selectWordMain(type){
+    clearWarn();
+    loadState();
     if(!STATE.token){
       showWarn("Эхлээд нэвтэрнэ үү.");
       return;
     }
+    if(type==="SNU"){
+      $("stepSnu").classList.remove("hidden");
+      $("stepTopik").classList.add("hidden");
+    }else{
+      $("stepTopik").classList.remove("hidden");
+      $("stepSnu").classList.add("hidden");
+    }
+  }
 
+  function backToWordMain(){
+    $("stepSnu").classList.add("hidden");
+    $("stepTopik").classList.add("hidden");
+    $("stepWordMain").classList.remove("hidden");
+    clearWarn();
+  }
+
+  // ✅ 단어: 기존 방식 유지 (lessonHub.html?book=...&level=...)
+  function goWordHub(book, level){
+    loadState();
+    if(!STATE.token){
+      showWarn("Эхлээд нэвтэрнэ үү.");
+      return;
+    }
+    // 기존 lessonHub가 이 파라미터를 받는 구조 유지
     const next = `lessonHub.html?book=${encodeURIComponent(book)}&level=${encodeURIComponent(level)}`;
     location.href = next;
   }
+
+  // ✅ 문법: grammar/lessonHub.html 로 이동 (name/klass/token 전달)
+  function goGrammarHub(){
+    loadState();
+    if(!STATE.token){
+      showWarn("Эхлээд нэвтэрнэ үү.");
+      return;
+    }
+    const qs =
+      `?name=${encodeURIComponent(STATE.name)}` +
+      `&klass=${encodeURIComponent(STATE.klass)}` +
+      `&token=${encodeURIComponent(STATE.token)}`;
+    location.href = `grammar/lessonHub.html${qs}`;
+  }
+
+  // 페이지 새로고침 시에도 로그인 상태가 있으면 step2로 바로 보여주기(선택)
+  (function boot(){
+    loadState();
+    if(STATE && STATE.token){
+      $("step2").classList.remove("hidden");
+    }
+  })();
 </script>
 </body>
 </html>
