@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
+  <meta http-equiv="Pragma" content="no-cache" />
+  <meta http-equiv="Expires" content="0" />
+  <title>GRAM · SNU · 1A · Lesson Hub</title>
+  <style>
+    body{margin:0;padding:20px;font-family:Arial,sans-serif;background:#f0f4f8;color:#223047}
+    .wrap{max-width:720px;margin:0 auto;background:#fff;border:1px solid #d9e4f5;border-radius:16px;padding:18px;box-shadow:0 10px 20px rgba(0,0,0,.08)}
+    h1{margin:0 0 12px 0;font-size:22px;text-align:center}
+    .meta{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-bottom:12px;color:#4b5b6f;font-size:14px}
+    .meta b{color:#1f2f45}
+    .btnRow{display:flex;gap:10px;flex-wrap:wrap;justify-content:center;margin-top:14px}
+    .btn{display:inline-block;padding:12px 14px;border-radius:12px;border:1px solid #d7dee7;background:#2d6cdf;color:#fff;text-decoration:none;font-weight:900}
+    .btnGray{background:#eef2f7;color:#223047}
+    .list{margin-top:14px;border-top:1px solid #e8eef8;padding-top:14px}
+    .item{padding:12px;border:1px solid #d9e4f5;border-radius:12px;margin-bottom:10px;background:#f6f9ff}
+    .itemTitle{font-weight:900;font-size:16px}
+    .note{margin-top:6px;color:#6a7a8e;font-size:13px;line-height:1.5}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <h1>문법 · SNU · 1A (레슨 선택)</h1>
+
+    <div class="meta">
+      <div>이름: <b id="studentName">—</b></div>
+      <div>반: <b id="klassName">—</b></div>
+      <div>Token: <b id="tokenView">—</b></div>
+    </div>
+
+    <div class="btnRow">
+      <a class="btn btnGray" id="backLevel" href="#">레벨로(뒤로)</a>
+      <a class="btn btnGray" id="goMain" href="#">메인으로</a>
+      <a class="btn btnGray" id="goWordHub" href="#">단어로</a>
+    </div>
+
+    <div class="list">
+      <div class="item">
+        <div class="itemTitle">GRAM-SNU-1A-lesson01 (샘플)</div>
+        <div class="note">샘플 문법 레슨입니다. 버튼이 잘 열리는지 확인하세요.</div>
+        <a class="btn" id="goL1" href="#">시작</a>
+      </div>
+    </div>
+
+    <div class="note" style="text-align:center">
+      ※ 이 페이지는 name/klass/token을 URL에서 그대로 받아서 다음 문법 퀴즈로 전달합니다.
+    </div>
+  </div>
+
+<script>
+  const p = new URLSearchParams(location.search);
+  const name = (p.get("name")||"").trim();
+  const klass = (p.get("klass")||"").trim();
+  const token = (p.get("token")||"").trim();
+
+  document.getElementById("studentName").textContent = name || "—";
+  document.getElementById("klassName").textContent = klass || "—";
+  document.getElementById("tokenView").textContent = token || "—";
+
+  const qs =
+    `?name=${encodeURIComponent(name)}` +
+    `&klass=${encodeURIComponent(klass)}` +
+    `&token=${encodeURIComponent(token)}`;
+
+  // 뒤로: SNU 레벨 선택 화면
+  document.getElementById("backLevel").href = "GRAM-SNU-hub.html" + qs;
+
+  // 루트 메인/단어
+  document.getElementById("goMain").href = "../index.html" + qs;
+  document.getElementById("goWordHub").href = "../lessonHub.html" + qs;
+
+  // 샘플 레슨 링크(다음 단계에서 만들 파일)
+  document.getElementById("goL1").href = "GRAM-SNU-1A-lesson01.html" + qs;
+</script>
+</body>
+</html>
