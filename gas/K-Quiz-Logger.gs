@@ -34,7 +34,7 @@ const TG_BASE_WAIT_MS = 1200;  // 기본 대기(ms)
  */
 const FALLBACK_MASTER_PASSWORD = "";
 const FALLBACK_TELEGRAM_TOKEN = "";
-const FALLBACK_TELEGRAM_CHAT_ID = "";
+const FALLBACK_TELEGRAM_CHAT_ID = "5418932608";
 
 // ====== 공통 유틸 ======
 function nowMs_() { return Date.now(); }
