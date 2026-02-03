@@ -52,6 +52,7 @@
       margin-top:14px; padding:12px; border-radius:12px;
       background:#fff5f5; border:1px solid #feb2b2;
       color:#7a1f1f; font-size:14px; line-height:1.45; text-align:left;
+      white-space:pre-line;
     }
     .okbox{
       margin-top:14px; padding:12px; border-radius:12px;
@@ -60,6 +61,7 @@
     }
   </style>
 </head>
+
 <body>
 <div class="container">
   <h1>Сургалтын тест</h1>
@@ -97,7 +99,7 @@
   </div>
 
   <div id="stepSnu" class="hidden">
-    <p class="sub" style="margin-top:16px;">교재 сонгоно уу.</p>
+    <p class="sub" style="margin-top:16px;">교재 сон고но уу.</p>
     <div class="grid">
       <div class="cardBtn" onclick="goWordHub('SNU','1A')">1A</div>
       <div class="cardBtn" onclick="goWordHub('SNU','1B')">1B</div>
@@ -116,7 +118,7 @@
     <button class="btn btnGray" onclick="backToWordMain()">Буцах</button>
   </div>
 
-  <!-- Step 3: GRAMMAR -> grammar/lessonHub.html 로 이동 -->
+  <!-- Step 3: GRAMMAR -> grammar/index.html 로 이동 -->
   <div id="stepGrammar" class="hidden">
     <p class="sub" style="margin-top:16px;">Дүрмийн тест рүү орно.</p>
     <div class="okbox">
@@ -131,8 +133,8 @@
 </div>
 
 <script>
-  // ✅ Apps Script 웹앱 URL (그대로 유지)
-  const SCRIPT_URL = "https://https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
+  // ✅ Apps Script 웹앱 URL (오타 수정: https://https:// ❌ -> https:// ✅)
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
 
   let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"" };
 
@@ -163,24 +165,52 @@
     $("stepGrammar").classList.add("hidden");
   }
 
-  // JSONP helper (iPhone/Android 모두 안정적으로)
-  function jsonp(url, cbName){
+  // ✅ JSONP helper (메신저/인앱브라우저 안정성 강화: timeout + cleanup)
+  function jsonpRequest(baseUrl, params, timeoutMs = 12000){
     return new Promise((resolve, reject)=>{
-      const callback = cbName + "_" + Date.now() + "_" + Math.floor(Math.random()*10000);
-      window[callback] = (data)=>{
-        resolve(data);
-        script.remove();
-        delete window[callback];
-      };
+      const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1e6);
+      const qs = new URLSearchParams({ ...params, callback: cbName }).toString();
+      const url = baseUrl + (baseUrl.includes("?") ? "&" : "?") + qs;
+
+      let done = false;
       const script = document.createElement("script");
-      script.src = url + (url.includes("?") ? "&" : "?") + "callback=" + callback;
-      script.onerror = ()=>{ reject(new Error("jsonp_error")); script.remove(); delete window[callback]; };
-      document.body.appendChild(script);
+
+      function cleanup(){
+        try { delete window[cbName]; } catch(e){ window[cbName] = undefined; }
+        if(script && script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      const timer = setTimeout(()=>{
+        if(done) return;
+        done = true;
+        cleanup();
+        reject(new Error("JSONP timeout"));
+      }, timeoutMs);
+
+      window[cbName] = (data)=>{
+        if(done) return;
+        done = true;
+        clearTimeout(timer);
+        cleanup();
+        resolve(data);
+      };
+
+      script.onerror = ()=>{
+        if(done) return;
+        done = true;
+        clearTimeout(timer);
+        cleanup();
+        reject(new Error("JSONP script load error"));
+      };
+
+      script.src = url;
+      document.head.appendChild(script);
     });
   }
 
   async function login(){
     clearWarn();
+
     const pass = $("pass").value.trim();
     const name = $("name").value.trim();
     const klass = $("klass").value.trim();
@@ -192,10 +222,16 @@
 
     const deviceId = getDeviceId();
 
-    // 1) 토큰 발급
-    const url = `${SCRIPT_URL}?action=issue&pass=${encodeURIComponent(pass)}&name=${encodeURIComponent(name)}&klass=${encodeURIComponent(klass)}&deviceId=${encodeURIComponent(deviceId)}`;
     try{
-      const res = await jsonp(url, "cb");
+      // 1) 토큰 발급 (JSONP)
+      const res = await jsonpRequest(SCRIPT_URL, {
+        action: "issue",
+        pass,
+        name,
+        klass,
+        deviceId
+      });
+
       if(!res || !res.ok || !res.token){
         showWarn("Нэвтрэх боломжгүй байна. (Нууц үг буруу эсвэл сервер алдаа)");
         return;
@@ -271,19 +307,23 @@
     clearWarn();
   }
 
-  // ✅ 단어: 기존 방식 유지 (lessonHub.html?book=...&level=...)
+  // ✅ 단어 허브 이동: book/level + (규칙) name/klass/token 항상 전달
   function goWordHub(book, level){
     loadState();
     if(!STATE.token){
       showWarn("Эхлээд нэвтэрнэ үү.");
       return;
     }
-    // 기존 lessonHub가 이 파라미터를 받는 구조 유지
-    const next = `lessonHub.html?book=${encodeURIComponent(book)}&level=${encodeURIComponent(level)}`;
+    const next =
+      `lessonHub.html?book=${encodeURIComponent(book)}` +
+      `&level=${encodeURIComponent(level)}` +
+      `&name=${encodeURIComponent(STATE.name)}` +
+      `&klass=${encodeURIComponent(STATE.klass)}` +
+      `&token=${encodeURIComponent(STATE.token)}`;
     location.href = next;
   }
 
-  // ✅ 문법: grammar/lessonHub.html 로 이동 (name/klass/token 전달)
+  // ✅ 문법 허브 이동: (규칙) name/klass/token 전달
   function goGrammarHub(){
     loadState();
     if(!STATE.token){
@@ -297,7 +337,7 @@
     location.href = "grammar/index.html" + qs;
   }
 
-  // 페이지 새로고침 시에도 로그인 상태가 있으면 step2로 바로 보여주기(선택)
+  // 새로고침 시 로그인 유지(선택)
   (function boot(){
     loadState();
     if(STATE && STATE.token){
@@ -307,4 +347,3 @@
 </script>
 </body>
 </html>
-
