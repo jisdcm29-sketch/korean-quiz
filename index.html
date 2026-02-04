@@ -30,7 +30,7 @@
     h1{margin:0; font-size:22px;}
     .sub{margin:10px 0 0; color:var(--muted); font-size:14px; line-height:1.45;}
 
-    input, select{
+    input{
       width:100%; padding:14px 12px; margin-top:12px;
       border:2px solid #d7dee7; border-radius:12px;
       font-size:16px; text-align:center;
@@ -49,14 +49,13 @@
 
     .grid{display:grid; gap:10px; margin-top:16px;}
 
-    /* ✅ 레벨 버튼(1A~4B) : 항상 2열 유지 (3번째 스샷 느낌) */
+    /* ✅ 레벨(1A~4B) : 기본 2열, 너무 좁을 때만 1열 */
     .grid2{
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
       gap:14px;
       margin-top:16px;
     }
-    /* 화면이 아주 좁을 때만 1열로 */
     @media (max-width:340px){
       .grid2{ grid-template-columns:1fr; }
     }
@@ -71,6 +70,34 @@
     .cardBtn:hover{background:var(--primary); color:#fff;}
     .cardOk{border-color:var(--ok);}
     .cardOk:hover{background:var(--ok); color:#fff;}
+
+    /* ✅ 반 선택: 버튼형 2열 */
+    .klassGrid{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:12px;
+    }
+    @media (max-width:340px){
+      .klassGrid{ grid-template-columns:1fr; }
+    }
+    .klassBtn{
+      width:100%;
+      padding:16px 12px;
+      border-radius:14px;
+      border:2px solid #d7dee7;
+      background:#fff;
+      font-weight:900;
+      cursor:pointer;
+      transition:.15s;
+      user-select:none;
+    }
+    .klassBtn:hover{ border-color: var(--primary); }
+    .klassBtn.active{
+      border-color: var(--primary);
+      background: var(--primary);
+      color:#fff;
+    }
 
     .hidden{display:none;}
 
@@ -97,16 +124,14 @@
 
   <!-- Step 1: Login -->
   <div id="step1">
-    <!-- ✅ (요청) Messenger 안내 박스 + 외부브라우저/링크복사 버튼 삭제 -->
+    <!-- ✅ (요청) 상단 Messenger 안내 박스 + 외부 브라우저/링크 복사 버튼 삭제 -->
 
     <input id="pass" type="password" placeholder="Нууц үг"/>
     <input id="name" type="text" placeholder="Таны нэр"/>
 
-    <select id="klass">
-      <option value="">Анги сонгох</option>
-      <option value="BBTA1반">BBTA1반</option>
-      <option value="EKO2반">EKO2반</option>
-    </select>
+    <!-- ✅ 반 선택: select 대신 버튼형 -->
+    <input id="klass" type="hidden" value="" />
+    <div id="klassGrid" class="klassGrid"></div>
 
     <button class="btn" onclick="login()">Үргэлжлүүлэх</button>
 
@@ -177,6 +202,13 @@
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
+
+  // ✅ 반 목록: 여기만 수정하면 버튼이 자동으로 바뀜
+  const KLASS_OPTIONS = [
+    { value:"BBTA1반", label:"BBTA1반" },
+    { value:"EKO2반", label:"EKO2반" },
+  ];
+
   let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"" };
 
   function $(id){ return document.getElementById(id); }
@@ -192,7 +224,10 @@
     w.textContent = msg;
     w.classList.remove("hidden");
   }
-  function clearWarn(){ $("warn").classList.add("hidden"); }
+  function clearWarn(){
+    const w = $("warn");
+    if(w) w.classList.add("hidden");
+  }
 
   function hideAllSteps(){
     $("step1").classList.add("hidden");
@@ -207,6 +242,10 @@
     hideAllSteps();
     const el = $(stepId);
     if(el) el.classList.remove("hidden");
+
+    // step1 표시 시 버튼 UI 재렌더(상태 꼬임 방지)
+    if(stepId === "step1") renderKlassButtons();
+
     scrollToTop();
   }
 
@@ -256,7 +295,6 @@
     const k = "kquiz_deviceId";
     let id = localStorage.getItem(k);
     if(!id){
-      // crypto.randomUUID가 없는 구형/인앱에서도 동작하도록 안전하게 생성
       const canUUID = (window.crypto && typeof window.crypto.randomUUID === "function");
       id = canUUID ? window.crypto.randomUUID() : ("d_" + Date.now() + "_" + Math.floor(Math.random()*1e9));
       localStorage.setItem(k, id);
@@ -264,12 +302,35 @@
     return id;
   }
 
+  function renderKlassButtons(){
+    const wrap = $("klassGrid");
+    const hidden = $("klass");
+    if(!wrap || !hidden) return;
+
+    const current = (hidden.value || "").trim();
+    wrap.innerHTML = "";
+
+    KLASS_OPTIONS.forEach(opt=>{
+      const b = document.createElement("button");
+      b.type = "button";
+      b.className = "klassBtn" + (opt.value === current ? " active" : "");
+      b.textContent = opt.label;
+      b.onclick = ()=>{
+        hidden.value = opt.value;
+        [...wrap.querySelectorAll(".klassBtn")].forEach(x=>x.classList.remove("active"));
+        b.classList.add("active");
+        clearWarn();
+      };
+      wrap.appendChild(b);
+    });
+  }
+
   async function login(){
     clearWarn();
 
-    const pass = $("pass").value.trim();
-    const name = $("name").value.trim();
-    const klass = $("klass").value.trim();
+    const pass = ($("pass").value || "").trim();
+    const name = ($("name").value || "").trim();
+    const klass = ($("klass").value || "").trim();
 
     if(!pass || !name || !klass){
       showWarn("Нууц үг, нэр, анги гурвыг бүгдийг нь оруулна уу.");
@@ -304,6 +365,12 @@
     if(s){
       try{ STATE = JSON.parse(s) || STATE; }catch(e){}
     }
+
+    // 저장된 klass를 hidden input에 반영 후 렌더
+    if(STATE && STATE.klass && $("klass")){
+      $("klass").value = STATE.klass;
+    }
+    renderKlassButtons();
   }
 
   function backToLogin(){
