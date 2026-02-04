@@ -13,6 +13,7 @@
       --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5; --line:#d9e4f5;
       --text:#223047; --muted:#6a7a8e;
       --warnbg:#fff5f5; --warnline:#feb2b2; --warntext:#7a1f1f;
+      --okbg:#f0fff4; --okline:#b7f0c7; --oktext:#0f7a3d;
     }
     *{box-sizing:border-box}
     body{margin:0; padding:20px; background:var(--bg); font-family:Arial,sans-serif; text-align:center; color:var(--text);}
@@ -40,21 +41,29 @@
     .cardBtn{
       padding:16px 12px; border-radius:14px; border:2px solid var(--primary);
       background:#fff; font-weight:900; cursor:pointer; font-size:16px;
+      user-select:none;
     }
     .cardBtn:hover{background:var(--primary); color:#fff;}
+
     .warn{
       margin-top:14px; padding:12px; border-radius:12px; background:var(--warnbg);
       border:1px solid var(--warnline); color:var(--warntext);
       font-size:14px; line-height:1.45; text-align:left;
+      white-space:pre-line;
+    }
+    .ok{
+      margin-top:14px; padding:12px; border-radius:12px; background:var(--okbg);
+      border:1px solid var(--okline); color:var(--oktext);
+      font-size:14px; line-height:1.45; text-align:left;
+      white-space:pre-line;
     }
     .hidden{display:none;}
     .meta{margin-top:10px; text-align:left; color:#4b5b6f; font-size:14px;}
     .meta b{color:#1f2f45;}
-    .small{font-size:12px; color:var(--muted); margin-top:8px; text-align:left;}
   </style>
 </head>
 <body>
-<div class="container">
+<div class="container" id="app">
   <h1>Хичээл сонгох</h1>
   <p class="sub">Доорх хичээлээс сонгоно уу.</p>
 
@@ -73,28 +82,34 @@
     Анги: <b id="klassName">—</b>
   </div>
 
+  <div id="ok" class="ok hidden"></div>
   <div id="warn" class="warn hidden"></div>
 
   <div id="list" class="grid"></div>
-
-  <div class="small">
-    Санамж: Хэрэв хичээлийн жагсаалт харагдахгүй бол, GitHub Pages шинэчлэл удааширсан байж болно. Түр хүлээгээд дахин оролдоно уу.
-  </div>
 </div>
 
 <script>
-  // ✅ GitHub 저장소 정보 (사장님 계정/저장소로 바꿔야 합니다)
-  // 현재는 "예시" 입니다. 아래 두 줄을 사장님 값으로만 바꾸면 됩니다.
+  // ✅ GitHub 저장소 정보
   const GITHUB_USERNAME = "jisdcm29-sketch";
   const GITHUB_REPO = "korean-quiz";
 
+  function $(id){ return document.getElementById(id); }
+
   function showWarn(msg){
-    const w = document.getElementById("warn");
+    const w = $("warn");
     w.textContent = msg;
     w.classList.remove("hidden");
+    $("ok").classList.add("hidden");
   }
-  function clearWarn(){
-    document.getElementById("warn").classList.add("hidden");
+  function showOk(msg){
+    const o = $("ok");
+    o.textContent = msg;
+    o.classList.remove("hidden");
+    $("warn").classList.add("hidden");
+  }
+  function clearMsg(){
+    $("warn").classList.add("hidden");
+    $("ok").classList.add("hidden");
   }
 
   function goHome(){
@@ -120,90 +135,116 @@
 
   function buildPrefix(book, level){
     // 파일명 규칙:
-    // 서울대: SNU-1A-lesson01.html
-    // TOPIK:  TOPIK-1-lesson01.html  (사장님이 이렇게 올릴 예정이라고 가정)
+    // SNU:   SNU-1A-lesson01.html
+    // TOPIK: TOPIK-1-lesson01.html
     if(book === "SNU") return `SNU-${level}-lesson`;
     if(book === "TOPIK") return `TOPIK-${level}-lesson`;
     return "";
   }
 
   function prettyTitle(book, level){
-    if(book === "SNU") return `서울대 · ${level}`;
+    // ✅ 언어 섞임 방지: 한국어 "서울대" 대신 SNU 사용
+    if(book === "SNU") return `SNU · ${level}`;
     if(book === "TOPIK") return `TOPIK · ${level}`;
     return "—";
   }
 
-  function escapeHtml(s){
-    return String(s)
-      .replaceAll("&","&amp;").replaceAll("<","&lt;")
-      .replaceAll(">","&gt;").replaceAll('"',"&quot;")
-      .replaceAll("'","&#39;");
+  function lessonNumFromName(filename){
+    const m = String(filename).match(/lesson(\d+)\.html$/i);
+    return m ? parseInt(m[1], 10) : null;
+  }
+
+  function naturalSortByLesson(a, b){
+    const na = lessonNumFromName(a.name);
+    const nb = lessonNumFromName(b.name);
+    if(na !== null && nb !== null) return na - nb;
+    return String(a.name).localeCompare(String(b.name));
   }
 
   async function loadLessons(){
-    clearWarn();
+    clearMsg();
 
     const st = getState();
     if(!st || !st.token || !st.name || !st.klass){
-      showWarn("Нэвтрэх мэдээлэл олдсонгүй. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+      showWarn("Нэвтрэх мэдээлэл олдсонгүй.\nЭхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
       return;
     }
 
-    document.getElementById("studentName").textContent = st.name;
-    document.getElementById("klassName").textContent = st.klass;
+    $("studentName").textContent = st.name;
+    $("klassName").textContent = st.klass;
 
     const {book, level} = getParams();
     const prefix = buildPrefix(book, level);
-    document.getElementById("badge").textContent = prettyTitle(book, level);
+    $("badge").textContent = prettyTitle(book, level);
 
     if(!prefix){
-      showWarn("Буруу хандалт байна. Эхлэл хуудас руу орж зөв сонголт хийнэ үү.");
+      showWarn("Буруу хандалт байна.\nЭхлэл хуудас руу орж зөв сонголт хийнэ үү.");
       return;
     }
 
-    const api = `https://api.github.com/repos/${encodeURIComponent(GITHUB_USERNAME)}/${encodeURIComponent(GITHUB_REPO)}/contents/`;
-    const listDiv = document.getElementById("list");
+    const listDiv = $("list");
     listDiv.innerHTML = "";
+    showOk("Ачаалж байна...");
+
+    const api = `https://api.github.com/repos/${encodeURIComponent(GITHUB_USERNAME)}/${encodeURIComponent(GITHUB_REPO)}/contents/`;
 
     try{
-      const res = await fetch(api, { cache:"no-store" });
+      const res = await fetch(api, {
+        cache:"no-store",
+        headers: { "Accept": "application/vnd.github+json" }
+      });
+
+      // 레이트 리밋/차단/권한 등의 경우
+      if(!res.ok){
+        let extra = "";
+        if(res.status === 403) extra = "\n(Сервер түр хязгаарласан байж магадгүй. Дахин оролдоно уу.)";
+        showWarn(`GitHub-аас файлын жагсаалт авч чадсангүй. [${res.status}]${extra}`);
+        return;
+      }
+
       const files = await res.json();
 
       if(!Array.isArray(files)){
-        showWarn("GitHub-аас файлын жагсаалт авч чадсангүй.");
+        showWarn("GitHub-аас буруу хариу ирлээ.\n(Файлын жагсаалт биш байна.)");
         return;
       }
 
-      // 해당 prefix로 시작하는 html 파일만 찾기
       const lessonFiles = files
         .filter(f => f && f.name && f.name.endsWith(".html") && f.name.startsWith(prefix))
-        .sort((a,b) => a.name.localeCompare(b.name));
+        .sort(naturalSortByLesson);
 
       if(lessonFiles.length === 0){
-        showWarn("Энэ түвшний хичээлийн файл олдсонгүй. Файлын нэрийг шалгана уу.");
+        showWarn("Энэ түвшний хичээлийн файл олдсонгүй.\nФайлын нэрийг шалгана уу.");
         return;
       }
+
+      clearMsg();
 
       lessonFiles.forEach(f => {
         const btn = document.createElement("button");
         btn.className = "cardBtn";
 
-        // 표시: lesson01 -> 1-р хичээл
-        const m = f.name.match(/lesson(\d+)\.html$/);
-        const num = m ? parseInt(m[1],10) : null;
+        const num = lessonNumFromName(f.name);
         btn.textContent = num ? `${num}-р хичээл` : f.name.replace(".html","");
 
         btn.onclick = () => {
-          // ✅ 과 파일로 name/klass/token 전달
+          // ✅ 레슨 파일로 name/klass/token 전달
           const url =
-            `${f.name}?name=${encodeURIComponent(st.name)}&klass=${encodeURIComponent(st.klass)}&token=${encodeURIComponent(st.token)}`;
+            `${f.name}?name=${encodeURIComponent(st.name)}` +
+            `&klass=${encodeURIComponent(st.klass)}` +
+            `&token=${encodeURIComponent(st.token)}`;
           location.href = url;
         };
+
         listDiv.appendChild(btn);
       });
 
+      // 모바일에서 목록이 바로 보이게 살짝 스크롤
+      const app = $("app");
+      if(app) app.scrollIntoView({ behavior:"smooth", block:"start" });
+
     }catch(e){
-      showWarn("Алдаа гарлаа. Дахин оролдоно уу.");
+      showWarn("Алдаа гарлаа.\nДахин оролдоно уу.");
     }
   }
 
