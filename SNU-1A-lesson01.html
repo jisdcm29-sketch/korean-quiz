@@ -29,11 +29,10 @@
       -webkit-text-size-adjust:100%;
     }
 
-    /* 전체 컨테이너를 화면 높이에 맞춰 flex 레이아웃 */
     .container{
       max-width:560px;
       margin:0 auto;
-      height:calc(100vh - 24px); /* body padding(12*2) 제외 */
+      height:calc(100vh - 24px);
       background:var(--card);
       padding:14px;
       border-radius:20px;
@@ -44,7 +43,6 @@
       gap:10px;
     }
 
-    /* ✅ 얇은 고정 헤더 */
     .headerBar{
       position:sticky;
       top:0;
@@ -76,6 +74,7 @@
       line-height:1.25;
     }
     .nameBox b{color:#1f2f45;}
+
     .btn{
       background:var(--primary);
       color:#fff;
@@ -105,16 +104,23 @@
       white-space:pre-line;
     }
 
-    /* ✅ 본문 영역: 남은 공간 사용 */
     .main{
       flex:1;
-      min-height:0; /* ✅ 내부 스크롤 가능하게 */
+      min-height:0;
       display:flex;
       flex-direction:column;
       gap:10px;
     }
 
-    /* 퀴즈 섹션 */
+    /* ✅ 섹션 공통 레이아웃 (인라인 style 금지!) */
+    .sectionFlex{
+      display:flex;
+      flex-direction:column;
+      gap:10px;
+      flex:1;
+      min-height:0;
+    }
+
     .qno{
       margin-top:2px;
       color:var(--primary);
@@ -133,14 +139,13 @@
     }
     .question{
       margin:2px 0 0;
-      font-size:clamp(28px, 8vw, 52px); /* ✅ 화면에 맞게 자동 조절 */
+      font-size:clamp(28px, 8vw, 52px);
       font-weight:900;
       color:#1f2f45;
       line-height:1.08;
       word-break:keep-all;
     }
 
-    /* ✅ 보기 영역만 내부 스크롤 (페이지 스크롤 X) */
     .choicesWrap{
       flex:1;
       min-height:0;
@@ -171,7 +176,6 @@
       text-align:left;
     }
 
-    /* 리뷰/결과는 내부 스크롤 허용 */
     .panelScroll{
       flex:1;
       min-height:0;
@@ -179,7 +183,6 @@
       -webkit-overflow-scrolling:touch;
       text-align:left;
     }
-
     .panel{
       margin-top:10px;
       padding:14px;
@@ -229,7 +232,7 @@
     }
     .btnRow .btn{flex:1; padding:12px 12px;}
 
-    .hidden{display:none;}
+    .hidden{display:none !important;} /* ✅ 인라인보다 강하게 */
 
     .overlay{
       position:fixed;
@@ -258,7 +261,6 @@
 
 <body>
 <div class="container">
-  <!-- ✅ HEADER -->
   <div class="headerBar">
     <div class="topline">
       <div class="nameBox">
@@ -272,23 +274,20 @@
     <div id="errorSection" class="warn hidden"></div>
   </div>
 
-  <!-- ✅ MAIN -->
   <div class="main">
-    <!-- QUIZ -->
-    <div id="quizSection" class="hidden" style="display:flex; flex-direction:column; gap:10px; flex:1; min-height:0;">
+    <div id="quizSection" class="sectionFlex hidden">
       <div class="qno" id="qno"></div>
       <div class="inst" id="inst"></div>
       <div class="question" id="qtext"></div>
 
-      <div class="choicesWrap" id="choicesWrap">
+      <div class="choicesWrap">
         <div id="choices"></div>
       </div>
 
       <p class="note">Санамж: Алдаа гаргасан үгсийг төгсгөлд нь дахин харуулна.</p>
     </div>
 
-    <!-- REVIEW -->
-    <div id="reviewSection" class="hidden" style="display:flex; flex-direction:column; gap:10px; flex:1; min-height:0;">
+    <div id="reviewSection" class="sectionFlex hidden">
       <div class="panelScroll">
         <h1 style="margin:0; font-size:20px; color:var(--orange); text-align:center;">Алдаагаа шалгана уу</h1>
         <p class="note">Эдгээр үгсийг дахин хараад, дараа нь дахин оролдоно уу.</p>
@@ -306,8 +305,7 @@
       </div>
     </div>
 
-    <!-- RESULT -->
-    <div id="resultSection" class="hidden" style="display:flex; flex-direction:column; gap:10px; flex:1; min-height:0;">
+    <div id="resultSection" class="sectionFlex hidden">
       <div class="panelScroll">
         <h1 style="margin:0; font-size:20px; color:var(--ok); text-align:center;">Тэнцлээ!</h1>
 
@@ -331,7 +329,6 @@
   </div>
 </div>
 
-<!-- Screenshot Help -->
 <div class="overlay" id="overlay" onclick="closeModal(event)">
   <div class="modal">
     <h2>Скриншот хийх арга</h2>
@@ -345,18 +342,11 @@
 </div>
 
 <script>
-/* =========================
-   서버(구글 Apps Script) URL
-   ========================= */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
 
-/* =========================
-   1A · 1-р хичээл: үгс (40)
-   ========================= */
 const rawWords = [
   { kor:"공항", mon:"нисэх онгоцны буудал", pos:"n" },
   { kor:"시장", mon:"зах", pos:"n" },
-
   { kor:"가다", mon:"явах", pos:"v" },
   { kor:"오다", mon:"ирэх", pos:"v" },
   { kor:"마시다", mon:"уух", pos:"v" },
@@ -366,7 +356,6 @@ const rawWords = [
   { kor:"요리하다", mon:"хоол хийх", pos:"v" },
   { kor:"주다", mon:"өгөх", pos:"v" },
   { kor:"운동하다", mon:"дасгал хийх", pos:"v" },
-
   { kor:"영국", mon:"Их Британи", pos:"n" },
   { kor:"호주", mon:"Австрали", pos:"n" },
   { kor:"미국", mon:"Америк", pos:"n" },
@@ -376,7 +365,6 @@ const rawWords = [
   { kor:"일본", mon:"Япон", pos:"n" },
   { kor:"몽골", mon:"Монгол", pos:"n" },
   { kor:"한국", mon:"Солонгос", pos:"n" },
-
   { kor:"책상", mon:"ширээ", pos:"n" },
   { kor:"의자", mon:"сандал", pos:"n" },
   { kor:"학교", mon:"сургууль", pos:"n" },
@@ -385,27 +373,20 @@ const rawWords = [
   { kor:"식당", mon:"хоолны газар", pos:"n" },
   { kor:"백화점", mon:"их дэлгүүр", pos:"n" },
   { kor:"마트", mon:"дэлгүүр", pos:"n" },
-
   { kor:"주스", mon:"жүүс", pos:"n" },
   { kor:"피자", mon:"пицца", pos:"n" },
-
   { kor:"선생님", mon:"багш", pos:"n" },
   { kor:"학생", mon:"оюутан", pos:"n" },
   { kor:"사람", mon:"хүн", pos:"n" },
-
   { kor:"의사", mon:"эмч", pos:"n" },
   { kor:"기자", mon:"сэтгүүлч", pos:"n" },
   { kor:"요리사", mon:"тогооч", pos:"n" },
   { kor:"가수", mon:"дуучин", pos:"n" },
   { kor:"군인", mon:"цэрэг", pos:"n" },
   { kor:"회사원", mon:"компанийн ажилтан", pos:"n" },
-
   { kor:"어느", mon:"аль", pos:"o" }
 ];
 
-/* =========================
-   유틸
-   ========================= */
 function shuffle(arr){
   const a=[...arr];
   for(let i=a.length-1;i>0;i--){
@@ -444,36 +425,23 @@ function escapeHtml(s){
     .replaceAll("'","&#39;");
 }
 
-/* ✅ 항상 4개 보기 생성 */
 function buildChoices({answer, type, pos}){
   const pick = (w) => (type==="kor" ? w.mon : w.kor);
-
   const samePos = (pos==="o") ? rawWords : rawWords.filter(w => w.pos === pos);
-  const allPool = rawWords;
-
   const candSame = samePos.map(pick).filter(x => x && x !== answer);
-  const candAll  = allPool.map(pick).filter(x => x && x !== answer);
+  const candAll  = rawWords.map(pick).filter(x => x && x !== answer);
 
   const set = new Set([answer]);
-
-  for(const c of shuffle(candSame)){
-    set.add(c);
-    if(set.size>=4) break;
-  }
+  for(const c of shuffle(candSame)){ set.add(c); if(set.size>=4) break; }
   if(set.size<4){
-    for(const c of shuffle(candAll)){
-      set.add(c);
-      if(set.size>=4) break;
-    }
+    for(const c of shuffle(candAll)){ set.add(c); if(set.size>=4) break; }
   }
   let list=Array.from(set);
   while(list.length<4) list.push(answer);
   return shuffle(list.slice(0,4));
 }
 
-/* =========================
-   상태
-   ========================= */
+/* 상태 */
 const lessonId = "SNU-1A-lesson01";
 let name="", klass="", token="", deviceId="";
 let attempts=0;
@@ -505,15 +473,18 @@ const logStatusEl = document.getElementById("logStatus");
 
 const overlay = document.getElementById("overlay");
 
-/* =========================
-   파라미터 & 서버 검증
-   ========================= */
-function showError(msg){
-  errorSection.textContent = msg;
-  errorSection.classList.remove("hidden");
+function hideAll(){
   quizSection.classList.add("hidden");
   reviewSection.classList.add("hidden");
   resultSection.classList.add("hidden");
+}
+function showError(msg){
+  errorSection.textContent = msg;
+  errorSection.classList.remove("hidden");
+  hideAll();
+}
+function clearError(){
+  errorSection.classList.add("hidden");
 }
 
 function getParams(){
@@ -527,32 +498,18 @@ function getParams(){
 
 async function validateToken(){
   const cacheKey = "result_"+token;
-  const cached = sessionStorage.getItem(cacheKey);
-  if(cached) return true;
+  if(sessionStorage.getItem(cacheKey)) return true;
 
   const url = `${SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}&deviceId=${encodeURIComponent(deviceId)}&klass=${encodeURIComponent(klass)}&name=${encodeURIComponent(name)}`;
   const res = await jsonp(url);
   return !!(res && res.ok);
 }
 
-/* =========================
-   시도 횟수(이름별)
-   ========================= */
 function attemptsKey(){ return `attempts_${lessonId}_${name}`; }
+function loadAttempts(){ attempts = parseInt(localStorage.getItem(attemptsKey())||"0",10) || 0; }
+function saveAttempts(){ localStorage.setItem(attemptsKey(), String(attempts)); }
+function clearAttempts(){ localStorage.removeItem(attemptsKey()); }
 
-function loadAttempts(){
-  attempts = parseInt(localStorage.getItem(attemptsKey())||"0",10) || 0;
-}
-function saveAttempts(){
-  localStorage.setItem(attemptsKey(), String(attempts));
-}
-function clearAttempts(){
-  localStorage.removeItem(attemptsKey());
-}
-
-/* =========================
-   문제 생성/진행
-   ========================= */
 function prepareQuestions(){
   const shuffled = shuffle(rawWords);
   questions = shuffled.map(w=>{
@@ -562,15 +519,12 @@ function prepareQuestions(){
     const type = isKorQuestion ? "kor" : "mon";
     return { q,a,type,pos:w.pos, choices: buildChoices({answer:a, type, pos:w.pos}) };
   });
-  idx=0;
-  correct=0;
-  wrong=[];
+  idx=0; correct=0; wrong=[];
 }
 
 function showQuiz(){
-  errorSection.classList.add("hidden");
-  reviewSection.classList.add("hidden");
-  resultSection.classList.add("hidden");
+  clearError();
+  hideAll();
   quizSection.classList.remove("hidden");
   showQuestion();
 }
@@ -578,7 +532,6 @@ function showQuiz(){
 function showQuestion(){
   if(idx>=questions.length){ finish(); return; }
   const item = questions[idx];
-
   qnoEl.textContent = `${idx+1} / ${questions.length}`;
   instEl.textContent = (item.type==="kor") ? "Зөв монгол утгыг сонгоно уу." : "Зөв солонгос үгийг сонгоно уу.";
   qtextEl.textContent = item.q;
@@ -595,35 +548,26 @@ function showQuestion(){
 
 function answer(choice){
   const item=questions[idx];
-  if(choice===item.a){
-    correct++;
-  }else{
-    wrong.push(item);
-  }
+  if(choice===item.a) correct++;
+  else wrong.push(item);
   idx++;
   showQuestion();
 }
 
 function calcScore(){
-  if(!questions.length) return 0;
-  return Math.round((correct / questions.length) * 100);
+  return questions.length ? Math.round((correct / questions.length) * 100) : 0;
 }
 
 function finish(){
   attempts++;
   saveAttempts();
-
   const finalScore = calcScore();
-  if(finalScore>=80 || attempts>=5){
-    showResult(finalScore, { fromCache:false });
-  }else{
-    showReview(finalScore);
-  }
+  if(finalScore>=80 || attempts>=5) showResult(finalScore, {fromCache:false});
+  else showReview(finalScore);
 }
 
 function showReview(finalScore){
-  quizSection.classList.add("hidden");
-  resultSection.classList.add("hidden");
+  hideAll();
   reviewSection.classList.remove("hidden");
 
   reviewScoreEl.innerHTML = `Таны дүн: <b style="color:var(--bad);">${finalScore} оноо</b>`;
@@ -643,28 +587,20 @@ async function sendLog(finalScore){
     const ua = navigator.userAgent || "";
     const url = `${SCRIPT_URL}?action=log&token=${encodeURIComponent(token)}&deviceId=${encodeURIComponent(deviceId)}&book=${encodeURIComponent("SNU")}&lesson=${encodeURIComponent("1A-lesson01")}&score=${encodeURIComponent(String(finalScore))}&attempts=${encodeURIComponent(String(attempts))}&ua=${encodeURIComponent(ua)}`;
     const res = await jsonp(url);
-
     if(res && res.ok){
       logStatusEl.textContent = "Бүртгэл амжилттай илгээгдлээ.";
-      sessionStorage.setItem("result_"+token, JSON.stringify({
-        name, klass, finalScore, attempts, t: Date.now(), logged:true
-      }));
+      sessionStorage.setItem("result_"+token, JSON.stringify({ name, klass, finalScore, attempts, t: Date.now(), logged:true }));
       return true;
-    }else{
-      logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
-      return false;
     }
-  }catch(e){
-    logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
-    return false;
-  }
+  }catch(e){}
+  logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. Дахин оролдоно уу.";
+  return false;
 }
 
 async function showResult(finalScore, opts){
   const fromCache = !!(opts && opts.fromCache);
 
-  quizSection.classList.add("hidden");
-  reviewSection.classList.add("hidden");
+  hideAll();
   resultSection.classList.remove("hidden");
 
   resultLine1El.textContent = `${name}, баяр хүргэе!`;
@@ -675,12 +611,8 @@ async function showResult(finalScore, opts){
   const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
   resultDateEl.textContent = `Огноо: ${fmt.format(now)}`;
 
-  // 합격이면 시도횟수 초기화(단, 캐시로 결과만 보여주는 경우엔 건드리지 않음)
-  if(!fromCache){
-    clearAttempts();
-  }
+  if(!fromCache) clearAttempts();
 
-  // 캐시로 들어온 경우(이미 로그 완료)면 재전송 X
   if(fromCache){
     logStatusEl.textContent = "Бүртгэл илгээгдсэн байна.";
     return;
@@ -690,43 +622,27 @@ async function showResult(finalScore, opts){
   await sendLog(finalScore);
 }
 
-/* 버튼 */
-function retry(){
-  prepareQuestions();
-  showQuiz();
-}
-function goHome(){
-  // 로그인 유지하려면 index.html로만 이동하면 됨(저장소에 남아있음)
-  location.href = "index.html";
-}
+function retry(){ prepareQuestions(); showQuiz(); }
+function goHome(){ location.href = "index.html"; }
 
-/* 캡처(가능하면 share) */
 async function captureShare(){
   const text =
-    `Нэр: ${name}\n` +
-    `Анги: ${klass}\n` +
-    `Хичээл: 1A-lesson01\n` +
-    `Дүн: ${finalScoreEl.textContent}\n`;
-
+    `Нэр: ${name}\nАнги: ${klass}\nХичээл: 1A-lesson01\n${finalScoreEl.textContent}\n`;
   try{
     if(navigator.share){
-      await navigator.share({ title: "Korean Quiz Result", text });
+      await navigator.share({ title:"Korean Quiz Result", text });
       return;
     }
   }catch(e){}
   openScreenshotHelp();
 }
 
-/* 스크린샷 안내 */
 function openScreenshotHelp(){ overlay.style.display="flex"; }
 function closeModal(e){
   if(e && e.target && e.target !== overlay) return;
   overlay.style.display="none";
 }
 
-/* =========================
-   시작
-   ========================= */
 (async function init(){
   const p=getParams();
   name=p.name; klass=p.klass; token=p.token;
@@ -740,14 +656,13 @@ function closeModal(e){
     return;
   }
 
-  // 결과 캐시가 있으면(이미 기록 전송까지 끝난 상태) 결과만 표시
+  // 캐시 결과가 있으면 결과만
   const cached = sessionStorage.getItem("result_"+token);
   if(cached){
     try{
       const obj = JSON.parse(cached);
       attempts = obj.attempts || 0;
-      const finalScore = obj.finalScore || 0;
-      await showResult(finalScore, { fromCache:true });
+      await showResult(obj.finalScore || 0, {fromCache:true});
       return;
     }catch(e){}
   }
