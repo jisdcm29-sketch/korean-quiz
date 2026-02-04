@@ -9,18 +9,18 @@
 
   <title>Сургалтын тест · Korean Quiz</title>
 
-  <!-- ✅ OG (공유 미리보기 개선) -->
+  <!-- ✅ OG (공유 미리보기) -->
   <meta property="og:type" content="website">
   <meta property="og:title" content="Сургалтын тест · Korean Quiz">
   <meta property="og:description" content="Нууц үг, нэр, ангиа оруулаад тестээ эхлүүлнэ үү.">
   <meta property="og:url" content="https://jisdcm29-sketch.github.io/korean-quiz/">
-  <!-- og:image가 있으면 더 좋습니다. 없으면 이 줄은 삭제해도 됩니다. -->
-  <!-- <meta property="og:image" content="https://jisdcm29-sketch.github.io/korean-quiz/og.png"> -->
+  <meta property="og:image" content="https://jisdcm29-sketch.github.io/korean-quiz/og.png">
+  <meta name="twitter:card" content="summary_large_image">
 
   <style>
     :root{
       --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5; --line:#d9e4f5;
-      --text:#223047; --muted:#6a7a8e; --ok:#0f7a3d; --bad:#c0392b;
+      --text:#223047; --muted:#6a7a8e; --ok:#0f7a3d;
       --warnbg:#fff5f5; --warnline:#feb2b2; --warntext:#7a1f1f;
       --okbg:#f0fff4; --okline:#b7f0c7; --oktext:#0f7a3d;
     }
@@ -51,6 +51,11 @@
     @media (max-width:460px){ .btnRow{grid-template-columns:1fr;} }
 
     .grid{display:grid; gap:10px; margin-top:16px;}
+
+    /* ✅ 레벨 버튼(1A~4B) 2열로 보기 좋게 */
+    .grid2{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:16px;}
+    @media (max-width:560px){ .grid2{grid-template-columns:1fr;} }
+
     .cardBtn{
       padding:16px 12px; border-radius:14px;
       border:2px solid var(--primary); background:#fff;
@@ -94,12 +99,11 @@
   <!-- Step 1: Login -->
   <div id="step1">
 
-    <!-- ✅ Messenger 안내 + 외부 브라우저 유도 -->
     <div class="hint">
       ℹ️ Messenger/Facebook дотор нээвэл “гадаад линк” гэсэн анхааруулга гарч болно.
       Энэ нь хэвийн.\n
-      ➜ “Линк рүү шилжих” (эсвэл “링크로 이동”) товчийг дарна уу.\n
-      Хэрэв удаан байвал доорх “Гадна браузер” / “Линк хуулах”-ыг ашиглана уу.
+      ➜ “Линк рүү шилжих” товчийг дарна уу.\n
+      Хэрэв удаан байвал доорх товчнуудыг ашиглана уу.
     </div>
 
     <div class="btnRow">
@@ -119,11 +123,11 @@
     <button class="btn" onclick="login()">Үргэлжлүүлэх</button>
 
     <div class="tiny">
-      Зөвлөгөө: Safari/Chrome дээр нээвэл илүү тогтвортой ажиллана.
+      Safari/Chrome дээр нээвэл илүү тогтвортой ажиллана.
     </div>
   </div>
 
-  <!-- Step 2: Word / Grammar 선택 -->
+  <!-- Step 2: Word / Grammar -->
   <div id="step2" class="hidden">
     <p class="sub" style="margin-top:16px;">Тестийн төрлөө сонгоно уу.</p>
     <div class="grid">
@@ -133,7 +137,7 @@
     <button class="btn btnGray" onclick="backToLogin()">Буцах</button>
   </div>
 
-  <!-- Step 3: WORD -> 기존 분기 유지 (SNU/TOPIK) -->
+  <!-- Step 3: WORD main -->
   <div id="stepWordMain" class="hidden">
     <p class="sub" style="margin-top:16px;">Төрөл сонгоно уу.</p>
     <div class="grid">
@@ -143,19 +147,25 @@
     <button class="btn btnGray" onclick="backToType()">Буцах</button>
   </div>
 
+  <!-- ✅ Step: SNU level (1A~4B) -->
   <div id="stepSnu" class="hidden">
-    <p class="sub" style="margin-top:16px;">Сурах бичгээ сонгоно уу.</p>
-    <div class="grid">
+    <p class="sub" style="margin-top:16px;">Түвшнээ сонгоно уу.</p>
+    <div class="grid2">
       <div class="cardBtn" onclick="goWordHub('SNU','1A')">1A</div>
       <div class="cardBtn" onclick="goWordHub('SNU','1B')">1B</div>
       <div class="cardBtn" onclick="goWordHub('SNU','2A')">2A</div>
       <div class="cardBtn" onclick="goWordHub('SNU','2B')">2B</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','3A')">3A</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','3B')">3B</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','4A')">4A</div>
+      <div class="cardBtn" onclick="goWordHub('SNU','4B')">4B</div>
     </div>
     <button class="btn btnGray" onclick="backToWordMain()">Буцах</button>
   </div>
 
+  <!-- Step: TOPIK -->
   <div id="stepTopik" class="hidden">
-    <p class="sub" style="margin-top:16px;">TOPIK сонгоно уу.</p>
+    <p class="sub" style="margin-top:16px;">TOPIK түвшин сонгоно уу.</p>
     <div class="grid">
       <div class="cardBtn" onclick="goWordHub('TOPIK','1')">TOPIK 1</div>
       <div class="cardBtn" onclick="goWordHub('TOPIK','2')">TOPIK 2</div>
@@ -163,12 +173,12 @@
     <button class="btn btnGray" onclick="backToWordMain()">Буцах</button>
   </div>
 
-  <!-- Step 3: GRAMMAR -> grammar/index.html 로 이동 -->
+  <!-- Step: GRAMMAR -->
   <div id="stepGrammar" class="hidden">
     <p class="sub" style="margin-top:16px;">Дүрмийн тест рүү орно.</p>
     <div class="okbox">
-      ✅ Бэлэн. Доорх товчийг дарна уу.<br>
-      (name/klass/token автоматаар дамжина.)
+      ✅ Бэлэн. Доорх товчийг дарна уу.\n
+      Нэр/анги/token автоматаар дамжина.
     </div>
     <button class="btn" style="background:var(--ok);" onclick="goGrammarHub()">Дүрэм рүү орох</button>
     <button class="btn btnGray" onclick="backToType()">Буцах</button>
@@ -179,7 +189,6 @@
 
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
-
   let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"" };
 
   function $(id){ return document.getElementById(id); }
@@ -190,22 +199,13 @@
     else window.scrollTo({ top:0, behavior:"smooth" });
   }
 
-  // ✅ 외부 브라우저 유도 (완전 강제는 불가, 시도 + 안내)
   function openExternal(){
     const url = location.href;
-
-    // 1) 공유 시도(가능한 브라우저에서 UX 좋음)
     if(navigator.share){
       navigator.share({ title: document.title, url }).catch(()=>{});
     }
-
-    // 2) 새 창 시도 (일부 인앱에서 외부로 넘기는 트리거가 됨)
-    try{
-      window.open(url, "_blank");
-    }catch(e){}
-
-    // 3) 안내 메시지
-    showWarn("Хэрэв анхааруулга гарвал “Линк рүү шилжих” товчийг дарна уу.\n(эсвэл Safari/Chrome дээр нээнэ үү.)");
+    try{ window.open(url, "_blank"); }catch(e){}
+    showWarn("Хэрэв анхааруулга гарвал “Линк рүү шилжих” товчийг дарна уу.\nSafari/Chrome дээр нээвэл илүү тогтвортой.");
   }
 
   async function copyLink(){
@@ -213,11 +213,10 @@
     try{
       if(navigator.clipboard && navigator.clipboard.writeText){
         await navigator.clipboard.writeText(url);
-        showWarn("✅ Линк хуулагдлаа. Safari/Chrome дээр наагаад нээнэ үү.");
+        showWarn("✅ Линк хуулагдлаа.\nSafari/Chrome дээр наагаад нээнэ үү.");
         return;
       }
     }catch(e){}
-    // fallback
     showWarn("Линк хуулах боломжгүй байна.\nДоорх хаягийг удаан дарж хуулна уу:\n" + url);
   }
 
@@ -254,7 +253,6 @@
     scrollToTop();
   }
 
-  // ✅ JSONP helper
   function jsonpRequest(baseUrl, params, timeoutMs = 12000){
     return new Promise((resolve, reject)=>{
       const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1e6);
@@ -314,14 +312,11 @@
     try{
       const res = await jsonpRequest(SCRIPT_URL, {
         action: "issue",
-        pass,
-        name,
-        klass,
-        deviceId
+        pass, name, klass, deviceId
       });
 
       if(!res || !res.ok || !res.token){
-        showWarn("Нэвтрэх боломжгүй байна. (Нууц үг буруу эсвэл сервер алдаа)");
+        showWarn("Нэвтрэх боломжгүй байна.\n(Нууц үг буруу эсвэл серверийн алдаа)");
         return;
       }
 
@@ -329,9 +324,9 @@
       sessionStorage.setItem("kquiz_state", JSON.stringify(STATE));
 
       showStep("step2");
-      showWarn("Амжилттай. Одоо тестийн төрлөө сонгоно уу.");
+      showWarn("Амжилттай.\nОдоо тестийн төрлөө сонгоно уу.");
     }catch(e){
-      showWarn("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.");
+      showWarn("Сервертэй холбогдож чадсангүй.\nДахин оролдоно уу.");
     }
   }
 
@@ -355,11 +350,8 @@
       showStep("step1");
       return;
     }
-    if(type === "WORD"){
-      showStep("stepWordMain");
-    }else{
-      showStep("stepGrammar");
-    }
+    if(type === "WORD") showStep("stepWordMain");
+    else showStep("stepGrammar");
   }
 
   function backToType(){
@@ -375,11 +367,8 @@
       showStep("step1");
       return;
     }
-    if(type==="SNU"){
-      showStep("stepSnu");
-    }else{
-      showStep("stepTopik");
-    }
+    if(type==="SNU") showStep("stepSnu");
+    else showStep("stepTopik");
   }
 
   function backToWordMain(){
@@ -419,11 +408,8 @@
 
   (function boot(){
     loadState();
-    if(STATE && STATE.token){
-      showStep("step2");
-    }else{
-      showStep("step1");
-    }
+    if(STATE && STATE.token) showStep("step2");
+    else showStep("step1");
   })();
 </script>
 </body>
