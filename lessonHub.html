@@ -20,6 +20,7 @@
     .container{max-width:680px; margin:0 auto; background:var(--card); padding:26px; border-radius:20px; border:1px solid var(--line); box-shadow:0 10px 20px rgba(0,0,0,0.08);}
     h1{margin:0; font-size:22px;}
     .sub{margin:10px 0 0; color:var(--muted); font-size:14px; line-height:1.45;}
+
     .top{
       display:flex; justify-content:space-between; align-items:center; gap:10px; margin-top:12px;
       flex-wrap:wrap;
@@ -35,8 +36,10 @@
     .btn:hover{background:var(--primary2);}
     .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
     .btnGray:hover{background:#e2e8f0;}
-    .grid{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:16px;}
-    @media (max-width:560px){ .grid{grid-template-columns:1fr;} }
+
+    /* ✅ 레슨 목록: 기본 2열 유지 (아주 좁을 때만 1열) */
+    .grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; margin-top:16px;}
+    @media (max-width:340px){ .grid{grid-template-columns:1fr;} }
 
     .cardBtn{
       padding:16px 12px; border-radius:14px; border:2px solid var(--primary);
@@ -88,15 +91,15 @@
 
 <script>
   /******************************************************************
-   * ✅ GitHub API 제거 버전 (동시접속/속도 최적화)
-   * - 레슨 목록을 "범위(start~end)"로 즉시 생성합니다.
-   * - 파일명 규칙: SNU-1A-lesson01.html, SNU-1B-lesson09.html ...
-   * - 이동 시 name/klass/token 항상 전달 (규칙 유지)
+   * ✅ 레슨 허브 (로그인 유지 대응 버전)
+   * - index.html에서 저장한 kquiz_state_v2(session/local) 읽기
+   * - URL에 name/klass/token 있으면 상태 복구 저장
+   * - book/level은 URL로 받음
+   * - 이동 시 name/klass/token 항상 전달
    ******************************************************************/
 
-  /** ✅ 여기만 보면 됩니다: 레슨 범위 설정 */
+  /** ✅ 레슨 범위 설정 */
   const LESSON_RANGE = {
-    // SNU: A = 1~8, B = 9~16 (1~4 모두 동일)
     "SNU-1A": { start: 1, end: 8 },
     "SNU-1B": { start: 9, end: 16 },
     "SNU-2A": { start: 1, end: 8 },
@@ -106,10 +109,14 @@
     "SNU-4A": { start: 1, end: 8 },
     "SNU-4B": { start: 9, end: 16 },
 
-    // TOPIK(필요하면 나중에 조정): 예시로 1~20
     "TOPIK-1": { start: 1, end: 20 },
     "TOPIK-2": { start: 1, end: 20 }
   };
+
+  // ✅ index.html과 동일한 저장 키/TTL
+  const STORAGE_KEY = "kquiz_state_v2";
+  const SESSION_KEY = "kquiz_state_v2_session";
+  const STATE_TTL_MS = 8 * 60 * 60 * 1000; // 8시간
 
   function pad2(n){ return String(n).padStart(2, "0"); }
   function $(id){ return document.getElementById(id); }
@@ -131,20 +138,17 @@
     $("ok").classList.add("hidden");
   }
 
-  function goHome(){ location.href = "index.html?v=" + Date.now(); }
+  function goHome(){ location.href = "index.html"; }
   function goBack(){ history.back(); }
-
-  function getState(){
-    const s = sessionStorage.getItem("kquiz_state");
-    if(!s) return null;
-    try{ return JSON.parse(s); }catch(e){ return null; }
-  }
 
   function getParams(){
     const p = new URLSearchParams(location.search);
     return {
       book: (p.get("book") || "").trim(),   // SNU / TOPIK
-      level:(p.get("level")|| "").trim()    // 1A..4B / 1 / 2
+      level:(p.get("level")|| "").trim(),   // 1A..4B / 1 / 2
+      name: (p.get("name") || "").trim(),
+      klass:(p.get("klass")|| "").trim(),
+      token:(p.get("token")|| "").trim()
     };
   }
 
@@ -153,18 +157,71 @@
     if(book === "TOPIK") return `TOPIK · ${level}`;
     return "—";
   }
-
   function getKey(book, level){ return `${book}-${level}`; }
-
   function buildFilename(book, level, num){
-    // ex) SNU-1B-lesson09.html
     return `${book}-${level}-lesson${pad2(num)}.html`;
+  }
+
+  function readState(){
+    // 1) session 우선
+    let raw = null;
+    try{ raw = sessionStorage.getItem(SESSION_KEY); }catch(e){}
+    // 2) 없으면 local backup
+    if(!raw){
+      try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
+    }
+
+    if(!raw) return null;
+
+    try{
+      const s = JSON.parse(raw);
+      const now = Date.now();
+      const ts = s && s.ts ? s.ts : 0;
+      const okTTL = ts && (now - ts) <= STATE_TTL_MS;
+      const okToken = s && s.token && String(s.token).length > 5;
+      if(okTTL && okToken) return s;
+    }catch(e){}
+
+    return null;
+  }
+
+  function saveStateFromUrlIfPossible(){
+    // URL에 name/klass/token이 있으면 복구 저장(직접 링크로 열어도 OK)
+    const p = getParams();
+    if(p.name && p.klass && p.token){
+      const s = {
+        pass: "", // 허브에서는 필요 없음
+        name: p.name,
+        klass: p.klass,
+        deviceId: "", // 허브에서는 필요 없음
+        token: p.token,
+        ts: Date.now()
+      };
+      try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }catch(e){}
+      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+      return s;
+    }
+    return null;
   }
 
   function loadLessons(){
     clearMsg();
 
-    const st = getState();
+    const urlp = getParams();
+    const book = urlp.book;
+    const level = urlp.level;
+
+    $("badge").textContent = prettyTitle(book, level);
+
+    if(!book || !level){
+      showWarn("Буруу хандалт байна.\nЭхлэл хуудас руу орж зөв сонголт хийнэ үү.");
+      return;
+    }
+
+    // 상태 복구 우선: 저장소 -> URL 복구
+    let st = readState();
+    if(!st) st = saveStateFromUrlIfPossible();
+
     if(!st || !st.token || !st.name || !st.klass){
       showWarn("Нэвтрэх мэдээлэл олдсонгүй.\nЭхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
       return;
@@ -172,14 +229,6 @@
 
     $("studentName").textContent = st.name;
     $("klassName").textContent = st.klass;
-
-    const {book, level} = getParams();
-    $("badge").textContent = prettyTitle(book, level);
-
-    if(!book || !level){
-      showWarn("Буруу хандалт байна.\nЭхлэл хуудас руу орж зөв сонголт хийнэ үү.");
-      return;
-    }
 
     const key = getKey(book, level);
     const cfg = LESSON_RANGE[key];
