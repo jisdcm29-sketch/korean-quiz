@@ -68,9 +68,7 @@
   <p class="sub">Доорх хичээлээс сонгоно уу.</p>
 
   <div class="top">
-    <div>
-      <span class="badge" id="badge">—</span>
-    </div>
+    <div><span class="badge" id="badge">—</span></div>
     <div style="display:flex; gap:10px;">
       <button class="btn btnGray" onclick="goBack()">Буцах</button>
       <button class="btn" onclick="goHome()">Эхлэл</button>
@@ -91,24 +89,29 @@
 <script>
   /******************************************************************
    * ✅ GitHub API 제거 버전 (동시접속/속도 최적화)
-   * - 레슨 목록을 "레슨 개수"로 즉시 생성합니다.
-   * - 파일명 규칙: SNU-1A-lesson01.html, TOPIK-1-lesson01.html ...
+   * - 레슨 목록을 "범위(start~end)"로 즉시 생성합니다.
+   * - 파일명 규칙: SNU-1A-lesson01.html, SNU-1B-lesson09.html ...
    * - 이동 시 name/klass/token 항상 전달 (규칙 유지)
    ******************************************************************/
 
-  /** ✅ 여기만 수정하면 됩니다: 각 과정의 "마지막 레슨 번호" */
-  const LESSON_COUNT = {
-    "SNU-1A": 20,
-    "SNU-1B": 20,
-    "SNU-2A": 20,
-    "SNU-2B": 20,
-    "TOPIK-1": 20,
-    "TOPIK-2": 20
+  /** ✅ 여기만 보면 됩니다: 레슨 범위 설정 */
+  const LESSON_RANGE = {
+    // SNU: A = 1~8, B = 9~16 (1~4 모두 동일)
+    "SNU-1A": { start: 1, end: 8 },
+    "SNU-1B": { start: 9, end: 16 },
+    "SNU-2A": { start: 1, end: 8 },
+    "SNU-2B": { start: 9, end: 16 },
+    "SNU-3A": { start: 1, end: 8 },
+    "SNU-3B": { start: 9, end: 16 },
+    "SNU-4A": { start: 1, end: 8 },
+    "SNU-4B": { start: 9, end: 16 },
+
+    // TOPIK(필요하면 나중에 조정): 예시로 1~20
+    "TOPIK-1": { start: 1, end: 20 },
+    "TOPIK-2": { start: 1, end: 20 }
   };
 
-  /** lesson01 처럼 2자리로 맞추기 (01~99) */
   function pad2(n){ return String(n).padStart(2, "0"); }
-
   function $(id){ return document.getElementById(id); }
 
   function showWarn(msg){
@@ -128,12 +131,8 @@
     $("ok").classList.add("hidden");
   }
 
-  function goHome(){
-    location.href = "index.html?v=" + Date.now();
-  }
-  function goBack(){
-    history.back();
-  }
+  function goHome(){ location.href = "index.html?v=" + Date.now(); }
+  function goBack(){ history.back(); }
 
   function getState(){
     const s = sessionStorage.getItem("kquiz_state");
@@ -145,7 +144,7 @@
     const p = new URLSearchParams(location.search);
     return {
       book: (p.get("book") || "").trim(),   // SNU / TOPIK
-      level:(p.get("level")|| "").trim()    // 1A / 1B / 2A / 2B / 1 / 2
+      level:(p.get("level")|| "").trim()    // 1A..4B / 1 / 2
     };
   }
 
@@ -155,12 +154,10 @@
     return "—";
   }
 
-  function getKey(book, level){
-    return `${book}-${level}`; // ex) SNU-1A, TOPIK-1
-  }
+  function getKey(book, level){ return `${book}-${level}`; }
 
   function buildFilename(book, level, num){
-    // ex) SNU-1A-lesson01.html / TOPIK-1-lesson01.html
+    // ex) SNU-1B-lesson09.html
     return `${book}-${level}-lesson${pad2(num)}.html`;
   }
 
@@ -185,12 +182,12 @@
     }
 
     const key = getKey(book, level);
-    const max = LESSON_COUNT[key];
+    const cfg = LESSON_RANGE[key];
 
-    if(!max || max < 1){
+    if(!cfg || !cfg.start || !cfg.end || cfg.end < cfg.start){
       showWarn(
         "Энэ түвшний хичээлийн тохиргоо олдсонгүй.\n" +
-        "LESSON_COUNT-д энэ түлхүүрийг нэмнэ үү: " + key
+        "LESSON_RANGE-д энэ түлхүүрийг нэмнэ үү: " + key
       );
       return;
     }
@@ -199,14 +196,13 @@
     listDiv.innerHTML = "";
     showOk("Ачаалж байна...");
 
-    // ✅ 버튼 즉시 생성 (네트워크 요청 없음)
-    for(let i=1; i<=max; i++){
+    for(let n = cfg.start; n <= cfg.end; n++){
       const btn = document.createElement("button");
       btn.className = "cardBtn";
-      btn.textContent = `${i}-р хичээл`;
+      btn.textContent = `${n}-р хичээл`;
 
       btn.onclick = () => {
-        const file = buildFilename(book, level, i);
+        const file = buildFilename(book, level, n);
         const url =
           `${file}?name=${encodeURIComponent(st.name)}` +
           `&klass=${encodeURIComponent(st.klass)}` +
@@ -218,8 +214,7 @@
     }
 
     clearMsg();
-    const app = $("app");
-    if(app) app.scrollIntoView({ behavior:"smooth", block:"start" });
+    $("app").scrollIntoView({ behavior:"smooth", block:"start" });
   }
 
   loadLessons();
