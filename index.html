@@ -6,12 +6,23 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>Сонголт · Үг / Дүрэм</title>
+
+  <title>Сургалтын тест · Korean Quiz</title>
+
+  <!-- ✅ OG (공유 미리보기 개선) -->
+  <meta property="og:type" content="website">
+  <meta property="og:title" content="Сургалтын тест · Korean Quiz">
+  <meta property="og:description" content="Нууц үг, нэр, ангиа оруулаад тестээ эхлүүлнэ үү.">
+  <meta property="og:url" content="https://jisdcm29-sketch.github.io/korean-quiz/">
+  <!-- og:image가 있으면 더 좋습니다. 없으면 이 줄은 삭제해도 됩니다. -->
+  <!-- <meta property="og:image" content="https://jisdcm29-sketch.github.io/korean-quiz/og.png"> -->
 
   <style>
     :root{
       --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5; --line:#d9e4f5;
       --text:#223047; --muted:#6a7a8e; --ok:#0f7a3d; --bad:#c0392b;
+      --warnbg:#fff5f5; --warnline:#feb2b2; --warntext:#7a1f1f;
+      --okbg:#f0fff4; --okline:#b7f0c7; --oktext:#0f7a3d;
     }
     *{box-sizing:border-box}
     body{margin:0; padding:20px; background:var(--bg); font-family:Arial,sans-serif; text-align:center; color:var(--text);}
@@ -36,6 +47,9 @@
     .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
     .btnGray:hover{background:#e2e8f0;}
 
+    .btnRow{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
+    @media (max-width:460px){ .btnRow{grid-template-columns:1fr;} }
+
     .grid{display:grid; gap:10px; margin-top:16px;}
     .cardBtn{
       padding:16px 12px; border-radius:14px;
@@ -49,17 +63,26 @@
     .cardOk:hover{background:var(--ok); color:#fff;}
 
     .hidden{display:none;}
+
     .warn{
       margin-top:14px; padding:12px; border-radius:12px;
-      background:#fff5f5; border:1px solid #feb2b2;
-      color:#7a1f1f; font-size:14px; line-height:1.45; text-align:left;
+      background:var(--warnbg); border:1px solid var(--warnline);
+      color:var(--warntext); font-size:14px; line-height:1.45; text-align:left;
       white-space:pre-line;
     }
     .okbox{
       margin-top:14px; padding:12px; border-radius:12px;
-      background:#f0fff4; border:1px solid #b7f0c7;
-      color:#0f7a3d; font-size:14px; line-height:1.45; text-align:left;
+      background:var(--okbg); border:1px solid var(--okline);
+      color:var(--oktext); font-size:14px; line-height:1.45; text-align:left;
+      white-space:pre-line;
     }
+    .hint{
+      margin-top:12px; padding:12px; border-radius:12px;
+      background:#f6f9ff; border:1px solid #d9e4f5;
+      color:#2b3b52; font-size:13px; line-height:1.45; text-align:left;
+      white-space:pre-line;
+    }
+    .tiny{font-size:12px; color:var(--muted); margin-top:8px; text-align:left;}
   </style>
 </head>
 
@@ -70,6 +93,20 @@
 
   <!-- Step 1: Login -->
   <div id="step1">
+
+    <!-- ✅ Messenger 안내 + 외부 브라우저 유도 -->
+    <div class="hint">
+      ℹ️ Messenger/Facebook дотор нээвэл “гадаад линк” гэсэн анхааруулга гарч болно.
+      Энэ нь хэвийн.\n
+      ➜ “Линк рүү шилжих” (эсвэл “링크로 이동”) товчийг дарна уу.\n
+      Хэрэв удаан байвал доорх “Гадна браузер” / “Линк хуулах”-ыг ашиглана уу.
+    </div>
+
+    <div class="btnRow">
+      <button class="btn btnGray" onclick="openExternal()">Гадна браузер</button>
+      <button class="btn btnGray" onclick="copyLink()">Линк хуулах</button>
+    </div>
+
     <input id="pass" type="password" placeholder="Нууц үг"/>
     <input id="name" type="text" placeholder="Таны нэр"/>
 
@@ -80,6 +117,10 @@
     </select>
 
     <button class="btn" onclick="login()">Үргэлжлүүлэх</button>
+
+    <div class="tiny">
+      Зөвлөгөө: Safari/Chrome дээр нээвэл илүү тогтвортой ажиллана.
+    </div>
   </div>
 
   <!-- Step 2: Word / Grammar 선택 -->
@@ -137,7 +178,6 @@
 </div>
 
 <script>
-  // ✅ Apps Script 웹앱 URL
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
 
   let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"" };
@@ -148,6 +188,37 @@
     const app = $("app");
     if(app) app.scrollIntoView({ behavior: "smooth", block: "start" });
     else window.scrollTo({ top:0, behavior:"smooth" });
+  }
+
+  // ✅ 외부 브라우저 유도 (완전 강제는 불가, 시도 + 안내)
+  function openExternal(){
+    const url = location.href;
+
+    // 1) 공유 시도(가능한 브라우저에서 UX 좋음)
+    if(navigator.share){
+      navigator.share({ title: document.title, url }).catch(()=>{});
+    }
+
+    // 2) 새 창 시도 (일부 인앱에서 외부로 넘기는 트리거가 됨)
+    try{
+      window.open(url, "_blank");
+    }catch(e){}
+
+    // 3) 안내 메시지
+    showWarn("Хэрэв анхааруулга гарвал “Линк рүү шилжих” товчийг дарна уу.\n(эсвэл Safari/Chrome дээр нээнэ үү.)");
+  }
+
+  async function copyLink(){
+    const url = location.href;
+    try{
+      if(navigator.clipboard && navigator.clipboard.writeText){
+        await navigator.clipboard.writeText(url);
+        showWarn("✅ Линк хуулагдлаа. Safari/Chrome дээр наагаад нээнэ үү.");
+        return;
+      }
+    }catch(e){}
+    // fallback
+    showWarn("Линк хуулах боломжгүй байна.\nДоорх хаягийг удаан дарж хуулна уу:\n" + url);
   }
 
   function getDeviceId(){
@@ -183,7 +254,7 @@
     scrollToTop();
   }
 
-  // ✅ JSONP helper (메신저/인앱브라우저 안정성 강화: timeout + cleanup)
+  // ✅ JSONP helper
   function jsonpRequest(baseUrl, params, timeoutMs = 12000){
     return new Promise((resolve, reject)=>{
       const cbName = "cb_" + Date.now() + "_" + Math.floor(Math.random()*1e6);
@@ -241,7 +312,6 @@
     const deviceId = getDeviceId();
 
     try{
-      // 1) 토큰 발급 (JSONP)
       const res = await jsonpRequest(SCRIPT_URL, {
         action: "issue",
         pass,
@@ -272,10 +342,8 @@
     }
   }
 
-  // Step controls
   function backToLogin(){
     clearWarn();
-    // 로그인 화면으로
     showStep("step1");
   }
 
@@ -287,7 +355,6 @@
       showStep("step1");
       return;
     }
-
     if(type === "WORD"){
       showStep("stepWordMain");
     }else{
@@ -300,7 +367,6 @@
     showStep("step2");
   }
 
-  // WORD branch
   function selectWordMain(type){
     clearWarn();
     loadState();
@@ -309,8 +375,6 @@
       showStep("step1");
       return;
     }
-
-    // ✅ 선택하면 이전 선택(WORD main)은 숨기고, 다음 단계만 표시
     if(type==="SNU"){
       showStep("stepSnu");
     }else{
@@ -323,7 +387,6 @@
     showStep("stepWordMain");
   }
 
-  // ✅ 단어 허브 이동: book/level + (규칙) name/klass/token 항상 전달
   function goWordHub(book, level){
     loadState();
     if(!STATE.token){
@@ -340,7 +403,6 @@
     location.href = next;
   }
 
-  // ✅ 문법 허브 이동: (규칙) name/klass/token 전달
   function goGrammarHub(){
     loadState();
     if(!STATE.token){
@@ -355,11 +417,9 @@
     location.href = "grammar/index.html" + qs;
   }
 
-  // 새로고침 시 로그인 유지(선택)
   (function boot(){
     loadState();
     if(STATE && STATE.token){
-      // ✅ 토큰 있으면 로그인 폼 숨기고 step2부터
       showStep("step2");
     }else{
       showStep("step1");
