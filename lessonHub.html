@@ -28,6 +28,7 @@
     .badge{
       display:inline-block; padding:4px 10px; border-radius:999px; border:1px solid #d7dee7;
       background:#f6f9ff; font-size:12px; font-weight:900; color:#2c3e50;
+      max-width:100%; overflow:hidden; text-overflow:ellipsis; white-space:nowrap;
     }
     .btn{
       padding:12px 14px; border-radius:12px; border:none; cursor:pointer;
@@ -37,7 +38,7 @@
     .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
     .btnGray:hover{background:#e2e8f0;}
 
-    /* ✅ 레슨 목록: 기본 2열 유지 (아주 좁을 때만 1열) */
+    /* ✅ 기본 2열 (아주 좁으면 1열) */
     .grid{display:grid; grid-template-columns:repeat(2, minmax(0,1fr)); gap:14px; margin-top:16px;}
     @media (max-width:340px){ .grid{grid-template-columns:1fr;} }
 
@@ -91,14 +92,12 @@
 
 <script>
   /******************************************************************
-   * ✅ 레슨 허브 (로그인 유지 대응 버전)
-   * - index.html에서 저장한 kquiz_state_v2(session/local) 읽기
-   * - URL에 name/klass/token 있으면 상태 복구 저장
-   * - book/level은 URL로 받음
-   * - 이동 시 name/klass/token 항상 전달
+   * ✅ lessonHub (호환/복구 강화 버전)
+   * - v2 저장소 + 예전(kquiz_state) 저장소 모두 지원
+   * - URL에 name/klass/token 있으면 저장소로 복구
+   * - URL에 book/level 없으면 index로 자동 이동
    ******************************************************************/
 
-  /** ✅ 레슨 범위 설정 */
   const LESSON_RANGE = {
     "SNU-1A": { start: 1, end: 8 },
     "SNU-1B": { start: 9, end: 16 },
@@ -113,9 +112,13 @@
     "TOPIK-2": { start: 1, end: 20 }
   };
 
-  // ✅ index.html과 동일한 저장 키/TTL
-  const STORAGE_KEY = "kquiz_state_v2";
-  const SESSION_KEY = "kquiz_state_v2_session";
+  // v2 keys (새 버전)
+  const STORAGE_KEY_V2 = "kquiz_state_v2";
+  const SESSION_KEY_V2  = "kquiz_state_v2_session";
+
+  // legacy key (예전 버전)
+  const LEGACY_SESSION_KEY = "kquiz_state";
+
   const STATE_TTL_MS = 8 * 60 * 60 * 1000; // 8시간
 
   function pad2(n){ return String(n).padStart(2, "0"); }
@@ -144,8 +147,8 @@
   function getParams(){
     const p = new URLSearchParams(location.search);
     return {
-      book: (p.get("book") || "").trim(),   // SNU / TOPIK
-      level:(p.get("level")|| "").trim(),   // 1A..4B / 1 / 2
+      book: (p.get("book") || "").trim(),
+      level:(p.get("level")|| "").trim(),
       name: (p.get("name") || "").trim(),
       klass:(p.get("klass")|| "").trim(),
       token:(p.get("token")|| "").trim()
@@ -162,43 +165,82 @@
     return `${book}-${level}-lesson${pad2(num)}.html`;
   }
 
-  function readState(){
-    // 1) session 우선
-    let raw = null;
-    try{ raw = sessionStorage.getItem(SESSION_KEY); }catch(e){}
-    // 2) 없으면 local backup
-    if(!raw){
-      try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
-    }
+  // v2 state 검증
+  function validateV2State(s){
+    if(!s || !s.token || !s.name || !s.klass) return false;
+    const ts = s.ts || 0;
+    if(!ts) return false;
+    if((Date.now() - ts) > STATE_TTL_MS) return false;
+    return String(s.token).length > 5;
+  }
 
-    if(!raw) return null;
+  // legacy state 검증(예전엔 ts가 없을 수 있음)
+  function validateLegacyState(s){
+    if(!s || !s.token || !s.name || !s.klass) return false;
+    return String(s.token).length > 5;
+  }
 
+  function readStateAny(){
+    // 1) v2 session
     try{
-      const s = JSON.parse(raw);
-      const now = Date.now();
-      const ts = s && s.ts ? s.ts : 0;
-      const okTTL = ts && (now - ts) <= STATE_TTL_MS;
-      const okToken = s && s.token && String(s.token).length > 5;
-      if(okTTL && okToken) return s;
+      const raw = sessionStorage.getItem(SESSION_KEY_V2);
+      if(raw){
+        const s = JSON.parse(raw);
+        if(validateV2State(s)) return s;
+      }
+    }catch(e){}
+
+    // 2) v2 local
+    try{
+      const raw = localStorage.getItem(STORAGE_KEY_V2);
+      if(raw){
+        const s = JSON.parse(raw);
+        if(validateV2State(s)){
+          // session에도 복원
+          try{ sessionStorage.setItem(SESSION_KEY_V2, JSON.stringify(s)); }catch(e){}
+          return s;
+        }
+      }
+    }catch(e){}
+
+    // 3) legacy session (kquiz_state)
+    try{
+      const raw = sessionStorage.getItem(LEGACY_SESSION_KEY);
+      if(raw){
+        const s = JSON.parse(raw);
+        if(validateLegacyState(s)){
+          // v2로 승격 저장(앞으로는 자동 호환)
+          const upgraded = {
+            pass: s.pass || "",
+            name: s.name,
+            klass: s.klass,
+            deviceId: s.deviceId || "",
+            token: s.token,
+            ts: Date.now()
+          };
+          try{ sessionStorage.setItem(SESSION_KEY_V2, JSON.stringify(upgraded)); }catch(e){}
+          try{ localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(upgraded)); }catch(e){}
+          return upgraded;
+        }
+      }
     }catch(e){}
 
     return null;
   }
 
   function saveStateFromUrlIfPossible(){
-    // URL에 name/klass/token이 있으면 복구 저장(직접 링크로 열어도 OK)
     const p = getParams();
     if(p.name && p.klass && p.token){
       const s = {
-        pass: "", // 허브에서는 필요 없음
+        pass: "",
         name: p.name,
         klass: p.klass,
-        deviceId: "", // 허브에서는 필요 없음
+        deviceId: "",
         token: p.token,
         ts: Date.now()
       };
-      try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }catch(e){}
-      try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+      try{ sessionStorage.setItem(SESSION_KEY_V2, JSON.stringify(s)); }catch(e){}
+      try{ localStorage.setItem(STORAGE_KEY_V2, JSON.stringify(s)); }catch(e){}
       return s;
     }
     return null;
@@ -207,19 +249,19 @@
   function loadLessons(){
     clearMsg();
 
-    const urlp = getParams();
-    const book = urlp.book;
-    const level = urlp.level;
+    const p = getParams();
 
-    $("badge").textContent = prettyTitle(book, level);
-
-    if(!book || !level){
-      showWarn("Буруу хандалт байна.\nЭхлэл хуудас руу орж зөв сонголт хийнэ үү.");
+    // ✅ book/level 없는 상태로 들어온 경우(스샷 케이스) → 홈으로 보냄
+    if(!p.book || !p.level){
+      $("badge").textContent = "—";
+      showWarn("Буруу холбоос байна.\nЭхлэл товчийг дарж (Эхлэл) хуудаснаас дахин сонгоно уу.");
       return;
     }
 
-    // 상태 복구 우선: 저장소 -> URL 복구
-    let st = readState();
+    $("badge").textContent = prettyTitle(p.book, p.level);
+
+    // ✅ 상태: 저장소 -> URL복구 순서
+    let st = readStateAny();
     if(!st) st = saveStateFromUrlIfPossible();
 
     if(!st || !st.token || !st.name || !st.klass){
@@ -230,14 +272,11 @@
     $("studentName").textContent = st.name;
     $("klassName").textContent = st.klass;
 
-    const key = getKey(book, level);
+    const key = getKey(p.book, p.level);
     const cfg = LESSON_RANGE[key];
 
     if(!cfg || !cfg.start || !cfg.end || cfg.end < cfg.start){
-      showWarn(
-        "Энэ түвшний хичээлийн тохиргоо олдсонгүй.\n" +
-        "LESSON_RANGE-д энэ түлхүүрийг нэмнэ үү: " + key
-      );
+      showWarn("Энэ түвшний хичээлийн тохиргоо олдсонгүй.\nLESSON_RANGE-д нэмнэ үү: " + key);
       return;
     }
 
@@ -249,16 +288,14 @@
       const btn = document.createElement("button");
       btn.className = "cardBtn";
       btn.textContent = `${n}-р хичээл`;
-
       btn.onclick = () => {
-        const file = buildFilename(book, level, n);
+        const file = buildFilename(p.book, p.level, n);
         const url =
           `${file}?name=${encodeURIComponent(st.name)}` +
           `&klass=${encodeURIComponent(st.klass)}` +
           `&token=${encodeURIComponent(st.token)}`;
         location.href = url;
       };
-
       listDiv.appendChild(btn);
     }
 
