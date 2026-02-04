@@ -112,13 +112,12 @@
       gap:10px;
     }
 
-    /* ✅ 섹션 공통 레이아웃 (인라인 style 금지!) */
+    /* ✅ 섹션 공통: (display는 JS가 강제 제어) */
     .sectionFlex{
-      display:flex;
-      flex-direction:column;
-      gap:10px;
       flex:1;
       min-height:0;
+      flex-direction:column;
+      gap:10px;
     }
 
     .qno{
@@ -232,8 +231,6 @@
     }
     .btnRow .btn{flex:1; padding:12px 12px;}
 
-    .hidden{display:none !important;} /* ✅ 인라인보다 강하게 */
-
     .overlay{
       position:fixed;
       inset:0;
@@ -271,11 +268,12 @@
       <button class="btn btnGray" onclick="goHome()">Эхлэл</button>
     </div>
 
-    <div id="errorSection" class="warn hidden"></div>
+    <div id="errorSection" class="warn" style="display:none;"></div>
   </div>
 
   <div class="main">
-    <div id="quizSection" class="sectionFlex hidden">
+    <!-- ✅ display는 JS가 강제 제어 -->
+    <div id="quizSection" class="sectionFlex" style="display:none;">
       <div class="qno" id="qno"></div>
       <div class="inst" id="inst"></div>
       <div class="question" id="qtext"></div>
@@ -287,7 +285,7 @@
       <p class="note">Санамж: Алдаа гаргасан үгсийг төгсгөлд нь дахин харуулна.</p>
     </div>
 
-    <div id="reviewSection" class="sectionFlex hidden">
+    <div id="reviewSection" class="sectionFlex" style="display:none;">
       <div class="panelScroll">
         <h1 style="margin:0; font-size:20px; color:var(--orange); text-align:center;">Алдаагаа шалгана уу</h1>
         <p class="note">Эдгээр үгсийг дахин хараад, дараа нь дахин оролдоно уу.</p>
@@ -305,7 +303,7 @@
       </div>
     </div>
 
-    <div id="resultSection" class="sectionFlex hidden">
+    <div id="resultSection" class="sectionFlex" style="display:none;">
       <div class="panelScroll">
         <h1 style="margin:0; font-size:20px; color:var(--ok); text-align:center;">Тэнцлээ!</h1>
 
@@ -387,6 +385,8 @@ const rawWords = [
   { kor:"어느", mon:"аль", pos:"o" }
 ];
 
+function $(id){ return document.getElementById(id); }
+
 function shuffle(arr){
   const a=[...arr];
   for(let i=a.length-1;i>0;i--){
@@ -449,42 +449,62 @@ let attempts=0;
 let questions=[], idx=0, correct=0, wrong=[];
 
 /* DOM */
-const studentNameEl = document.getElementById("studentName");
-const klassNameEl = document.getElementById("klassName");
-const errorSection = document.getElementById("errorSection");
-const quizSection = document.getElementById("quizSection");
-const reviewSection = document.getElementById("reviewSection");
-const resultSection = document.getElementById("resultSection");
+const studentNameEl = $("studentName");
+const klassNameEl = $("klassName");
+const errorSection = $("errorSection");
+const quizSection = $("quizSection");
+const reviewSection = $("reviewSection");
+const resultSection = $("resultSection");
 
-const qnoEl = document.getElementById("qno");
-const instEl = document.getElementById("inst");
-const qtextEl = document.getElementById("qtext");
-const choicesEl = document.getElementById("choices");
+const qnoEl = $("qno");
+const instEl = $("inst");
+const qtextEl = $("qtext");
+const choicesEl = $("choices");
 
-const reviewScoreEl = document.getElementById("reviewScore");
-const wrongListEl = document.getElementById("wrongList");
-const attemptInfoEl = document.getElementById("attemptInfo");
+const reviewScoreEl = $("reviewScore");
+const wrongListEl = $("wrongList");
+const attemptInfoEl = $("attemptInfo");
 
-const resultLine1El = document.getElementById("resultLine1");
-const finalScoreEl = document.getElementById("finalScore");
-const resultLine2El = document.getElementById("resultLine2");
-const resultDateEl = document.getElementById("resultDate");
-const logStatusEl = document.getElementById("logStatus");
+const resultLine1El = $("resultLine1");
+const finalScoreEl = $("finalScore");
+const resultLine2El = $("resultLine2");
+const resultDateEl = $("resultDate");
+const logStatusEl = $("logStatus");
 
-const overlay = document.getElementById("overlay");
+const overlay = $("overlay");
 
-function hideAll(){
-  quizSection.classList.add("hidden");
-  reviewSection.classList.add("hidden");
-  resultSection.classList.add("hidden");
+/* ✅ 핵심: display를 JS가 강제로 제어 */
+function setView(view){
+  // view: "quiz" | "review" | "result"
+  const map = {
+    quiz: quizSection,
+    review: reviewSection,
+    result: resultSection
+  };
+
+  for(const k of Object.keys(map)){
+    const el = map[k];
+    if(!el) continue;
+    if(k === view){
+      el.style.display = "flex";
+      el.classList.add("sectionFlex");
+    }else{
+      el.style.display = "none";
+    }
+  }
 }
+
 function showError(msg){
   errorSection.textContent = msg;
-  errorSection.classList.remove("hidden");
-  hideAll();
+  errorSection.style.display = "block";
+  setView(null); // 모두 none 처리
+  quizSection.style.display = "none";
+  reviewSection.style.display = "none";
+  resultSection.style.display = "none";
 }
+
 function clearError(){
-  errorSection.classList.add("hidden");
+  errorSection.style.display = "none";
 }
 
 function getParams(){
@@ -524,14 +544,14 @@ function prepareQuestions(){
 
 function showQuiz(){
   clearError();
-  hideAll();
-  quizSection.classList.remove("hidden");
+  setView("quiz");
   showQuestion();
 }
 
 function showQuestion(){
   if(idx>=questions.length){ finish(); return; }
   const item = questions[idx];
+
   qnoEl.textContent = `${idx+1} / ${questions.length}`;
   instEl.textContent = (item.type==="kor") ? "Зөв монгол утгыг сонгоно уу." : "Зөв солонгос үгийг сонгоно уу.";
   qtextEl.textContent = item.q;
@@ -561,14 +581,14 @@ function calcScore(){
 function finish(){
   attempts++;
   saveAttempts();
+
   const finalScore = calcScore();
   if(finalScore>=80 || attempts>=5) showResult(finalScore, {fromCache:false});
   else showReview(finalScore);
 }
 
 function showReview(finalScore){
-  hideAll();
-  reviewSection.classList.remove("hidden");
+  setView("review");
 
   reviewScoreEl.innerHTML = `Таны дүн: <b style="color:var(--bad);">${finalScore} оноо</b>`;
   attemptInfoEl.textContent = `Оролдлого: ${attempts} (5 удаа хүрвэл автоматаар тэнцэнэ)`;
@@ -599,9 +619,7 @@ async function sendLog(finalScore){
 
 async function showResult(finalScore, opts){
   const fromCache = !!(opts && opts.fromCache);
-
-  hideAll();
-  resultSection.classList.remove("hidden");
+  setView("result");
 
   resultLine1El.textContent = `${name}, баяр хүргэе!`;
   finalScoreEl.textContent = `Дүн: ${finalScore} оноо`;
@@ -644,6 +662,12 @@ function closeModal(e){
 }
 
 (async function init(){
+  // ✅ 시작 시 무조건 모두 숨김(겹침 방지)
+  quizSection.style.display = "none";
+  reviewSection.style.display = "none";
+  resultSection.style.display = "none";
+  errorSection.style.display = "none";
+
   const p=getParams();
   name=p.name; klass=p.klass; token=p.token;
   deviceId=getDeviceId();
@@ -656,7 +680,6 @@ function closeModal(e){
     return;
   }
 
-  // 캐시 결과가 있으면 결과만
   const cached = sessionStorage.getItem("result_"+token);
   if(cached){
     try{
