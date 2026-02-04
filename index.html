@@ -49,7 +49,7 @@
 
     .grid{display:grid; gap:10px; margin-top:16px;}
 
-    /* ✅ 레벨(1A~4B) : 기본 2열, 너무 좁을 때만 1열 */
+    /* ✅ 레벨(1A~4B) : 기본 2열 */
     .grid2{
       display:grid;
       grid-template-columns:repeat(2, minmax(0, 1fr));
@@ -114,6 +114,8 @@
       white-space:pre-line;
     }
     .tiny{font-size:12px; color:var(--muted); margin-top:8px; text-align:left;}
+    .rowTop{display:flex; gap:10px; margin-top:12px;}
+    .rowTop .btn{margin-top:0;}
   </style>
 </head>
 
@@ -124,12 +126,12 @@
 
   <!-- Step 1: Login -->
   <div id="step1">
-    <!-- ✅ (요청) 상단 Messenger 안내 박스 + 외부 브라우저/링크 복사 버튼 삭제 -->
+    <!-- (요청) 상단 Messenger 안내 박스 + 링크 버튼 삭제 유지 -->
 
     <input id="pass" type="password" placeholder="Нууц үг"/>
     <input id="name" type="text" placeholder="Таны нэр"/>
 
-    <!-- ✅ 반 선택: select 대신 버튼형 -->
+    <!-- 반 선택: 버튼형 -->
     <input id="klass" type="hidden" value="" />
     <div id="klassGrid" class="klassGrid"></div>
 
@@ -142,12 +144,16 @@
 
   <!-- Step 2: Word / Grammar -->
   <div id="step2" class="hidden">
+    <div class="rowTop">
+      <button class="btn btnGray" style="flex:1" onclick="backToLogin()">Буцах</button>
+      <button class="btn btnGray" style="flex:1" onclick="logout()">Гарах</button>
+    </div>
+
     <p class="sub" style="margin-top:16px;">Тестийн төрлөө сонгоно уу.</p>
     <div class="grid">
       <div class="cardBtn" onclick="selectType('WORD')">Үг</div>
       <div class="cardBtn cardOk" onclick="selectType('GRAMMAR')">Дүрэм</div>
     </div>
-    <button class="btn btnGray" onclick="backToLogin()">Буцах</button>
   </div>
 
   <!-- Step 3: WORD main -->
@@ -203,13 +209,18 @@
 <script>
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
 
-  // ✅ 반 목록: 여기만 수정하면 버튼이 자동으로 바뀜
+  // ✅ 반 목록: 여기만 수정하면 됨
   const KLASS_OPTIONS = [
     { value:"BBTA1반", label:"BBTA1반" },
     { value:"EKO2반", label:"EKO2반" },
   ];
 
-  let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"" };
+  // ✅ 로그인 유지 키
+  const STORAGE_KEY = "kquiz_state_v2";
+  const SESSION_KEY = "kquiz_state_v2_session";
+  const STATE_TTL_MS = 8 * 60 * 60 * 1000; // 8시간 (원하면 늘려도 됨)
+
+  let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"", ts:0 };
 
   function $(id){ return document.getElementById(id); }
 
@@ -242,10 +253,7 @@
     hideAllSteps();
     const el = $(stepId);
     if(el) el.classList.remove("hidden");
-
-    // step1 표시 시 버튼 UI 재렌더(상태 꼬임 방지)
     if(stepId === "step1") renderKlassButtons();
-
     scrollToTop();
   }
 
@@ -302,6 +310,60 @@
     return id;
   }
 
+  function saveState(next){
+    const s = { ...next, ts: Date.now() };
+    STATE = s;
+
+    // ✅ 앱 닫기 전까지: sessionStorage가 기본
+    try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify(s)); }catch(e){}
+
+    // ✅ 인앱 세션 날림 대비: localStorage 백업(짧은 TTL)
+    try{ localStorage.setItem(STORAGE_KEY, JSON.stringify(s)); }catch(e){}
+  }
+
+  function clearState(){
+    STATE = { pass:"", name:"", klass:"", deviceId:getDeviceId(), token:"", ts:0 };
+    try{ sessionStorage.removeItem(SESSION_KEY); }catch(e){}
+    try{ localStorage.removeItem(STORAGE_KEY); }catch(e){}
+  }
+
+  function loadState(){
+    // 1) session 우선
+    let raw = null;
+    try{ raw = sessionStorage.getItem(SESSION_KEY); }catch(e){}
+    // 2) 없으면 local backup
+    if(!raw){
+      try{ raw = localStorage.getItem(STORAGE_KEY); }catch(e){}
+    }
+
+    if(raw){
+      try{
+        const parsed = JSON.parse(raw);
+        const now = Date.now();
+        const ts = parsed && parsed.ts ? parsed.ts : 0;
+        const okTTL = ts && (now - ts) <= STATE_TTL_MS;
+        const okToken = parsed && parsed.token && String(parsed.token).length > 5;
+
+        if(okTTL && okToken){
+          STATE = parsed;
+          // session에도 다시 심어서 “앱 닫기 전 유지”를 안정화
+          try{ sessionStorage.setItem(SESSION_KEY, JSON.stringify(parsed)); }catch(e){}
+        }else{
+          clearState();
+        }
+      }catch(e){
+        clearState();
+      }
+    }else{
+      // 최초 진입
+      STATE.deviceId = getDeviceId();
+    }
+
+    // UI에 반영
+    if(STATE.klass && $("klass")) $("klass").value = STATE.klass;
+    renderKlassButtons();
+  }
+
   function renderKlassButtons(){
     const wrap = $("klassGrid");
     const hidden = $("klass");
@@ -331,7 +393,6 @@
     const pass = ($("pass").value || "").trim();
     const name = ($("name").value || "").trim();
     const klass = ($("klass").value || "").trim();
-
     if(!pass || !name || !klass){
       showWarn("Нууц үг, нэр, анги гурвыг бүгдийг нь оруулна уу.");
       return;
@@ -340,19 +401,13 @@
     const deviceId = getDeviceId();
 
     try{
-      const res = await jsonpRequest(SCRIPT_URL, {
-        action: "issue",
-        pass, name, klass, deviceId
-      });
-
+      const res = await jsonpRequest(SCRIPT_URL, { action: "issue", pass, name, klass, deviceId });
       if(!res || !res.ok || !res.token){
         showWarn("Нэвтрэх боломжгүй байна.\n(Нууц үг буруу эсвэл серверийн алдаа)");
         return;
       }
 
-      STATE = { pass, name, klass, deviceId, token: res.token };
-      sessionStorage.setItem("kquiz_state", JSON.stringify(STATE));
-
+      saveState({ pass, name, klass, deviceId, token: res.token });
       showStep("step2");
       showWarn("Амжилттай.\nОдоо тестийн төрлөө сонгоно уу.");
     }catch(e){
@@ -360,17 +415,16 @@
     }
   }
 
-  function loadState(){
-    const s = sessionStorage.getItem("kquiz_state");
-    if(s){
-      try{ STATE = JSON.parse(s) || STATE; }catch(e){}
-    }
-
-    // 저장된 klass를 hidden input에 반영 후 렌더
-    if(STATE && STATE.klass && $("klass")){
-      $("klass").value = STATE.klass;
-    }
+  function logout(){
+    clearWarn();
+    clearState();
+    // 입력칸도 초기화
+    if($("pass")) $("pass").value = "";
+    if($("name")) $("name").value = "";
+    if($("klass")) $("klass").value = "";
     renderKlassButtons();
+    showStep("step1");
+    showWarn("Гарлаа. Дахин нэвтэрнэ үү.");
   }
 
   function backToLogin(){
