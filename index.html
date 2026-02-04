@@ -47,14 +47,19 @@
     .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
     .btnGray:hover{background:#e2e8f0;}
 
-    .btnRow{display:grid; grid-template-columns:1fr 1fr; gap:10px; margin-top:12px;}
-    @media (max-width:460px){ .btnRow{grid-template-columns:1fr;} }
-
     .grid{display:grid; gap:10px; margin-top:16px;}
 
-    /* ✅ 레벨 버튼(1A~4B) 2열로 보기 좋게 */
-    .grid2{display:grid; grid-template-columns:repeat(2, 1fr); gap:10px; margin-top:16px;}
-    @media (max-width:560px){ .grid2{grid-template-columns:1fr;} }
+    /* ✅ 레벨 버튼(1A~4B) : 항상 2열 유지 (3번째 스샷 느낌) */
+    .grid2{
+      display:grid;
+      grid-template-columns:repeat(2, minmax(0, 1fr));
+      gap:14px;
+      margin-top:16px;
+    }
+    /* 화면이 아주 좁을 때만 1열로 */
+    @media (max-width:340px){
+      .grid2{ grid-template-columns:1fr; }
+    }
 
     .cardBtn{
       padding:16px 12px; border-radius:14px;
@@ -81,12 +86,6 @@
       color:var(--oktext); font-size:14px; line-height:1.45; text-align:left;
       white-space:pre-line;
     }
-    .hint{
-      margin-top:12px; padding:12px; border-radius:12px;
-      background:#f6f9ff; border:1px solid #d9e4f5;
-      color:#2b3b52; font-size:13px; line-height:1.45; text-align:left;
-      white-space:pre-line;
-    }
     .tiny{font-size:12px; color:var(--muted); margin-top:8px; text-align:left;}
   </style>
 </head>
@@ -98,18 +97,7 @@
 
   <!-- Step 1: Login -->
   <div id="step1">
-
-    <div class="hint">
-      ℹ️ Messenger/Facebook дотор нээвэл “гадаад линк” гэсэн анхааруулга гарч болно.
-      Энэ нь хэвийн.\n
-      ➜ “Линк рүү шилжих” товчийг дарна уу.\n
-      Хэрэв удаан байвал доорх товчнуудыг ашиглана уу.
-    </div>
-
-    <div class="btnRow">
-      <button class="btn btnGray" onclick="openExternal()">Гадна браузер</button>
-      <button class="btn btnGray" onclick="copyLink()">Линк хуулах</button>
-    </div>
+    <!-- ✅ (요청) Messenger 안내 박스 + 외부브라우저/링크복사 버튼 삭제 -->
 
     <input id="pass" type="password" placeholder="Нууц үг"/>
     <input id="name" type="text" placeholder="Таны нэр"/>
@@ -147,7 +135,7 @@
     <button class="btn btnGray" onclick="backToType()">Буцах</button>
   </div>
 
-  <!-- ✅ Step: SNU level (1A~4B) -->
+  <!-- Step: SNU level (1A~4B) -->
   <div id="stepSnu" class="hidden">
     <p class="sub" style="margin-top:16px;">Түвшнээ сонгоно уу.</p>
     <div class="grid2">
@@ -197,37 +185,6 @@
     const app = $("app");
     if(app) app.scrollIntoView({ behavior: "smooth", block: "start" });
     else window.scrollTo({ top:0, behavior:"smooth" });
-  }
-
-  function openExternal(){
-    const url = location.href;
-    if(navigator.share){
-      navigator.share({ title: document.title, url }).catch(()=>{});
-    }
-    try{ window.open(url, "_blank"); }catch(e){}
-    showWarn("Хэрэв анхааруулга гарвал “Линк рүү шилжих” товчийг дарна уу.\nSafari/Chrome дээр нээвэл илүү тогтвортой.");
-  }
-
-  async function copyLink(){
-    const url = location.href;
-    try{
-      if(navigator.clipboard && navigator.clipboard.writeText){
-        await navigator.clipboard.writeText(url);
-        showWarn("✅ Линк хуулагдлаа.\nSafari/Chrome дээр наагаад нээнэ үү.");
-        return;
-      }
-    }catch(e){}
-    showWarn("Линк хуулах боломжгүй байна.\nДоорх хаягийг удаан дарж хуулна уу:\n" + url);
-  }
-
-  function getDeviceId(){
-    const k = "kquiz_deviceId";
-    let id = localStorage.getItem(k);
-    if(!id){
-      id = (crypto && crypto.randomUUID) ? crypto.randomUUID() : (Date.now()+"_"+Math.random()).replace(".","");
-      localStorage.setItem(k, id);
-    }
-    return id;
   }
 
   function showWarn(msg){
@@ -293,6 +250,18 @@
       script.src = url;
       document.head.appendChild(script);
     });
+  }
+
+  function getDeviceId(){
+    const k = "kquiz_deviceId";
+    let id = localStorage.getItem(k);
+    if(!id){
+      // crypto.randomUUID가 없는 구형/인앱에서도 동작하도록 안전하게 생성
+      const canUUID = (window.crypto && typeof window.crypto.randomUUID === "function");
+      id = canUUID ? window.crypto.randomUUID() : ("d_" + Date.now() + "_" + Math.floor(Math.random()*1e9));
+      localStorage.setItem(k, id);
+    }
+    return id;
   }
 
   async function login(){
