@@ -42,6 +42,7 @@
       border:2px solid var(--primary); background:#fff;
       font-weight:900; cursor:pointer;
       transition:.15s;
+      user-select:none;
     }
     .cardBtn:hover{background:var(--primary); color:#fff;}
     .cardOk{border-color:var(--ok);}
@@ -63,27 +64,30 @@
 </head>
 
 <body>
-<div class="container">
+<div class="container" id="app">
   <h1>Сургалтын тест</h1>
   <p class="sub">Нууц үг, нэр, ангиа оруулаад үргэлжлүүлнэ үү.</p>
 
-  <input id="pass" type="password" placeholder="Нууц үг"/>
-  <input id="name" type="text" placeholder="Таны нэр"/>
+  <!-- Step 1: Login -->
+  <div id="step1">
+    <input id="pass" type="password" placeholder="Нууц үг"/>
+    <input id="name" type="text" placeholder="Таны нэр"/>
 
-  <select id="klass">
-    <option value="">Анги сонгох</option>
-    <option value="BBTA1반">BBTA1반</option>
-    <option value="EKO2반">EKO2반</option>
-  </select>
+    <select id="klass">
+      <option value="">Анги сонгох</option>
+      <option value="BBTA1반">BBTA1반</option>
+      <option value="EKO2반">EKO2반</option>
+    </select>
 
-  <button class="btn" onclick="login()">Үргэлжлүүлэх</button>
+    <button class="btn" onclick="login()">Үргэлжлүүлэх</button>
+  </div>
 
   <!-- Step 2: Word / Grammar 선택 -->
   <div id="step2" class="hidden">
     <p class="sub" style="margin-top:16px;">Тестийн төрлөө сонгоно уу.</p>
     <div class="grid">
-      <div class="cardBtn" onclick="selectType('WORD')">Үг (단어)</div>
-      <div class="cardBtn cardOk" onclick="selectType('GRAMMAR')">Дүрэм (문법)</div>
+      <div class="cardBtn" onclick="selectType('WORD')">Үг</div>
+      <div class="cardBtn cardOk" onclick="selectType('GRAMMAR')">Дүрэм</div>
     </div>
     <button class="btn btnGray" onclick="backToLogin()">Буцах</button>
   </div>
@@ -92,14 +96,14 @@
   <div id="stepWordMain" class="hidden">
     <p class="sub" style="margin-top:16px;">Төрөл сонгоно уу.</p>
     <div class="grid">
-      <div class="cardBtn" onclick="selectWordMain('SNU')">서울대 교재</div>
+      <div class="cardBtn" onclick="selectWordMain('SNU')">SNU</div>
       <div class="cardBtn" onclick="selectWordMain('TOPIK')">TOPIK</div>
     </div>
     <button class="btn btnGray" onclick="backToType()">Буцах</button>
   </div>
 
   <div id="stepSnu" class="hidden">
-    <p class="sub" style="margin-top:16px;">교재 сон고но уу.</p>
+    <p class="sub" style="margin-top:16px;">Сурах бичгээ сонгоно уу.</p>
     <div class="grid">
       <div class="cardBtn" onclick="goWordHub('SNU','1A')">1A</div>
       <div class="cardBtn" onclick="goWordHub('SNU','1B')">1B</div>
@@ -133,12 +137,18 @@
 </div>
 
 <script>
-  // ✅ Apps Script 웹앱 URL (오타 수정: https://https:// ❌ -> https:// ✅)
+  // ✅ Apps Script 웹앱 URL
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
 
   let STATE = { pass:"", name:"", klass:"", deviceId:"", token:"" };
 
   function $(id){ return document.getElementById(id); }
+
+  function scrollToTop(){
+    const app = $("app");
+    if(app) app.scrollIntoView({ behavior: "smooth", block: "start" });
+    else window.scrollTo({ top:0, behavior:"smooth" });
+  }
 
   function getDeviceId(){
     const k = "kquiz_deviceId";
@@ -158,11 +168,19 @@
   function clearWarn(){ $("warn").classList.add("hidden"); }
 
   function hideAllSteps(){
+    $("step1").classList.add("hidden");
     $("step2").classList.add("hidden");
     $("stepWordMain").classList.add("hidden");
     $("stepSnu").classList.add("hidden");
     $("stepTopik").classList.add("hidden");
     $("stepGrammar").classList.add("hidden");
+  }
+
+  function showStep(stepId){
+    hideAllSteps();
+    const el = $(stepId);
+    if(el) el.classList.remove("hidden");
+    scrollToTop();
   }
 
   // ✅ JSONP helper (메신저/인앱브라우저 안정성 강화: timeout + cleanup)
@@ -240,8 +258,7 @@
       STATE = { pass, name, klass, deviceId, token: res.token };
       sessionStorage.setItem("kquiz_state", JSON.stringify(STATE));
 
-      hideAllSteps();
-      $("step2").classList.remove("hidden");
+      showStep("step2");
       showWarn("Амжилттай. Одоо тестийн төрлөө сонгоно уу.");
     }catch(e){
       showWarn("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.");
@@ -257,8 +274,9 @@
 
   // Step controls
   function backToLogin(){
-    hideAllSteps();
     clearWarn();
+    // 로그인 화면으로
+    showStep("step1");
   }
 
   function selectType(type){
@@ -266,21 +284,20 @@
     loadState();
     if(!STATE.token){
       showWarn("Эхлээд нэвтэрнэ үү.");
+      showStep("step1");
       return;
     }
 
-    hideAllSteps();
     if(type === "WORD"){
-      $("stepWordMain").classList.remove("hidden");
+      showStep("stepWordMain");
     }else{
-      $("stepGrammar").classList.remove("hidden");
+      showStep("stepGrammar");
     }
   }
 
   function backToType(){
-    hideAllSteps();
-    $("step2").classList.remove("hidden");
     clearWarn();
+    showStep("step2");
   }
 
   // WORD branch
@@ -289,22 +306,21 @@
     loadState();
     if(!STATE.token){
       showWarn("Эхлээд нэвтэрнэ үү.");
+      showStep("step1");
       return;
     }
+
+    // ✅ 선택하면 이전 선택(WORD main)은 숨기고, 다음 단계만 표시
     if(type==="SNU"){
-      $("stepSnu").classList.remove("hidden");
-      $("stepTopik").classList.add("hidden");
+      showStep("stepSnu");
     }else{
-      $("stepTopik").classList.remove("hidden");
-      $("stepSnu").classList.add("hidden");
+      showStep("stepTopik");
     }
   }
 
   function backToWordMain(){
-    $("stepSnu").classList.add("hidden");
-    $("stepTopik").classList.add("hidden");
-    $("stepWordMain").classList.remove("hidden");
     clearWarn();
+    showStep("stepWordMain");
   }
 
   // ✅ 단어 허브 이동: book/level + (규칙) name/klass/token 항상 전달
@@ -312,6 +328,7 @@
     loadState();
     if(!STATE.token){
       showWarn("Эхлээд нэвтэрнэ үү.");
+      showStep("step1");
       return;
     }
     const next =
@@ -328,6 +345,7 @@
     loadState();
     if(!STATE.token){
       showWarn("Эхлээд нэвтэрнэ үү.");
+      showStep("step1");
       return;
     }
     const qs =
@@ -341,7 +359,10 @@
   (function boot(){
     loadState();
     if(STATE && STATE.token){
-      $("step2").classList.remove("hidden");
+      // ✅ 토큰 있으면 로그인 폼 숨기고 step2부터
+      showStep("step2");
+    }else{
+      showStep("step1");
     }
   })();
 </script>
