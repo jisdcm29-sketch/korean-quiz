@@ -89,9 +89,25 @@
 </div>
 
 <script>
-  // ✅ GitHub 저장소 정보
-  const GITHUB_USERNAME = "jisdcm29-sketch";
-  const GITHUB_REPO = "korean-quiz";
+  /******************************************************************
+   * ✅ GitHub API 제거 버전 (동시접속/속도 최적화)
+   * - 레슨 목록을 "레슨 개수"로 즉시 생성합니다.
+   * - 파일명 규칙: SNU-1A-lesson01.html, TOPIK-1-lesson01.html ...
+   * - 이동 시 name/klass/token 항상 전달 (규칙 유지)
+   ******************************************************************/
+
+  /** ✅ 여기만 수정하면 됩니다: 각 과정의 "마지막 레슨 번호" */
+  const LESSON_COUNT = {
+    "SNU-1A": 20,
+    "SNU-1B": 20,
+    "SNU-2A": 20,
+    "SNU-2B": 20,
+    "TOPIK-1": 20,
+    "TOPIK-2": 20
+  };
+
+  /** lesson01 처럼 2자리로 맞추기 (01~99) */
+  function pad2(n){ return String(n).padStart(2, "0"); }
 
   function $(id){ return document.getElementById(id); }
 
@@ -133,35 +149,22 @@
     };
   }
 
-  function buildPrefix(book, level){
-    // 파일명 규칙:
-    // SNU:   SNU-1A-lesson01.html
-    // TOPIK: TOPIK-1-lesson01.html
-    if(book === "SNU") return `SNU-${level}-lesson`;
-    if(book === "TOPIK") return `TOPIK-${level}-lesson`;
-    return "";
-  }
-
   function prettyTitle(book, level){
-    // ✅ 언어 섞임 방지: 한국어 "서울대" 대신 SNU 사용
     if(book === "SNU") return `SNU · ${level}`;
     if(book === "TOPIK") return `TOPIK · ${level}`;
     return "—";
   }
 
-  function lessonNumFromName(filename){
-    const m = String(filename).match(/lesson(\d+)\.html$/i);
-    return m ? parseInt(m[1], 10) : null;
+  function getKey(book, level){
+    return `${book}-${level}`; // ex) SNU-1A, TOPIK-1
   }
 
-  function naturalSortByLesson(a, b){
-    const na = lessonNumFromName(a.name);
-    const nb = lessonNumFromName(b.name);
-    if(na !== null && nb !== null) return na - nb;
-    return String(a.name).localeCompare(String(b.name));
+  function buildFilename(book, level, num){
+    // ex) SNU-1A-lesson01.html / TOPIK-1-lesson01.html
+    return `${book}-${level}-lesson${pad2(num)}.html`;
   }
 
-  async function loadLessons(){
+  function loadLessons(){
     clearMsg();
 
     const st = getState();
@@ -174,11 +177,21 @@
     $("klassName").textContent = st.klass;
 
     const {book, level} = getParams();
-    const prefix = buildPrefix(book, level);
     $("badge").textContent = prettyTitle(book, level);
 
-    if(!prefix){
+    if(!book || !level){
       showWarn("Буруу хандалт байна.\nЭхлэл хуудас руу орж зөв сонголт хийнэ үү.");
+      return;
+    }
+
+    const key = getKey(book, level);
+    const max = LESSON_COUNT[key];
+
+    if(!max || max < 1){
+      showWarn(
+        "Энэ түвшний хичээлийн тохиргоо олдсонгүй.\n" +
+        "LESSON_COUNT-д энэ түлхүүрийг нэмнэ үү: " + key
+      );
       return;
     }
 
@@ -186,66 +199,27 @@
     listDiv.innerHTML = "";
     showOk("Ачаалж байна...");
 
-    const api = `https://api.github.com/repos/${encodeURIComponent(GITHUB_USERNAME)}/${encodeURIComponent(GITHUB_REPO)}/contents/`;
+    // ✅ 버튼 즉시 생성 (네트워크 요청 없음)
+    for(let i=1; i<=max; i++){
+      const btn = document.createElement("button");
+      btn.className = "cardBtn";
+      btn.textContent = `${i}-р хичээл`;
 
-    try{
-      const res = await fetch(api, {
-        cache:"no-store",
-        headers: { "Accept": "application/vnd.github+json" }
-      });
+      btn.onclick = () => {
+        const file = buildFilename(book, level, i);
+        const url =
+          `${file}?name=${encodeURIComponent(st.name)}` +
+          `&klass=${encodeURIComponent(st.klass)}` +
+          `&token=${encodeURIComponent(st.token)}`;
+        location.href = url;
+      };
 
-      // 레이트 리밋/차단/권한 등의 경우
-      if(!res.ok){
-        let extra = "";
-        if(res.status === 403) extra = "\n(Сервер түр хязгаарласан байж магадгүй. Дахин оролдоно уу.)";
-        showWarn(`GitHub-аас файлын жагсаалт авч чадсангүй. [${res.status}]${extra}`);
-        return;
-      }
-
-      const files = await res.json();
-
-      if(!Array.isArray(files)){
-        showWarn("GitHub-аас буруу хариу ирлээ.\n(Файлын жагсаалт биш байна.)");
-        return;
-      }
-
-      const lessonFiles = files
-        .filter(f => f && f.name && f.name.endsWith(".html") && f.name.startsWith(prefix))
-        .sort(naturalSortByLesson);
-
-      if(lessonFiles.length === 0){
-        showWarn("Энэ түвшний хичээлийн файл олдсонгүй.\nФайлын нэрийг шалгана уу.");
-        return;
-      }
-
-      clearMsg();
-
-      lessonFiles.forEach(f => {
-        const btn = document.createElement("button");
-        btn.className = "cardBtn";
-
-        const num = lessonNumFromName(f.name);
-        btn.textContent = num ? `${num}-р хичээл` : f.name.replace(".html","");
-
-        btn.onclick = () => {
-          // ✅ 레슨 파일로 name/klass/token 전달
-          const url =
-            `${f.name}?name=${encodeURIComponent(st.name)}` +
-            `&klass=${encodeURIComponent(st.klass)}` +
-            `&token=${encodeURIComponent(st.token)}`;
-          location.href = url;
-        };
-
-        listDiv.appendChild(btn);
-      });
-
-      // 모바일에서 목록이 바로 보이게 살짝 스크롤
-      const app = $("app");
-      if(app) app.scrollIntoView({ behavior:"smooth", block:"start" });
-
-    }catch(e){
-      showWarn("Алдаа гарлаа.\nДахин оролдоно уу.");
+      listDiv.appendChild(btn);
     }
+
+    clearMsg();
+    const app = $("app");
+    if(app) app.scrollIntoView({ behavior:"smooth", block:"start" });
   }
 
   loadLessons();
