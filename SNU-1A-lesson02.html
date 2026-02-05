@@ -104,6 +104,50 @@
     .choice, #choices button{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
     .btn{padding:9px; font-size:12.5px;}
   }
+
+  /* ===== Result (NO SCROLL / smaller text) ===== */
+  .resultHeadline{
+    font-size: clamp(24px, 6.2vw, 38px);
+    font-weight: 900;
+    margin: 0 0 6px;
+    letter-spacing: -0.5px;
+    line-height: 1.03;
+  }
+  .resultCard{
+    border: 2px solid var(--okline);
+    background: #f3fff6;
+    border-radius: 18px;
+    padding: 10px 12px;
+    text-align: left;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+    gap: 8px;
+    overflow: hidden;
+  }
+  .resultLeft{
+    color: var(--ok);
+    font-weight: 900;
+    line-height: 1.45;
+    font-size: 15px;
+    white-space: pre-line;
+  }
+  .resultBless{
+    text-align: center;
+    font-weight: 900;
+    font-size: clamp(18px, 5.2vw, 28px);
+    color: #111;
+    line-height: 1.08;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    padding: 4px 0 2px;
+  }
+  @media (max-width: 390px){
+    .resultLeft{font-size: 14px;}
+    .resultBless{font-size: clamp(17px, 5.1vw, 26px);}
+  }
   </style>
 </head>
 
@@ -127,6 +171,7 @@
   </div>
 
   <div class="main">
+
     <!-- QUIZ -->
     <div class="qbox" id="quizBox">
       <div class="qNo" id="qNo">Q 1 / 0</div>
@@ -147,37 +192,32 @@
       <div class="reviewList" id="reviewList"></div>
       <div class="footerBtns">
         <button class="btn" onclick="restartQuiz()">Retry</button>
-        <button class="btn gray" onclick="showResultScreen()">Result</button>
+        <button class="btn gray" onclick="showResultScreen(false)">Result</button>
       </div>
     </div>
 
     <!-- RESULT -->
     <div class="qbox hidden" id="resultBox">
-      <div class="qText" id="resultTitle">Result</div>
-      <div class="msg ok" id="resultMsg"></div>
+      <div class="resultHeadline" id="resultHeadline">Тэнцлээ!</div>
+
+      <div class="resultCard" id="resultCard">
+        <div class="resultLeft" id="resultMeta"></div>
+        <div class="resultBless" id="blessLine">Есүс танд хайртай!</div>
+      </div>
 
       <div class="footerBtns">
-        <button class="btn" onclick="shareCapture()">Капчер</button>
         <button class="btn gray" onclick="goBackHub()">← Hub</button>
       </div>
-      <div class="small" style="margin-top:6px;">
-        📌 <b>Скриншот</b> хийгээд багшдаа явуулаарай!
-      </div>
     </div>
+
   </div>
 </div>
 
 <script>
-  /***********************
-   * CONFIG
-   ***********************/
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
   const BOOK = "SNU-1A";
   const LESSON = "lesson02";
 
-  /***********************
-   * WORD DATA (PDF 표기 그대로)
-   ***********************/
   const WORDS = [
     { ko: "책", mn: "ном" },
     { ko: "공책", mn: "дэвтэр" },
@@ -199,6 +239,7 @@
     { ko: "안경", mn: "нүдний шил" },
     { ko: "우산", mn: "шүхэр" },
     { ko: "시계", mn: "цаг" },
+
     { ko: "휴지", mn: "ариун цаас" },
     { ko: "동전", mn: "зоос" },
     { ko: "교통카드", mn: "тээврийн карт" },
@@ -221,9 +262,6 @@
     { ko: "여자 친구", mn: "найз охин" }
   ];
 
-  /***********************
-   * STATE
-   ***********************/
   const qs = new URLSearchParams(location.search);
   const NAME = (qs.get("name") || "").trim();
   const KLASS = (qs.get("klass") || "").trim();
@@ -235,11 +273,11 @@
   const attemptKey = `kquiz_attempt_fail__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
   let failAttempts = Number(localStorage.getItem(attemptKey) || "0");
 
-  let MODE = "KOQ"; // KOQ: 한국어 질문→몽골어 보기, MNQ: 몽골어 질문→한국어 보기
+  let MODE = "KOQ";
   let idx = 0;
   let score = 0;
   let questions = [];
-  let wrongs = []; // {q, correct, picked}
+  let wrongs = [];
 
   const $ = (id)=>document.getElementById(id);
 
@@ -343,19 +381,11 @@
     }
   }
 
-  /***********************
-   * ✅ 모든 단어를 전부 출제
-   ***********************/
   function buildQuestions_(){
     const pool = WORDS.slice().filter(x => x && x.ko && x.mn);
-
-    if(pool.length < 4){
-      setTopMsg("warn", "❗ WORDS가 4개 미만입니다.\n보기 4개 구성을 위해 4개 이상 필요합니다.");
-    }
-
     shuffle_(pool);
-    const base = pool; // ✅ 전체 출제
 
+    const base = pool; // ✅ 전체 출제
     questions = base.map(item => {
       const qText = (MODE==="KOQ") ? item.ko : item.mn;
       const correct = (MODE==="KOQ") ? item.mn : item.ko;
@@ -366,7 +396,6 @@
 
       const choices = uniqueChoices_(correct, distractorPool, 4);
       shuffle_(choices);
-
       return { qText, correct, choices };
     });
   }
@@ -436,15 +465,12 @@
 
     setTimeout(()=>{
       idx++;
-      if(idx >= questions.length){
-        finishQuiz_();
-      }else{
-        renderQuestion_();
-      }
-    }, 450);
+      if(idx >= questions.length) finishQuiz_();
+      else renderQuestion_();
+    }, 180);
   }
 
-  async function finishQuiz_(){
+  function finishQuiz_(){
     const total = questions.length;
     const correctCount = total - wrongs.length;
 
@@ -460,13 +486,11 @@
     const passedByAttempts = failAttempts >= 5;
     const finalPass = passedByScore || passedByAttempts;
 
-    await safeLog_(score, failAttempts);
+    if(finalPass) showResultScreen(true, passedByAttempts && !passedByScore);
+    else showReviewScreen_();
 
-    if(finalPass){
-      showResultScreen(true, passedByAttempts && !passedByScore);
-    }else{
-      showReviewScreen_();
-    }
+    // ✅ 로그는 화면 전환 지연 없이 뒤에서 처리
+    safeLog_(score, failAttempts);
   }
 
   function showReviewScreen_(){
@@ -494,23 +518,32 @@
     showOnly("resultBox");
 
     const date = new Date().toLocaleString();
-    const title = passed ? "Тэнцлээ!" : "Result";
-    $("resultTitle").textContent = title;
 
-    const passNote = passedByAttempts
-      ? "\n✅ 5+ удаа оролдсон тул онооноос үл хамааран тэнцүүлэв."
+    const headline = passed ? `${NAME} Тэнцлээ!` : `${NAME} Result`;
+    const hEl = document.getElementById("resultHeadline");
+    if(hEl) hEl.textContent = headline;
+
+    const passNote = (passedByAttempts && !passed)
+      ? `\n✅ 5+ удаа оролдсон тул онооноос үл хамааран тэнцүүлэв.`
       : "";
 
-    $("resultMsg").textContent =
-      `Name: ${NAME}\n` +
+    const meta =
       `Class: ${KLASS}\n` +
       `Book: ${BOOK}\n` +
       `Lesson: ${LESSON}\n` +
       `Score: ${score} / 100\n` +
       `Attempts: ${failAttempts}\n` +
-      `Date: ${date}\n` +
-      passNote + "\n\n" +
-      `📌 Скриншот хийгээд багшдаа явуулаарай!`;
+      `Date: ${date}` +
+      passNote;
+
+    const metaEl = document.getElementById("resultMeta");
+    if(metaEl) metaEl.textContent = meta;
+
+    const blessEl = document.getElementById("blessLine");
+    if(blessEl){
+      blessEl.textContent = "Есүс танд хайртай!";
+      blessEl.style.display = passed ? "block" : "none";
+    }
   }
 
   async function safeLog_(scoreNum, attemptsNum){
@@ -544,30 +577,8 @@
     wrongs = [];
     updatePills();
     buildQuestions_();
-
-    if(!questions.length){
-      showOnly("quizBox");
-      $("qText").textContent = "No WORDS";
-      $("choices").innerHTML = "";
-      $("qNo").textContent = "Q 0 / 0";
-      return;
-    }
-
     showOnly("quizBox");
     renderQuestion_();
-  }
-
-  async function shareCapture(){
-    const text =
-      `Name: ${NAME}\nClass: ${KLASS}\nBook: ${BOOK}\nLesson: ${LESSON}\nScore: ${score}/100\nAttempts: ${failAttempts}\nDate: ${new Date().toLocaleString()}`;
-
-    try{
-      if(navigator.share){
-        await navigator.share({ title: "K-Quiz Result", text });
-        return;
-      }
-    }catch(e){}
-    alert("Скриншот хийгээд багшдаа явуулаарай! (Share дэмжихгүй байна)");
   }
 
   function shuffle_(arr){
