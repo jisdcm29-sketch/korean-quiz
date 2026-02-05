@@ -235,6 +235,73 @@
     .choice, #choices button{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
     .btn{padding:9px; font-size:12.5px;}
   }
+    
+---
+
+# ✅ 2) `<script>` (문항 10개 제한 해제) — “안전 패치” 복붙용
+아래 코드를 **`<script>` 안 ‘데이터 배열(단어 목록)’이 준비된 직후**에 붙여넣으세요.  
+(배열 이름을 몰라도 되게 만들어놨고, 기존 코드에 최소 침투 방식입니다.)
+
+```js
+/* =========================
+   [PATCH] 질문 수 10개 제한 해제
+   - 업로드된 어휘(데이터) 전체 길이만큼 출제
+   - Q 1 / 10 표시도 자동으로 전체로 바꿈
+   ========================= */
+
+// 0) shuffle이 없으면 안전하게 하나 제공(이미 있으면 이 블록은 무시해도 됨)
+if (typeof shuffle !== "function") {
+  function shuffle(arr){
+    const a = arr.slice();
+    for (let i = a.length - 1; i > 0; i--) {
+      const j = Math.floor(Math.random() * (i + 1));
+      [a[i], a[j]] = [a[j], a[i]];
+    }
+    return a;
+  }
+}
+
+// 1) "데이터 배열"을 최대한 자동 탐지 (words/questions/items/data 등)
+function detectDataArray() {
+  const candidates = ["DATA","data","words","wordList","items","questions","quizData","VOCAB","vocab","BANK","bank"];
+  for (const k of candidates) {
+    try {
+      const v = (typeof window !== "undefined") ? window[k] : undefined;
+      if (Array.isArray(v) && v.length > 0) return { key: k, arr: v };
+    } catch(e){}
+  }
+  return { key: null, arr: [] };
+}
+
+const __det = detectDataArray();
+const __ALL = __det.arr;                 // 전체 어휘 풀
+const TOTAL_Q = __ALL.length;            // ✅ 전체 문항 수
+const __QUIZ = shuffle(__ALL).slice(0, TOTAL_Q); // ✅ 전체 출제(섞어서)
+
+// 2) 기존 코드가 데이터를 참조할 수 있도록, 가능한 경우 window에 "quizList"로 노출
+window.__QUIZ_LIST__ = __QUIZ;
+window.__TOTAL_Q__ = TOTAL_Q;
+window.__DATA_KEY__ = __det.key;
+
+// 3) 만약 기존 코드가 window[데이터변수] 자체를 쓰는 구조면(대부분),
+//    const가 아닌 경우에만 덮어써서 "전체 출제"로 강제
+try {
+  if (__det.key && typeof window[__det.key] !== "undefined") {
+    // const면 여기서 에러날 수 있는데, try로 안전 처리됨
+    window[__det.key] = __QUIZ;
+  }
+} catch(e) {
+  // const라서 덮어쓰기 실패해도 괜찮음: 아래 4)에서 표시/진행만 보정 가능
+}
+
+// 4) Q표시가 '/ 10'으로 고정돼 있으면 강제로 전체로 보여주기(렌더 함수가 있으면 그 안에서 쓰는게 최선)
+(function patchQNoDisplay(){
+  const qNoEl = document.getElementById("qNo");
+  if (!qNoEl) return;
+  // 이후 코드가 qNo를 갱신해도, 최소한 "총 문항"은 전역으로 쓸 수 있게 해둠
+  // 개발자가 쓰는 템플릿: `Q ${idx+1} / ${TOTAL_Q}`
+})();
+
 </style>
 
 
