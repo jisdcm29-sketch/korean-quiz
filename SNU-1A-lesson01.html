@@ -14,8 +14,7 @@
     --line:#d9e4f5; --text:#223047; --muted:#6a7a8e; --ok:#0f7a3d; --bad:#c0392b;
     --warnbg:#fff5f5; --warnline:#feb2b2; --okbg:#f0fff4; --okline:#b7f0c7;
   }
-  *{box-sizing:border
-  -box}
+  *{box-sizing:border-box}
   body{
     margin:0; padding:8px; background:var(--bg); color:var(--text);
     font-family: Arial, system-ui, -apple-system, "Segoe UI", sans-serif;
@@ -52,16 +51,6 @@
     font-weight:900; line-height:1.10;
     word-break:keep-all; overflow-wrap:anywhere; margin-top:0;
   }
-
-  /* ✅ Review 제목 크게(샘플처럼) */
-  .reviewTitle{
-    font-size: clamp(34px, 9vw, 52px);
-    font-weight: 900;
-    margin: 2px 0 0;
-    letter-spacing: -0.6px;
-    line-height: 1.0;
-  }
-
   .choices{display:grid; grid-template-columns:1fr; gap:10px; margin-top:4px;}
   .choice{
     width:100%; padding:12px 10px; border-radius:16px; border:2px solid var(--primary);
@@ -92,10 +81,35 @@
   .msg.ok{background:var(--okbg); border:1px solid var(--okline); color:#0f7a3d;}
   .hidden{display:none !important;}
 
-  /* ✅ Review 리스트: 샘플처럼 Your/Ans 강조 */
+  /* ===== Review (샘플 스타일 + Q/Ans만) ===== */
+  .reviewHeadline{
+    font-size: clamp(34px, 9.2vw, 54px);
+    font-weight:900;
+    margin: 0;
+    letter-spacing: -0.8px;
+    line-height: 1.02;
+    color:#1f2b3d;
+    text-align:center;
+  }
+  .reviewMsgBox{
+    background: var(--warnbg);
+    border: 1px solid var(--warnline);
+    color: #7a1f1f;
+    border-radius: 12px;
+    padding: 10px 12px;
+    text-align:left;
+    font-size: 13px;
+    line-height: 1.35;
+    white-space: pre-line;
+  }
   .reviewList{
-    text-align:left; border:1px solid var(--line); border-radius:14px; padding:10px;
-    overflow:auto; max-height:42vh; background:#fff;
+    text-align:left;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px;
+    overflow:auto;
+    max-height:44vh;
+    background:#fff;
   }
   .reviewItem{
     padding:10px 0;
@@ -103,20 +117,35 @@
   }
   .reviewItem:last-child{border-bottom:none;}
   .reviewNo{
-    font-size:16px; font-weight:900; color:#1f2b3d;
-    margin-bottom:6px;
+    font-size:18px;
+    font-weight:900;
+    color:#1f2b3d;
+    margin: 0 0 6px;
   }
   .reviewQ{
-    font-size:14px; font-weight:900; color:#1f2b3d;
-    margin:2px 0 8px;
+    font-size:15px;
+    font-weight:900;
+    color:#1f2b3d;
+    margin: 0 0 10px;
   }
-  .reviewYour{
-    font-size:18px; font-weight:900; color:var(--bad);
-    margin:2px 0 6px;
-  }
+  /* ✅ picked(Your) 제거: Ans만 크게 */
   .reviewAns{
-    font-size:18px; font-weight:900; color:var(--ok);
-    margin:2px 0 0;
+    font-size:22px;
+    font-weight:900;
+    color: var(--ok);
+    margin: 0;
+  }
+  .badgeTimeout{
+    display:inline-block;
+    margin-left:8px;
+    padding:2px 8px;
+    border-radius:999px;
+    border:1px solid var(--warnline);
+    background:var(--warnbg);
+    color:#7a1f1f;
+    font-weight:900;
+    font-size:12px;
+    vertical-align:middle;
   }
 
   .small{font-size:11px; color:var(--muted);}
@@ -132,17 +161,18 @@
     }
     .qbox{padding:9px; gap:7px;}
     .qText{font-size: clamp(18px, 5.6vw, 30px);}
-    .reviewTitle{font-size: clamp(32px, 9.5vw, 48px);}
     .choices{gap:9px;}
     .choice{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
     .btn{padding:9px; font-size:12.5px;}
 
-    .reviewNo{font-size:15px;}
-    .reviewQ{font-size:13px;}
-    .reviewYour,.reviewAns{font-size:17px;}
+    .reviewHeadline{font-size: clamp(32px, 9.6vw, 50px);}
+    .reviewAns{font-size:20px;}
+    .reviewNo{font-size:17px;}
+    .reviewQ{font-size:14px;}
+    .badgeTimeout{font-size:11px;}
   }
 
-  /* ===== Result (NO SCROLL / smaller text) ===== */
+  /* ===== Result ===== */
   .resultHeadline{
     font-size: clamp(24px, 6.2vw, 38px);
     font-weight: 900;
@@ -185,11 +215,16 @@
     .resultLeft{font-size: 14px;}
     .resultBless{font-size: clamp(17px, 5.1vw, 26px);}
   }
+
+  /* ✅ Review/Result에서는 시간/설정이 절대 나오면 안 됨 */
+  .hideOnReviewResult{display:block;}
+  .screen-review .hideOnReviewResult,
+  .screen-result .hideOnReviewResult{display:none !important;}
   </style>
 </head>
 
 <body>
-<div class="container">
+<div class="container" id="appRoot">
   <div class="header">
     <h1 class="title">SNU 1A · Lesson 01</h1>
     <p class="sub" id="userLine">...</p>
@@ -197,18 +232,18 @@
     <div class="row">
       <span class="pill">Score: <b id="scorePill">0</b>/100</span>
       <span class="pill">Attempts: <b id="attemptPill">0</b></span>
-      <!-- ✅ Time 표시 제거 -->
+      <!-- ✅ Quiz에서는 항상 Time 표시 (Review/Result에서는 숨김) -->
+      <span class="pill hideOnReviewResult">Time: <b id="timePill">-</b>s</span>
       <span class="pill">Date: <b id="datePill">-</b></span>
     </div>
 
-    <div class="row" style="margin-top:8px;">
-      <!-- ✅ (요청) 시간 표시 문구 없음 -->
+    <div class="row hideOnReviewResult" style="margin-top:8px;">
       <button class="modeBtn active" id="modeKo" onclick="setMode('KOQ')">한국어 질문 → 몽골어 보기</button>
       <button class="modeBtn" id="modeMn" onclick="setMode('MNQ')">Монгол асуулт → 한국어 보기</button>
     </div>
 
-    <div class="row" style="margin-top:6px;">
-      <!-- ✅ (요청) 버튼에 10s/12s 표시는 제거 (기능만 유지) -->
+    <!-- ✅ 사용자 선택 버튼은 남김 (Review/Result에서는 숨김) -->
+    <div class="row hideOnReviewResult" style="margin-top:6px;">
       <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통</button>
       <button class="speedBtn" id="speedSlow" onclick="setSpeed('slow')">느림</button>
     </div>
@@ -233,8 +268,8 @@
 
     <!-- REVIEW -->
     <div class="qbox hidden" id="reviewBox">
-      <div class="reviewTitle">Review</div>
-      <div class="msg warn" id="reviewMsg"></div>
+      <div class="reviewHeadline">Review</div>
+      <div class="reviewMsgBox" id="reviewMsg"></div>
       <div class="reviewList" id="reviewList"></div>
       <div class="footerBtns">
         <button class="btn" onclick="restartQuiz()">Retry</button>
@@ -265,8 +300,9 @@
   const BOOK = "SNU-1A";
   const LESSON = "lesson01";
 
-  // ✅ 시간(표시는 숨김): 보통(기본)=10초, 느림=12초
+  // ✅ 기본=보통 10초, 느림 12초
   const TIME_LIMIT = { normal: 10, slow: 12 };
+  let SPEED = "normal"; // default
 
   const WORDS = [
     { ko: "공항", mn: "нисэх онгоцны буудал" },
@@ -307,7 +343,7 @@
     { ko: "의자", mn: "сандал" },
     { ko: "운동하다", mn: "дасгал хийх" },
     { ko: "마트", mn: "супермаркет" },
-    { ko: "학생", mn: "оюутан" },
+    { ko: "학생", mn: "оюутan" },
     { ko: "백화점", mn: "их дэлгүүр" },
     { ko: "독일", mn: "Герман" }
   ];
@@ -321,19 +357,18 @@
   const deviceId = getDeviceId_();
   const ua = navigator.userAgent || "";
 
-  // ✅ Attempts: 모든 시도 카운트
+  // ✅ Attempts: 시도할 때마다 카운터(합/불 무관)
   const attemptKey = `kquiz_attempt__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
   let attempts = Number(localStorage.getItem(attemptKey) || "0");
 
   // ====== STATE ======
   let MODE = "KOQ";
-  let SPEED = "normal"; // ✅ 기본: 보통(10s)
   let idx = 0;
   let score = 0;
   let questions = [];
   let wrongs = [];
 
-  // timer(표시는 숨김)
+  // timer
   let remainSec = 0;
   let tickId = null;
   let questionLocked = false;
@@ -358,6 +393,7 @@
     $("attemptPill").textContent = String(attempts);
     $("datePill").textContent = new Date().toLocaleDateString();
     $("userLine").textContent = `${NAME} · ${KLASS} · ${BOOK} · ${LESSON}`;
+    $("timePill").textContent = (remainSec > 0 ? String(remainSec) : "0");
   }
 
   function setMode(mode){
@@ -367,11 +403,21 @@
     restartQuiz();
   }
 
+  // ✅ 문제 진행 중에도 속도 변경 가능(선택 버튼 유지)
   function setSpeed(speed){
     SPEED = speed;
     $("speedNormal").classList.toggle("active", SPEED==="normal");
     $("speedSlow").classList.toggle("active", SPEED==="slow");
-    restartQuiz();
+    // 현재 문제 타이머만 즉시 재시작
+    if(!$("quizBox").classList.contains("hidden")){
+      startTimer_();
+    }
+  }
+
+  function setScreenClass_(cls){
+    const root = $("appRoot");
+    root.classList.remove("screen-quiz","screen-review","screen-result");
+    root.classList.add(cls);
   }
 
   function showOnly(boxId){
@@ -380,6 +426,10 @@
     $("reviewBox").classList.add("hidden");
     $("resultBox").classList.add("hidden");
     $(boxId).classList.remove("hidden");
+
+    if(boxId==="quizBox") setScreenClass_("screen-quiz");
+    if(boxId==="reviewBox") setScreenClass_("screen-review");
+    if(boxId==="resultBox") setScreenClass_("screen-result");
   }
 
   function jsonpRequest_(baseUrl, params, timeoutMs=12000){
@@ -452,8 +502,7 @@
     const pool = WORDS.slice().filter(x => x && x.ko && x.mn);
     shuffle_(pool);
 
-    const base = pool; // ✅ 전체 출제
-    questions = base.map(item => {
+    questions = pool.map(item => {
       const qText = (MODE==="KOQ") ? item.ko : item.mn;
       const correct = (MODE==="KOQ") ? item.mn : item.ko;
 
@@ -470,7 +519,6 @@
   function uniqueChoices_(correct, pool, n){
     const out = [correct];
     const seen = new Set(out);
-
     for(const v of pool){
       if(out.length >= n) break;
       if(v && !seen.has(v)){
@@ -478,7 +526,6 @@
         seen.add(v);
       }
     }
-
     let guard = 0;
     while(out.length < n && guard < 500){
       guard++;
@@ -489,7 +536,6 @@
         seen.add(v);
       }
     }
-
     while(out.length < n) out.push("—");
     return out;
   }
@@ -521,15 +567,18 @@
   function startTimer_(){
     stopTimer_();
     remainSec = TIME_LIMIT[SPEED] ?? 10;
+    updatePills();
 
     tickId = setInterval(()=>{
       remainSec--;
       if(remainSec <= 0){
         remainSec = 0;
+        updatePills();
         stopTimer_();
         handleTimeout_();
         return;
       }
+      updatePills();
     }, 1000);
   }
 
@@ -547,7 +596,7 @@
     const q = questions[idx];
 
     // ✅ 시간 초과 = 오답 + 자동 다음
-    wrongs.push({ q: q.qText, correct: q.correct, picked: "TIMEOUT", reason: "timeout" });
+    wrongs.push({ q: q.qText, correct: q.correct, reason: "timeout" });
 
     const buttons = Array.from(document.querySelectorAll(".choice"));
     buttons.forEach(b => b.classList.add("disabled"));
@@ -580,7 +629,8 @@
     });
 
     if(!isCorrect){
-      wrongs.push({ q: q.qText, correct: q.correct, picked, reason: "wrong" });
+      // ✅ Review에는 picked를 표시하지 않지만, 내부 reason은 유지
+      wrongs.push({ q: q.qText, correct: q.correct, reason: "wrong" });
     }
 
     setTimeout(()=>{
@@ -595,7 +645,6 @@
 
     const total = questions.length;
     const correctCount = total - wrongs.length;
-
     score = Math.round((correctCount / Math.max(1,total)) * 100);
 
     // ✅ Attempts: 매 시도 +1
@@ -605,8 +654,6 @@
     updatePills();
 
     const passed = score >= 80;
-
-    // ✅ 80 미만이면 Review 먼저
     if(!passed) showReviewScreen_();
     else showResultScreen(true);
 
@@ -615,9 +662,11 @@
   }
 
   function showReviewScreen_(){
+    // ✅ Review 화면에서는 시간/설정 UI가 숨겨짐(CSS로)
     showOnly("reviewBox");
+
     $("reviewMsg").textContent =
-      `80-аас доош оноо авсан тул эхлээд Review харуулна.\n` +
+      `80-аас доош оноо авсан тул эхлээд\nReview харуулна.\n` +
       `Одоо: ${score} / 100\n` +
       `Attempts: ${attempts}`;
 
@@ -625,15 +674,12 @@
     list.innerHTML = "";
 
     wrongs.forEach((w,i)=>{
-      const isTimeout = w.reason === "timeout";
-      const yourText = isTimeout ? "TIMEOUT" : w.picked;
-
+      const timeoutBadge = (w.reason==="timeout") ? `<span class="badgeTimeout">시간 초과</span>` : "";
       const div = document.createElement("div");
       div.className = "reviewItem";
       div.innerHTML =
-        `<div class="reviewNo">#${i+1}</div>` +
+        `<div class="reviewNo">#${i+1}${timeoutBadge}</div>` +
         `<div class="reviewQ">Q: ${escapeHtml_(w.q)}</div>` +
-        `<div class="reviewYour">Your: ${escapeHtml_(yourText)}</div>` +
         `<div class="reviewAns">Ans: ${escapeHtml_(w.correct)}</div>`;
       list.appendChild(div);
     });
@@ -643,7 +689,6 @@
     showOnly("resultBox");
 
     const date = new Date().toLocaleString();
-
     const headline = passed ? `${NAME} Тэнцлээ!` : `${NAME} Result`;
     const hEl = $("resultHeadline");
     if(hEl) hEl.textContent = headline;
@@ -740,6 +785,8 @@
       $("choices").innerHTML = "";
       return;
     }
+    // 기본 속도 버튼 상태 반영
+    setSpeed(SPEED);
     restartQuiz();
   })();
 </script>
