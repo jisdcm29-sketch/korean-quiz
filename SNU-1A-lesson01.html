@@ -33,12 +33,12 @@
   .pill{font-size:11px; padding:5px 9px; border-radius:999px; border:1px solid var(--line); background:#f7fbff;}
   .pill b{font-weight:900}
 
-  .modeBtn, #modeKo, #modeMn{
+  .modeBtn, .speedBtn{
     border:2px solid var(--primary); background:#fff; color:var(--text);
     padding:7px 9px; border-radius:12px; font-weight:900; cursor:pointer;
     min-width:132px; font-size: clamp(11px, 3.1vw, 13px); line-height:1.15; white-space:normal;
   }
-  .modeBtn.active, #modeKo.active, #modeMn.active{background:var(--primary); color:#fff;}
+  .modeBtn.active, .speedBtn.active{background:var(--primary); color:#fff;}
 
   .main{flex:1; min-height:0; display:flex; flex-direction:column; gap:6px;}
   .qbox{
@@ -46,21 +46,21 @@
     display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;
   }
   .qNo{font-size:12px; color:var(--muted); text-align:left;}
-  .qText, #qText{
+  .qText{
     font-size: clamp(20px, 5.8vw, 34px);
     font-weight:900; line-height:1.10;
     word-break:keep-all; overflow-wrap:anywhere; margin-top:0;
   }
-  .choices, #choices{display:grid; grid-template-columns:1fr; gap:10px; margin-top:4px;}
-  .choice, #choices .choice, #choices button{
+  .choices{display:grid; grid-template-columns:1fr; gap:10px; margin-top:4px;}
+  .choice{
     width:100%; padding:12px 10px; border-radius:16px; border:2px solid var(--primary);
     background:#fff; color:var(--text); font-weight:900; cursor:pointer; transition:.15s;
     word-break:keep-all; overflow-wrap:anywhere; line-height:1.12;
     font-size: clamp(16px, 4.6vw, 24px);
     min-height:50px; display:flex; align-items:center; justify-content:center; text-align:center;
   }
-  .choice:hover, #choices button:hover{background:var(--primary); color:#fff;}
-  .choice.disabled, #choices button:disabled{opacity:.55; cursor:not-allowed;}
+  .choice:hover{background:var(--primary); color:#fff;}
+  .choice.disabled{opacity:.55; cursor:not-allowed;}
   .choice.correct{border-color:var(--ok);}
   .choice.wrong{border-color:var(--bad);}
 
@@ -94,14 +94,14 @@
     .container{height:calc(100vh - 12px); padding:9px; gap:5px;}
     .sub{font-size:11px;}
     .pill{font-size:10.5px; padding:4px 8px;}
-    .modeBtn, #modeKo, #modeMn{
+    .modeBtn, .speedBtn{
       min-width:128px; padding:6px 8px;
       font-size: clamp(10.5px, 3.0vw, 12px);
     }
     .qbox{padding:9px; gap:7px;}
-    .qText, #qText{font-size: clamp(18px, 5.6vw, 30px);}
-    .choices, #choices{gap:9px;}
-    .choice, #choices button{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
+    .qText{font-size: clamp(18px, 5.6vw, 30px);}
+    .choices{gap:9px;}
+    .choice{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
     .btn{padding:9px; font-size:12.5px;}
   }
 
@@ -156,15 +156,22 @@
   <div class="header">
     <h1 class="title">SNU 1A · Lesson 01</h1>
     <p class="sub" id="userLine">...</p>
+
     <div class="row">
       <span class="pill">Score: <b id="scorePill">0</b>/100</span>
       <span class="pill">Attempts: <b id="attemptPill">0</b></span>
+      <span class="pill">Time: <b id="timePill">-</b>s</span>
       <span class="pill">Date: <b id="datePill">-</b></span>
     </div>
 
     <div class="row" style="margin-top:8px;">
       <button class="modeBtn active" id="modeKo" onclick="setMode('KOQ')">한국어 질문 → 몽골어 보기</button>
       <button class="modeBtn" id="modeMn" onclick="setMode('MNQ')">Монгол асуулт → 한국어 보기</button>
+    </div>
+
+    <div class="row" style="margin-top:6px;">
+      <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통 · 15s</button>
+      <button class="speedBtn" id="speedFast" onclick="setSpeed('fast')">빠름 · 10s</button>
     </div>
 
     <div class="msg warn hidden" id="topMsg"></div>
@@ -182,7 +189,7 @@
         <button class="btn gray" onclick="goBackHub()">← Hub</button>
         <button class="btn gray" onclick="restartQuiz()">Restart</button>
       </div>
-      <div class="small">※ 4 choices / Language-cross / JSONP log</div>
+      <div class="small">※ 4 choices / Language-cross / JSONP log / timeout=wrong+next</div>
     </div>
 
     <!-- REVIEW -->
@@ -214,9 +221,13 @@
 </div>
 
 <script>
+  // ====== CONFIG ======
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
   const BOOK = "SNU-1A";
   const LESSON = "lesson01";
+
+  // 단어 타이머(지침): 보통 15초 / 빠름 10초
+  const TIME_LIMIT = { normal: 15, fast: 10 }; // word lesson
 
   const WORDS = [
     { ko: "공항", mn: "нисэх онгоцны буудал" },
@@ -262,6 +273,7 @@
     { ko: "독일", mn: "Герман" }
   ];
 
+  // ====== URL PARAMS ======
   const qs = new URLSearchParams(location.search);
   const NAME = (qs.get("name") || "").trim();
   const KLASS = (qs.get("klass") || "").trim();
@@ -270,14 +282,22 @@
   const deviceId = getDeviceId_();
   const ua = navigator.userAgent || "";
 
-  const attemptKey = `kquiz_attempt_fail__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
-  let failAttempts = Number(localStorage.getItem(attemptKey) || "0");
+  // ✅ Attempts: "모든 시도" 카운트 (합/불과 무관)
+  const attemptKey = `kquiz_attempt__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
+  let attempts = Number(localStorage.getItem(attemptKey) || "0");
 
+  // ====== STATE ======
   let MODE = "KOQ";
+  let SPEED = "normal"; // default: 보통
   let idx = 0;
   let score = 0;
   let questions = [];
   let wrongs = [];
+
+  // timer
+  let remainSec = 0;
+  let tickId = null;
+  let questionLocked = false;
 
   const $ = (id)=>document.getElementById(id);
 
@@ -296,9 +316,10 @@
 
   function updatePills(){
     $("scorePill").textContent = String(score);
-    $("attemptPill").textContent = String(failAttempts);
+    $("attemptPill").textContent = String(attempts);
     $("datePill").textContent = new Date().toLocaleDateString();
     $("userLine").textContent = `${NAME} · ${KLASS} · ${BOOK} · ${LESSON}`;
+    $("timePill").textContent = (remainSec>0 ? String(remainSec) : "-");
   }
 
   function setMode(mode){
@@ -308,7 +329,15 @@
     restartQuiz();
   }
 
+  function setSpeed(speed){
+    SPEED = speed;
+    $("speedNormal").classList.toggle("active", SPEED==="normal");
+    $("speedFast").classList.toggle("active", SPEED==="fast");
+    restartQuiz();
+  }
+
   function showOnly(boxId){
+    stopTimer_();
     $("quizBox").classList.add("hidden");
     $("reviewBox").classList.add("hidden");
     $("resultBox").classList.add("hidden");
@@ -428,7 +457,9 @@
   }
 
   function renderQuestion_(){
+    questionLocked = false;
     setTopMsg("", "");
+
     const total = questions.length;
     const q = questions[idx];
 
@@ -445,9 +476,64 @@
       btn.onclick = ()=> pickAnswer_(choiceText);
       wrap.appendChild(btn);
     });
+
+    startTimer_();
+  }
+
+  function startTimer_(){
+    stopTimer_();
+    remainSec = TIME_LIMIT[SPEED] || 15;
+    updatePills();
+
+    tickId = setInterval(()=>{
+      remainSec--;
+      if(remainSec <= 0){
+        remainSec = 0;
+        updatePills();
+        stopTimer_();
+        handleTimeout_();
+        return;
+      }
+      updatePills();
+    }, 1000);
+  }
+
+  function stopTimer_(){
+    if(tickId){
+      clearInterval(tickId);
+      tickId = null;
+    }
+  }
+
+  function handleTimeout_(){
+    if(questionLocked) return;
+    questionLocked = true;
+
+    const q = questions[idx];
+
+    // ✅ 시간 초과 = 오답 + 자동 다음
+    wrongs.push({ q: q.qText, correct: q.correct, picked: "⏱ TIMEOUT", reason: "timeout" });
+
+    // 버튼 비활성화 표시
+    const buttons = Array.from(document.querySelectorAll(".choice"));
+    buttons.forEach(b => b.classList.add("disabled"));
+    buttons.forEach(b=>{
+      if(b.textContent === q.correct) b.classList.add("correct");
+    });
+
+    setTimeout(()=>{
+      idx++;
+      if(idx >= questions.length) finishQuiz_();
+      else renderQuestion_();
+    }, 180);
   }
 
   function pickAnswer_(picked){
+    if(questionLocked) return;
+    questionLocked = true;
+
+    stopTimer_();
+
     const q = questions[idx];
     const buttons = Array.from(document.querySelectorAll(".choice"));
     buttons.forEach(b => b.classList.add("disabled"));
@@ -460,7 +546,7 @@
     });
 
     if(!isCorrect){
-      wrongs.push({ q: q.qText, correct: q.correct, picked });
+      wrongs.push({ q: q.qText, correct: q.correct, picked, reason: "wrong" });
     }
 
     setTimeout(()=>{
@@ -471,26 +557,27 @@
   }
 
   function finishQuiz_(){
+    stopTimer_();
+
     const total = questions.length;
     const correctCount = total - wrongs.length;
 
     score = Math.round((correctCount / Math.max(1,total)) * 100);
+
+    // ✅ Attempts: 매번 증가(합/불 무관)
+    attempts += 1;
+    localStorage.setItem(attemptKey, String(attempts));
+
     updatePills();
 
-    const passedByScore = score >= 80;
-    if(!passedByScore){
-      failAttempts += 1;
-      localStorage.setItem(attemptKey, String(failAttempts));
-    }
+    const passed = score >= 80;
 
-    const passedByAttempts = failAttempts >= 5;
-    const finalPass = passedByScore || passedByAttempts;
+    // ✅ 80 미만이면 Review 먼저 → 그 다음 Result
+    if(!passed) showReviewScreen_();
+    else showResultScreen(true);
 
-    if(finalPass) showResultScreen(true, passedByAttempts && !passedByScore);
-    else showReviewScreen_();
-
-    // ✅ 로그는 화면 전환 지연 없이 뒤에서 처리
-    safeLog_(score, failAttempts);
+    // ✅ 로그는 "모든 시도" 무조건 전송(비동기)
+    safeLog_(score, attempts);
   }
 
   function showReviewScreen_(){
@@ -498,51 +585,53 @@
     $("reviewMsg").textContent =
       `80-аас доош оноо авсан тул эхлээд Review харуулна.\n` +
       `Одоо: ${score} / 100\n` +
-      `Fail attempts: ${failAttempts} (5 хүрвэл онооноос үл хамааран тэнцэнэ)`;
+      `Attempts: ${attempts}`;
 
     const list = $("reviewList");
     list.innerHTML = "";
+
     wrongs.forEach((w,i)=>{
+      const isTimeout = w.reason === "timeout";
+      const tag = isTimeout ? `<span style="display:inline-block; padding:2px 7px; border-radius:999px; border:1px solid #feb2b2; background:#fff5f5; color:#7a1f1f; font-weight:900; margin-left:6px;">시간 초과</span>` : "";
+      const yourLine = isTimeout ? `Your: ⏱ TIMEOUT` : `Your: ${escapeHtml_(w.picked)}`;
+
       const div = document.createElement("div");
       div.className = "reviewItem";
       div.innerHTML =
-        `<b>#${i+1}</b>` +
+        `<b>#${i+1}</b>${tag}` +
         `<div>Q: ${escapeHtml_(w.q)}</div>` +
-        `<div style="color:var(--bad); font-weight:900;">Your: ${escapeHtml_(w.picked)}</div>` +
+        `<div style="color:var(--bad); font-weight:900;">${yourLine}</div>` +
         `<div style="color:var(--ok); font-weight:900;">Ans: ${escapeHtml_(w.correct)}</div>`;
       list.appendChild(div);
     });
   }
 
-  function showResultScreen(passed=true, passedByAttempts=false){
+  function showResultScreen(passed=true){
     showOnly("resultBox");
 
     const date = new Date().toLocaleString();
 
     const headline = passed ? `${NAME} Тэнцлээ!` : `${NAME} Result`;
-    const hEl = document.getElementById("resultHeadline");
+    const hEl = $("resultHeadline");
     if(hEl) hEl.textContent = headline;
 
-    const passNote = (passedByAttempts && !passed)
-      ? `\n✅ 5+ удаа оролдсон тул онооноос үл хамааран тэнцүүлэв.`
-      : "";
-
     const meta =
+      `Name: ${NAME}\n` +
       `Class: ${KLASS}\n` +
       `Book: ${BOOK}\n` +
       `Lesson: ${LESSON}\n` +
       `Score: ${score} / 100\n` +
-      `Attempts: ${failAttempts}\n` +
-      `Date: ${date}` +
-      passNote;
+      `Attempts: ${attempts}\n` +
+      `Date: ${date}`;
 
-    const metaEl = document.getElementById("resultMeta");
+    const metaEl = $("resultMeta");
     if(metaEl) metaEl.textContent = meta;
 
-    const blessEl = document.getElementById("blessLine");
+    // ✅ 결과 화면에는 항상 지정 문구 표시
+    const blessEl = $("blessLine");
     if(blessEl){
       blessEl.textContent = "Есүс танд хайртай!";
-      blessEl.style.display = passed ? "block" : "none";
+      blessEl.style.display = "block";
     }
   }
 
@@ -572,9 +661,11 @@
   }
 
   function restartQuiz(){
+    stopTimer_();
     idx = 0;
     score = 0;
     wrongs = [];
+    remainSec = 0;
     updatePills();
     buildQuestions_();
     showOnly("quizBox");
