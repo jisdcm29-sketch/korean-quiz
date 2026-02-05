@@ -105,52 +105,52 @@
     .btn{padding:9px; font-size:12.5px;}
   }
 
-  /* ===== Result (Safe layout: no cut / smooth) ===== */
+  /* ===== Result (NO SCROLL / smaller text) ===== */
   .resultHeadline{
-    font-size: clamp(26px, 7vw, 42px);
+    font-size: clamp(24px, 6.2vw, 38px);   /* ↓ 조금 줄임 */
     font-weight: 900;
-    margin: 2px 0 8px;
+    margin: 0 0 6px;
     letter-spacing: -0.5px;
-    line-height: 1.05;
+    line-height: 1.03;
   }
 
   .resultCard{
     border: 2px solid var(--okline);
     background: #f3fff6;
     border-radius: 18px;
-    padding: 12px 12px 12px;
+    padding: 10px 12px;                   /* ↓ 패딩 줄임 */
     text-align: left;
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    gap: 10px;
-    overflow: auto;              /* ✅ 작은 화면에서 안 잘리게 스크롤 허용 */
-    -webkit-overflow-scrolling: touch;
+    justify-content: space-between;
+    gap: 8px;
+    overflow: hidden;                      /* ✅ 스크롤 금지 */
   }
 
   .resultLeft{
     color: var(--ok);
     font-weight: 900;
-    line-height: 1.55;
-    font-size: 16px;
+    line-height: 1.45;                     /* ↓ 줄간격 줄임 */
+    font-size: 15px;                       /* ↓ 글자 줄임 */
     white-space: pre-line;
   }
 
   .resultBless{
     text-align: center;
     font-weight: 900;
-    font-size: clamp(20px, 6.2vw, 34px); /* ✅ 너무 커서 잘리는 문제 방지 */
+    font-size: clamp(18px, 5.2vw, 28px);   /* ✅ 크게 줄임(잘림 방지) */
     color: #111;
-    line-height: 1.12;
+    line-height: 1.08;                     /* ↓ 줄간격 줄임 */
     word-break: keep-all;
     overflow-wrap: anywhere;
-    padding: 6px 0 2px;          /* ✅ 하단 잘림 방지 */
+    padding: 4px 0 2px;                    /* ↓ 여백 줄임 */
   }
 
   @media (max-width: 390px){
-    .resultLeft{font-size: 15px;}
-    .resultBless{padding-bottom: 10px;}
+    .resultLeft{font-size: 14px;}
+    .resultBless{font-size: clamp(17px, 5.1vw, 26px);}
   }
   </style>
 </head>
@@ -200,7 +200,7 @@
       </div>
     </div>
 
-    <!-- RESULT (샘플 스타일 / 캡처 버튼 제거 / 잘림 방지) -->
+    <!-- RESULT -->
     <div class="qbox hidden" id="resultBox">
       <div class="resultHeadline" id="resultHeadline">Тэнцлээ!</div>
 
@@ -218,16 +218,10 @@
 </div>
 
 <script>
-  /***********************
-   * CONFIG
-   ***********************/
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
   const BOOK = "SNU-1A";
   const LESSON = "lesson08";
 
-  /***********************
-   * WORD DATA (PDF 표기 그대로)
-   ***********************/
   const WORDS = [
     { ko: "골프", mn: "гольф" },
     { ko: "테니스", mn: "теннис" },
@@ -271,9 +265,6 @@
     { ko: "맑다", mn: "цэлмэг" }
   ];
 
-  /***********************
-   * STATE
-   ***********************/
   const qs = new URLSearchParams(location.search);
   const NAME = (qs.get("name") || "").trim();
   const KLASS = (qs.get("klass") || "").trim();
@@ -285,11 +276,11 @@
   const attemptKey = `kquiz_attempt_fail__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
   let failAttempts = Number(localStorage.getItem(attemptKey) || "0");
 
-  let MODE = "KOQ"; // KOQ: 한국어 질문→몽골어 보기, MNQ: 몽골어 질문→한국어 보기
+  let MODE = "KOQ";
   let idx = 0;
   let score = 0;
   let questions = [];
-  let wrongs = []; // {q, correct, picked}
+  let wrongs = [];
 
   const $ = (id)=>document.getElementById(id);
 
@@ -397,7 +388,7 @@
     const pool = WORDS.slice().filter(x => x && x.ko && x.mn);
     shuffle_(pool);
 
-    const base = pool; // ✅ 전체 출제
+    const base = pool; // 전체 출제
     questions = base.map(item => {
       const qText = (MODE==="KOQ") ? item.ko : item.mn;
       const correct = (MODE==="KOQ") ? item.mn : item.ko;
@@ -475,14 +466,10 @@
       wrongs.push({ q: q.qText, correct: q.correct, picked });
     }
 
-    // ✅ 마지막 문제 후 화면 전환이 자연스럽도록 대기 시간 단축
     setTimeout(()=>{
       idx++;
-      if(idx >= questions.length){
-        finishQuiz_();
-      }else{
-        renderQuestion_();
-      }
+      if(idx >= questions.length) finishQuiz_();
+      else renderQuestion_();
     }, 180);
   }
 
@@ -494,7 +481,6 @@
     updatePills();
 
     const passedByScore = score >= 80;
-
     if(!passedByScore){
       failAttempts += 1;
       localStorage.setItem(attemptKey, String(failAttempts));
@@ -503,14 +489,10 @@
     const passedByAttempts = failAttempts >= 5;
     const finalPass = passedByScore || passedByAttempts;
 
-    // ✅ 화면을 먼저 보여주고(즉시), 로그는 뒤에서 보냄(지연 제거)
-    if(finalPass){
-      showResultScreen(true, passedByAttempts && !passedByScore);
-    }else{
-      showReviewScreen_();
-    }
+    if(finalPass) showResultScreen(true, passedByAttempts && !passedByScore);
+    else showReviewScreen_();
 
-    // ✅ 로그는 await 없이 백그라운드 처리
+    // 로그는 지연 없이 뒤에서 처리
     safeLog_(score, failAttempts);
   }
 
@@ -535,7 +517,6 @@
     });
   }
 
-  // ✅ 샘플형 RESULT 화면 (잘림 방지 / 즉시 전환)
   function showResultScreen(passed=true, passedByAttempts=false){
     showOnly("resultBox");
 
@@ -566,10 +547,6 @@
       blessEl.textContent = "Есүс танд хайртай!";
       blessEl.style.display = passed ? "block" : "none";
     }
-
-    // ✅ 결과 카드 스크롤이 맨 위로 고정(잘림/중간 위치 방지)
-    const card = document.getElementById("resultCard");
-    if(card) card.scrollTop = 0;
   }
 
   async function safeLog_(scoreNum, attemptsNum){
