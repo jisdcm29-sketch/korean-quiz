@@ -51,6 +51,16 @@
     font-weight:900; line-height:1.10;
     word-break:keep-all; overflow-wrap:anywhere; margin-top:0;
   }
+
+  /* ✅ Review 제목 크게(샘플처럼) */
+  .reviewTitle{
+    font-size: clamp(34px, 9vw, 52px);
+    font-weight: 900;
+    margin: 0;
+    letter-spacing: -0.6px;
+    line-height: 1.0;
+  }
+
   .choices{display:grid; grid-template-columns:1fr; gap:10px; margin-top:4px;}
   .choice{
     width:100%; padding:12px 10px; border-radius:16px; border:2px solid var(--primary);
@@ -100,6 +110,7 @@
     }
     .qbox{padding:9px; gap:7px;}
     .qText{font-size: clamp(18px, 5.6vw, 30px);}
+    .reviewTitle{font-size: clamp(32px, 9.5vw, 48px);}
     .choices{gap:9px;}
     .choice{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
     .btn{padding:9px; font-size:12.5px;}
@@ -170,8 +181,9 @@
     </div>
 
     <div class="row" style="margin-top:6px;">
-      <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통 · 15s</button>
-      <button class="speedBtn" id="speedFast" onclick="setSpeed('fast')">빠름 · 10s</button>
+      <!-- ✅ 보통=10초(기본), 느림=12초 -->
+      <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통 · 10s</button>
+      <button class="speedBtn" id="speedSlow" onclick="setSpeed('slow')">느림 · 12s</button>
     </div>
 
     <div class="msg warn hidden" id="topMsg"></div>
@@ -194,7 +206,7 @@
 
     <!-- REVIEW -->
     <div class="qbox hidden" id="reviewBox">
-      <div class="qText">Review</div>
+      <div class="reviewTitle">Review</div>
       <div class="msg warn" id="reviewMsg"></div>
       <div class="reviewList" id="reviewList"></div>
       <div class="footerBtns">
@@ -226,8 +238,8 @@
   const BOOK = "SNU-1A";
   const LESSON = "lesson01";
 
-  // 단어 타이머(지침): 보통 15초 / 빠름 10초
-  const TIME_LIMIT = { normal: 15, fast: 10 }; // word lesson
+  // ✅ 시간: 보통 10초(기본), 느림 12초
+  const TIME_LIMIT = { normal: 10, slow: 12 };
 
   const WORDS = [
     { ko: "공항", mn: "нисэх онгоцны буудал" },
@@ -282,13 +294,13 @@
   const deviceId = getDeviceId_();
   const ua = navigator.userAgent || "";
 
-  // ✅ Attempts: "모든 시도" 카운트 (합/불과 무관)
+  // ✅ Attempts: "모든 시도" 카운트
   const attemptKey = `kquiz_attempt__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
   let attempts = Number(localStorage.getItem(attemptKey) || "0");
 
   // ====== STATE ======
   let MODE = "KOQ";
-  let SPEED = "normal"; // default: 보통
+  let SPEED = "normal"; // ✅ 기본: 보통(10s)
   let idx = 0;
   let score = 0;
   let questions = [];
@@ -332,7 +344,7 @@
   function setSpeed(speed){
     SPEED = speed;
     $("speedNormal").classList.toggle("active", SPEED==="normal");
-    $("speedFast").classList.toggle("active", SPEED==="fast");
+    $("speedSlow").classList.toggle("active", SPEED==="slow");
     restartQuiz();
   }
 
@@ -482,7 +494,7 @@
 
   function startTimer_(){
     stopTimer_();
-    remainSec = TIME_LIMIT[SPEED] || 15;
+    remainSec = TIME_LIMIT[SPEED] ?? 10;
     updatePills();
 
     tickId = setInterval(()=>{
@@ -514,7 +526,6 @@
     // ✅ 시간 초과 = 오답 + 자동 다음
     wrongs.push({ q: q.qText, correct: q.correct, picked: "⏱ TIMEOUT", reason: "timeout" });
 
-    // 버튼 비활성화 표시
     const buttons = Array.from(document.querySelectorAll(".choice"));
     buttons.forEach(b => b.classList.add("disabled"));
     buttons.forEach(b=>{
@@ -564,7 +575,7 @@
 
     score = Math.round((correctCount / Math.max(1,total)) * 100);
 
-    // ✅ Attempts: 매번 증가(합/불 무관)
+    // ✅ Attempts: 매 시도 +1 (합/불 무관)
     attempts += 1;
     localStorage.setItem(attemptKey, String(attempts));
 
@@ -572,11 +583,11 @@
 
     const passed = score >= 80;
 
-    // ✅ 80 미만이면 Review 먼저 → 그 다음 Result
+    // ✅ 80 미만이면 Review 먼저 → Result는 버튼으로 이동
     if(!passed) showReviewScreen_();
     else showResultScreen(true);
 
-    // ✅ 로그는 "모든 시도" 무조건 전송(비동기)
+    // ✅ 로그는 모든 시도 무조건 전송(비동기)
     safeLog_(score, attempts);
   }
 
@@ -592,7 +603,9 @@
 
     wrongs.forEach((w,i)=>{
       const isTimeout = w.reason === "timeout";
-      const tag = isTimeout ? `<span style="display:inline-block; padding:2px 7px; border-radius:999px; border:1px solid #feb2b2; background:#fff5f5; color:#7a1f1f; font-weight:900; margin-left:6px;">시간 초과</span>` : "";
+      const tag = isTimeout
+        ? `<span style="display:inline-block; padding:2px 7px; border-radius:999px; border:1px solid #feb2b2; background:#fff5f5; color:#7a1f1f; font-weight:900; margin-left:6px;">시간 초과</span>`
+        : "";
       const yourLine = isTimeout ? `Your: ⏱ TIMEOUT` : `Your: ${escapeHtml_(w.picked)}`;
 
       const div = document.createElement("div");
@@ -627,7 +640,6 @@
     const metaEl = $("resultMeta");
     if(metaEl) metaEl.textContent = meta;
 
-    // ✅ 결과 화면에는 항상 지정 문구 표시
     const blessEl = $("blessLine");
     if(blessEl){
       blessEl.textContent = "Есүс танд хайртай!";
