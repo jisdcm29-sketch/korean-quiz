@@ -10,141 +10,101 @@
 
   <style>
   :root{
-    --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5;
+    --bg:#f0f4f8; --card:#ffffff; --primary:#2d6cdf; --primary2:#1f4ea5;
     --line:#d9e4f5; --text:#223047; --muted:#6a7a8e; --ok:#0f7a3d; --bad:#c0392b;
     --warnbg:#fff5f5; --warnline:#feb2b2; --okbg:#f0fff4; --okline:#b7f0c7;
   }
   *{box-sizing:border-box}
   body{
-    margin:0; padding:10px; background:var(--bg); color:var(--text);
+    margin:0; padding:8px; background:var(--bg); color:var(--text);
     font-family: Arial, system-ui, -apple-system, "Segoe UI", sans-serif;
-    text-align:center;
-    -webkit-text-size-adjust:100%;
+    text-align:center; -webkit-text-size-adjust:100%;
   }
-
-  /* ✅ 아래 여백이 남는 문제를 줄이기 위해: 컨테이너 높이/패딩 조정 */
   .container{
-    max-width:560px; margin:0 auto;
-    height:calc(100vh - 20px);
+    max-width:560px; margin:0 auto; height:calc(100vh - 16px);
     background:var(--card); border:1px solid var(--line); border-radius:18px;
     box-shadow:0 10px 20px rgba(0,0,0,.08);
-    display:flex; flex-direction:column;
-    gap:8px;
-    padding:12px;
+    display:flex; flex-direction:column; gap:6px; padding:10px;
   }
-
-  .header{
-    position:sticky; top:0; background:var(--card);
-    padding:4px 4px 0; z-index:5;
-  }
+  .header{position:sticky; top:0; background:var(--card); padding:2px 4px 0; z-index:5;}
   .title{margin:0; font-size:18px; font-weight:900;}
-  .sub{margin:6px 0 0; color:var(--muted); font-size:13px; line-height:1.35;}
-  .row{display:flex; gap:8px; align-items:center; justify-content:center; flex-wrap:wrap;}
-  .pill{
-    font-size:12px; padding:6px 10px; border-radius:999px;
-    border:1px solid var(--line); background:#f7fbff;
-  }
+  .sub{margin:4px 0 0; color:var(--muted); font-size:12px; line-height:1.25;}
+  .row{display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap;}
+  .pill{font-size:11px; padding:5px 9px; border-radius:999px; border:1px solid var(--line); background:#f7fbff;}
   .pill b{font-weight:900}
 
-  .modeBtn{
+  .modeBtn, #modeKo, #modeMn{
     border:2px solid var(--primary); background:#fff; color:var(--text);
-    padding:10px 12px; border-radius:12px; font-weight:900; cursor:pointer;
-    min-width:160px;
-    font-size:14px;
+    padding:7px 9px; border-radius:12px; font-weight:900; cursor:pointer;
+    min-width:132px; font-size: clamp(11px, 3.1vw, 13px); line-height:1.15; white-space:normal;
   }
-  .modeBtn.active{background:var(--primary); color:#fff;}
+  .modeBtn.active, #modeKo.active, #modeMn.active{background:var(--primary); color:#fff;}
 
-  .main{
-    flex:1; min-height:0;
-    display:flex; flex-direction:column;
-    gap:8px;
-  }
-
-  /* ✅ 하단 여백을 먹는 요소를 줄이고, 퀴즈 영역을 키움 */
+  .main{flex:1; min-height:0; display:flex; flex-direction:column; gap:6px;}
   .qbox{
-    border:1px solid var(--line); border-radius:16px;
-    padding:12px; background:#fff;
-    display:flex; flex-direction:column;
-    gap:10px;
-    flex:1;              /* ✅ 남는 공간을 qbox가 더 먹게 */
-    min-height:0;
+    border:1px solid var(--line); border-radius:16px; padding:10px; background:#fff;
+    display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;
   }
-
-  .qNo{font-size:13px; color:var(--muted); text-align:left;}
-
-  /* ✅ 질문 어휘를 크게 */
-  .qText{
-    font-size: clamp(30px, 8.2vw, 48px);
-    font-weight:900;
-    line-height:1.15;
-    word-break:keep-all;
-    margin-top:2px;
+  .qNo{font-size:12px; color:var(--muted); text-align:left;}
+  .qText, #qText{
+    font-size: clamp(20px, 5.8vw, 34px);
+    font-weight:900; line-height:1.10;
+    word-break:keep-all; overflow-wrap:anywhere; margin-top:0;
   }
-
-  /* ✅ 선택지 1열 */
-  .choices{
-    display:grid;
-    grid-template-columns: 1fr;
-    gap:12px;
-    margin-top:6px;
+  .choices, #choices{display:grid; grid-template-columns:1fr; gap:10px; margin-top:4px;}
+  .choice, #choices .choice, #choices button{
+    width:100%; padding:12px 10px; border-radius:16px; border:2px solid var(--primary);
+    background:#fff; color:var(--text); font-weight:900; cursor:pointer; transition:.15s;
+    word-break:keep-all; overflow-wrap:anywhere; line-height:1.12;
+    font-size: clamp(16px, 4.6vw, 24px);
+    min-height:50px; display:flex; align-items:center; justify-content:center; text-align:center;
   }
-
-  /* ✅ 선택지 글씨/버튼 크게 (아래 여백 활용) */
-  .choice{
-    width:100%;
-    padding:18px 14px;
-    border-radius:16px;
-    border:2px solid var(--primary);
-    background:#fff;
-    font-weight:900;
-    cursor:pointer;
-    transition:.15s;
-    word-break:keep-all;
-    line-height:1.18;
-    font-size: clamp(22px, 6.2vw, 34px);
-    min-height:72px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
-  }
-
-  .choice:hover{background:var(--primary); color:#fff;}
-  .choice.disabled{opacity:.55; cursor:not-allowed;}
+  .choice:hover, #choices button:hover{background:var(--primary); color:#fff;}
+  .choice.disabled, #choices button:disabled{opacity:.55; cursor:not-allowed;}
   .choice.correct{border-color:var(--ok);}
   .choice.wrong{border-color:var(--bad);}
 
-  /* 버튼 영역은 조금 줄여서 내용(문제/선택지)에 공간을 줌 */
-  .footerBtns{display:flex; gap:10px; margin-top:2px;}
+  .footerBtns{display:flex; gap:10px; margin-top:0;}
   .btn{
-    flex:1;
-    padding:11px; border:none; border-radius:12px;
-    background:var(--primary); color:#fff;
-    font-weight:900; cursor:pointer;
-    font-size:14px;
+    flex:1; padding:10px; border:none; border-radius:12px; background:var(--primary);
+    color:#fff; font-weight:900; cursor:pointer; font-size:13px;
   }
   .btn:hover{background:var(--primary2);}
   .btn.gray{background:#eef2f7; color:var(--text); border:1px solid #d7dee7;}
   .btn.gray:hover{background:#e2e8f0;}
 
   .msg{
-    padding:10px 12px; border-radius:12px; text-align:left; font-size:13px; line-height:1.45;
-    white-space:pre-line;
+    padding:9px 10px; border-radius:12px; text-align:left;
+    font-size:12px; line-height:1.35; white-space:pre-line;
   }
   .msg.warn{background:var(--warnbg); border:1px solid var(--warnline); color:#7a1f1f;}
   .msg.ok{background:var(--okbg); border:1px solid var(--okline); color:#0f7a3d;}
   .hidden{display:none !important;}
 
   .reviewList{
-    text-align:left; border:1px solid var(--line); border-radius:14px; padding:12px;
-    overflow:auto; max-height:38vh; background:#fff;
-    font-size:13px; line-height:1.5;
+    text-align:left; border:1px solid var(--line); border-radius:14px; padding:10px;
+    overflow:auto; max-height:38vh; background:#fff; font-size:12px; line-height:1.45;
   }
   .reviewItem{padding:8px 0; border-bottom:1px dashed #e6eefb;}
   .reviewItem:last-child{border-bottom:none;}
-  .small{font-size:12px; color:var(--muted);}
-</style>
+  .small{font-size:11px; color:var(--muted);}
 
+  @media (max-width: 390px){
+    body{padding:6px;}
+    .container{height:calc(100vh - 12px); padding:9px; gap:5px;}
+    .sub{font-size:11px;}
+    .pill{font-size:10.5px; padding:4px 8px;}
+    .modeBtn, #modeKo, #modeMn{
+      min-width:128px; padding:6px 8px;
+      font-size: clamp(10.5px, 3.0vw, 12px);
+    }
+    .qbox{padding:9px; gap:7px;}
+    .qText, #qText{font-size: clamp(18px, 5.6vw, 30px);}
+    .choices, #choices{gap:9px;}
+    .choice, #choices button{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
+    .btn{padding:9px; font-size:12.5px;}
+  }
+  </style>
 </head>
 
 <body>
@@ -167,10 +127,8 @@
   </div>
 
   <div class="main">
-
-    <!-- QUIZ -->
     <div class="qbox" id="quizBox">
-      <div class="qNo" id="qNo">Q 1 / 10</div>
+      <div class="qNo" id="qNo">Q 1 / 0</div>
       <div class="qText" id="qText">...</div>
       <div class="choices" id="choices"></div>
 
@@ -181,7 +139,6 @@
       <div class="small">※ 4 choices / Language-cross / JSONP log</div>
     </div>
 
-    <!-- REVIEW -->
     <div class="qbox hidden" id="reviewBox">
       <div class="qText">Review</div>
       <div class="msg warn" id="reviewMsg"></div>
@@ -192,7 +149,6 @@
       </div>
     </div>
 
-    <!-- RESULT -->
     <div class="qbox hidden" id="resultBox">
       <div class="qText" id="resultTitle">Result</div>
       <div class="msg ok" id="resultMsg"></div>
@@ -205,69 +161,57 @@
         📌 <b>Скриншот</b> хийгээд багшдаа явуулаарай!
       </div>
     </div>
-
   </div>
 </div>
 
 <script>
-  /***********************
-   * CONFIG
-   ***********************/
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
   const BOOK = "SNU-1A";
-  const LESSON = "lesson01";
+  const LESSON = "lesson05";
 
-  /***********************
-   * WORD DATA (PDF 표기 그대로)
-   ***********************/
   const WORDS = [
-  { ko: "일", mn: "нэг" },
-  { ko: "이", mn: "хоёр" },
-  { ko: "삼", mn: "гурав" },
-  { ko: "사", mn: "дөрөв" },
-  { ko: "오", mn: "тав" },
-  { ko: "육", mn: "зургаа" },
-  { ko: "칠", mn: "долоо" },
-  { ko: "팔", mn: "найм" },
-  { ko: "구", mn: "ес" },
-  { ko: "십", mn: "арав" },
-  { ko: "월요일", mn: "Даваа гараг" },
-  { ko: "화요일", mn: "Мягмар гараг" },
-  { ko: "수요일", mn: "Лхагва гараг" },
-  { ko: "목요일", mn: "Пүрэв гараг" },
-  { ko: "금요일", mn: "Баасан гараг" },
-  { ko: "토요일", mn: "Бямба гараг" },
-  { ko: "일요일", mn: "Ням гараг" },
-  { ko: "주말", mn: "амралтын өдөр" },
-  { ko: "생일", mn: "Төрсөн өдөр" },
-  { ko: "약속", mn: "амлалт" },
+    { ko: "일", mn: "нэг" },
+    { ko: "이", mn: "хоёр" },
+    { ko: "삼", mn: "гурав" },
+    { ko: "사", mn: "дөрөв" },
+    { ko: "오", mn: "тав" },
+    { ko: "육", mn: "зургаа" },
+    { ko: "칠", mn: "долоо" },
+    { ko: "팔", mn: "найм" },
+    { ko: "구", mn: "ес" },
+    { ko: "십", mn: "арав" },
+    { ko: "월요일", mn: "Даваа гараг" },
+    { ko: "화요일", mn: "Мягмар гараг" },
+    { ko: "수요일", mn: "Лхагва гараг" },
+    { ko: "목요일", mn: "Пүрэв гараг" },
+    { ko: "금요일", mn: "Баасан гараг" },
+    { ko: "토요일", mn: "Бямба гараг" },
+    { ko: "일요일", mn: "Ням гараг" },
+    { ko: "주말", mn: "амралтын өдөр" },
+    { ko: "생일", mn: "Төрсөн өдөр" },
+    { ko: "약속", mn: "амлалт" },
+    { ko: "어제", mn: "өчигдөр" },
+    { ko: "내일", mn: "маргааш" },
+    { ko: "쇼핑하다", mn: "дэлгүүр хэсэх" },
+    { ko: "산책하다", mn: "салхилах" },
+    { ko: "사진을 찍다", mn: "зураг авах" },
+    { ko: "같이", mn: "хамт" },
+    { ko: "세수하다", mn: "нүүрээ угаах" },
+    { ko: "이를 닦다", mn: "шүдээ угаах" },
+    { ko: "선물", mn: "бэлэг" },
+    { ko: "파티", mn: "үдэшлэг" },
+    { ko: "명절", mn: "баярын өдөр" },
+    { ko: "음력", mn: "билийн тоолол" },
+    { ko: "양력", mn: "аргын тоолол" },
+    { ko: "며칠", mn: "хэд хоног" },
+    { ko: "언제", mn: "хэзээ" },
+    { ko: "그래서", mn: "тэгиймээс" },
+    { ko: "공항", mn: "нисэх онгоцны буудал" },
+    { ko: "은행", mn: "банк" },
+    { ko: "가게", mn: "дэлгүүр" },
+    { ko: "기념품", mn: "бэлэг дурсгал" }
+  ];
 
-  { ko: "어제", mn: "өчигдөр" },
-  { ko: "내일", mn: "маргааш" },
-  { ko: "쇼핑하다", mn: "дэлгүүр хэсэх" },
-  { ko: "산책하다", mn: "салхилах" },
-  { ko: "사진을 찍다", mn: "зураг авах" },
-  { ko: "같이", mn: "хамт" },
-  { ko: "세수하다", mn: "нүүрээ угаах" },
-  { ko: "이를 닦다", mn: "шүдээ угаах" },
-  { ko: "선물", mn: "бэлэг" },
-  { ko: "파티", mn: "үдэшлэг" },
-  { ko: "명절", mn: "баярын өдөр" },
-  { ko: "음력", mn: "билийн тоолол" },
-  { ko: "양력", mn: "аргын тоолол" },
-  { ko: "며칠", mn: "хэд хоног" },
-  { ko: "언제", mn: "хэзээ" },
-  { ko: "그래서", mn: "тэгиймээс" },
-  { ko: "공항", mn: "нисэх онгоцны буудал" },
-  { ko: "은행", mn: "банк" },
-  { ko: "가게", mn: "дэлгүүр" },
-  { ko: "기념품", mn: "бэлэг дурсгал" }
-];
-
-
-  /***********************
-   * STATE
-   ***********************/
   const qs = new URLSearchParams(location.search);
   const NAME = (qs.get("name") || "").trim();
   const KLASS = (qs.get("klass") || "").trim();
@@ -279,11 +223,11 @@
   const attemptKey = `kquiz_attempt_fail__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
   let failAttempts = Number(localStorage.getItem(attemptKey) || "0");
 
-  let MODE = "KOQ"; // KOQ: 한국어 질문→몽골어 보기, MNQ: 몽골어 질문→한국어 보기
+  let MODE = "KOQ";
   let idx = 0;
   let score = 0;
   let questions = [];
-  let wrongs = []; // {q, correct, picked}
+  let wrongs = [];
 
   const $ = (id)=>document.getElementById(id);
 
@@ -391,9 +335,7 @@
     const pool = WORDS.slice().filter(x => x && x.ko && x.mn);
     shuffle_(pool);
 
-    const count = Math.min(10, pool.length);
-    const base = pool.slice(0, count);
-
+    const base = pool; // ✅ 전체 출제
     questions = base.map(item => {
       const qText = (MODE==="KOQ") ? item.ko : item.mn;
       const correct = (MODE==="KOQ") ? item.mn : item.ko;
@@ -404,7 +346,6 @@
 
       const choices = uniqueChoices_(correct, distractorPool, 4);
       shuffle_(choices);
-
       return { qText, correct, choices };
     });
   }
@@ -412,22 +353,26 @@
   function uniqueChoices_(correct, pool, n){
     const out = [correct];
     const seen = new Set(out);
+
     for(const v of pool){
       if(out.length >= n) break;
-      if(!seen.has(v)){
+      if(v && !seen.has(v)){
         out.push(v);
         seen.add(v);
       }
     }
+
     let guard = 0;
     while(out.length < n && guard < 500){
       guard++;
+      if(!pool.length) break;
       const v = pool[Math.floor(Math.random()*pool.length)];
       if(v && !seen.has(v)){
         out.push(v);
         seen.add(v);
       }
     }
+
     while(out.length < n) out.push("—");
     return out;
   }
@@ -470,11 +415,8 @@
 
     setTimeout(()=>{
       idx++;
-      if(idx >= questions.length){
-        finishQuiz_();
-      }else{
-        renderQuestion_();
-      }
+      if(idx >= questions.length) finishQuiz_();
+      else renderQuestion_();
     }, 450);
   }
 
@@ -496,11 +438,8 @@
 
     await safeLog_(score, failAttempts);
 
-    if(finalPass){
-      showResultScreen(true, passedByAttempts && !passedByScore);
-    }else{
-      showReviewScreen_();
-    }
+    if(finalPass) showResultScreen(true, passedByAttempts && !passedByScore);
+    else showReviewScreen_();
   }
 
   function showReviewScreen_(){
@@ -528,8 +467,7 @@
     showOnly("resultBox");
 
     const date = new Date().toLocaleString();
-    const title = passed ? "Тэнцлээ!" : "Result";
-    $("resultTitle").textContent = title;
+    $("resultTitle").textContent = passed ? "Тэнцлээ!" : "Result";
 
     const passNote = passedByAttempts
       ? "\n✅ 5+ удаа оролдсон тул онооноос үл хамааран тэнцүүлэв."
