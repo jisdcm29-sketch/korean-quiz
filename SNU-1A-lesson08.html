@@ -16,122 +16,48 @@
   }
   *{box-sizing:border-box}
   body{
-    margin:0;
-    padding:8px;
-    background:var(--bg);
-    color:var(--text);
+    margin:0; padding:8px; background:var(--bg); color:var(--text);
     font-family: Arial, system-ui, -apple-system, "Segoe UI", sans-serif;
-    text-align:center;
-    -webkit-text-size-adjust:100%;
+    text-align:center; -webkit-text-size-adjust:100%;
   }
   .container{
-    max-width:560px;
-    margin:0 auto;
-    height:calc(100vh - 16px);
-    background:var(--card);
-    border:1px solid var(--line);
-    border-radius:18px;
+    max-width:560px; margin:0 auto; height:calc(100vh - 16px);
+    background:var(--card); border:1px solid var(--line); border-radius:18px;
     box-shadow:0 10px 20px rgba(0,0,0,.08);
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-    padding:10px;
+    display:flex; flex-direction:column; gap:6px; padding:10px;
   }
-  .header{
-    position:sticky;
-    top:0;
-    background:var(--card);
-    padding:2px 4px 0;
-    z-index:5;
-  }
+  .header{position:sticky; top:0; background:var(--card); padding:2px 4px 0; z-index:5;}
   .title{margin:0; font-size:18px; font-weight:900;}
   .sub{margin:4px 0 0; color:var(--muted); font-size:12px; line-height:1.25;}
-  .row{
-    display:flex;
-    gap:6px;
-    align-items:center;
-    justify-content:center;
-    flex-wrap:wrap;
-  }
-  .pill{
-    font-size:11px;
-    padding:5px 9px;
-    border-radius:999px;
-    border:1px solid var(--line);
-    background:#f7fbff;
-  }
+  .row{display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap;}
+  .pill{font-size:11px; padding:5px 9px; border-radius:999px; border:1px solid var(--line); background:#f7fbff;}
   .pill b{font-weight:900}
 
   .modeBtn, #modeKo, #modeMn{
-    border:2px solid var(--primary);
-    background:#fff;
-    color:var(--text);
-    padding:7px 9px;
-    border-radius:12px;
-    font-weight:900;
-    cursor:pointer;
-    min-width:132px;
-    font-size: clamp(11px, 3.1vw, 13px);
-    line-height:1.15;
-    white-space:normal;
+    border:2px solid var(--primary); background:#fff; color:var(--text);
+    padding:7px 9px; border-radius:12px; font-weight:900; cursor:pointer;
+    min-width:132px; font-size: clamp(11px, 3.1vw, 13px); line-height:1.15; white-space:normal;
   }
-  .modeBtn.active, #modeKo.active, #modeMn.active{
-    background:var(--primary);
-    color:#fff;
-  }
+  .modeBtn.active, #modeKo.active, #modeMn.active{background:var(--primary); color:#fff;}
 
-  .main{
-    flex:1;
-    min-height:0;
-    display:flex;
-    flex-direction:column;
-    gap:6px;
-  }
+  .main{flex:1; min-height:0; display:flex; flex-direction:column; gap:6px;}
   .qbox{
-    border:1px solid var(--line);
-    border-radius:16px;
-    padding:10px;
-    background:#fff;
-    display:flex;
-    flex-direction:column;
-    gap:8px;
-    flex:1;
-    min-height:0;
+    border:1px solid var(--line); border-radius:16px; padding:10px; background:#fff;
+    display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;
   }
   .qNo{font-size:12px; color:var(--muted); text-align:left;}
   .qText, #qText{
     font-size: clamp(20px, 5.8vw, 34px);
-    font-weight:900;
-    line-height:1.10;
-    word-break:keep-all;
-    overflow-wrap:anywhere;
-    margin-top:0;
+    font-weight:900; line-height:1.10;
+    word-break:keep-all; overflow-wrap:anywhere; margin-top:0;
   }
-  .choices, #choices{
-    display:grid;
-    grid-template-columns:1fr;
-    gap:10px;
-    margin-top:4px;
-  }
+  .choices, #choices{display:grid; grid-template-columns:1fr; gap:10px; margin-top:4px;}
   .choice, #choices .choice, #choices button{
-    width:100%;
-    padding:12px 10px;
-    border-radius:16px;
-    border:2px solid var(--primary);
-    background:#fff;
-    color:var(--text);
-    font-weight:900;
-    cursor:pointer;
-    transition:.15s;
-    word-break:keep-all;
-    overflow-wrap:anywhere;
-    line-height:1.12;
+    width:100%; padding:12px 10px; border-radius:16px; border:2px solid var(--primary);
+    background:#fff; color:var(--text); font-weight:900; cursor:pointer; transition:.15s;
+    word-break:keep-all; overflow-wrap:anywhere; line-height:1.12;
     font-size: clamp(16px, 4.6vw, 24px);
-    min-height:50px;
-    display:flex;
-    align-items:center;
-    justify-content:center;
-    text-align:center;
+    min-height:50px; display:flex; align-items:center; justify-content:center; text-align:center;
   }
   .choice:hover, #choices button:hover{background:var(--primary); color:#fff;}
   .choice.disabled, #choices button:disabled{opacity:.55; cursor:not-allowed;}
@@ -140,42 +66,24 @@
 
   .footerBtns{display:flex; gap:10px; margin-top:0;}
   .btn{
-    flex:1;
-    padding:10px;
-    border:none;
-    border-radius:12px;
-    background:var(--primary);
-    color:#fff;
-    font-weight:900;
-    cursor:pointer;
-    font-size:13px;
+    flex:1; padding:10px; border:none; border-radius:12px; background:var(--primary);
+    color:#fff; font-weight:900; cursor:pointer; font-size:13px;
   }
   .btn:hover{background:var(--primary2);}
   .btn.gray{background:#eef2f7; color:var(--text); border:1px solid #d7dee7;}
   .btn.gray:hover{background:#e2e8f0;}
 
   .msg{
-    padding:9px 10px;
-    border-radius:12px;
-    text-align:left;
-    font-size:12px;
-    line-height:1.35;
-    white-space:pre-line;
+    padding:9px 10px; border-radius:12px; text-align:left;
+    font-size:12px; line-height:1.35; white-space:pre-line;
   }
   .msg.warn{background:var(--warnbg); border:1px solid var(--warnline); color:#7a1f1f;}
   .msg.ok{background:var(--okbg); border:1px solid var(--okline); color:#0f7a3d;}
   .hidden{display:none !important;}
 
   .reviewList{
-    text-align:left;
-    border:1px solid var(--line);
-    border-radius:14px;
-    padding:10px;
-    overflow:auto;
-    max-height:38vh;
-    background:#fff;
-    font-size:12px;
-    line-height:1.45;
+    text-align:left; border:1px solid var(--line); border-radius:14px; padding:10px;
+    overflow:auto; max-height:38vh; background:#fff; font-size:12px; line-height:1.45;
   }
   .reviewItem{padding:8px 0; border-bottom:1px dashed #e6eefb;}
   .reviewItem:last-child{border-bottom:none;}
@@ -195,6 +103,43 @@
     .choices, #choices{gap:9px;}
     .choice, #choices button{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
     .btn{padding:9px; font-size:12.5px;}
+  }
+
+  /* ===== Result (Pass screen) ===== */
+  .resultHeadline{
+    font-size: clamp(28px, 7.2vw, 44px);
+    font-weight: 900;
+    margin: 6px 0 10px;
+    letter-spacing: -0.5px;
+  }
+  .resultCard{
+    border: 2px solid var(--okline);
+    background: #f3fff6;
+    border-radius: 18px;
+    padding: 14px 14px 18px;
+    text-align: left;
+    flex: 1;
+    min-height: 0;
+    display: flex;
+    flex-direction: column;
+    justify-content: space-between;
+  }
+  .resultLeft{
+    color: var(--ok);
+    font-weight: 900;
+    line-height: 1.55;
+    font-size: 16px;
+    white-space: pre-line;
+  }
+  .resultBless{
+    margin-top: 18px;
+    text-align: center;
+    font-weight: 900;
+    font-size: clamp(26px, 6.8vw, 40px);
+    color: #111;
+  }
+  @media (max-width: 390px){
+    .resultLeft{font-size: 15px;}
   }
   </style>
 </head>
@@ -219,6 +164,8 @@
   </div>
 
   <div class="main">
+
+    <!-- QUIZ -->
     <div class="qbox" id="quizBox">
       <div class="qNo" id="qNo">Q 1 / 0</div>
       <div class="qText" id="qText">...</div>
@@ -231,36 +178,45 @@
       <div class="small">※ 4 choices / Language-cross / JSONP log</div>
     </div>
 
+    <!-- REVIEW -->
     <div class="qbox hidden" id="reviewBox">
       <div class="qText">Review</div>
       <div class="msg warn" id="reviewMsg"></div>
       <div class="reviewList" id="reviewList"></div>
       <div class="footerBtns">
         <button class="btn" onclick="restartQuiz()">Retry</button>
-        <button class="btn gray" onclick="showResultScreen()">Result</button>
+        <button class="btn gray" onclick="showResultScreen(false)">Result</button>
       </div>
     </div>
 
+    <!-- RESULT (샘플 스타일 / 캡처 버튼 제거) -->
     <div class="qbox hidden" id="resultBox">
-      <div class="qText" id="resultTitle">Result</div>
-      <div class="msg ok" id="resultMsg"></div>
+      <div class="resultHeadline" id="resultHeadline">Тэнцлээ!</div>
+
+      <div class="resultCard">
+        <div class="resultLeft" id="resultMeta"></div>
+        <div class="resultBless" id="blessLine">Есүс танд хайртай!</div>
+      </div>
 
       <div class="footerBtns">
-        <button class="btn" onclick="shareCapture()">Капчер</button>
         <button class="btn gray" onclick="goBackHub()">← Hub</button>
       </div>
-      <div class="small" style="margin-top:6px;">
-        📌 <b>Скриншот</b> хийгээд багшдаа явуулаарай!
-      </div>
     </div>
+
   </div>
 </div>
 
 <script>
+  /***********************
+   * CONFIG
+   ***********************/
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycby_n5xrEIRduxeo2upw4D0nsishR6zwBOY5JO472-7wU3EAYip94-4BncYw5r7dWHj6/exec";
   const BOOK = "SNU-1A";
   const LESSON = "lesson08";
 
+  /***********************
+   * WORD DATA (PDF 표기 그대로)
+   ***********************/
   const WORDS = [
     { ko: "골프", mn: "гольф" },
     { ko: "테니스", mn: "теннис" },
@@ -304,6 +260,9 @@
     { ko: "맑다", mn: "цэлмэг" }
   ];
 
+  /***********************
+   * STATE
+   ***********************/
   const qs = new URLSearchParams(location.search);
   const NAME = (qs.get("name") || "").trim();
   const KLASS = (qs.get("klass") || "").trim();
@@ -315,11 +274,11 @@
   const attemptKey = `kquiz_attempt_fail__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
   let failAttempts = Number(localStorage.getItem(attemptKey) || "0");
 
-  let MODE = "KOQ";
+  let MODE = "KOQ"; // KOQ: 한국어 질문→몽골어 보기, MNQ: 몽골어 질문→한국어 보기
   let idx = 0;
   let score = 0;
   let questions = [];
-  let wrongs = [];
+  let wrongs = []; // {q, correct, picked}
 
   const $ = (id)=>document.getElementById(id);
 
@@ -507,8 +466,11 @@
 
     setTimeout(()=>{
       idx++;
-      if(idx >= questions.length) finishQuiz_();
-      else renderQuestion_();
+      if(idx >= questions.length){
+        finishQuiz_();
+      }else{
+        renderQuestion_();
+      }
     }, 450);
   }
 
@@ -530,8 +492,11 @@
 
     await safeLog_(score, failAttempts);
 
-    if(finalPass) showResultScreen(true, passedByAttempts && !passedByScore);
-    else showReviewScreen_();
+    if(finalPass){
+      showResultScreen(true, passedByAttempts && !passedByScore);
+    }else{
+      showReviewScreen_();
+    }
   }
 
   function showReviewScreen_(){
@@ -555,26 +520,37 @@
     });
   }
 
+  // ✅ 샘플형 RESULT 화면 (캡처 버튼 없음 / 큰 문구)
   function showResultScreen(passed=true, passedByAttempts=false){
     showOnly("resultBox");
 
     const date = new Date().toLocaleString();
-    $("resultTitle").textContent = passed ? "Тэнцлээ!" : "Result";
 
-    const passNote = passedByAttempts
-      ? "\n✅ 5+ удаа оролдсон тул онооноос үл хамааран тэнцүүлэв."
+    const headline = passed ? `${NAME} Тэнцлээ!` : `${NAME} Result`;
+    const hEl = document.getElementById("resultHeadline");
+    if(hEl) hEl.textContent = headline;
+
+    const passNote = (passedByAttempts && !passed)
+      ? `\n✅ 5+ удаа оролдсон тул онооноос үл хамааран тэнцүүлэв.`
       : "";
 
-    $("resultMsg").textContent =
-      `Name: ${NAME}\n` +
+    const meta =
       `Class: ${KLASS}\n` +
       `Book: ${BOOK}\n` +
       `Lesson: ${LESSON}\n` +
       `Score: ${score} / 100\n` +
       `Attempts: ${failAttempts}\n` +
-      `Date: ${date}\n` +
-      passNote + "\n\n" +
-      `📌 Скриншот хийгээд багшдаа явуулаарай!`;
+      `Date: ${date}` +
+      passNote;
+
+    const metaEl = document.getElementById("resultMeta");
+    if(metaEl) metaEl.textContent = meta;
+
+    const blessEl = document.getElementById("blessLine");
+    if(blessEl){
+      blessEl.textContent = "Есүс танд хайртай!";
+      blessEl.style.display = passed ? "block" : "none";
+    }
   }
 
   async function safeLog_(scoreNum, attemptsNum){
@@ -610,19 +586,6 @@
     buildQuestions_();
     showOnly("quizBox");
     renderQuestion_();
-  }
-
-  async function shareCapture(){
-    const text =
-      `Name: ${NAME}\nClass: ${KLASS}\nBook: ${BOOK}\nLesson: ${LESSON}\nScore: ${score}/100\nAttempts: ${failAttempts}\nDate: ${new Date().toLocaleString()}`;
-
-    try{
-      if(navigator.share){
-        await navigator.share({ title: "K-Quiz Result", text });
-        return;
-      }
-    }catch(e){}
-    alert("Скриншот хийгээд багшдаа явуулаарай! (Share дэмжихгүй байна)");
   }
 
   function shuffle_(arr){
