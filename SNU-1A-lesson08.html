@@ -105,25 +105,30 @@
     .btn{padding:9px; font-size:12.5px;}
   }
 
-  /* ===== Result (Pass screen) ===== */
+  /* ===== Result (Safe layout: no cut / smooth) ===== */
   .resultHeadline{
-    font-size: clamp(28px, 7.2vw, 44px);
+    font-size: clamp(26px, 7vw, 42px);
     font-weight: 900;
-    margin: 6px 0 10px;
+    margin: 2px 0 8px;
     letter-spacing: -0.5px;
+    line-height: 1.05;
   }
+
   .resultCard{
     border: 2px solid var(--okline);
     background: #f3fff6;
     border-radius: 18px;
-    padding: 14px 14px 18px;
+    padding: 12px 12px 12px;
     text-align: left;
     flex: 1;
     min-height: 0;
     display: flex;
     flex-direction: column;
-    justify-content: space-between;
+    gap: 10px;
+    overflow: auto;              /* ✅ 작은 화면에서 안 잘리게 스크롤 허용 */
+    -webkit-overflow-scrolling: touch;
   }
+
   .resultLeft{
     color: var(--ok);
     font-weight: 900;
@@ -131,15 +136,21 @@
     font-size: 16px;
     white-space: pre-line;
   }
+
   .resultBless{
-    margin-top: 18px;
     text-align: center;
     font-weight: 900;
-    font-size: clamp(26px, 6.8vw, 40px);
+    font-size: clamp(20px, 6.2vw, 34px); /* ✅ 너무 커서 잘리는 문제 방지 */
     color: #111;
+    line-height: 1.12;
+    word-break: keep-all;
+    overflow-wrap: anywhere;
+    padding: 6px 0 2px;          /* ✅ 하단 잘림 방지 */
   }
+
   @media (max-width: 390px){
     .resultLeft{font-size: 15px;}
+    .resultBless{padding-bottom: 10px;}
   }
   </style>
 </head>
@@ -189,11 +200,11 @@
       </div>
     </div>
 
-    <!-- RESULT (샘플 스타일 / 캡처 버튼 제거) -->
+    <!-- RESULT (샘플 스타일 / 캡처 버튼 제거 / 잘림 방지) -->
     <div class="qbox hidden" id="resultBox">
       <div class="resultHeadline" id="resultHeadline">Тэнцлээ!</div>
 
-      <div class="resultCard">
+      <div class="resultCard" id="resultCard">
         <div class="resultLeft" id="resultMeta"></div>
         <div class="resultBless" id="blessLine">Есүс танд хайртай!</div>
       </div>
@@ -464,6 +475,7 @@
       wrongs.push({ q: q.qText, correct: q.correct, picked });
     }
 
+    // ✅ 마지막 문제 후 화면 전환이 자연스럽도록 대기 시간 단축
     setTimeout(()=>{
       idx++;
       if(idx >= questions.length){
@@ -471,10 +483,10 @@
       }else{
         renderQuestion_();
       }
-    }, 450);
+    }, 180);
   }
 
-  async function finishQuiz_(){
+  function finishQuiz_(){
     const total = questions.length;
     const correctCount = total - wrongs.length;
 
@@ -482,6 +494,7 @@
     updatePills();
 
     const passedByScore = score >= 80;
+
     if(!passedByScore){
       failAttempts += 1;
       localStorage.setItem(attemptKey, String(failAttempts));
@@ -490,13 +503,15 @@
     const passedByAttempts = failAttempts >= 5;
     const finalPass = passedByScore || passedByAttempts;
 
-    await safeLog_(score, failAttempts);
-
+    // ✅ 화면을 먼저 보여주고(즉시), 로그는 뒤에서 보냄(지연 제거)
     if(finalPass){
       showResultScreen(true, passedByAttempts && !passedByScore);
     }else{
       showReviewScreen_();
     }
+
+    // ✅ 로그는 await 없이 백그라운드 처리
+    safeLog_(score, failAttempts);
   }
 
   function showReviewScreen_(){
@@ -520,7 +535,7 @@
     });
   }
 
-  // ✅ 샘플형 RESULT 화면 (캡처 버튼 없음 / 큰 문구)
+  // ✅ 샘플형 RESULT 화면 (잘림 방지 / 즉시 전환)
   function showResultScreen(passed=true, passedByAttempts=false){
     showOnly("resultBox");
 
@@ -551,6 +566,10 @@
       blessEl.textContent = "Есүс танд хайртай!";
       blessEl.style.display = passed ? "block" : "none";
     }
+
+    // ✅ 결과 카드 스크롤이 맨 위로 고정(잘림/중간 위치 방지)
+    const card = document.getElementById("resultCard");
+    if(card) card.scrollTop = 0;
   }
 
   async function safeLog_(scoreNum, attemptsNum){
