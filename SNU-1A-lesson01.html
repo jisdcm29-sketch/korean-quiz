@@ -14,81 +14,117 @@
    - Keep top title OK
    - Shrink mode buttons + question + choices for mobile
    ========================================================= */
-
-<style>
   :root{
-    --bg:#f0f4f8; --card:#fff; --primary:#2d6cdf; --primary2:#1f4ea5;
+    --bg:#f0f4f8; --card:#ffffff; --primary:#2d6cdf; --primary2:#1f4ea5;
     --line:#d9e4f5; --text:#223047; --muted:#6a7a8e; --ok:#0f7a3d; --bad:#c0392b;
     --warnbg:#fff5f5; --warnline:#feb2b2; --okbg:#f0fff4; --okline:#b7f0c7;
   }
+
   *{box-sizing:border-box}
+
   body{
-    margin:0; padding:8px; background:var(--bg); color:var(--text);
+    margin:0;
+    padding:8px;
+    background:var(--bg);
+    color:var(--text);
     font-family: Arial, system-ui, -apple-system, "Segoe UI", sans-serif;
     text-align:center;
     -webkit-text-size-adjust:100%;
   }
 
-  /* ✅ 컨테이너 패딩/간격을 더 줄여서 화면에 더 많이 담기 */
+  /* 카드 컨테이너(스크린샷처럼 하얗게 “풀페이지” 되는 것 방지) */
   .container{
-    max-width:560px; margin:0 auto;
+    max-width:560px;
+    margin:0 auto;
     height:calc(100vh - 16px);
-    background:var(--card); border:1px solid var(--line); border-radius:18px;
+    background:var(--card);
+    border:1px solid var(--line);
+    border-radius:18px;
     box-shadow:0 10px 20px rgba(0,0,0,.08);
-    display:flex; flex-direction:column;
+    display:flex;
+    flex-direction:column;
     gap:6px;
     padding:10px;
   }
 
-  /* ✅ 헤더 내부 여백 축소 */
   .header{
-    position:sticky; top:0; background:var(--card);
-    padding:2px 4px 0; z-index:5;
+    position:sticky;
+    top:0;
+    background:var(--card);
+    padding:2px 4px 0;
+    z-index:5;
   }
+
   .title{margin:0; font-size:18px; font-weight:900;}
   .sub{margin:4px 0 0; color:var(--muted); font-size:12px; line-height:1.25;}
-  .row{display:flex; gap:6px; align-items:center; justify-content:center; flex-wrap:wrap;}
 
-  /* ✅ pill(Score/Attempts/Date) 높이/글자 축소 */
+  .row{
+    display:flex;
+    gap:6px;
+    align-items:center;
+    justify-content:center;
+    flex-wrap:wrap;
+  }
+
   .pill{
-    font-size:11px; padding:5px 9px; border-radius:999px;
-    border:1px solid var(--line); background:#f7fbff;
+    font-size:11px;
+    padding:5px 9px;
+    border-radius:999px;
+    border:1px solid var(--line);
+    background:#f7fbff;
   }
   .pill b{font-weight:900}
 
-  /* ✅ [더 축소] 모드 버튼(한국어 질문/몽골어 질문) */
-  .modeBtn{
-    border:2px solid var(--primary); background:#fff; color:var(--text);
-    padding:7px 9px; border-radius:12px; font-weight:900; cursor:pointer;
+  /* =========================
+     언어 모드 버튼(안전 타겟)
+     - .modeBtn 없더라도 #modeKo/#modeMn으로 적용
+     ========================= */
+  .modeBtn,
+  #modeKo, #modeMn{
+    border:2px solid var(--primary);
+    background:#fff;
+    color:var(--text);
+    padding:7px 9px;
+    border-radius:12px;
+    font-weight:900;
+    cursor:pointer;
     min-width:132px;
     font-size: clamp(11px, 3.1vw, 13px);
     line-height:1.15;
     white-space:normal;
   }
-  .modeBtn.active{background:var(--primary); color:#fff;}
+
+  .modeBtn.active,
+  #modeKo.active, #modeMn.active{
+    background:var(--primary);
+    color:#fff;
+  }
 
   .main{
-    flex:1; min-height:0;
-    display:flex; flex-direction:column;
+    flex:1;
+    min-height:0;
+    display:flex;
+    flex-direction:column;
     gap:6px;
   }
 
-  /* ✅ qbox 자체 패딩/간격 축소 */
   .qbox{
-    border:1px solid var(--line); border-radius:16px;
-    padding:10px; background:#fff;
-    display:flex; flex-direction:column;
+    border:1px solid var(--line);
+    border-radius:16px;
+    padding:10px;
+    background:#fff;
+    display:flex;
+    flex-direction:column;
     gap:8px;
     flex:1;
     min-height:0;
   }
 
-  /* ✅ Q번호 줄도 조금 줄이기 */
   .qNo{font-size:12px; color:var(--muted); text-align:left;}
 
-  /* ✅ [핵심] 질문(qText) 글자 더 줄이기 + 줄바꿈 안정화 */
-  .qText{
-    font-size: clamp(20px, 5.8vw, 34px); /* ⬅️ 더 축소 */
+  /* 질문 텍스트 */
+  .qText, #qText{
+    font-size: clamp(20px, 5.8vw, 34px);
     font-weight:900;
     line-height:1.10;
     word-break:keep-all;
@@ -96,20 +132,27 @@
     margin-top:0;
   }
 
-  .choices{
+  /* 보기 영역 */
+  .choices, #choices{
     display:grid;
-    grid-template-columns: 1fr;
+    grid-template-columns:1fr;
     gap:10px;
     margin-top:4px;
   }
 
-  /* ✅ 선택지 버튼도 약간 더 축소 + 높이 줄임 */
-  .choice{
+  /* =========================
+     보기 버튼(안전 타겟)
+     - .choice 없더라도 #choices button으로 적용
+     ========================= */
+  .choice,
+  #choices .choice,
+  #choices button{
     width:100%;
     padding:12px 10px;
     border-radius:16px;
     border:2px solid var(--primary);
     background:#fff;
+    color:var(--text);
     font-weight:900;
     cursor:pointer;
     transition:.15s;
@@ -124,18 +167,26 @@
     text-align:center;
   }
 
-  .choice:hover{background:var(--primary); color:#fff;}
-  .choice.disabled{opacity:.55; cursor:not-allowed;}
+  .choice:hover,
+  #choices button:hover{background:var(--primary); color:#fff;}
+
+  .choice.disabled,
+  #choices button:disabled{opacity:.55; cursor:not-allowed;}
+
   .choice.correct{border-color:var(--ok);}
   .choice.wrong{border-color:var(--bad);}
 
-  /* ✅ 하단 버튼 영역도 조금 줄이기 */
   .footerBtns{display:flex; gap:10px; margin-top:0;}
+
   .btn{
     flex:1;
-    padding:10px; border:none; border-radius:12px;
-    background:var(--primary); color:#fff;
-    font-weight:900; cursor:pointer;
+    padding:10px;
+    border:none;
+    border-radius:12px;
+    background:var(--primary);
+    color:#fff;
+    font-weight:900;
+    cursor:pointer;
     font-size:13px;
   }
   .btn:hover{background:var(--primary2);}
@@ -143,7 +194,11 @@
   .btn.gray:hover{background:#e2e8f0;}
 
   .msg{
-    padding:9px 10px; border-radius:12px; text-align:left; font-size:12px; line-height:1.35;
+    padding:9px 10px;
+    border-radius:12px;
+    text-align:left;
+    font-size:12px;
+    line-height:1.35;
     white-space:pre-line;
   }
   .msg.warn{background:var(--warnbg); border:1px solid var(--warnline); color:#7a1f1f;}
@@ -151,28 +206,37 @@
   .hidden{display:none !important;}
 
   .reviewList{
-    text-align:left; border:1px solid var(--line); border-radius:14px; padding:10px;
-    overflow:auto; max-height:38vh; background:#fff;
-    font-size:12px; line-height:1.45;
+    text-align:left;
+    border:1px solid var(--line);
+    border-radius:14px;
+    padding:10px;
+    overflow:auto;
+    max-height:38vh;
+    background:#fff;
+    font-size:12px;
+    line-height:1.45;
   }
   .reviewItem{padding:8px 0; border-bottom:1px dashed #e6eefb;}
   .reviewItem:last-child{border-bottom:none;}
   .small{font-size:11px; color:var(--muted);}
 
-  /* ✅ 아주 작은 폰(아이폰 SE급)에서는 한 단계 더 축소 */
   @media (max-width: 390px){
     body{padding:6px;}
     .container{height:calc(100vh - 12px); padding:9px; gap:5px;}
     .sub{font-size:11px;}
     .pill{font-size:10.5px; padding:4px 8px;}
-    .modeBtn{min-width:128px; padding:6px 8px; font-size: clamp(10.5px, 3.0vw, 12px);}
+    .modeBtn, #modeKo, #modeMn{
+      min-width:128px; padding:6px 8px;
+      font-size: clamp(10.5px, 3.0vw, 12px);
+    }
     .qbox{padding:9px; gap:7px;}
-    .qText{font-size: clamp(18px, 5.6vw, 30px);}
-    .choices{gap:9px;}
-    .choice{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
+    .qText, #qText{font-size: clamp(18px, 5.6vw, 30px);}
+    .choices, #choices{gap:9px;}
+    .choice, #choices button{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.5vw, 22px);}
     .btn{padding:9px; font-size:12.5px;}
   }
 </style>
+
 
 </head>
 
