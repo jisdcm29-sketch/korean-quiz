@@ -235,6 +235,43 @@
   .resultBlessings .line-purple{ font-size:18px; }
   .resultBlessings .line-blue{ font-size:20px; }
 }
+    *** a/SNU-1A-lesson08.html
+--- b/SNU-1A-lesson08.html
+***************
+*** 1,1 ****
+--- 1,70 ----
++ /* ✅ 3줄 문구가 잘리지 않게(모바일 포함) 결과 카드 레이아웃 보강 */
++ #resultCard{
++   height: auto !important;
++   min-height: unset !important;
++   overflow: visible !important;
++ }
++
++ /* resultCard가 flex인 경우가 많아서(좌측 meta + 우측 문구) 안전 처리 */
++ #resultCard{
++   display: flex;
++   flex-direction: column;   /* meta 아래로 문구가 내려가도록 */
++   align-items: stretch;
++ }
++
++ #resultMeta{
++   width: 100%;
++ }
++
++ #blessLines{
++   width: 100%;
++   margin-top: 14px;
++   padding-bottom: 8px;      /* 아래 잘림 방지 여유 */
++   text-align: center;
++   line-height: 1.35;
++   word-break: keep-all;
++ }
++
++ #blessLines > div{
++   display: block;           /* ✅ 각 문장이 반드시 한 줄(블록)로 */
++   white-space: normal;      /* 줄바꿈 허용 */
++ }
+
   </style>
 </head>
 
