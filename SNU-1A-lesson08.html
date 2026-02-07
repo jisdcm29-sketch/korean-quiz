@@ -25,6 +25,7 @@
       background:var(--card); border:1px solid var(--line); border-radius:18px;
       box-shadow:0 10px 20px rgba(0,0,0,.08);
       display:flex; flex-direction:column; gap:6px; padding:10px;
+      overflow:hidden; /* ✅ 전체 화면을 한 페이지로 고정(슬라이드 최소화) */
     }
     .header{position:sticky; top:0; background:var(--card); padding:2px 4px 0; z-index:5;}
     .title{margin:0; font-size:18px; font-weight:900;}
@@ -44,6 +45,7 @@
     .qbox{
       border:1px solid var(--line); border-radius:16px; padding:10px; background:#fff;
       display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;
+      overflow:hidden; /* ✅ 박스 안에서만 레이아웃 정리 */
     }
     .qNo{font-size:12px; color:var(--muted); text-align:left;}
     .qText{
@@ -156,70 +158,68 @@
       line-height: 1.03;
     }
 
-    /* ✅ RESULT 화면: 내용 길면 스크롤 허용(3줄 절대 숨지 않게) */
-    #resultBox{
-      overflow:auto;
-      -webkit-overflow-scrolling: touch;
-    }
+    /* ✅ 슬라이드(스크롤) 없이 한 화면에 들어오게: Result 박스는 스크롤 금지 */
+    #resultBox{ overflow:hidden; }
 
+    /* ✅ 카드가 화면 높이에 맞춰 내부에서 배치되도록(밑 3줄이 항상 보이게) */
     .resultCard{
       border: 2px solid var(--okline);
       background: #f3fff6;
       border-radius: 18px;
-      padding: 10px 12px 22px; /* ✅ 아래 여유 */
+      padding: 10px 12px;
       text-align: left;
 
+      flex: 1;
+      min-height: 0;
       display: flex;
       flex-direction: column;
-      gap: 8px;
 
-      justify-content: flex-start; /* ✅ space-between 금지 */
-      overflow: visible;           /* ✅ hidden 금지 */
-      flex: 0 0 auto;              /* ✅ 콘텐츠 높이만큼 */
-      height: auto;
-      min-height: unset;
+      /* ✅ 위 메타 + 아래 3줄을 “끝까지” 배치(잘림 방지용으로 글자 크기/간격도 줄임) */
+      justify-content: space-between;
+      gap: 6px;
+      overflow: hidden;
     }
 
     .resultLeft{
       color: var(--ok);
       font-weight: 900;
-      line-height: 1.45;
-      font-size: 15px;
+      line-height: 1.32; /* ✅ 세로 공간 절약 */
+      font-size: 14px;   /* ✅ 세로 공간 절약 */
       white-space: pre-line;
     }
     @media (max-width: 390px){
-      .resultLeft{font-size: 14px;}
+      .resultLeft{font-size: 13.5px;}
     }
 
-    /* ✅ 샘플처럼 3줄 문구 */
+    /* ✅ 샘플처럼 3줄(하지만 화면에 다 들어오도록 크기/간격 최적화) */
     #blessLines{
       width:100%;
-      margin-top:22px;       /* ✅ 메타와 간격 */
+      margin-top: 6px;
       text-align:center;
-      line-height:1.20;
+      line-height:1.12;
       word-break:keep-all;
       overflow-wrap:anywhere;
+      padding-bottom: 2px;
     }
     #blessLines > div{ display:block; white-space:normal; }
 
     #blessLines .line-red{
       color:#e53935;
       font-weight:900;
-      font-size: clamp(22px, 5.6vw, 30px);
-      margin-top: 6px;
+      font-size: clamp(18px, 4.6vw, 24px); /* ✅ 줄여서 한 화면 고정 */
+      margin-top: 2px;
     }
     #blessLines .line-purple{
       color:#6a1b9a;
       font-weight:900;
-      font-size: clamp(22px, 5.6vw, 30px);
-      margin-top: 18px;
+      font-size: clamp(18px, 4.6vw, 24px);
+      margin-top: 12px;
     }
     #blessLines .line-blue{
       color:#1e88e5;
       font-weight:900;
-      font-size: clamp(22px, 5.6vw, 30px);
-      margin-top: 18px;
-      padding-bottom: 6px;
+      font-size: clamp(18px, 4.6vw, 24px);
+      margin-top: 12px;
     }
   </style>
 </head>
