@@ -86,7 +86,7 @@
     /* ===== Review ===== */
     .reviewHeadline{
       font-size: clamp(34px, 9.2vw, 54px);
-      font-weight:900; margin: 0; letter-spacing: -0.8px; line-height: 1.02;
+      font-weight:900; margin:0; letter-spacing:-0.8px; line-height:1.02;
       color:#1f2b3d; text-align:center;
     }
     .reviewMsgBox{
@@ -111,9 +111,9 @@
     }
     .reviewItem{ padding:10px 0; border-bottom:1px dashed #e6eefb; }
     .reviewItem:last-child{border-bottom:none;}
-    .reviewNo{ font-size:18px; font-weight:900; color:#1f2b3d; margin: 0 0 6px; }
-    .reviewQ{ font-size:15px; font-weight:900; color:#1f2b3d; margin: 0 0 10px; }
-    .reviewAns{ font-size:22px; font-weight:900; color: var(--ok); margin: 0; }
+    .reviewNo{ font-size:18px; font-weight:900; color:#1f2b3d; margin:0 0 6px; }
+    .reviewQ{ font-size:15px; font-weight:900; color:#1f2b3d; margin:0 0 10px; }
+    .reviewAns{ font-size:22px; font-weight:900; color: var(--ok); margin:0; }
     .badgeTimeout{
       display:inline-block; margin-left:8px; padding:2px 8px;
       border-radius:999px; border:1px solid var(--warnline);
@@ -152,11 +152,11 @@
     .resultHeadline{
       font-size: clamp(24px, 6.2vw, 38px);
       font-weight: 900;
-      margin: 0 0 6px;
-      letter-spacing: -0.5px;
-      line-height: 1.03;
+      margin:0 0 6px;
+      letter-spacing:-0.5px;
+      line-height:1.03;
     }
-    #resultBox{ overflow:hidden; } /* ✅ 스크롤 금지 */
+    #resultBox{ overflow:hidden; } /* ✅ 결과 스크롤 금지 */
 
     .resultCard{
       border: 2px solid var(--okline);
@@ -185,7 +185,6 @@
       .resultLeft{font-size: 13.5px;}
     }
 
-    /* ✅ 결과 3줄 문구 */
     #blessLines{
       width:100%;
       margin-top: 6px;
@@ -233,8 +232,8 @@
       </div>
 
       <div class="row hideOnReviewResult" style="margin-top:6px;">
-       <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통</button>
-       <button class="speedBtn" id="speedSlow" onclick="setSpeed('slow')">느림</button>
+        <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통</button>
+        <button class="speedBtn" id="speedSlow" onclick="setSpeed('slow')">느림</button>
       </div>
 
       <div class="msg warn hidden" id="topMsg"></div>
@@ -291,11 +290,11 @@
   const BOOK = "SNU-1A";
   const LESSON = "lesson06";
 
-  /* ✅ 단어 권장: 보통 10초 / 느림 12초 */
+  /* ✅ 보통 10초 / 느림 12초 */
   const TIME_LIMIT = { normal: 10, slow: 12 };
   let SPEED = "normal";
 
-  /* ✅ SNU 1A - 6과 WORDS (사용자 제공본 반영) */
+  /* ✅ SNU 1A - 6과 WORDS (사용자 제공본) */
   const WORDS = [
     { ko: "귤", mn: "жүрж" },
     { ko: "딸기", mn: "гүзээлзгэнэ" },
@@ -356,6 +355,7 @@
   const deviceId = getDeviceId_();
   const ua = navigator.userAgent || "";
 
+  /* ✅ Attempts: 시도할 때마다 카운트(합/불 무관) */
   const attemptKey = `kquiz_attempt__${BOOK}__${LESSON}__${KLASS}__${NAME}`;
   let attempts = Number(localStorage.getItem(attemptKey) || "0");
 
@@ -402,7 +402,7 @@
   function setSpeed(speed){
     SPEED = speed;
     $("speedNormal").classList.toggle("active", SPEED==="normal");
-    $("speedFast").classList.toggle("active", SPEED==="slow");
+    $("speedSlow").classList.toggle("active", SPEED==="slow");
     if(!$("quizBox").classList.contains("hidden")){
       startTimer_();
     }
@@ -654,7 +654,7 @@
     if(!passed) showReviewScreen_();
     else showResultScreen(true);
 
-    // ✅ 모든 시도 무조건 전송
+    /* ✅ 모든 시도 무조건 전송 */
     safeLog_(score, attempts);
   }
 
