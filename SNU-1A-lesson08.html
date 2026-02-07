@@ -25,7 +25,7 @@
       background:var(--card); border:1px solid var(--line); border-radius:18px;
       box-shadow:0 10px 20px rgba(0,0,0,.08);
       display:flex; flex-direction:column; gap:6px; padding:10px;
-      overflow:hidden; /* ✅ 전체 화면을 한 페이지로 고정(슬라이드 최소화) */
+      overflow:hidden; /* ✅ 결과도 한 화면 고정 */
     }
     .header{position:sticky; top:0; background:var(--card); padding:2px 4px 0; z-index:5;}
     .title{margin:0; font-size:18px; font-weight:900;}
@@ -45,7 +45,7 @@
     .qbox{
       border:1px solid var(--line); border-radius:16px; padding:10px; background:#fff;
       display:flex; flex-direction:column; gap:8px; flex:1; min-height:0;
-      overflow:hidden; /* ✅ 박스 안에서만 레이아웃 정리 */
+      overflow:hidden;
     }
     .qNo{font-size:12px; color:var(--muted); text-align:left;}
     .qText{
@@ -158,10 +158,9 @@
       line-height: 1.03;
     }
 
-    /* ✅ 슬라이드(스크롤) 없이 한 화면에 들어오게: Result 박스는 스크롤 금지 */
+    /* ✅ 슬라이드(스크롤) 없이 한 화면 고정 */
     #resultBox{ overflow:hidden; }
 
-    /* ✅ 카드가 화면 높이에 맞춰 내부에서 배치되도록(밑 3줄이 항상 보이게) */
     .resultCard{
       border: 2px solid var(--okline);
       background: #f3fff6;
@@ -174,7 +173,6 @@
       display: flex;
       flex-direction: column;
 
-      /* ✅ 위 메타 + 아래 3줄을 “끝까지” 배치(잘림 방지용으로 글자 크기/간격도 줄임) */
       justify-content: space-between;
       gap: 6px;
       overflow: hidden;
@@ -183,15 +181,15 @@
     .resultLeft{
       color: var(--ok);
       font-weight: 900;
-      line-height: 1.32; /* ✅ 세로 공간 절약 */
-      font-size: 14px;   /* ✅ 세로 공간 절약 */
+      line-height: 1.32;
+      font-size: 14px;
       white-space: pre-line;
     }
     @media (max-width: 390px){
       .resultLeft{font-size: 13.5px;}
     }
 
-    /* ✅ 샘플처럼 3줄(하지만 화면에 다 들어오도록 크기/간격 최적화) */
+    /* ✅ 결과 3줄 문구(요청 수정 반영: 빨강은 "Баяр хүргэе!"만) */
     #blessLines{
       width:100%;
       margin-top: 6px;
@@ -206,7 +204,7 @@
     #blessLines .line-red{
       color:#e53935;
       font-weight:900;
-      font-size: clamp(18px, 4.6vw, 24px); /* ✅ 줄여서 한 화면 고정 */
+      font-size: clamp(18px, 4.6vw, 24px);
       margin-top: 2px;
     }
     #blessLines .line-purple{
@@ -649,6 +647,7 @@
     if(!passed) showReviewScreen_();
     else showResultScreen(true);
 
+    // ✅ 모든 시도 무조건 전송
     safeLog_(score, attempts);
   }
 
