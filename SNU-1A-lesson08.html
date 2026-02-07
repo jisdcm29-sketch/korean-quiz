@@ -219,6 +219,22 @@
   .hideOnReviewResult{display:block;}
   .screen-review .hideOnReviewResult,
   .screen-result .hideOnReviewResult{display:none !important;}
+
+    .resultBlessings{
+  margin-top:14px;
+  text-align:center;
+  line-height:1.35;
+  word-break:keep-all;
+}
+.resultBlessings .line-red{ color:#e53935; font-weight:700; font-size:20px; }
+.resultBlessings .line-purple{ color:#6a1b9a; font-weight:600; font-size:20px; margin-top:10px; }
+.resultBlessings .line-blue{ color:#1e88e5; font-weight:700; font-size:22px; margin-top:10px; }
+
+@media (max-width:420px){
+  .resultBlessings .line-red,
+  .resultBlessings .line-purple{ font-size:18px; }
+  .resultBlessings .line-blue{ font-size:20px; }
+}
   </style>
 </head>
 
