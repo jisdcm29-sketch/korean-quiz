@@ -275,19 +275,22 @@
     </div>
 
     <!-- RESULT -->
-    <div class="qbox hidden" id="resultBox">
-      <div class="resultHeadline" id="resultHeadline">Тэнцлээ!</div>
+  <div class="qbox hidden" id="resultBox">
+  <div class="resultHeadline" id="resultHeadline">Тэнцлээ!</div>
 
-      <div class="resultCard" id="resultCard">
-        <div class="resultLeft" id="resultMeta"></div>
-        <div class="resultBless" id="blessLine">Есүс танд хайртай!</div>
-      </div>
+  <div class="resultCard" id="resultCard">
+    <div class="resultLeft" id="resultMeta"></div>
 
-      <div class="footerBtns">
-        <button class="btn gray" onclick="goBackHub()">← Hub</button>
-      </div>
+    <!-- 아래 3줄만 표시 (기존 blessLine 삭제) -->
+    <div class="resultBlessings" id="blessLines">
+      <div class="line-red">Сайхан сорилт! Баяр хүргэе!</div>
+      <div class="line-purple">Өнөөдрийн зүтгэл — Таны ирээдүй</div>
+      <div class="line-blue">Есүсийн хайраар ерөөе.</div>
     </div>
+  </div>
 
+  <div class="footerBtns">
+    <button class="btn gray" onclick="goBackHub()">← Hub</button>
   </div>
 </div>
 
