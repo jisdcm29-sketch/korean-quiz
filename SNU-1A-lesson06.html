@@ -233,8 +233,8 @@
       </div>
 
       <div class="row hideOnReviewResult" style="margin-top:6px;">
-        <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통</button>
-        <button class="speedBtn" id="speedFast" onclick="setSpeed('fast')">빠름</button>
+       <button class="speedBtn active" id="speedNormal" onclick="setSpeed('normal')">보통</button>
+       <button class="speedBtn" id="speedSlow" onclick="setSpeed('slow')">느림</button>
       </div>
 
       <div class="msg warn hidden" id="topMsg"></div>
@@ -291,8 +291,8 @@
   const BOOK = "SNU-1A";
   const LESSON = "lesson06";
 
-  /* ✅ 단어 권장: 보통 15초 / 빠름 10초 */
-  const TIME_LIMIT = { normal: 15, fast: 10 };
+  /* ✅ 단어 권장: 보통 10초 / 느림 12초 */
+  const TIME_LIMIT = { normal: 10, slow: 12 };
   let SPEED = "normal";
 
   /* ✅ SNU 1A - 6과 WORDS (사용자 제공본 반영) */
@@ -402,7 +402,7 @@
   function setSpeed(speed){
     SPEED = speed;
     $("speedNormal").classList.toggle("active", SPEED==="normal");
-    $("speedFast").classList.toggle("active", SPEED==="fast");
+    $("speedFast").classList.toggle("active", SPEED==="slow");
     if(!$("quizBox").classList.contains("hidden")){
       startTimer_();
     }
@@ -567,7 +567,7 @@
 
   function startTimer_(){
     stopTimer_();
-    remainSec = TIME_LIMIT[SPEED] ?? 15;
+    remainSec = TIME_LIMIT[SPEED] ?? 10;
     updatePills();
 
     tickId = setInterval(()=>{
