@@ -25,7 +25,7 @@
       background:var(--card); border:1px solid var(--line); border-radius:18px;
       box-shadow:0 10px 20px rgba(0,0,0,.08);
       display:flex; flex-direction:column; gap:6px; padding:10px;
-      overflow:hidden; /* ✅ 결과도 한 화면 고정 */
+      overflow:hidden;
     }
     .header{position:sticky; top:0; background:var(--card); padding:2px 4px 0; z-index:5;}
     .title{margin:0; font-size:18px; font-weight:900;}
@@ -156,7 +156,7 @@
       letter-spacing: -0.5px;
       line-height: 1.03;
     }
-    #resultBox{ overflow:hidden; } /* ✅ 스크롤 금지 */
+    #resultBox{ overflow:hidden; }
 
     .resultCard{
       border: 2px solid var(--okline);
@@ -185,7 +185,6 @@
       .resultLeft{font-size: 13.5px;}
     }
 
-    /* ✅ 결과 3줄 문구 (스크롤 없이 한 화면에) */
     #blessLines{
       width:100%;
       margin-top: 6px;
@@ -295,9 +294,48 @@
   const TIME_LIMIT = { normal: 15, fast: 10 };
   let SPEED = "normal";
 
-  /* ✅ 여기(WORDS)에 사용자가 준 1A-7과 단어 목록을 “그대로” 붙여넣으세요 */
+  /* ✅ SNU 1A - 7과 WORDS (사용자 제공본 반영) */
   const WORDS = [
-    /* 여기에 붙여넣기 */
+    { ko: "눈이 오다", mn: "цас орох" },
+    { ko: "덥다", mn: "халуун" },
+    { ko: "따뜻하다", mn: "дулаан" },
+    { ko: "맑다", mn: "цэлмэг" },
+    { ko: "비가 오다", mn: "бороо орох" },
+    { ko: "시원하다", mn: "сэрүүхэн" },
+    { ko: "춥다", mn: "хүйтэн" },
+    { ko: "흐리다", mn: "бүрхэг" },
+    { ko: "계절", mn: "улирал" },
+    { ko: "봄", mn: "хавар" },
+    { ko: "여름", mn: "зун" },
+    { ko: "가을", mn: "намар" },
+    { ko: "겨울", mn: "өвөл" },
+    { ko: "가볍다", mn: "хөнгөн" },
+    { ko: "무겁다", mn: "хүнд" },
+    { ko: "쉽다", mn: "амархан" },
+    { ko: "어렵다", mn: "хэцүү" },
+    { ko: "맵다", mn: "халуун ногоотой" },
+    { ko: "아주", mn: "маш" },
+    { ko: "요즘", mn: "сүүлийн үед" },
+    { ko: "고향", mn: "төрсөн нутаг" },
+    { ko: "스키장", mn: "цанын бааз" },
+    { ko: "단풍", mn: "навч шарлах" },
+    { ko: "구경하다", mn: "үзэж сонирхох" },
+    { ko: "수영장", mn: "усан сан" },
+    { ko: "꽃", mn: "цэцэг" },
+    { ko: "바다", mn: "далай" },
+    { ko: "회", mn: "түүхий загас" },
+    { ko: "불꽃놀이", mn: "салют" },
+    { ko: "여행", mn: "аялал" },
+    { ko: "필요하다", mn: "хэрэгтэй" },
+    { ko: "준비하다", mn: "бэлтгэх" },
+    { ko: "선글라스", mn: "нарны шил" },
+    { ko: "부채", mn: "дэвүүр" },
+    { ko: "슬리퍼", mn: "углааш" },
+    { ko: "하늘", mn: "тэнгэр" },
+    { ko: "파랗다", mn: "цэнхэр" },
+    { ko: "눈사람", mn: "цаасан хүн" },
+    { ko: "맛있다", mn: "амттай" },
+    { ko: "비싸다", mn: "үнэтэй" }
   ];
 
   const qs = new URLSearchParams(location.search);
@@ -606,6 +644,7 @@
     if(!passed) showReviewScreen_();
     else showResultScreen(true);
 
+    // ✅ 모든 시도 무조건 전송
     safeLog_(score, attempts);
   }
 
