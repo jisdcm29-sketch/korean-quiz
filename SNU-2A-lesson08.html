@@ -145,7 +145,7 @@
       .btn{padding:9px; font-size:12.5px;}
     }
 
-    /* Review/Result에서는 시간/설정 숨김 */
+    /* Review/Result에서는 시간/설정이 절대 나오면 안 됨 */
     .hideOnReviewResult{display:block;}
     .screen-review .hideOnReviewResult,
     .screen-result .hideOnReviewResult{display:none !important;}
@@ -187,17 +187,30 @@
       .resultLeft{font-size: 13.5px;}
     }
 
-    #blessLine{
+    #blessLines{
       width:100%;
-      margin-top: 8px;
+      margin-top: 6px;
       text-align:center;
       line-height:1.12;
       word-break:keep-all;
       overflow-wrap:anywhere;
       padding-bottom: 2px;
-      font-weight: 900;
-      color:#1e88e5;
-      font-size: clamp(20px, 5.2vw, 28px);
+    }
+    #blessLines > div{ display:block; white-space:normal; }
+    #blessLines .line-red{
+      color:#e53935; font-weight:900;
+      font-size: clamp(18px, 4.6vw, 24px);
+      margin-top: 2px;
+    }
+    #blessLines .line-purple{
+      color:#6a1b9a; font-weight:900;
+      font-size: clamp(18px, 4.6vw, 24px);
+      margin-top: 12px;
+    }
+    #blessLines .line-blue{
+      color:#1e88e5; font-weight:900;
+      font-size: clamp(18px, 4.6vw, 24px);
+      margin-top: 12px;
     }
   </style>
 </head>
@@ -242,7 +255,7 @@
         <div class="small">※ 4 choices / Language-cross / JSONP log / timeout=wrong+next</div>
       </div>
 
-      <!-- REVIEW (80점 미만일 때만) -->
+      <!-- REVIEW (80점 미만이면 먼저) -->
       <div class="qbox hidden" id="reviewBox">
         <div class="reviewHeadline">Review</div>
         <div class="reviewMsgBox" id="reviewMsg"></div>
@@ -259,7 +272,12 @@
 
         <div class="resultCard" id="resultCard">
           <div class="resultLeft" id="resultMeta"></div>
-          <div id="blessLine">Есүс танд хайртай!</div>
+
+          <div id="blessLines">
+            <div class="line-red">Баяр хүргэе!</div>
+            <div class="line-purple">Өнөөдрийн зүтгэл — Таны ирээдүй</div>
+            <div class="line-blue">Есүс танд хайртай!</div>
+          </div>
         </div>
 
         <div class="footerBtns">
@@ -663,14 +681,14 @@
 
     const passed = (score >= 80);
 
-    /* 정책: 80점 미만이면 Review 먼저, 아니면 바로 Result */
+    /* ✅ 정책: 80점 미만이면 Review 먼저, 그 다음 Result */
     if(passed){
       showResultScreen(true);
     }else{
       showReviewScreen_();
     }
 
-    /* 모든 시도 무조건 전송 */
+    /* ✅ 모든 시도 무조건 전송 */
     safeLog_(score, attempts);
   }
 
