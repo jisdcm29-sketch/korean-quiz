@@ -49,20 +49,23 @@
     }
     .qNo{font-size:12px; color:var(--muted); text-align:left;}
 
-    /* ✅ 긴 문장 대비: 기본 글자 크기는 크게, JS가 필요 시 자동 축소 */
+    /* ✅ 질문: 너무 커지지 않게 + 긴 문장 자동축소(아래 JS) */
     .qText{
-      font-size: clamp(18px, 5.2vw, 32px);
-      font-weight:900; line-height:1.08;
+      font-size: clamp(18px, 5.1vw, 28px);
+      font-weight:900; line-height:1.10;
       word-break:keep-all; overflow-wrap:anywhere;
-      margin:0;
-      padding:0 2px;
+      margin:0; padding:0 2px;
+      text-align:center;
     }
+
     .choices{display:grid; grid-template-columns:1fr; gap:10px; margin-top:2px;}
+
+    /* ✅ 보기: 너무 작지 않게(기본 크게) + 긴 보기 자동축소(아래 JS) */
     .choice{
       width:100%; padding:12px 10px; border-radius:16px; border:2px solid var(--primary);
       background:#fff; color:var(--text); font-weight:900; cursor:pointer; transition:.15s;
-      word-break:keep-all; overflow-wrap:anywhere; line-height:1.10;
-      font-size: clamp(15px, 4.2vw, 22px);
+      word-break:keep-all; overflow-wrap:anywhere; line-height:1.12;
+      font-size: clamp(16px, 4.3vw, 22px);
       min-height:50px; display:flex; align-items:center; justify-content:center; text-align:center;
       overflow:hidden;
     }
@@ -90,14 +93,14 @@
 
     /* ===== Review ===== */
     .reviewHeadline{
-      font-size: clamp(34px, 9.2vw, 54px);
+      font-size: clamp(30px, 8.6vw, 48px);
       font-weight:900; margin:0; letter-spacing:-0.8px; line-height:1.02;
       color:#1f2b3d; text-align:center;
     }
     .reviewMsgBox{
-      background: var(--warnbg);
-      border: 1px solid var(--warnline);
-      color: #7a1f1f;
+      background: #f7fbff;
+      border: 1px solid var(--line);
+      color: #1f2b3d;
       border-radius: 12px;
       padding: 10px 12px;
       text-align:left;
@@ -116,14 +119,14 @@
     }
     .reviewItem{ padding:10px 0; border-bottom:1px dashed #e6eefb; }
     .reviewItem:last-child{border-bottom:none;}
-    .reviewNo{ font-size:18px; font-weight:900; color:#1f2b3d; margin:0 0 6px; }
-    .reviewQ{ font-size:15px; font-weight:900; color:#1f2b3d; margin:0 0 10px; }
-    .reviewAns{ font-size:22px; font-weight:900; color: var(--ok); margin:0; }
+    .reviewNo{ font-size:16px; font-weight:900; color:#1f2b3d; margin:0 0 6px; }
+    .reviewQ{ font-size:14px; font-weight:900; color:#1f2b3d; margin:0 0 8px; }
+    .reviewAns{ font-size:18px; font-weight:900; color: var(--ok); margin:0; }
     .badgeTimeout{
       display:inline-block; margin-left:8px; padding:2px 8px;
       border-radius:999px; border:1px solid var(--warnline);
       background:var(--warnbg); color:#7a1f1f; font-weight:900;
-      font-size:12px; vertical-align:middle;
+      font-size:11px; vertical-align:middle;
     }
 
     .small{font-size:11px; color:var(--muted);}
@@ -138,16 +141,10 @@
         font-size: clamp(10.5px, 3.0vw, 12px);
       }
       .qbox{padding:9px; gap:7px;}
-      .qText{font-size: clamp(16px, 5.0vw, 28px);}
+      .qText{font-size: clamp(17px, 5.0vw, 26px);}
       .choices{gap:9px;}
-      .choice{min-height:48px; padding:11px 10px; font-size: clamp(14px, 4.0vw, 20px);}
+      .choice{min-height:48px; padding:11px 10px; font-size: clamp(15px, 4.1vw, 21px);}
       .btn{padding:9px; font-size:12.5px;}
-
-      .reviewHeadline{font-size: clamp(32px, 9.6vw, 50px);}
-      .reviewAns{font-size:20px;}
-      .reviewNo{font-size:17px;}
-      .reviewQ{font-size:14px;}
-      .badgeTimeout{font-size:11px;}
     }
 
     /* ✅ Review/Result에서는 시간/설정이 절대 나오면 안 됨 */
@@ -260,14 +257,14 @@
         <div class="small">※ 4 choices / Language-cross / JSONP log / timeout=wrong+next</div>
       </div>
 
-      <!-- REVIEW -->
+      <!-- REVIEW (✅ 점수와 상관없이 항상 보여줌) -->
       <div class="qbox hidden" id="reviewBox">
         <div class="reviewHeadline">Review</div>
         <div class="reviewMsgBox" id="reviewMsg"></div>
         <div class="reviewList" id="reviewList"></div>
         <div class="footerBtns">
           <button class="btn" onclick="restartQuiz()">Retry</button>
-          <button class="btn gray" onclick="showResultScreen(false)">Result</button>
+          <button class="btn gray" onclick="showResultScreen(lastPassed)">Result</button>
         </div>
       </div>
 
@@ -281,7 +278,7 @@
           <div id="blessLines">
             <div class="line-red">Баяр хүргэе!</div>
             <div class="line-purple">Өнөөдрийн зүтгэл — Таны ирээдүй</div>
-            <div class="line-blue">Есүсийн хайраар ерөөе.</div>
+            <div class="line-blue">Есүсийн хайраар ерөөe.</div>
           </div>
         </div>
 
@@ -301,9 +298,6 @@
   const TIME_LIMIT = { normal: 10, slow: 12 };
   let SPEED = "normal";
 
-  /* =========================
-     ✅ WORDS 기본 틀(템플릿)
-     ========================= */
   const WORDS = [
     { ko: "길을 묻다", mn: "зам асуух" },
     { ko: "길을 가르쳐 주다", mn: "зам зааж өгөх" },
@@ -367,6 +361,9 @@
   let remainSec = 0;
   let tickId = null;
   let questionLocked = false;
+
+  /* ✅ 마지막 결과(합격 여부) */
+  let lastPassed = false;
 
   const $ = (id)=>document.getElementById(id);
 
@@ -540,57 +537,36 @@
     return out;
   }
 
-  /* ✅ 화면에 맞게 글자 자동 축소(스크롤 없이 보이게) */
+  /* ✅ 화면에 맞게 글자 자동축소: 질문(최대 3줄), 보기(최대 2줄) */
   function fitText_(el, maxPx, minPx, maxLines){
     if(!el) return;
-    const style = getComputedStyle(el);
     const parent = el.parentElement;
-
-    const original = el.textContent || "";
-    if(!original.trim()) return;
+    const maxW = parent ? parent.clientWidth : el.clientWidth;
 
     el.style.wordBreak = "keep-all";
     el.style.overflowWrap = "anywhere";
     el.style.whiteSpace = "normal";
 
-    // 초기화
-    el.style.fontSize = maxPx + "px";
-
-    const maxW = parent ? parent.clientWidth : el.clientWidth;
-    const maxH = parent ? parent.clientHeight : el.clientHeight;
-
-    // 라인 높이 계산(대충 1.08~1.12 기반)
-    const lineHeightFactor = Math.max(1.06, Math.min(1.18, parseFloat(style.lineHeight) / (parseFloat(style.fontSize)||maxPx) || 1.10));
-
-    // 높이 제한: (maxLines * lineHeight) + 여유
-    function allowedHeight(fontPx){
-      const lh = fontPx * lineHeightFactor;
-      return Math.min(maxH || 9999, (maxLines * lh) + 2);
-    }
-
     let font = maxPx;
     let guard = 0;
 
-    // 폭/높이 둘 다 체크 (버튼/텍스트가 커져서 넘치면 축소)
     while(guard++ < 80 && font > minPx){
       el.style.fontSize = font + "px";
 
-      // 레이아웃 반영을 위해 강제 reflow
-      const h = el.scrollHeight;
-      const w = el.scrollWidth;
-      const aH = allowedHeight(font);
+      const lh = font * 1.12;
+      const allowedH = (maxLines * lh) + 2;
 
-      if((maxW && w > maxW + 1) || (h > aH + 1)){
+      const w = el.scrollWidth;
+      const h = el.scrollHeight;
+
+      if((maxW && w > maxW + 1) || (h > allowedH + 1)){
         font -= 1;
         continue;
       }
       break;
     }
 
-    // 그래도 너무 길면(극단) 줄 수를 조금 더 허용
-    if(font <= minPx){
-      el.style.fontSize = minPx + "px";
-    }
+    if(font <= minPx) el.style.fontSize = minPx + "px";
   }
 
   function renderQuestion_(){
@@ -614,11 +590,13 @@
       wrap.appendChild(btn);
     });
 
-    // ✅ 글자 자동 맞춤(질문 3줄, 보기 2줄)
     requestAnimationFrame(()=>{
-      fitText_($("qText"), 32, 14, 3);
+      /* ✅ 질문: 최대 28px, 최소 16px */
+      fitText_($("qText"), 28, 16, 3);
+
+      /* ✅ 보기: 최대 22px, 최소 14px (너무 작게 안 내려가게) */
       const buttons = Array.from(document.querySelectorAll(".choice"));
-      buttons.forEach(b => fitText_(b, 22, 12, 2));
+      buttons.forEach(b => fitText_(b, 22, 14, 2));
     });
 
     startTimer_();
@@ -709,10 +687,12 @@
 
     updatePills();
 
-    const passed = score >= 80;
-    if(!passed) showReviewScreen_();
-    else showResultScreen(true);
+    lastPassed = (score >= 80);
 
+    /* ✅ 점수와 상관없이 항상 Review 먼저 보여줌 */
+    showReviewScreen_();
+
+    /* ✅ 모든 시도 무조건 전송 */
     safeLog_(score, attempts);
   }
 
@@ -720,12 +700,23 @@
     showOnly("reviewBox");
 
     $("reviewMsg").textContent =
-      `80-аас доош оноо авсан тул эхлээд\nReview харуулна.\n` +
-      `Одоо: ${score} / 100\n` +
+      `Review → дараа нь Result харж болно.\n` +
+      `Score: ${score} / 100\n` +
       `Attempts: ${attempts}`;
 
     const list = $("reviewList");
     list.innerHTML = "";
+
+    if(wrongs.length === 0){
+      const div = document.createElement("div");
+      div.className = "reviewItem";
+      div.innerHTML =
+        `<div class="reviewNo">🎉 Perfect!</div>` +
+        `<div class="reviewQ">All correct.</div>` +
+        `<div class="reviewAns">Ans: —</div>`;
+      list.appendChild(div);
+      return;
+    }
 
     wrongs.forEach((w,i)=>{
       const timeoutBadge = (w.reason==="timeout") ? `<span class="badgeTimeout">시간 초과</span>` : "";
