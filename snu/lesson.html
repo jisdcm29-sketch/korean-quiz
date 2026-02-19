@@ -1,0 +1,115 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>서울대 레슨</title>
+  <style>
+    :root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;--accent:#60a5fa;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);}
+    a{color:inherit;text-decoration:none}
+    .topbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
+    .container{max-width:980px;margin:0 auto;padding:16px}
+    .card{background:rgba(17,24,39,.9);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+    .muted{color:var(--muted);line-height:1.6}
+    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer}
+    table{width:100%;border-collapse:collapse;margin-top:10px}
+    th,td{border-bottom:1px solid var(--line);padding:10px;vertical-align:top}
+    th{color:var(--muted);text-align:left}
+    .tag{display:inline-block;padding:2px 8px;border:1px solid var(--line);border-radius:999px;background:#0b1020;color:var(--muted);font-size:12px}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
+    <div style="display:flex;gap:8px;flex-wrap:wrap">
+      <a class="btn" href="./index.html">서울대 목록</a>
+      <a class="btn" href="../index.html">대시보드</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1 style="margin:0 0 6px;" id="title">레슨</h1>
+      <div class="muted" id="subtitle">불러오는 중...</div>
+
+      <h2 style="margin:16px 0 6px;">어휘</h2>
+      <div id="vocab"></div>
+
+      <h2 style="margin:16px 0 6px;">문법</h2>
+      <div id="grammar"></div>
+    </section>
+  </main>
+
+  <script>
+    function getParam(name){
+      const u = new URL(location.href);
+      return u.searchParams.get(name);
+    }
+
+    async function main(){
+      const dataPath = getParam("data");
+      const title = document.getElementById("title");
+      const subtitle = document.getElementById("subtitle");
+
+      if(!dataPath){
+        subtitle.textContent = "data 경로가 없습니다.";
+        return;
+      }
+
+      try{
+        const res = await fetch(dataPath, { cache:"no-store" });
+        if(!res.ok) throw new Error("레슨 JSON 로드 실패: " + res.status);
+        const d = await res.json();
+
+        title.textContent = `${d.level} ${d.lesson} · ${d.title_kr || ""}`;
+        subtitle.textContent = d.title_mn || "";
+
+        // vocab
+        const vocabDiv = document.getElementById("vocab");
+        if((d.vocab||[]).length){
+          let html = "<table><thead><tr><th>한국어</th><th>몽골어</th><th>예문</th></tr></thead><tbody>";
+          d.vocab.forEach(v=>{
+            const ex = (v.example_kr||"") + (v.example_mn ? "<br/><span class='muted'>" + v.example_mn + "</span>" : "");
+            html += `<tr>
+              <td><b>${v.ko||""}</b> <span class="tag">${v.pos||""}</span></td>
+              <td>${v.mn||""}</td>
+              <td>${ex}</td>
+            </tr>`;
+          });
+          html += "</tbody></table>";
+          vocabDiv.innerHTML = html;
+        } else {
+          vocabDiv.innerHTML = "<div class='muted'>어휘가 없습니다.</div>";
+        }
+
+        // grammar
+        const gramDiv = document.getElementById("grammar");
+        if((d.grammar||[]).length){
+          let html = "";
+          d.grammar.forEach(g=>{
+            html += `<div class="card" style="margin-top:10px;">
+              <div style="font-weight:900;">${g.title || ""} <span class="tag">${g.pattern || ""}</span></div>
+              <div class="muted" style="margin-top:6px;">${g.use_kr || ""}</div>
+              ${g.use_mn ? `<div class="muted" style="margin-top:6px;">${g.use_mn}</div>` : ""}
+              ${(g.examples||[]).length ? "<div style='margin-top:10px;'>" + g.examples.map(e=>`<div>• ${e.kr||""}<br/><span class="muted">${e.mn||""}</span></div>`).join("") + "</div>" : ""}
+            </div>`;
+          });
+          gramDiv.innerHTML = html;
+        } else {
+          gramDiv.innerHTML = "<div class='muted'>문법이 없습니다.</div>";
+        }
+
+      } catch(err){
+        subtitle.textContent = "불러오기 오류";
+        console.log(err);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
