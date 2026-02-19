@@ -319,23 +319,17 @@
       });
     }
 
-    function applyAccess(role){
-      const tileSNU = document.getElementById("tileSNU");
-      const tileT1  = document.getElementById("tileT1");
-      const tileT2  = document.getElementById("tileT2");
+   function applyAccess(role){
+  const tileSNU = document.getElementById("tileSNU");
+  const tileT1  = document.getElementById("tileT1");
+  const tileT2  = document.getElementById("tileT2");
 
-      tileSNU.classList.remove("disabled");
-      tileT1.classList.remove("disabled");
-      tileT2.classList.remove("disabled");
+  // 지금은 누구나 모두 사용 가능(잠금 해제)
+  tileSNU.classList.remove("disabled");
+  tileT1.classList.remove("disabled");
+  tileT2.classList.remove("disabled");
+}
 
-      // BOOK: SNU만 / TOPIK: TOPIK만 / ALL: 전부
-      if(role === "BOOK"){
-        tileT1.classList.add("disabled");
-        tileT2.classList.add("disabled");
-      } else if(role === "TOPIK"){
-        tileSNU.classList.add("disabled");
-      }
-    }
 
     function render(){
       const session = getSession();
