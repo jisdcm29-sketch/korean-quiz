@@ -1,0 +1,21 @@
+{
+  "title": "TOPIK I 샘플(테스트)",
+  "items": [
+    {
+      "id": "T1-V-001",
+      "type": "vocab",
+      "question_kr": "‘학교’의 뜻은 무엇입니까?",
+      "choices": ["сургууль", "эмнэлэг", "дэлгүүр", "ажил"],
+      "answer_index": 0,
+      "explain_kr": "학교 = сургууль"
+    },
+    {
+      "id": "T1-G-001",
+      "type": "grammar",
+      "question_kr": "‘-(으)세요’는 언제 사용합니까?",
+      "choices": ["부탁/명령", "과거 회상", "추측", "원인/이유"],
+      "answer_index": 0,
+      "explain_kr": "공손하게 부탁하거나 명령할 때 사용합니다."
+    }
+  ]
+}
