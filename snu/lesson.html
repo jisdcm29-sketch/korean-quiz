@@ -46,17 +46,10 @@
     }
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
     .tab{
-  padding:10px 12px;
-  border-radius:12px;
-  border:1px solid var(--line);
-  background:#0b1020;
-  color: var(--text);
-  cursor:pointer;
-}
-.tab.active{
-  border-color:rgba(96,165,250,.7);
-  color: var(--text);
-}
+      padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer
+    }
+    .tab.active{border-color:rgba(96,165,250,.7);color:var(--text)}
     .panel{display:none;margin-top:12px}
     .panel.active{display:block}
     .bar{height:1px;background:var(--line);margin:12px 0}
@@ -65,7 +58,6 @@
     th,td{border-bottom:1px solid var(--line);padding:10px;vertical-align:top}
     th{color:var(--muted);text-align:left}
 
-    .qwrap{display:grid;gap:12px}
     .qbox{border:1px solid var(--line);background:#0b1020;border-radius:16px;padding:14px}
     .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
     @media(max-width:800px){.choices{grid-template-columns:1fr}}
@@ -81,8 +73,9 @@
   <header class="topbar">
     <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
     <div class="btnRow">
-      <a class="btn" href="./index.html">서울대 목록</a>
-      <a class="btn" href="../index.html">대시보드</a>
+      <button class="btn" id="btnLang">KR</button>
+      <a class="btn" href="./index.html" id="btnSnuList">서울대 목록</a>
+      <a class="btn" href="../index.html" id="btnDashboard">대시보드</a>
     </div>
   </header>
 
@@ -104,7 +97,6 @@
 
       <div class="bar"></div>
 
-      <!-- VOCAB PANEL -->
       <div class="panel active" id="panel-vocab">
         <div class="btnRow" id="legacyRowVocab" style="margin-bottom:10px;display:none;">
           <a class="btn" id="legacyBtnVocab" href="#">기존 어휘(HTML) 보기</a>
@@ -112,19 +104,17 @@
         <div id="vocab"></div>
       </div>
 
-      <!-- QUIZ PANEL -->
       <div class="panel" id="panel-quiz">
         <div class="btnRow" style="margin-bottom:10px;">
           <button class="btn" id="btnMode" type="button">방향: 한국어 → 몽골어</button>
           <button class="btn" id="btnNew" type="button">새 문제</button>
-          <a class="btn" id="legacyBtnQuiz" href="#" style="display:none;">기존 테스트(HTML) 보기</a>
+          <a class="btn" id="legacyBtnQuiz" href="#" style="display:none;">기존 자료(HTML) 보기</a>
         </div>
         <div class="muted small" id="quizHint"></div>
         <div class="bar"></div>
         <div id="quiz"></div>
       </div>
 
-      <!-- GRAMMAR PANEL -->
       <div class="panel" id="panel-grammar">
         <div id="grammar"></div>
       </div>
@@ -132,11 +122,84 @@
   </main>
 
   <script>
+    // ---- i18n ----
+    const I18N = {
+      KR: {
+        dashboard: "대시보드",
+        snuList: "서울대 목록",
+        loading: "불러오는 중...",
+        loaded: "로드 완료",
+        vocabView: "어휘 보기",
+        vocabQuiz: "어휘 테스트",
+        grammar: "문법",
+        legacyVocab: "기존 어휘(HTML) 보기",
+        legacyHtml: "기존 자료(HTML) 보기",
+        thKo: "한국어",
+        thMn: "몽골어",
+        thEx: "예문",
+        noVocab: "어휘 데이터가 없습니다.",
+        useLegacy: "아래 버튼으로 기존 자료를 사용할 수 있습니다.",
+        noGrammar: "문법이 없습니다.",
+        modeK2M: "방향: 한국어 → 몽골어",
+        modeM2K: "방향: 몽골어 → 한국어",
+        newQ: "새 문제",
+        quizHint: (n)=> n ? `어휘 ${n}개로 테스트합니다. (4지선다, 랜덤)` : "어휘 데이터가 없어서 테스트를 만들 수 없습니다.",
+        qLabel: "문제",
+        correct: "정답!",
+        wrong: "오답!",
+        answer: "정답"
+      },
+      MN: {
+        dashboard: "Самбар",
+        snuList: "СӨҮ (жагсаалт)",
+        loading: "Ачаалж байна...",
+        loaded: "Ачааллаа",
+        vocabView: "Үг харах",
+        vocabQuiz: "Үг шалгалт",
+        grammar: "Дүрэм",
+        legacyVocab: "Хуучин үгс (HTML) харах",
+        legacyHtml: "Хуучин материал (HTML) харах",
+        thKo: "Солонгос",
+        thMn: "Монгол",
+        thEx: "Жишээ",
+        noVocab: "Үгийн өгөгдөл алга.",
+        useLegacy: "Доорх товчоор хуучин материалыг ашиглаж болно.",
+        noGrammar: "Дүрэм байхгүй.",
+        modeK2M: "Чиглэл: Солонгос → Монгол",
+        modeM2K: "Чиглэл: Монгол → Солонгос",
+        newQ: "Шинэ асуулт",
+        quizHint: (n)=> n ? `Үг ${n} ширхэгээр шалгана. (4 сонголт, санамсаргүй)` : "Үг байхгүй тул шалгалт үүсгэж чадсангүй.",
+        qLabel: "Асуулт",
+        correct: "Зөв!",
+        wrong: "Буруу!",
+        answer: "Зөв хариулт"
+      }
+    };
+
+    function getLang(){
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toUpperCase();
+      const s1 = (localStorage.getItem("lang")||"").toUpperCase();
+      const s2 = (localStorage.getItem("kq_lang")||"").toUpperCase();
+      const s3 = (localStorage.getItem("language")||"").toUpperCase();
+      const pick = (q==="MN"||q==="KR") ? q : (s2||s1||s3);
+      return (pick==="MN") ? "MN" : "KR";
+    }
+    function setLang(l){
+      localStorage.setItem("lang", l);
+      localStorage.setItem("kq_lang", l);
+      localStorage.setItem("language", l);
+    }
+    function tr(key, arg){
+      const L = getLang();
+      const v = (I18N[L] && I18N[L][key]) ? I18N[L][key] : I18N.KR[key];
+      return (typeof v === "function") ? v(arg) : v;
+    }
+
     function getParam(name){
       const u = new URL(location.href);
       return u.searchParams.get(name);
     }
-
     function shuffle(arr){
       const a = arr.slice();
       for(let i=a.length-1;i>0;i--){
@@ -159,16 +222,32 @@
       });
     }
 
-    // state
     let LESSON = null;
-    let QUIZ_MODE = "KO2MN"; // or "MN2KO"
+    let QUIZ_MODE = "KO2MN"; // or MN2KO
+
+    function applyTexts(){
+      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
+      document.getElementById("btnLang").textContent = getLang();
+      document.getElementById("btnDashboard").textContent = tr("dashboard");
+      document.getElementById("btnSnuList").textContent = tr("snuList");
+      document.getElementById("subtitle").textContent = tr("loading");
+
+      document.getElementById("tab-vocab").textContent = tr("vocabView");
+      document.getElementById("tab-quiz").textContent = tr("vocabQuiz");
+      document.getElementById("tab-grammar").textContent = tr("grammar");
+
+      document.getElementById("legacyBtnVocab").textContent = tr("legacyVocab");
+      document.getElementById("legacyBtnQuiz").textContent = tr("legacyHtml");
+
+      document.getElementById("btnNew").textContent = tr("newQ");
+      document.getElementById("btnMode").textContent = (QUIZ_MODE==="KO2MN") ? tr("modeK2M") : tr("modeM2K");
+    }
 
     function renderVocab(d){
       const vocabDiv = document.getElementById("vocab");
       const legacyRow = document.getElementById("legacyRowVocab");
       const legacyBtn = document.getElementById("legacyBtnVocab");
 
-      // legacy button (always show if exists)
       if(d.legacy_vocab_url){
         legacyBtn.href = d.legacy_vocab_url;
         legacyRow.style.display = "";
@@ -177,10 +256,10 @@
       }
 
       const vocab = d.vocab || [];
-
-      // always keep same "table area" layout
       if(vocab.length){
-        let html = "<table><thead><tr><th>한국어</th><th>몽골어</th><th>예문</th></tr></thead><tbody>";
+        let html = `<table><thead><tr>
+          <th>${tr("thKo")}</th><th>${tr("thMn")}</th><th>${tr("thEx")}</th>
+        </tr></thead><tbody>`;
         vocab.forEach(v=>{
           const ko = v.ko || "";
           const mn = v.mn || "";
@@ -200,17 +279,14 @@
         vocabDiv.innerHTML = html;
       } else {
         vocabDiv.innerHTML =
-          "<div class='muted'>어휘 데이터가 없습니다.</div>" +
-          (d.legacy_vocab_url
-            ? "<div class='muted small' style='margin-top:6px;'>아래 버튼으로 기존 자료를 사용할 수 있습니다.</div>"
-            : "");
+          `<div class='muted'>${tr("noVocab")}</div>` +
+          (d.legacy_vocab_url ? `<div class='muted small' style='margin-top:6px;'>${tr("useLegacy")}</div>` : "");
       }
     }
 
     function renderGrammar(d){
       const gramDiv = document.getElementById("grammar");
       const grammar = d.grammar || [];
-
       if(grammar.length){
         let html = "";
         grammar.forEach(g=>{
@@ -219,7 +295,6 @@
             const mn = e.mn || "";
             return `<div style="margin-top:8px;">• ${kr}<br/><span class="muted">${mn}</span></div>`;
           }).join("");
-
           html += `<div class="card" style="margin-top:10px;">
             <div style="font-weight:900;">${g.title || ""} <span class="tag">${g.pattern || ""}</span></div>
             <div class="muted" style="margin-top:6px;">${g.use_kr || ""}</div>
@@ -229,17 +304,15 @@
         });
         gramDiv.innerHTML = html;
       } else {
-        gramDiv.innerHTML = "<div class='muted'>문법이 없습니다.</div>";
+        gramDiv.innerHTML = `<div class='muted'>${tr("noGrammar")}</div>`;
       }
     }
 
     function pickQuestion(vocab){
-      // require at least 4 distinct options to make good MCQ, but handle smaller too
       const pool = vocab.filter(v => (v.ko || v.mn));
       if(!pool.length) return null;
 
       const q = pool[Math.floor(Math.random()*pool.length)];
-
       const getPrompt = (v) => QUIZ_MODE==="KO2MN" ? (v.ko||"") : (v.mn||"");
       const getAnswer = (v) => QUIZ_MODE==="KO2MN" ? (v.mn||"") : (v.ko||"");
 
@@ -247,14 +320,9 @@
       const prompt = getPrompt(q);
       if(!prompt || !correct) return null;
 
-      // collect distractors
-      const others = pool
-        .map(v => getAnswer(v))
-        .filter(a => a && a !== correct);
-
+      const others = pool.map(v => getAnswer(v)).filter(a => a && a !== correct);
       const uniq = Array.from(new Set(others));
       const distractors = shuffle(uniq).slice(0, 3);
-
       const choices = shuffle([correct, ...distractors]);
 
       return { prompt, correct, choices };
@@ -265,7 +333,6 @@
       const hint = document.getElementById("quizHint");
       const legacyBtnQuiz = document.getElementById("legacyBtnQuiz");
 
-      // show legacy test link if exists
       if(d.legacy_vocab_url){
         legacyBtnQuiz.href = d.legacy_vocab_url;
         legacyBtnQuiz.style.display = "";
@@ -274,19 +341,17 @@
       }
 
       const vocab = d.vocab || [];
-      hint.textContent = vocab.length
-        ? `어휘 ${vocab.length}개로 테스트합니다. (4지선다, 랜덤)`
-        : `어휘 데이터가 없어서 테스트를 만들 수 없습니다.`;
+      hint.textContent = tr("quizHint", vocab.length);
 
       quizDiv.innerHTML = "";
       if(!vocab.length){
-        quizDiv.innerHTML = "<div class='muted'>어휘가 없어서 테스트를 만들 수 없습니다.</div>";
+        quizDiv.innerHTML = `<div class='muted'>${tr("noVocab")}</div>`;
         return;
       }
 
       const q = pickQuestion(vocab);
       if(!q){
-        quizDiv.innerHTML = "<div class='muted'>테스트 문제를 만들 수 없습니다. (어휘에 ko/mn 값이 있는지 확인)</div>";
+        quizDiv.innerHTML = "<div class='muted'>퀴즈를 만들 수 없습니다. (ko/mn 값 확인)</div>";
         return;
       }
 
@@ -294,7 +359,8 @@
       box.className = "qbox";
 
       const head = document.createElement("div");
-      head.innerHTML = `<div class="muted small">문제</div><div style="font-weight:900;font-size:18px;margin-top:6px;">${q.prompt}</div>`;
+      head.innerHTML = `<div class="muted small">${tr("qLabel")}</div>
+                        <div style="font-weight:900;font-size:18px;margin-top:6px;">${q.prompt}</div>`;
       box.appendChild(head);
 
       const choicesWrap = document.createElement("div");
@@ -320,8 +386,8 @@
           result.classList.remove("ok","bad");
           result.classList.add(ok ? "ok" : "bad");
           result.innerHTML = ok
-            ? `<b>정답!</b> <span class="muted small">(정답: ${q.correct})</span>`
-            : `<b>오답!</b> <span class="muted small">정답: ${q.correct}</span>`;
+            ? `<b>${tr("correct")}</b> <span class="muted small">(${tr("answer")}: ${q.correct})</span>`
+            : `<b>${tr("wrong")}</b> <span class="muted small">${tr("answer")}: ${q.correct}</span>`;
           lock();
         });
 
@@ -330,31 +396,41 @@
 
       box.appendChild(choicesWrap);
       box.appendChild(result);
-
       quizDiv.appendChild(box);
     }
 
     async function main(){
-      const dataPath = getParam("data");
-      const title = document.getElementById("title");
-      const subtitle = document.getElementById("subtitle");
-      const status = document.getElementById("status");
+      applyTexts();
 
-      // tabs
       document.getElementById("tab-vocab").addEventListener("click", ()=>setActiveTab("vocab"));
       document.getElementById("tab-quiz").addEventListener("click", ()=>setActiveTab("quiz"));
       document.getElementById("tab-grammar").addEventListener("click", ()=>setActiveTab("grammar"));
 
+      document.getElementById("btnLang").addEventListener("click", ()=>{
+        const next = (getLang()==="KR") ? "MN" : "KR";
+        setLang(next);
+        applyTexts();
+        if(LESSON){
+          renderVocab(LESSON);
+          renderGrammar(LESSON);
+          renderQuiz(LESSON);
+        }
+      });
+
       document.getElementById("btnMode").addEventListener("click", ()=>{
         QUIZ_MODE = (QUIZ_MODE==="KO2MN") ? "MN2KO" : "KO2MN";
-        document.getElementById("btnMode").textContent =
-          (QUIZ_MODE==="KO2MN") ? "방향: 한국어 → 몽골어" : "방향: 몽골어 → 한국어";
+        applyTexts();
         if(LESSON) renderQuiz(LESSON);
       });
 
       document.getElementById("btnNew").addEventListener("click", ()=>{
         if(LESSON) renderQuiz(LESSON);
       });
+
+      const dataPath = getParam("data");
+      const title = document.getElementById("title");
+      const subtitle = document.getElementById("subtitle");
+      const status = document.getElementById("status");
 
       if(!dataPath){
         subtitle.textContent = "data 경로가 없습니다.";
@@ -370,7 +446,7 @@
 
         title.textContent = `${d.level || ""} ${d.lesson || ""} · ${d.title_kr || ""}`.trim();
         subtitle.textContent = d.title_mn || "";
-        status.textContent = "로드 완료";
+        status.textContent = tr("loaded");
 
         renderVocab(d);
         renderGrammar(d);
