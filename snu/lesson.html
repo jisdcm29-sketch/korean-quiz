@@ -45,8 +45,18 @@
       border-radius:999px;background:#0b1020;color:var(--muted);font-size:12px
     }
     .tabs{display:flex;gap:8px;flex-wrap:wrap;margin-top:12px}
-    .tab{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0b1020;cursor:pointer}
-    .tab.active{border-color:rgba(96,165,250,.7)}
+    .tab{
+  padding:10px 12px;
+  border-radius:12px;
+  border:1px solid var(--line);
+  background:#0b1020;
+  color: var(--text);
+  cursor:pointer;
+}
+.tab.active{
+  border-color:rgba(96,165,250,.7);
+  color: var(--text);
+}
     .panel{display:none;margin-top:12px}
     .panel.active{display:block}
     .bar{height:1px;background:var(--line);margin:12px 0}
