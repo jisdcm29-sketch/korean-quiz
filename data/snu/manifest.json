@@ -9,6 +9,12 @@
           "title_kr": "1과",
           "title_mn": "1-р хичээл",
           "data": "../data/snu/1A/lesson01.json"
+        },
+        {
+          "id": "1A-02",
+          "title_kr": "2과",
+          "title_mn": "2-р хичээл",
+          "data": "../data/snu/1A/lesson02.json"
         }
       ]
     }
