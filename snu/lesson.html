@@ -439,23 +439,33 @@
       }
 
       try{
-        const res = await fetch(dataPath, { cache:"no-store" });
-        if(!res.ok) throw new Error("레슨 JSON 로드 실패: " + res.status);
-        const d = await res.json();
-        LESSON = d;
+  // ✅ 상대경로/절대URL 모두 안전하게 처리
+  const dataUrl = new URL(dataPath, location.href).toString();
 
-        title.textContent = `${d.level || ""} ${d.lesson || ""} · ${d.title_kr || ""}`.trim();
-        subtitle.textContent = d.title_mn || "";
-        status.textContent = tr("loaded");
+  // 화면에 지금 읽으려는 주소를 표시(문제 진단 가능)
+  document.getElementById("status").textContent = "Loading...";
+  document.getElementById("subtitle").textContent = dataUrl;
 
-        renderVocab(d);
-        renderGrammar(d);
-        renderQuiz(d);
-      } catch(err){
-        subtitle.textContent = "불러오기 오류";
-        status.textContent = "오류";
-        console.log(err);
-      }
+  const res = await fetch(dataUrl, { cache:"no-store" });
+  if(!res.ok) throw new Error("레슨 JSON 로드 실패: " + res.status + " / " + dataUrl);
+
+  const d = await res.json();
+  LESSON = d;
+
+  title.textContent = `${d.level || ""} ${d.lesson || ""} · ${d.title_kr || ""}`.trim();
+  subtitle.textContent = d.title_mn || "";
+  status.textContent = tr("loaded");
+
+  renderVocab(d);
+  renderGrammar(d);
+  renderQuiz(d);
+
+} catch(err){
+  // ✅ 에러를 화면에 “정확히” 보여줌 (콘솔 안 봐도 됨)
+  subtitle.textContent = "불러오기 오류: " + (err.message || err);
+  status.textContent = "오류";
+  console.log(err);
+}
     }
 
     main();
