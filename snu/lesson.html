@@ -82,6 +82,9 @@
           });
           html += "</tbody></table>";
           vocabDiv.innerHTML = html;
+            if(d.legacy_vocab_url){
+    vocabDiv.innerHTML += "<div style='margin-top:10px;'><a class='btn' href='" + d.legacy_vocab_url + "'>기존 어휘(HTML) 보기</a></div>";
+  }
        } else {
   if(d.legacy_vocab_url){
     vocabDiv.innerHTML =
