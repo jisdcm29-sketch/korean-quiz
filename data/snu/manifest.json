@@ -1,0 +1,16 @@
+{
+  "title": "서울대 한국어 (데이터 기반)",
+  "levels": [
+    {
+      "level": "1A",
+      "lessons": [
+        {
+          "id": "1A-01",
+          "title_kr": "1과",
+          "title_mn": "1-р хичээл",
+          "data": "../data/snu/1A/lesson01.json"
+        }
+      ]
+    }
+  ]
+}
