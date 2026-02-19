@@ -3,18 +3,49 @@
   "lesson": "02",
   "title_kr": "2과",
   "title_mn": "2-р хичээл",
-  "vocab": [],
+  "vocab": [
+    { "ko": "책", "mn": "ном", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "공책", "mn": "дэвтэр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "사전", "mn": "толь бичиг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "전자사전", "mn": "цахим толь бичиг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "연필", "mn": "харандаа", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "볼펜", "mn": "бал", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "지우개", "mn": "баллуур", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "필통", "mn": "үзэгний сав", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "자", "mn": "шугам", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "지도", "mn": "газрын зураг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "잡지", "mn": "сэтгүүл", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "신문", "mn": "сонин", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "엽서", "mn": "ил захидал", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "CD", "mn": "CD", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "가방", "mn": "цүнх", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "지갑", "mn": "түрийвч", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "모자", "mn": "малгай", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "안경", "mn": "нүдний шил", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "우산", "mn": "шүхэр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "시계", "mn": "цаг", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "휴지", "mn": "ариун цаас", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "동전", "mn": "зоос", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "교통카드", "mn": "тээврийн карт", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "책상", "mn": "ширээ", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "의자", "mn": "сандал", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "침대", "mn": "ор", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "텔레비전", "mn": "телевизор", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "냉장고", "mn": "хөргөгч", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "컴퓨터", "mn": "компьютер", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "카메라", "mn": "камер", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "휴대폰", "mn": "гар утас", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "물", "mn": "ус", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "주스", "mn": "жүүс", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "우유", "mn": "сүү", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "콜라", "mn": "кола", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "맥주", "mn": "шар айраг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "녹차", "mn": "ногоон цай", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "커피", "mn": "кофе", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "룸메이트", "mn": "өрөөний хамтрагч", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "여자 친구", "mn": "найз охин", "pos": "", "example_kr": "", "example_mn": "" }
+  ],
   "legacy_vocab_url": "../SNU-1A-lesson02.html",
-  "grammar": [
-    {
-      "title": "-에 가요/와요",
-      "pattern": "N-에 가요/와요",
-      "use_kr": "장소로 이동할 때 사용합니다. (가요=이동, 와요=말하는 사람 쪽으로 이동)",
-      "use_mn": "Газарт очих/ирэх хөдөлгөөнийг илэрхийлнэ. (가요=очих, 와요=ирэх)",
-      "examples": [
-        { "kr": "저는 학교에 가요.", "mn": "Би сургууль руу явна." },
-        { "kr": "친구가 우리 집에 와요.", "mn": "Найз манай гэрт ирнэ." }
-      ]
-    }
-  ]
+  "grammar": []
 }
