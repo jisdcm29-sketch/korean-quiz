@@ -1,0 +1,103 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>서울대 한국어 (데이터 기반)</title>
+  <style>
+    :root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;--accent:#60a5fa;}
+    *{box-sizing:border-box}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);}
+    a{color:inherit;text-decoration:none}
+    .topbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
+    .container{max-width:980px;margin:0 auto;padding:16px}
+    .card{background:rgba(17,24,39,.9);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+    .muted{color:var(--muted);line-height:1.6}
+    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
+    @media(max-width:900px){.grid{grid-template-columns:1fr}}
+    .tile{display:block;padding:14px;border-radius:16px;border:1px solid var(--line);background:#0b1020}
+    .tile:hover{border-color:rgba(96,165,250,.6)}
+    .t{font-weight:900;margin-bottom:6px}
+    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
+    <div><a class="btn" href="../index.html">대시보드</a></div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <h1 style="margin:0 0 6px;">서울대 한국어 (새 방식)</h1>
+      <div class="muted">레벨/과 목록을 자동으로 만들고, JSON 데이터로 어휘·문법을 보여줍니다.</div>
+      <div class="muted" id="status" style="margin-top:8px;">불러오는 중...</div>
+
+      <div id="list" class="grid"></div>
+    </section>
+
+    <section class="card" style="margin-top:12px;">
+      <h3 style="margin:0 0 6px;">기존 레슨(HTML)도 계속 사용 가능</h3>
+      <div class="muted">기존 방식 페이지: <a class="btn" href="../lessonHub.html">lessonHub.html</a></div>
+    </section>
+  </main>
+
+  <script>
+    const MANIFEST_URL = "../data/snu/manifest.json";
+
+    async function main(){
+      const status = document.getElementById("status");
+      const list = document.getElementById("list");
+
+      try{
+        const res = await fetch(MANIFEST_URL, { cache:"no-store" });
+        if(!res.ok) throw new Error("manifest.json 로드 실패: " + res.status);
+        const data = await res.json();
+
+        status.textContent = data.title || "서울대 한국어";
+
+        list.innerHTML = "";
+        (data.levels || []).forEach(levelObj=>{
+          const level = levelObj.level;
+          (levelObj.lessons || []).forEach(lesson=>{
+            const a = document.createElement("a");
+            a.className = "tile";
+            a.href = "./lesson.html?data=" + encodeURIComponent(lesson.data);
+
+            const title = document.createElement("div");
+            title.className = "t";
+            title.textContent = `${level} · ${lesson.title_kr || lesson.id}`;
+
+            const sub = document.createElement("div");
+            sub.className = "muted";
+            sub.textContent = lesson.title_mn || "";
+
+            const meta = document.createElement("div");
+            meta.className = "muted";
+            meta.style.marginTop = "8px";
+            meta.textContent = "클릭 → 어휘/문법 보기";
+
+            a.appendChild(title);
+            if(sub.textContent) a.appendChild(sub);
+            a.appendChild(meta);
+
+            list.appendChild(a);
+          });
+        });
+
+        if(!list.children.length){
+          list.innerHTML = '<div class="muted">레슨이 없습니다. data/snu/manifest.json을 확인하세요.</div>';
+        }
+      } catch(err){
+        status.textContent = "오류";
+        list.innerHTML = '<div class="muted">manifest.json을 불러오지 못했습니다.</div>';
+        console.log(err);
+      }
+    }
+
+    main();
+  </script>
+</body>
+</html>
