@@ -82,10 +82,15 @@
           });
           html += "</tbody></table>";
           vocabDiv.innerHTML = html;
-        } else {
-          vocabDiv.innerHTML = "<div class='muted'>어휘가 없습니다.</div>";
-        }
-
+       } else {
+  if(d.legacy_vocab_url){
+    vocabDiv.innerHTML =
+      "<div class='muted'>어휘는 기존 자료(HTML)를 사용합니다.</div>" +
+      "<div style='margin-top:10px;'><a class='btn' href='" + d.legacy_vocab_url + "'>기존 어휘(HTML) 보기</a></div>";
+  } else {
+    vocabDiv.innerHTML = "<div class='muted'>어휘가 없습니다.</div>";
+  }
+}
         // grammar
         const gramDiv = document.getElementById("grammar");
         if((d.grammar||[]).length){
