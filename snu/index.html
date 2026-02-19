@@ -3,101 +3,206 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>서울대 한국어 (데이터 기반)</title>
+  <title>서울대 한국어</title>
   <style>
     :root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;--accent:#60a5fa;}
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
+      background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);}
     a{color:inherit;text-decoration:none}
-    .topbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    .topbar{position:sticky;top:0;z-index:10;display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
     .brand{display:flex;align-items:center;gap:10px;font-weight:800}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
     .container{max-width:980px;margin:0 auto;padding:16px}
     .card{background:rgba(17,24,39,.9);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
     .muted{color:var(--muted);line-height:1.6}
+    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer;display:inline-block}
+    .btnRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
     @media(max-width:900px){.grid{grid-template-columns:1fr}}
-    .tile{display:block;padding:14px;border-radius:16px;border:1px solid var(--line);background:#0b1020}
+    .tile{display:block;padding:14px;border-radius:16px;border:1px solid var(--line);background:rgba(11,16,32,.7)}
     .tile:hover{border-color:rgba(96,165,250,.6)}
-    .t{font-weight:900;margin-bottom:6px}
-    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer}
+    .h1{margin:0 0 6px;font-size:28px;font-weight:900}
+    .small{font-size:13px}
+    .bar{height:1px;background:var(--line);margin:12px 0}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace}
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
-    <div><a class="btn" href="../index.html">대시보드</a></div>
-  </header>
+<header class="topbar">
+  <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
+  <div class="btnRow">
+    <button class="btn" id="btnLang">KR</button>
+    <a class="btn" href="../index.html" id="btnDashboard">대시보드</a>
+  </div>
+</header>
 
-  <main class="container">
-    <section class="card">
-      <h1 style="margin:0 0 6px;">서울대 한국어 (새 방식)</h1>
-      <div class="muted">레벨/과 목록을 자동으로 만들고, JSON 데이터로 어휘·문법을 보여줍니다.</div>
-      <div class="muted" id="status" style="margin-top:8px;">불러오는 중...</div>
+<main class="container">
+  <section class="card">
+    <div class="h1" id="pageTitle">서울대 한국어 (새 방식)</div>
+    <div class="muted" id="pageDesc">레벨/과 목록을 자동으로 만들고, JSON 데이터로 어휘·문법을 보여줍니다.</div>
+    <div class="bar"></div>
 
-      <div id="list" class="grid"></div>
-    </section>
+    <div class="muted small" id="subTitle">서울대 한국어 (데이터 기반)</div>
+    <div id="levels"></div>
 
-    <section class="card" style="margin-top:12px;">
-      <h3 style="margin:0 0 6px;">기존 레슨(HTML)도 계속 사용 가능</h3>
-      <div class="muted">기존 방식 페이지: <a class="btn" href="../lessonHub.html">lessonHub.html</a></div>
-    </section>
-  </main>
+    <div class="bar"></div>
 
-  <script>
-    const MANIFEST_URL = "../data/snu/manifest.json";
+    <div class="card" style="background:rgba(11,16,32,.55)">
+      <div style="font-weight:900" id="legacyTitle">기존 레슨(HTML)도 계속 사용 가능</div>
+      <div class="muted small" style="margin-top:6px;">
+        <span id="legacyLabel">기존 방식 페이지:</span>
+        <a class="btn mono" href="../lessonHub.html" id="legacyLink">lessonHub.html</a>
+      </div>
+    </div>
 
-    async function main(){
-      const status = document.getElementById("status");
-      const list = document.getElementById("list");
+    <div class="muted small" id="status" style="margin-top:10px;"></div>
+  </section>
+</main>
 
-      try{
-        const res = await fetch(MANIFEST_URL, { cache:"no-store" });
-        if(!res.ok) throw new Error("manifest.json 로드 실패: " + res.status);
-        const data = await res.json();
+<script>
+  // ---- i18n ----
+  const I18N = {
+    KR: {
+      dashboard: "대시보드",
+      title: "서울대 한국어 (새 방식)",
+      desc: "레벨/과 목록을 자동으로 만들고, JSON 데이터로 어휘·문법을 보여줍니다.",
+      subtitle: "서울대 한국어 (데이터 기반)",
+      click: "클릭 → 어휘/문법 보기",
+      legacyTitle: "기존 레슨(HTML)도 계속 사용 가능",
+      legacyLabel: "기존 방식 페이지:",
+      loading: "불러오는 중...",
+      loaded: "로드 완료",
+      loadFail: "manifest.json 로드 실패"
+    },
+    MN: {
+      dashboard: "Самбар",
+      title: "Сөүлийн их сургууль Солонгос хэл (шинэ)",
+      desc: "Түвшин/хичээлийн жагсаалтыг автоматаар үүсгээд, JSON өгөгдлөөр үгс·дүрмийг харуулна.",
+      subtitle: "Сөүлийн их сургууль Солонгос хэл (өгөгдөлд суурилсан)",
+      click: "Дар → Үг/Дүрэм харах",
+      legacyTitle: "Хуучин хичээл (HTML)-ийг үргэлжлүүлэн ашиглаж болно",
+      legacyLabel: "Хуучин хувилбарын хуудас:",
+      loading: "Ачаалж байна...",
+      loaded: "Ачааллаа",
+      loadFail: "manifest.json ачаалж чадсангүй"
+    }
+  };
 
-        status.textContent = data.title || "서울대 한국어";
+  function getLang(){
+    const u = new URL(location.href);
+    const q = (u.searchParams.get("lang")||"").toUpperCase();
+    const s1 = (localStorage.getItem("lang")||"").toUpperCase();
+    const s2 = (localStorage.getItem("kq_lang")||"").toUpperCase();
+    const s3 = (localStorage.getItem("language")||"").toUpperCase();
+    const pick = (q==="MN"||q==="KR") ? q : (s2||s1||s3);
+    return (pick==="MN") ? "MN" : "KR";
+  }
 
-        list.innerHTML = "";
-        (data.levels || []).forEach(levelObj=>{
-          const level = levelObj.level;
-          (levelObj.lessons || []).forEach(lesson=>{
-            const a = document.createElement("a");
-            a.className = "tile";
-            a.href = "./lesson.html?data=" + encodeURIComponent(lesson.data);
+  function setLang(l){
+    localStorage.setItem("lang", l);
+    localStorage.setItem("kq_lang", l);
+    localStorage.setItem("language", l);
+  }
 
-            const title = document.createElement("div");
-            title.className = "t";
-            title.textContent = `${level} · ${lesson.title_kr || lesson.id}`;
+  function t(key){
+    const L = getLang();
+    return (I18N[L] && I18N[L][key]) ? I18N[L][key] : I18N.KR[key] || key;
+  }
 
-            const sub = document.createElement("div");
-            sub.className = "muted";
-            sub.textContent = lesson.title_mn || "";
+  function applyTexts(){
+    document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
+    document.getElementById("btnDashboard").textContent = t("dashboard");
+    document.getElementById("pageTitle").textContent = t("title");
+    document.getElementById("pageDesc").textContent = t("desc");
+    document.getElementById("subTitle").textContent = t("subtitle");
+    document.getElementById("legacyTitle").textContent = t("legacyTitle");
+    document.getElementById("legacyLabel").textContent = t("legacyLabel");
+    document.getElementById("btnLang").textContent = getLang();
+  }
 
-            const meta = document.createElement("div");
-            meta.className = "muted";
-            meta.style.marginTop = "8px";
-            meta.textContent = "클릭 → 어휘/문법 보기";
+  async function main(){
+    applyTexts();
+    const status = document.getElementById("status");
+    status.textContent = t("loading");
 
-            a.appendChild(title);
-            if(sub.textContent) a.appendChild(sub);
-            a.appendChild(meta);
+    document.getElementById("btnLang").addEventListener("click", ()=>{
+      const next = (getLang()==="KR") ? "MN" : "KR";
+      setLang(next);
+      applyTexts();
+      // 다시 그리기
+      mainRenderOnly();
+    });
 
-            list.appendChild(a);
-          });
+    await mainRenderOnly();
+  }
+
+  async function mainRenderOnly(){
+    const status = document.getElementById("status");
+    const levelsDiv = document.getElementById("levels");
+    levelsDiv.innerHTML = "";
+    status.textContent = t("loading");
+
+    try{
+      const res = await fetch("../data/snu/manifest.json", {cache:"no-store"});
+      if(!res.ok) throw new Error("manifest fetch failed " + res.status);
+      const man = await res.json();
+
+      // subtitle는 번역 문구로 고정 (데이터의 title도 쓰고 싶으면 아래 줄 변경 가능)
+      // document.getElementById("subTitle").textContent = man.title || t("subtitle");
+
+      (man.levels || []).forEach(lv=>{
+        const wrap = document.createElement("div");
+        wrap.style.marginTop = "10px";
+
+        const lvTitle = document.createElement("div");
+        lvTitle.style.fontWeight = "900";
+        lvTitle.style.margin = "6px 0";
+        lvTitle.textContent = lv.level || "";
+        wrap.appendChild(lvTitle);
+
+        const grid = document.createElement("div");
+        grid.className = "grid";
+
+        (lv.lessons || []).forEach(les=>{
+          const a = document.createElement("a");
+          a.className = "tile";
+          a.href = `./lesson.html?data=${encodeURIComponent(les.data)}&id=${encodeURIComponent(les.id||"")}`;
+
+          const top = document.createElement("div");
+          top.style.fontWeight = "900";
+          top.textContent = `${lv.level} · ${les.title_kr || ""}`.trim();
+
+          const mn = document.createElement("div");
+          mn.className = "muted small";
+          mn.style.marginTop = "6px";
+          // 몽골어는 항상 보이게 두되, 언어가 MN이면 조금 더 강조해도 됨
+          mn.textContent = les.title_mn || "";
+
+          const hint = document.createElement("div");
+          hint.className = "muted small";
+          hint.style.marginTop = "10px";
+          hint.textContent = t("click");
+
+          a.appendChild(top);
+          a.appendChild(mn);
+          a.appendChild(hint);
+          grid.appendChild(a);
         });
 
-        if(!list.children.length){
-          list.innerHTML = '<div class="muted">레슨이 없습니다. data/snu/manifest.json을 확인하세요.</div>';
-        }
-      } catch(err){
-        status.textContent = "오류";
-        list.innerHTML = '<div class="muted">manifest.json을 불러오지 못했습니다.</div>';
-        console.log(err);
-      }
-    }
+        wrap.appendChild(grid);
+        levelsDiv.appendChild(wrap);
+      });
 
-    main();
-  </script>
+      status.textContent = t("loaded");
+    } catch(e){
+      console.log(e);
+      status.textContent = t("loadFail");
+    }
+  }
+
+  main();
+</script>
 </body>
 </html>
