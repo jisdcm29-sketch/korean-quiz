@@ -26,6 +26,34 @@
         { "id": "1B-15", "title_kr": "15과", "title_mn": "15-р хичээл", "data": "../data/snu/1B/lesson15.json" },
         { "id": "1B-16", "title_kr": "16과", "title_mn": "16-р хичээл", "data": "../data/snu/1B/lesson16.json" }
       ]
+    },
+    {
+      "level": "2A",
+      "lessons": [
+        { "id": "2A-01", "title_kr": "1과", "title_mn": "1-р хичээл", "data": "../data/snu/2A/lesson01.json" },
+        { "id": "2A-02", "title_kr": "2과", "title_mn": "2-р хичээл", "data": "../data/snu/2A/lesson02.json" },
+        { "id": "2A-03", "title_kr": "3과", "title_mn": "3-р хичээл", "data": "../data/snu/2A/lesson03.json" },
+        { "id": "2A-04", "title_kr": "4과", "title_mn": "4-р хичээл", "data": "../data/snu/2A/lesson04.json" },
+        { "id": "2A-05", "title_kr": "5과", "title_mn": "5-р хичээл", "data": "../data/snu/2A/lesson05.json" },
+        { "id": "2A-06", "title_kr": "6과", "title_mn": "6-р хичээл", "data": "../data/snu/2A/lesson06.json" },
+        { "id": "2A-07", "title_kr": "7과", "title_mn": "7-р хичээл", "data": "../data/snu/2A/lesson07.json" },
+        { "id": "2A-08", "title_kr": "8과", "title_mn": "8-р хичээл", "data": "../data/snu/2A/lesson08.json" },
+        { "id": "2A-09", "title_kr": "9과", "title_mn": "9-р хичээл", "data": "../data/snu/2A/lesson09.json" }
+      ]
+    },
+    {
+      "level": "2B",
+      "lessons": [
+        { "id": "2B-10", "title_kr": "10과", "title_mn": "10-р хичээл", "data": "../data/snu/2B/lesson10.json" },
+        { "id": "2B-11", "title_kr": "11과", "title_mn": "11-р хичээл", "data": "../data/snu/2B/lesson11.json" },
+        { "id": "2B-12", "title_kr": "12과", "title_mn": "12-р хичээл", "data": "../data/snu/2B/lesson12.json" },
+        { "id": "2B-13", "title_kr": "13과", "title_mn": "13-р хичээл", "data": "../data/snu/2B/lesson13.json" },
+        { "id": "2B-14", "title_kr": "14과", "title_mn": "14-р хичээл", "data": "../data/snu/2B/lesson14.json" },
+        { "id": "2B-15", "title_kr": "15과", "title_mn": "15-р хичээл", "data": "../data/snu/2B/lesson15.json" },
+        { "id": "2B-16", "title_kr": "16과", "title_mn": "16-р хичээл", "data": "../data/snu/2B/lesson16.json" },
+        { "id": "2B-17", "title_kr": "17과", "title_mn": "17-р хичээл", "data": "../data/snu/2B/lesson17.json" },
+        { "id": "2B-18", "title_kr": "18과", "title_mn": "18-р хичээл", "data": "../data/snu/2B/lesson18.json" }
+      ]
     }
   ]
 }
