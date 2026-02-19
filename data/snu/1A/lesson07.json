@@ -1,0 +1,60 @@
+{
+  "level": "1A",
+  "lesson": "07",
+  "title_kr": "7과",
+  "title_mn": "7-р хичээл",
+  "vocab": [
+    { "ko": "눈이 오다", "mn": "цас орох", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "덥다", "mn": "халуун", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "따뜻하다", "mn": "дулаан", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "맑다", "mn": "цэлмэг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "비가 오다", "mn": "бороо орох", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "시원하다", "mn": "сэрүүхэн", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "춥다", "mn": "хүйтэн", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "흐리다", "mn": "бүрхэг", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "계절", "mn": "улирал", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "봄", "mn": "хавар", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "여름", "mn": "зун", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "가을", "mn": "намар", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "겨울", "mn": "өвөл", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "가볍다", "mn": "хөнгөн", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "무겁다", "mn": "хүнд", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "쉽다", "mn": "амархан", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "어렵다", "mn": "хэцүү", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "맵다", "mn": "халуун ногоотой", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "아주", "mn": "маш", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "요즘", "mn": "сүүлийн үед", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "고향", "mn": "төрсөн нутаг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "스키장", "mn": "цанын бааз", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "단풍", "mn": "навч шарлах", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "구경하다", "mn": "үзэж сонирхох", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "수영장", "mn": "усан сан", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "꽃", "mn": "цэцэг", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "바다", "mn": "далай", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "회", "mn": "түүхий загас", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "불꽃놀이", "mn": "салют", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "여행", "mn": "аялал", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "필요하다", "mn": "хэрэгтэй", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "준비하다", "mn": "бэлтгэх", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "선글라스", "mn": "нарны шил", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "부채", "mn": "дэвүүр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "슬리퍼", "mn": "углааш", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "하늘", "mn": "тэнгэр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "파랗다", "mn": "цэнхэр", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "눈사람", "mn": "цаасан хүн", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "맛있다", "mn": "амттай", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "비싸다", "mn": "үнэтэй", "pos": "", "example_kr": "", "example_mn": "" }
+  ],
+  "legacy_vocab_url": "../SNU-1A-lesson07.html",
+  "grammar": []
+}
