@@ -1,0 +1,57 @@
+{
+  "level": "1A",
+  "lesson": "05",
+  "title_kr": "5과",
+  "title_mn": "5-р хичээл",
+  "vocab": [
+    { "ko": "일", "mn": "нэг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "이", "mn": "хоёр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "삼", "mn": "гурав", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "사", "mn": "дөрөв", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "오", "mn": "тав", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "육", "mn": "зургаа", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "칠", "mn": "долоо", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "팔", "mn": "найм", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "구", "mn": "ес", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "십", "mn": "арав", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "월요일", "mn": "Даваа гараг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "화요일", "mn": "Мягмар гараг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "수요일", "mn": "Лхагва гараг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "목요일", "mn": "Пүрэв гараг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "금요일", "mn": "Баасан гараг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "토요일", "mn": "Бямба гараг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "일요일", "mn": "Ням гараг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "주말", "mn": "амралтын өдөр", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "생일", "mn": "Төрсөн өдөр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "약속", "mn": "амлалт", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "어제", "mn": "өчигдөр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "내일", "mn": "маргааш", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "쇼핑하다", "mn": "дэлгүүр хэсэх", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "산책하다", "mn": "салхилах", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "사진을 찍다", "mn": "зураг авах", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "같이", "mn": "хамт", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "세수하다", "mn": "нүүрээ угаах", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "이를 닦다", "mn": "шүдээ угаах", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "선물", "mn": "бэлэг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "파티", "mn": "үдэшлэг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "명절", "mn": "баярын өдөр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "음력", "mn": "билийн тоолол", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "양력", "mn": "аргын тоолол", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "며칠", "mn": "хэд хоног", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "언제", "mn": "хэзээ", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "그래서", "mn": "тэгиймээс", "pos": "", "example_kr": "", "example_mn": "" },
+
+    { "ko": "공항", "mn": "нисэх онгоцны буудал", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "은행", "mn": "банк", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "가게", "mn": "дэлгүүр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "기념품", "mn": "бэлэг дурсгал", "pos": "", "example_kr": "", "example_mn": "" }
+  ],
+  "legacy_vocab_url": "../SNU-1A-lesson05.html",
+  "grammar": []
+}
