@@ -5,7 +5,7 @@
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>TOPIK I</title>
   <style>
-    :root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;--accent:#60a5fa;}
+    :root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;--accent:#60a5fa;--ok:#34d399;--bad:#f87171;}
     *{box-sizing:border-box}
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);}
     a{color:inherit;text-decoration:none}
@@ -17,26 +17,144 @@
     .muted{color:var(--muted);line-height:1.6}
     .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer}
+    .pill{display:inline-block;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:#0b1020;color:var(--muted);font-size:12px;margin-left:8px}
+    .qwrap{display:grid;gap:12px;margin-top:12px}
+    .qhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end}
+    .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+    @media (max-width:800px){ .choices{grid-template-columns:1fr} }
+    .choice{padding:12px;border-radius:14px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer;text-align:left}
+    .choice:hover{border-color:rgba(96,165,250,.6)}
+    .result{margin-top:10px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(11,16,32,.7)}
+    .ok{border-color:rgba(52,211,153,.6)}
+    .bad{border-color:rgba(248,113,113,.6)}
+    .small{font-size:13px}
+    .bar{height:1px;background:var(--line);margin:12px 0}
   </style>
 </head>
 <body>
   <header class="topbar">
     <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
+    <div class="btnRow" style="margin:0">
+      <a class="btn" href="../index.html">대시보드</a>
+    </div>
   </header>
 
   <main class="container">
     <section class="card">
-      <h1>TOPIK I</h1>
-      <p class="muted">
-        현재는 <b>준비중</b>입니다.<br/>
-        다음 단계에서 문제은행(엑셀 → JSON)을 연결하여<br/>
-        어휘/문법/읽기/듣기/모의고사 화면을 순서대로 붙입니다.
-      </p>
-
-      <div class="btnRow">
-        <a class="btn" href="../index.html">대시보드로 돌아가기</a>
+      <div class="qhead">
+        <div>
+          <h1 style="margin:0 0 6px;">TOPIK I <span class="pill">JSON 테스트</span></h1>
+          <div class="muted small">data/topik1_sample.json 파일을 읽어 문제를 보여줍니다.</div>
+        </div>
+        <div class="muted small" id="status">불러오는 중...</div>
       </div>
+
+      <div class="bar"></div>
+
+      <div id="app" class="qwrap"></div>
     </section>
   </main>
+
+  <script>
+    const DATA_URL = "../data/topik1_sample.json";
+
+    function el(tag, attrs={}, children=[]) {
+      const e = document.createElement(tag);
+      Object.entries(attrs).forEach(([k,v])=>{
+        if(k === "class") e.className = v;
+        else if(k === "html") e.innerHTML = v;
+        else e.setAttribute(k, v);
+      });
+      children.forEach(c => e.appendChild(c));
+      return e;
+    }
+
+    function renderQuestion(item, idx) {
+      const wrap = el("div", { class:"card" });
+
+      const title = el("div", { class:"qhead" }, [
+        el("div", {}, [
+          el("h2", { style:"margin:0 0 6px;" }, [document.createTextNode(`${idx+1}. ${item.question_kr}`)]),
+          el("div", { class:"muted small" }, [document.createTextNode(`유형: ${item.type}`)])
+        ]),
+        el("div", { class:"muted small" }, [document.createTextNode(item.id || "")])
+      ]);
+
+      const choicesWrap = el("div", { class:"choices" });
+      const result = el("div", { class:"result muted", style:"display:none;" });
+
+      function showResult(isCorrect, pickedIndex) {
+        const correctIndex = item.answer_index;
+        const correctText = item.choices[correctIndex];
+        const pickedText = item.choices[pickedIndex];
+
+        result.style.display = "";
+        result.classList.remove("ok","bad","muted");
+        result.classList.add(isCorrect ? "ok" : "bad");
+
+        const msg = isCorrect ? "정답!" : "오답!";
+        const explain = item.explain_kr ? `<div class="muted small" style="margin-top:6px;">해설: ${item.explain_kr}</div>` : "";
+
+        result.innerHTML =
+          `<div><b>${msg}</b> (선택: ${pickedText})</div>` +
+          `<div class="muted small" style="margin-top:6px;">정답: ${correctText}</div>` +
+          explain;
+
+        // 한 번 답하면 버튼 잠그기
+        [...choicesWrap.querySelectorAll("button")].forEach(b => b.disabled = true);
+      }
+
+      item.choices.forEach((c, ci) => {
+        const btn = el("button", { class:"choice", type:"button" }, [document.createTextNode(c)]);
+        btn.addEventListener("click", ()=>{
+          const isCorrect = ci === item.answer_index;
+          showResult(isCorrect, ci);
+        });
+        choicesWrap.appendChild(btn);
+      });
+
+      wrap.appendChild(title);
+      wrap.appendChild(choicesWrap);
+      wrap.appendChild(result);
+      return wrap;
+    }
+
+    async function main(){
+      const status = document.getElementById("status");
+      const app = document.getElementById("app");
+
+      try{
+        const res = await fetch(DATA_URL, { cache: "no-store" });
+        if(!res.ok) throw new Error("JSON을 불러올 수 없습니다: " + res.status);
+        const data = await res.json();
+
+        status.textContent = `불러옴: ${data.title || "TOPIK I"} / 문제 ${data.items?.length || 0}개`;
+
+        app.innerHTML = "";
+        (data.items || []).forEach((item, idx)=>{
+          app.appendChild(renderQuestion(item, idx));
+        });
+
+        if(!(data.items || []).length){
+          app.appendChild(el("div", { class:"muted" }, [document.createTextNode("문제가 없습니다. JSON 파일을 확인하세요.")]));
+        }
+      } catch(err){
+        status.textContent = "오류";
+        app.innerHTML = "";
+        app.appendChild(el("div", { class:"card" }, [
+          el("h2", {}, [document.createTextNode("JSON 로드 실패")]),
+          el("div", { class:"muted" }, [document.createTextNode("아래를 확인하세요:")]),
+          el("ul", { class:"muted" }, [
+            el("li", {}, [document.createTextNode("파일 경로가 맞는지: data/topik1_sample.json")]),
+            el("li", {}, [document.createTextNode("JSON 형식이 깨지지 않았는지(쉼표, 따옴표)")]),
+            el("li", {}, [document.createTextNode("GitHub Pages 반영이 완료됐는지(1~2분 걸릴 수 있음)")])
+          ]),
+          el("div", { class:"muted small", style:"margin-top:10px;" }, [document.createTextNode(String(err))])
+        ]));
+      }
+    }
+
+    main();
+  </script>
 </body>
 </html>
