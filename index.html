@@ -1,0 +1,391 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>Korean Quiz Hub</title>
+
+  <!-- (선택) PWA 기본: 나중에 manifest.json/icons 추가하면 앱처럼 설치 가능 -->
+  <!-- <link rel="manifest" href="./manifest.json"> -->
+  <meta name="theme-color" content="#111827" />
+
+  <style>
+    :root{
+      --bg:#0b1220;
+      --card:#111827;
+      --text:#e5e7eb;
+      --muted:#9ca3af;
+      --line:#243044;
+      --accent:#60a5fa;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans KR", Arial, sans-serif;
+      background:linear-gradient(180deg, #050814, var(--bg));
+      color:var(--text);
+    }
+    a{color:inherit; text-decoration:none}
+
+    .topbar{
+      position:sticky; top:0;
+      display:flex; align-items:center; justify-content:space-between;
+      padding:12px 16px;
+      background:rgba(5,8,20,.75);
+      backdrop-filter: blur(10px);
+      border-bottom:1px solid var(--line);
+      z-index:10;
+    }
+    .brand{display:flex; align-items:center; gap:10px; font-weight:800}
+    .dot{width:10px; height:10px; border-radius:999px; background:var(--accent)}
+    .top-actions{display:flex; gap:8px}
+    .chip{
+      padding:8px 10px;
+      border-radius:999px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      color:var(--text);
+      cursor:pointer;
+    }
+
+    .container{max-width:980px; margin:0 auto; padding:16px}
+    .card{
+      background:rgba(17,24,39,.9);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      box-shadow: 0 10px 30px rgba(0,0,0,.25);
+    }
+    h1,h2,h3{margin:0 0 8px}
+    .muted{color:var(--muted)}
+    label{display:block; margin:10px 0 6px; color:var(--muted); font-size:14px}
+    input{
+      width:100%;
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      color:var(--text);
+      outline:none;
+    }
+    input:focus{border-color:var(--accent)}
+    .grid2{display:grid; grid-template-columns:1fr 1fr; gap:12px; margin:12px 0}
+    @media (max-width:720px){ .grid2{grid-template-columns:1fr} }
+
+    .roleRow{display:flex; gap:10px; flex-wrap:wrap; margin-top:6px}
+    .radio{display:flex; align-items:center; gap:8px; padding:8px 10px; border:1px solid var(--line); border-radius:999px}
+
+    .btn{
+      margin-top:12px;
+      width:100%;
+      padding:12px 14px;
+      border:none;
+      border-radius:14px;
+      background:var(--accent);
+      color:#08101f;
+      font-weight:900;
+      cursor:pointer;
+    }
+
+    .note{
+      margin-top:12px;
+      color:var(--muted);
+      font-size:13px;
+      line-height:1.5;
+    }
+
+    .welcomeRow{display:flex; justify-content:space-between; align-items:flex-end; gap:12px}
+    .cards{display:grid; grid-template-columns:repeat(3,1fr); gap:12px; margin-top:12px}
+    @media (max-width:900px){ .cards{grid-template-columns:1fr} }
+
+    .tile{
+      background:linear-gradient(180deg, rgba(96,165,250,.18), rgba(17,24,39,.9));
+      border:1px solid var(--line);
+      border-radius:18px;
+      padding:16px;
+      display:block;
+      transition: transform .08s ease, border-color .08s ease;
+      min-height:130px;
+    }
+    .tile:hover{transform: translateY(-2px); border-color:rgba(96,165,250,.6)}
+    .tileTitle{font-size:18px; font-weight:900; margin-bottom:6px}
+    .tileDesc{opacity:.92; margin-bottom:8px}
+    .tileMeta{color:var(--muted); font-size:13px}
+
+    .list{margin:8px 0 0 18px; color:var(--muted); line-height:1.6}
+
+    .disabled{
+      opacity:.45;
+      pointer-events:none;
+      filter: grayscale(0.2);
+    }
+
+    .smallLinkRow{
+      display:flex; gap:10px; flex-wrap:wrap;
+      margin-top:12px;
+    }
+    .linkBtn{
+      padding:10px 12px;
+      border-radius:12px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      color:var(--text);
+      cursor:pointer;
+    }
+  </style>
+</head>
+
+<body>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <span id="appTitle">Korean Quiz</span>
+    </div>
+
+    <div class="top-actions">
+      <button class="chip" id="langBtn" type="button">KR</button>
+      <button class="chip" id="logoutBtn" type="button" style="display:none;">Logout</button>
+    </div>
+  </header>
+
+  <main class="container">
+    <!-- 로그인 카드 -->
+    <section class="card" id="loginCard">
+      <h1 id="hLogin">로그인</h1>
+      <p class="muted" id="pLogin">
+        지금은 “간단 로그인(로컬 저장)”로 시작합니다. (나중에 실제 로그인으로 교체 가능)
+      </p>
+
+      <div class="grid2">
+        <div>
+          <label id="lUser">아이디</label>
+          <input id="userId" placeholder="예: student01" autocomplete="username" />
+        </div>
+        <div>
+          <label id="lPass">비밀번호</label>
+          <input id="userPw" type="password" placeholder="임시" autocomplete="current-password" />
+        </div>
+      </div>
+
+      <label id="lRole">권한</label>
+      <div class="roleRow">
+        <label class="radio"><input type="radio" name="role" value="BOOK" checked> <span id="rBook">BOOK(교재)</span></label>
+        <label class="radio"><input type="radio" name="role" value="TOPIK"> <span id="rTopik">TOPIK(시험)</span></label>
+        <label class="radio"><input type="radio" name="role" value="ALL"> <span id="rAll">ALL(VIP)</span></label>
+      </div>
+
+      <button class="btn" id="loginBtn" type="button">Start</button>
+
+      <div class="note">
+        <strong>안내:</strong> 이 로그인은 “전환을 빠르게” 하기 위한 임시 버전입니다.<br/>
+        추후 실제 로그인/결제(예: Supabase/Firebase)로 바꿀 수 있습니다.
+      </div>
+
+      <div class="smallLinkRow">
+        <a class="linkBtn" href="./legacy-index.html">기존 화면(백업) 보기</a>
+      </div>
+    </section>
+
+    <!-- 대시보드 -->
+    <section id="dash" style="display:none;">
+      <div class="welcomeRow">
+        <h2 id="hDash">대시보드</h2>
+        <div class="muted" id="who"></div>
+      </div>
+
+      <div class="cards">
+        <!-- 서울대: 기존 lessonHub.html로 연결 -->
+        <a class="tile" id="tileSNU" href="./lessonHub.html">
+          <div class="tileTitle" id="tSNU">서울대 한국어</div>
+          <div class="tileDesc" id="dSNU">어휘 · 문법 · (선별)연습문제</div>
+          <div class="tileMeta" id="mSNU">기존 레슨 콘텐츠 그대로 연결</div>
+        </a>
+
+        <!-- TOPIK I: 준비중(폴더가 아직 없으면 404가 날 수 있어요) -->
+        <a class="tile" id="tileT1" href="./topik/index.html">
+          <div class="tileTitle" id="tT1">TOPIK I</div>
+          <div class="tileDesc" id="dT1">어휘 · 문법 · 읽기 · 듣기</div>
+          <div class="tileMeta" id="mT1">준비중(데이터 방식으로 확장)</div>
+        </a>
+
+        <!-- TOPIK II: 쓰기 51~53만 -->
+        <a class="tile" id="tileT2" href="./topik2/index.html">
+          <div class="tileTitle" id="tT2">TOPIK II</div>
+          <div class="tileDesc" id="dT2">어휘 · 문법 · 읽기 · 듣기 · 쓰기(51~53)</div>
+          <div class="tileMeta" id="mT2">54번 제외 / 자동 피드백 예정</div>
+        </a>
+      </div>
+
+      <div class="card" style="margin-top:16px;">
+        <h3 id="hRoadmap">다음 업데이트 방식</h3>
+        <ul class="list">
+          <li id="li1">지금은 기존 HTML 레슨을 그대로 사용</li>
+          <li id="li2">앞으로 추가 콘텐츠는 “엑셀 → JSON → 앱 자동 반영” 방식으로 전환</li>
+          <li id="li3">원하는 시점에 draft → public만 바꿔서 공개</li>
+        </ul>
+
+        <div class="smallLinkRow">
+          <a class="linkBtn" href="./lessonHub.html">서울대 레슨 허브로 이동</a>
+          <a class="linkBtn" href="./legacy-index.html">기존 화면(백업) 보기</a>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    const LS_KEY = "kq_session_v1";
+
+    const i18n = {
+      KR: {
+        appTitle: "Korean Quiz",
+        hLogin: "로그인",
+        pLogin: "지금은 “간단 로그인(로컬 저장)”로 시작합니다. (나중에 실제 로그인으로 교체 가능)",
+        lUser: "아이디",
+        lPass: "비밀번호",
+        lRole: "권한",
+        rBook: "BOOK(교재)",
+        rTopik: "TOPIK(시험)",
+        rAll: "ALL(VIP)",
+        start: "Start",
+        hDash: "대시보드",
+        tSNU: "서울대 한국어",
+        dSNU: "어휘 · 문법 · (선별)연습문제",
+        mSNU: "기존 레슨 콘텐츠 그대로 연결",
+        tT1: "TOPIK I",
+        dT1: "어휘 · 문법 · 읽기 · 듣기",
+        mT1: "준비중(데이터 방식으로 확장)",
+        tT2: "TOPIK II",
+        dT2: "어휘 · 문법 · 읽기 · 듣기 · 쓰기(51~53)",
+        mT2: "54번 제외 / 자동 피드백 예정",
+        hRoadmap: "다음 업데이트 방식",
+        li1: "지금은 기존 HTML 레슨을 그대로 사용",
+        li2: "앞으로 추가 콘텐츠는 “엑셀 → JSON → 앱 자동 반영” 방식으로 전환",
+        li3: "원하는 시점에 draft → public만 바꿔서 공개",
+        logout: "Logout",
+      },
+      MN: {
+        appTitle: "Korean Quiz",
+        hLogin: "Нэвтрэх",
+        pLogin: "Одоогоор “түр нэвтрэлт (local хадгалалт)” ашиглана. (Дараа нь жинхэнэ нэвтрэлт рүү сольж болно)",
+        lUser: "ID",
+        lPass: "Нууц үг",
+        lRole: "Эрх",
+        rBook: "BOOK(Сурах бичиг)",
+        rTopik: "TOPIK(Шалгалт)",
+        rAll: "ALL(VIP)",
+        start: "Эхлэх",
+        hDash: "Самбар",
+        tSNU: "Сөүлийн их сургууль",
+        dSNU: "Үгс · Дүрэм · (сонгосон) дасгал",
+        mSNU: "Одоогийн хичээлийн хуудсуудтай холбоно",
+        tT1: "TOPIK I",
+        dT1: "Үгс · Дүрэм · Унших · Сонсох",
+        mT1: "Бэлтгэл үе (өгөгдлөөр өргөжүүлнэ)",
+        tT2: "TOPIK II",
+        dT2: "Үгс · Дүрэм · Унших · Сонсох · Бичих(51~53)",
+        mT2: "54-ийг хассан / Автомат санал хүсэлт",
+        hRoadmap: "Дараагийн шинэчлэлт",
+        li1: "Одоогоор хуучин HTML хичээлүүдийг ашиглана",
+        li2: "Шинэ агуулгыг “Excel → JSON → App” аргаар нэмнэ",
+        li3: "draft → public болгож хүссэн үедээ нийтэлнэ",
+        logout: "Гарах",
+      }
+    };
+
+    function getSession(){
+      try { return JSON.parse(localStorage.getItem(LS_KEY) || "null"); }
+      catch { return null; }
+    }
+    function setSession(s){ localStorage.setItem(LS_KEY, JSON.stringify(s)); }
+    function clearSession(){ localStorage.removeItem(LS_KEY); }
+
+    function applyLang(lang){
+      const t = i18n[lang] || i18n.KR;
+      const map = {
+        appTitle:"appTitle",
+        hLogin:"hLogin", pLogin:"pLogin",
+        lUser:"lUser", lPass:"lPass", lRole:"lRole",
+        rBook:"rBook", rTopik:"rTopik", rAll:"rAll",
+        hDash:"hDash",
+        tSNU:"tSNU", dSNU:"dSNU", mSNU:"mSNU",
+        tT1:"tT1", dT1:"dT1", mT1:"mT1",
+        tT2:"tT2", dT2:"dT2", mT2:"mT2",
+        hRoadmap:"hRoadmap",
+        li1:"li1", li2:"li2", li3:"li3",
+      };
+      Object.entries(map).forEach(([key,id])=>{
+        const el = document.getElementById(id);
+        if(el) el.textContent = t[key];
+      });
+    }
+
+    function applyAccess(role){
+      const tileSNU = document.getElementById("tileSNU");
+      const tileT1  = document.getElementById("tileT1");
+      const tileT2  = document.getElementById("tileT2");
+
+      tileSNU.classList.remove("disabled");
+      tileT1.classList.remove("disabled");
+      tileT2.classList.remove("disabled");
+
+      // BOOK: SNU만 / TOPIK: TOPIK만 / ALL: 전부
+      if(role === "BOOK"){
+        tileT1.classList.add("disabled");
+        tileT2.classList.add("disabled");
+      } else if(role === "TOPIK"){
+        tileSNU.classList.add("disabled");
+      }
+    }
+
+    function render(){
+      const session = getSession();
+      const loginCard = document.getElementById("loginCard");
+      const dash = document.getElementById("dash");
+      const logoutBtn = document.getElementById("logoutBtn");
+      const who = document.getElementById("who");
+      const langBtn = document.getElementById("langBtn");
+
+      const lang = session?.lang || "KR";
+      langBtn.textContent = lang;
+      applyLang(lang);
+
+      if(!session){
+        loginCard.style.display = "";
+        dash.style.display = "none";
+        logoutBtn.style.display = "none";
+        return;
+      }
+
+      loginCard.style.display = "none";
+      dash.style.display = "";
+      logoutBtn.style.display = "";
+      who.textContent = `${session.userId} · ${session.role}`;
+
+      applyAccess(session.role);
+    }
+
+    document.getElementById("loginBtn").addEventListener("click", ()=>{
+      const userId = (document.getElementById("userId").value || "").trim() || "guest";
+      const role = document.querySelector('input[name="role"]:checked')?.value || "BOOK";
+      const existing = getSession();
+      const lang = existing?.lang || "KR";
+      setSession({ userId, role, lang });
+      render();
+    });
+
+    document.getElementById("logoutBtn").addEventListener("click", ()=>{
+      clearSession();
+      render();
+    });
+
+    document.getElementById("langBtn").addEventListener("click", ()=>{
+      const s = getSession() || { userId:"guest", role:"BOOK", lang:"KR" };
+      s.lang = (s.lang === "KR") ? "MN" : "KR";
+      setSession(s);
+      render();
+    });
+
+    render();
+  </script>
+</body>
+</html>
