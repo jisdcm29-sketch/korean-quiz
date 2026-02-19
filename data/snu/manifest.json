@@ -15,6 +15,42 @@
           "title_kr": "2과",
           "title_mn": "2-р хичээл",
           "data": "../data/snu/1A/lesson02.json"
+        },
+        {
+          "id": "1A-03",
+          "title_kr": "3과",
+          "title_mn": "3-р хичээл",
+          "data": "../data/snu/1A/lesson03.json"
+        },
+        {
+          "id": "1A-04",
+          "title_kr": "4과",
+          "title_mn": "4-р хичээл",
+          "data": "../data/snu/1A/lesson04.json"
+        },
+        {
+          "id": "1A-05",
+          "title_kr": "5과",
+          "title_mn": "5-р хичээл",
+          "data": "../data/snu/1A/lesson05.json"
+        },
+        {
+          "id": "1A-06",
+          "title_kr": "6과",
+          "title_mn": "6-р хичээл",
+          "data": "../data/snu/1A/lesson06.json"
+        },
+        {
+          "id": "1A-07",
+          "title_kr": "7과",
+          "title_mn": "7-р хичээл",
+          "data": "../data/snu/1A/lesson07.json"
+        },
+        {
+          "id": "1A-08",
+          "title_kr": "8과",
+          "title_mn": "8-р хичээл",
+          "data": "../data/snu/1A/lesson08.json"
         }
       ]
     }
