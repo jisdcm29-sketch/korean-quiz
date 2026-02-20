@@ -4,12 +4,14 @@
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
   <title>서울대 레슨</title>
+
   <style>
     :root{
       --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
       --accent:#60a5fa;--ok:#34d399;--bad:#f87171;
     }
     *{box-sizing:border-box}
+    html,body{overflow-x:hidden}
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
@@ -58,174 +60,84 @@
     th,td{border-bottom:1px solid var(--line);padding:10px;vertical-align:top}
     th{color:var(--muted);text-align:left}
 
+    /* ===== Quiz UI base ===== */
     .qbox{border:1px solid var(--line);background:#0b1020;border-radius:16px;padding:14px}
+    .qbox .qHead{display:block;text-align:center}
+    .qbox .qLabel{color:var(--muted);font-size:13px}
+    .qbox .qPrompt{
+      font-weight:900;
+      font-size:22px;              /* 기본(PC/태블릿) */
+      line-height:1.15;
+      margin-top:8px;
+      text-align:center;
+      word-break:keep-all;
+      overflow-wrap:anywhere;
+    }
+
+    /* 선택지: 기존 그리드(PC) */
     .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
     @media(max-width:800px){.choices{grid-template-columns:1fr}}
-    .choice{padding:12px;border-radius:14px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer;text-align:left}
+
+    .choice{
+      padding:12px;border-radius:14px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer;
+      text-align:center;           /* ✅ 가운데 */
+      line-height:1.2;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      word-break:keep-all;
+      font-size:18px;              /* 기본(PC/태블릿) */
+    }
     .choice:hover{border-color:rgba(96,165,250,.6)}
+
     .result{margin-top:10px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(11,16,32,.7)}
     .result.ok{border-color:rgba(52,211,153,.6)}
     .result.bad{border-color:rgba(248,113,113,.6)}
     .small{font-size:13px}
+
+    /* ===== ✅ Mobile: 질문 더 크게 + 중앙 + 간격 축소 + 한 화면에 더 많이 보이게 ===== */
+    @media (max-width: 520px){
+      .container{padding:10px}
+      .card{padding:12px}
+      .topbar{padding:10px 12px}
+      .btn{padding:9px 10px}
+      .tabs{gap:6px;margin-top:10px}
+      .tab{padding:9px 10px}
+      .bar{margin:10px 0}
+
+      /* 퀴즈 박스 */
+      .qbox{padding:12px}
+      .qbox .qHead{display:flex;flex-direction:column;align-items:center}
+      .qbox .qLabel{text-align:center}
+
+      /* ✅ 질문: 선택지보다 확실히 크게 */
+      .qbox .qPrompt{
+        font-size:28px;            /* ✅ 질문 크게 */
+        margin-top:8px;
+        margin-bottom:6px;
+        text-align:center;
+      }
+
+      /* ✅ 선택지: 간격 줄이고(스크롤 줄이기) 글자 약간 작게 */
+      .choices{
+        display:flex;              /* ✅ 모바일은 세로로 고정 */
+        flex-direction:column;
+        gap:6px;                   /* ✅ 간격 축소 */
+        margin-top:10px;
+      }
+      .choice{
+        font-size:20px;            /* ✅ 선택지(20) < 질문(28) */
+        padding:10px 12px;         /* ✅ 버튼 높이 줄여 한 화면에 더 많이 */
+        border-radius:14px;
+      }
+
+      /* 결과 박스도 조금 더 타이트 */
+      .result{padding:10px;margin-top:8px}
+      .muted.small{font-size:12px}
+    }
   </style>
-  <!-- ✅ Mobile Quiz Readability Patch (Question/Choices bigger + centered) -->
-<style>
-  /* 퀴즈(문제/선택지) 영역을 가운데로 */
-  #quizArea, #testArea, .quiz-area, .test-area, .vocab-test, .quizCard, .quiz-card {
-    margin-left: auto !important;
-    margin-right: auto !important;
-    text-align: center !important;
-  }
-
-  /* 문제(단어) 텍스트: 크게 + 중앙정렬 */
-  #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word {
-    font-weight: 800 !important;
-    line-height: 1.15 !important;
-    word-break: keep-all !important;
-    overflow-wrap: anywhere !important;
-    text-align: center !important;
-    margin: 10px auto 14px auto !important;
-  }
-
-  /* 선택지 버튼: 크게 + 터치하기 쉽게 + 중앙 */
-  #choices button, #choiceList button, .choices button, .choice button,
-  .choiceBtn, .choice-btn, .optionBtn, .option-btn {
-    width: 100% !important;
-    max-width: 520px !important;
-    margin: 10px auto !important;
-    padding: 16px 14px !important;
-    border-radius: 16px !important;
-    text-align: center !important;
-    line-height: 1.2 !important;
-  }
-
-  /* 버튼 안의 글자도 중앙 */
-  #choices button *, #choiceList button *, .choices button *, .choiceBtn *, .optionBtn * {
-    text-align: center !important;
-  }
-
-  /* 📱 휴대폰에서 글자 크게 + 위쪽 잡다한 영역은 작게 */
-  @media (max-width: 520px) {
-    /* 안내/설명 글이 크면 퀴즈가 작아 보이므로 축소 */
-    .hint, .help, .desc, .description, .note, .subText, .smallNote {
-      font-size: 12px !important;
-      line-height: 1.25 !important;
-      margin: 6px auto !important;
-      max-width: 95vw !important;
-    }
-
-    /* 퀴즈 카드(영역) 폭을 휴대폰에 맞춤 */
-    #quizArea, #testArea, .quiz-area, .test-area, .vocab-test, .quizCard, .quiz-card {
-      width: min(94vw, 640px) !important;
-      margin-top: 10px !important;
-      padding-top: 10px !important;
-    }
-
-    /* ✅ 핵심: 문제/선택지 글자 크기 */
-    #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word {
-      font-size: 34px !important; /* 문제(단어) */
-    }
-
-    #choices button, #choiceList button, .choices button, .choice button,
-    .choiceBtn, .choice-btn, .optionBtn, .option-btn {
-      font-size: 22px !important; /* 선택지 */
-    }
-
-    /* 버튼 안에 작은 글씨가 있으면 조금만 작게 */
-    #choices button small, .choices button small, .choiceBtn small, .optionBtn small {
-      font-size: 14px !important;
-      opacity: .85 !important;
-    }
-  }
-</style>
-  <!-- ✅ Mobile Quiz Layout Patch v2 (Question centered + +1pt vs choices + tighter spacing + no-scroll fit) -->
-<style>
-  /* 가로 스크롤(옆으로 밀림) 방지 */
-  html, body { overflow-x: hidden !important; }
-
-  /* ✅ “질문이 왼쪽으로 쏠리는 문제”를 강제로 중앙 정렬 */
-  /* 질문 텍스트 후보를 최대한 넓게 커버 */
-  #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word,
-  .questionWord, .question-word, .wordQuestion, .word-question,
-  .card .question, .card .q, .quizCard .question, .quiz-card .question,
-  .quizCard h2, .quizCard h3, .quiz-card h2, .quiz-card h3 {
-    display: block !important;
-    width: 100% !important;
-    text-align: center !important;
-    margin-left: auto !important;
-    margin-right: auto !important;
-  }
-
-  /* 모바일에서 “퀴즈가 화면 안에 다 보이게” 더 꽉 차게 */
-  @media (max-width: 520px) {
-
-    /* 상단/부가 영역이 너무 크면 줄여서 퀴즈에 공간을 줌 */
-    header, .topbar, .toolbar, .header, .controls, .controlRow, .tabs, .tabRow {
-      margin-bottom: 6px !important;
-      padding-bottom: 0 !important;
-    }
-
-    /* 설명/안내 문구가 길면 너무 공간을 차지하므로 더 작게 */
-    .hint, .help, .desc, .description, .note, .subText, .smallNote {
-      font-size: 11px !important;
-      line-height: 1.2 !important;
-      margin: 4px auto !important;
-    }
-
-    /* ✅ 퀴즈 카드 자체를 화면 폭에 맞춰서 꽉 채움 */
-    #quizArea, #testArea, .quiz-area, .test-area, .vocab-test, .quizCard, .quiz-card,
-    .card, .panel, .container .card {
-      width: min(96vw, 680px) !important;
-      margin-left: auto !important;
-      margin-right: auto !important;
-      padding-top: 8px !important;
-      padding-bottom: 8px !important;
-    }
-
-    /* ✅ 핵심: 글자 크기 (질문이 선택지보다 1pt 더 크게) */
-    /* 선택지 */
-    #choices button, #choiceList button, .choices button, .choice button,
-    .choiceBtn, .choice-btn, .optionBtn, .option-btn {
-      font-size: 22px !important;
-      padding: 12px 12px !important;   /* 기존보다 패딩 줄여서 화면에 더 많이 보이게 */
-      margin: 6px auto !important;     /* ✅ 간격 줄이기 */
-      max-width: 520px !important;
-      width: 100% !important;
-      line-height: 1.15 !important;
-    }
-
-    /* 질문(단어) = 선택지보다 1pt 크게 */
-    #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word,
-    .questionWord, .wordQuestion, .word-question,
-    .quizCard h2, .quizCard h3, .quiz-card h2, .quiz-card h3 {
-      font-size: 23px !important;      /* ✅ 22 + 1 */
-      font-weight: 900 !important;
-      line-height: 1.15 !important;
-      margin: 6px auto 10px auto !important;
-      text-align: center !important;
-    }
-
-    /* ✅ 선택지 리스트가 flex/grid라면 간격 강제 축소 */
-    #choices, #choiceList, .choices, .options, .optionList {
-      gap: 6px !important;
-    }
-
-    /* ✅ 화면 아래로 “스크롤해야 선택지가 다 보이는 문제” 완화:
-       카드 바깥 여백을 줄이고, 버튼 높이를 줄여 한 화면에 들어오게 함 */
-    .wrap, .page, .main, .content, .container {
-      padding-bottom: 8px !important;
-    }
-
-    /* 버튼 안의 긴 텍스트는 줄바꿈 허용(옆 스크롤 방지) */
-    #choices button, #choiceList button, .choices button,
-    .choiceBtn, .optionBtn {
-      white-space: normal !important;
-      overflow-wrap: anywhere !important;
-      word-break: keep-all !important;
-    }
-  }
-</style>
 </head>
+
 <body>
   <header class="topbar">
     <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
@@ -466,23 +378,35 @@
     }
 
     function pickQuestion(vocab){
-      const pool = vocab.filter(v => (v.ko || v.mn));
+      const pool = (vocab || []).filter(v => (v && (v.ko || v.mn)));
       if(!pool.length) return null;
 
-      const q = pool[Math.floor(Math.random()*pool.length)];
-      const getPrompt = (v) => QUIZ_MODE==="KO2MN" ? (v.ko||"") : (v.mn||"");
-      const getAnswer = (v) => QUIZ_MODE==="KO2MN" ? (v.mn||"") : (v.ko||"");
+      // 유효한 문제(프롬프트/정답 모두 존재) 나올 때까지 최대 15번 재시도
+      for(let tries=0; tries<15; tries++){
+        const q = pool[Math.floor(Math.random()*pool.length)];
+        const getPrompt = (v) => QUIZ_MODE==="KO2MN" ? (v.ko||"") : (v.mn||"");
+        const getAnswer = (v) => QUIZ_MODE==="KO2MN" ? (v.mn||"") : (v.ko||"");
 
-      const correct = getAnswer(q);
-      const prompt = getPrompt(q);
-      if(!prompt || !correct) return null;
+        const correct = getAnswer(q);
+        const prompt = getPrompt(q);
+        if(!prompt || !correct) continue;
 
-      const others = pool.map(v => getAnswer(v)).filter(a => a && a !== correct);
-      const uniq = Array.from(new Set(others));
-      const distractors = shuffle(uniq).slice(0, 3);
-      const choices = shuffle([correct, ...distractors]);
+        const others = pool.map(v => getAnswer(v)).filter(a => a && a !== correct);
+        const uniq = Array.from(new Set(others));
 
-      return { prompt, correct, choices };
+        // 3개 부족하면(데이터가 적으면) 같은 pool에서 더 뽑아 채우기
+        let distractors = shuffle(uniq).slice(0, 3);
+        while(distractors.length < 3){
+          const r = pool[Math.floor(Math.random()*pool.length)];
+          const cand = getAnswer(r);
+          if(cand && cand !== correct && !distractors.includes(cand)) distractors.push(cand);
+          if(pool.length === 1) break;
+        }
+
+        const choices = shuffle([correct, ...distractors]).slice(0,4);
+        if(choices.length === 4) return { prompt, correct, choices };
+      }
+      return null;
     }
 
     function renderQuiz(d){
@@ -516,12 +440,14 @@
       box.className = "qbox";
 
       const head = document.createElement("div");
-      head.innerHTML = `<div class="muted small">${tr("qLabel")}</div>
-                        <div style="font-weight:900;font-size:18px;margin-top:6px;">${q.prompt}</div>`;
+      head.className = "qHead";
+      head.innerHTML = `<div class="qLabel">${tr("qLabel")}</div>
+                        <div class="qPrompt" id="questionText">${q.prompt}</div>`;
       box.appendChild(head);
 
       const choicesWrap = document.createElement("div");
       choicesWrap.className = "choices";
+      choicesWrap.id = "choices";
 
       const result = document.createElement("div");
       result.className = "result";
@@ -596,33 +522,36 @@
       }
 
       try{
-  // ✅ 상대경로/절대URL 모두 안전하게 처리
-  const dataUrl = new URL(dataPath, location.href).toString();
+        const dataUrl = new URL(dataPath, location.href).toString();
 
-  // 화면에 지금 읽으려는 주소를 표시(문제 진단 가능)
-  document.getElementById("status").textContent = "Loading...";
-  document.getElementById("subtitle").textContent = dataUrl;
+        status.textContent = "Loading...";
+        subtitle.textContent = tr("loading");
 
-  const res = await fetch(dataUrl, { cache:"no-store" });
-  if(!res.ok) throw new Error("레슨 JSON 로드 실패: " + res.status + " / " + dataUrl);
+        const res = await fetch(dataUrl, { cache:"no-store" });
+        if(!res.ok) throw new Error("레슨 JSON 로드 실패: " + res.status + " / " + dataUrl);
 
-  const d = await res.json();
-  LESSON = d;
+        const d = await res.json();
+        LESSON = d;
 
-  title.textContent = `${d.level || ""} ${d.lesson || ""} · ${d.title_kr || ""}`.trim();
-  subtitle.textContent = d.title_mn || "";
-  status.textContent = tr("loaded");
+        const meta = d.meta || {};
+        const level = meta.level || d.level || "";
+        const lesson = meta.lesson || d.lesson || "";
+        const ttlKr = meta.title || d.title_kr || d.title || "";
+        const ttlMn = d.title_mn || "";
 
-  renderVocab(d);
-  renderGrammar(d);
-  renderQuiz(d);
+        title.textContent = `${level} ${lesson} · ${ttlKr}`.trim();
+        subtitle.textContent = ttlMn || "";
+        status.textContent = tr("loaded");
 
-} catch(err){
-  // ✅ 에러를 화면에 “정확히” 보여줌 (콘솔 안 봐도 됨)
-  subtitle.textContent = "불러오기 오류: " + (err.message || err);
-  status.textContent = "오류";
-  console.log(err);
-}
+        renderVocab(d);
+        renderGrammar(d);
+        renderQuiz(d);
+
+      }catch(err){
+        subtitle.textContent = "불러오기 오류: " + (err.message || err);
+        status.textContent = "오류";
+        console.log(err);
+      }
     }
 
     main();
