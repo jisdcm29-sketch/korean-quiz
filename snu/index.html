@@ -1,283 +1,328 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>서울대 한국어 (데이터 기반)</title>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>SNU Hub</title>
   <style>
     :root{
-      --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;--accent:#60a5fa;
+      --bg:#0b1220;
+      --card:#111a2e;
+      --text:#eaf0ff;
+      --muted:#a9b6d6;
+      --line:rgba(255,255,255,.10);
+      --accent:#7aa2ff;
+      --btn:#1b2a4a;
+      --danger:#ff6b6b;
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
-      background:linear-gradient(180deg,#050814,var(--bg));
+      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
+      background:linear-gradient(180deg,#060a14, var(--bg));
       color:var(--text);
     }
-    a{color:inherit;text-decoration:none}
-    .topbar{
-      position:sticky;top:0;z-index:10;
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line);
-    }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
-    .container{max-width:980px;margin:0 auto;padding:16px}
-    .card{
-      background:rgba(17,24,39,.9);
+    .wrap{max-width:980px;margin:0 auto;padding:18px 14px 40px}
+    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
+    .title{display:flex;flex-direction:column;gap:2px}
+    .title h1{font-size:18px;margin:0}
+    .title .sub{font-size:12px;color:var(--muted)}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      background:rgba(255,255,255,.06);
       border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      padding:8px 10px;border-radius:999px;
+      color:var(--muted);font-size:12px;
+      max-width:70vw;
+      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
     }
-    .muted{color:var(--muted);line-height:1.6}
-    .btnRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
+    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
     .btn{
-      padding:10px 12px;border-radius:12px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block
+      appearance:none;border:1px solid var(--line);
+      background:var(--btn);color:var(--text);
+      padding:10px 12px;border-radius:12px;
+      font-size:14px;cursor:pointer;
     }
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-    .title{font-size:28px;font-weight:900;margin:0 0 6px}
-    .sub{margin:0 0 12px}
-    .grid{display:grid;grid-template-columns:repeat(3,1fr);gap:12px;margin-top:12px}
-    @media(max-width:900px){.grid{grid-template-columns:repeat(2,1fr)}}
-    @media(max-width:600px){.grid{grid-template-columns:1fr}}
-    .tile{
+    .btn:active{transform:translateY(1px)}
+    .btn.secondary{background:transparent}
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      margin-top:12px;
+    }
+    @media (min-width:760px){
+      .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
+    .book{
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
       border:1px solid var(--line);
-      background:#0b1020;
-      border-radius:16px;
+      border-radius:18px;
       padding:14px;
       cursor:pointer;
-      transition:transform .05s ease;
+      min-height:88px;
+      display:flex;flex-direction:column;justify-content:space-between;gap:10px;
+      user-select:none;
     }
-    .tile:hover{border-color:rgba(96,165,250,.6)}
-    .tile:active{transform:scale(.99)}
-    .tileTitle{font-weight:900;font-size:18px;margin:0 0 6px}
-    .tileSub{margin:0;color:var(--muted);font-size:13px}
-    .bar{height:1px;background:var(--line);margin:12px 0}
-    .pill{
-      display:inline-block;padding:2px 8px;border:1px solid var(--line);
-      border-radius:999px;background:#0b1020;color:var(--muted);font-size:12px
+    .book.active{outline:2px solid rgba(122,162,255,.55)}
+    .book .k{font-size:16px;font-weight:700}
+    .book .m{font-size:12px;color:var(--muted)}
+    .panel{
+      margin-top:12px;
+      background:rgba(255,255,255,.04);
+      border:1px solid var(--line);
+      border-radius:18px;
+      overflow:hidden;
     }
+    .panelHead{
+      display:flex;align-items:center;justify-content:space-between;
+      padding:12px 14px;
+      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
+      border-bottom:1px solid var(--line);
+    }
+    .panelHead .left{display:flex;flex-direction:column;gap:2px}
+    .panelHead .left .h{font-size:15px;font-weight:700}
+    .panelHead .left .s{font-size:12px;color:var(--muted)}
+    .lessons{
+      display:grid;
+      grid-template-columns:repeat(2,minmax(0,1fr));
+      gap:10px;
+      padding:12px;
+    }
+    @media (min-width:760px){
+      .lessons{grid-template-columns:repeat(4,minmax(0,1fr))}
+    }
+    .lesson{
+      background:rgba(15,23,48,.55);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:12px;
+      display:flex;flex-direction:column;gap:8px;
+      cursor:pointer;
+      text-decoration:none;color:inherit;
+      min-height:78px;
+    }
+    .lesson:hover{border-color:rgba(122,162,255,.45)}
+    .lesson .n{font-weight:800;font-size:14px}
+    .lesson .t{font-size:12px;color:var(--muted);line-height:1.2}
+    .warn{
+      margin-top:12px;
+      border:1px solid rgba(255,107,107,.35);
+      background:rgba(255,107,107,.08);
+      color:#ffd6d6;
+      padding:10px 12px;
+      border-radius:14px;
+      font-size:12px;
+    }
+    .footerNote{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.4}
+    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
+    a{color:inherit}
   </style>
 </head>
 <body>
-  <header class="topbar">
-    <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
-    <div class="btnRow">
-      <button class="btn" id="btnLang">KR</button>
-      <a class="btn" href="../index.html" id="btnDashboard">대시보드</a>
+  <div class="wrap">
+    <div class="topbar">
+      <div class="title">
+        <h1>서울대 한국어 (새 방식)</h1>
+        <div class="sub">교재 선택 → 해당 교재 과만 펼쳐짐</div>
+      </div>
+      <div class="row">
+        <button class="btn secondary" id="btnHome">홈</button>
+      </div>
     </div>
-  </header>
 
-  <main class="container">
-    <section class="card">
-      <h1 class="title" id="pageTitle">서울대 한국어 (새 방식)</h1>
-      <p class="muted sub" id="pageDesc">교재를 먼저 고르고, 그 교재의 과(레슨)만 보이도록 합니다.</p>
+    <div class="row" style="margin-bottom:8px">
+      <div class="pill" id="who"></div>
+      <div class="pill mono" id="params"></div>
+    </div>
 
-      <div class="bar"></div>
+    <div class="grid" id="bookGrid"></div>
 
-      <!-- 화면 1: 교재 선택 -->
-      <div id="viewBooks">
-        <div class="btnRow">
-          <span class="pill" id="hintBook">교재 선택</span>
+    <div class="panel" id="panel" style="display:none">
+      <div class="panelHead">
+        <div class="left">
+          <div class="h" id="panelTitle">-</div>
+          <div class="s" id="panelSub">-</div>
         </div>
-        <div class="grid" id="bookGrid"></div>
-      </div>
-
-      <!-- 화면 2: 해당 교재의 과만 표시 -->
-      <div id="viewLessons" style="display:none;">
-        <div class="btnRow" style="justify-content:space-between;">
-          <div class="btnRow">
-            <button class="btn" id="btnBack">← 교재 목록</button>
-            <span class="pill" id="currentLevelPill"></span>
-          </div>
-        </div>
-        <div class="grid" id="lessonGrid" style="margin-top:12px;"></div>
-      </div>
-
-      <div class="bar"></div>
-
-      <div class="muted">
-        <div><b id="legacyTitle">기존 레슨(HTML)도 계속 사용 가능</b></div>
-        <div class="muted" style="margin-top:6px;">
-          <span id="legacyLabel">기존 방식 페이지:</span>
-          <a class="btn" href="../lessonHub.html" style="margin-left:8px;">lessonHub.html</a>
+        <div class="row">
+          <button class="btn secondary" id="btnCollapse">접기</button>
         </div>
       </div>
-    </section>
-  </main>
+      <div class="lessons" id="lessonGrid"></div>
+    </div>
+
+    <div class="warn" id="errBox" style="display:none"></div>
+
+    <div class="footerNote">
+      <div>• 레슨 링크는 <span class="mono">/snu/lesson.html?data=...</span> 형태로 생성됩니다.</div>
+      <div>• name/klass/token 파라미터는 그대로 전달됩니다.</div>
+    </div>
+  </div>
 
   <script>
-    // -------- i18n --------
-    const I18N = {
-      KR: {
-        dashboard: "대시보드",
-        title: "서울대 한국어 (새 방식)",
-        desc: "교재를 먼저 고르고, 그 교재의 과(레슨)만 보이도록 합니다.",
-        pickBook: "교재 선택",
-        back: "← 교재 목록",
-        clickToOpen: "클릭 → 어휘/문법 보기",
-        legacyTitle: "기존 레슨(HTML)도 계속 사용 가능",
-        legacyLabel: "기존 방식 페이지:",
-      },
-      MN: {
-        dashboard: "Самбар",
-        title: "СӨҮ Солонгос хэл (шинэ хэлбэр)",
-        desc: "Эхлээд номоо сонгоод, тухайн номын хичээлүүдийг л харуулна.",
-        pickBook: "Ном сонгох",
-        back: "← Номын жагсаалт",
-        clickToOpen: "Дар → Үг/Дүрэм харах",
-        legacyTitle: "Хуучин HTML хичээлийг мөн ашиглаж болно",
-        legacyLabel: "Хуучин хуудас:",
-      }
-    };
+    // ✅ GitHub Pages(/korean-quiz/) / 로컬 / 서브폴더 등에서 manifest.json을 안정적으로 찾기 위한 후보들
+    const MANIFEST_CANDIDATES = (function(){
+      const path = location.pathname || "";
+      const m = path.match(/^(.*)\/snu\/index\.html$/);
+      const repoBase = m ? m[1] : ""; // 예: /korean-quiz
+      const abs1 = new URL("../data/snu/manifest.json", location.href).toString(); // 상대경로를 절대 URL로 변환(가장 안전)
+      const abs2 = repoBase ? (location.origin + repoBase + "/data/snu/manifest.json") : "";
+      const abs3 = location.origin + "/data/snu/manifest.json"; // 루트 배치한 경우 대비
+      const list = [abs1, abs2, abs3].filter(Boolean);
+      return Array.from(new Set(list));
+    })();
 
-    function getLang(){
-      const u = new URL(location.href);
-      const q = (u.searchParams.get("lang")||"").toUpperCase();
-      const s1 = (localStorage.getItem("lang")||"").toUpperCase();
-      const s2 = (localStorage.getItem("kq_lang")||"").toUpperCase();
-      const s3 = (localStorage.getItem("language")||"").toUpperCase();
-      const pick = (q==="MN"||q==="KR") ? q : (s2||s1||s3);
-      return (pick==="MN") ? "MN" : "KR";
-    }
-    function setLang(l){
-      localStorage.setItem("lang", l);
-      localStorage.setItem("kq_lang", l);
-      localStorage.setItem("language", l);
-    }
-    function tr(key){
-      const L = getLang();
-      return (I18N[L] && I18N[L][key]) ? I18N[L][key] : I18N.KR[key];
+    function qs(k){ return new URLSearchParams(location.search).get(k) || ""; }
+    function esc(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])); }
+
+    function buildCarryParams(){
+      const name = qs("name");
+      const klass = qs("klass");
+      const token = qs("token");
+      const p = new URLSearchParams();
+      if(name) p.set("name", name);
+      if(klass) p.set("klass", klass);
+      if(token) p.set("token", token);
+      const s = p.toString();
+      return s ? ("&" + s) : "";
     }
 
-    function applyTexts(){
-      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
-      document.getElementById("btnLang").textContent = getLang();
-      document.getElementById("btnDashboard").textContent = tr("dashboard");
-      document.getElementById("pageTitle").textContent = tr("title");
-      document.getElementById("pageDesc").textContent = tr("desc");
-      document.getElementById("hintBook").textContent = tr("pickBook");
-      document.getElementById("btnBack").textContent = tr("back");
-      document.getElementById("legacyTitle").textContent = tr("legacyTitle");
-      document.getElementById("legacyLabel").textContent = tr("legacyLabel");
+    function goHome(){
+      const carry = buildCarryParams().replace(/^&/,"");
+      location.href = "../index.html" + (carry ? ("?" + carry) : "");
     }
 
-    // -------- state --------
-    let MANIFEST = null;
-    let currentLevel = null;
+    let manifest = null;
+    let activeBookId = "";
 
-    function showBooks(){
-      currentLevel = null;
-      document.getElementById("viewBooks").style.display = "";
-      document.getElementById("viewLessons").style.display = "none";
-      renderBooks();
-      const u = new URL(location.href);
-      u.searchParams.delete("level");
-      history.replaceState({}, "", u.toString());
+    function setErr(msgHtml){
+      const el = document.getElementById("errBox");
+      el.style.display = "block";
+      el.innerHTML = msgHtml;
     }
 
-    function showLessons(level){
-      currentLevel = level;
-      document.getElementById("viewBooks").style.display = "none";
-      document.getElementById("viewLessons").style.display = "";
-      document.getElementById("currentLevelPill").textContent = level;
-      renderLessons(level);
+    function clearErr(){
+      const el = document.getElementById("errBox");
+      el.style.display = "none";
+      el.innerHTML = "";
+    }
 
-      const u = new URL(location.href);
-      u.searchParams.set("level", level);
-      history.replaceState({}, "", u.toString());
+    function setHeader(){
+      const name = qs("name") || "학습자";
+      const klass = qs("klass") || "-";
+      document.getElementById("who").textContent = `👤 ${name} / ${klass}`;
+      const token = qs("token");
+      document.getElementById("params").textContent = `token=${token ? token.slice(0,6)+"…" : "-"}`;
     }
 
     function renderBooks(){
       const grid = document.getElementById("bookGrid");
       grid.innerHTML = "";
-      if(!MANIFEST || !MANIFEST.levels) return;
-
-      MANIFEST.levels.forEach(lv=>{
-        const tile = document.createElement("div");
-        tile.className = "tile";
-        tile.innerHTML = `
-          <div class="tileTitle">${lv.level}</div>
-          <div class="tileSub">${(lv.lessons && lv.lessons.length) ? (lv.lessons.length + " lessons") : ""}</div>
-          <div class="tileSub" style="margin-top:6px;">${tr("clickToOpen")}</div>
+      (manifest.books||[]).forEach(b=>{
+        const div = document.createElement("div");
+        div.className = "book" + (b.id===activeBookId ? " active":"");
+        div.innerHTML = `
+          <div class="k">${esc(b.title || b.id)}</div>
+          <div class="m">${esc(b.subtitle || ((b.lessons||[]).length + "과"))}</div>
         `;
-        tile.addEventListener("click", ()=>showLessons(lv.level));
-        grid.appendChild(tile);
+        div.addEventListener("click", ()=>selectBook(b.id));
+        grid.appendChild(div);
       });
     }
 
-    function renderLessons(level){
-      const grid = document.getElementById("lessonGrid");
-      grid.innerHTML = "";
-      const lv = (MANIFEST.levels || []).find(x=>x.level===level);
-      if(!lv){ grid.innerHTML = "<div class='muted'>레벨을 찾을 수 없습니다.</div>"; return; }
+    function renderLessons(book){
+      const panel = document.getElementById("panel");
+      const lg = document.getElementById("lessonGrid");
+      lg.innerHTML = "";
+      document.getElementById("panelTitle").textContent = book.title || book.id;
+      document.getElementById("panelSub").textContent =
+        (book.subtitle || "") + (book.subtitle ? " · " : "") + ((book.lessons||[]).length + "과");
 
-      (lv.lessons || []).forEach(lesson=>{
-        const tile = document.createElement("div");
-        tile.className = "tile";
-        const title = `${level} · ${lesson.title_kr || ""}`.trim();
-        const sub = lesson.title_mn || "";
-        tile.innerHTML = `
-          <div class="tileTitle">${title}</div>
-          <div class="tileSub">${sub}</div>
-          <div class="tileSub" style="margin-top:6px;">${tr("clickToOpen")}</div>
+      const carry = buildCarryParams();
+      (book.lessons||[]).forEach(ls=>{
+        const a = document.createElement("a");
+        a.className = "lesson";
+        const dataPath = ls.data || "";
+        a.href = `lesson.html?data=${encodeURIComponent(dataPath)}${carry}`;
+        a.innerHTML = `
+          <div class="n">${esc(ls.label || ("Lesson " + (ls.no||"")))}</div>
+          <div class="t">${esc(ls.title || "")}</div>
         `;
-
-        // lesson.html 로 이동 (lang도 같이 넘김)
-        tile.addEventListener("click", ()=>{
-          const lang = getLang();
-          const url = `./lesson.html?data=${encodeURIComponent(lesson.data)}&id=${encodeURIComponent(lesson.id)}&lang=${encodeURIComponent(lang)}`;
-          location.href = url;
-        });
-
-        grid.appendChild(tile);
+        lg.appendChild(a);
       });
+
+      panel.style.display = "block";
+      panel.scrollIntoView({behavior:"smooth", block:"start"});
+    }
+
+    function selectBook(id){
+      activeBookId = id;
+      renderBooks();
+      const book = (manifest.books||[]).find(b=>b.id===id);
+      if(book) renderLessons(book);
     }
 
     async function loadManifest(){
-      // snu/index.html 기준: ../data/snu/manifest.json
-      const res = await fetch("../data/snu/manifest.json", { cache:"no-store" });
-      if(!res.ok) throw new Error("manifest 로드 실패: " + res.status);
-      MANIFEST = await res.json();
+      let lastErr = "";
+      for(const url of MANIFEST_CANDIDATES){
+        try{
+          const r = await fetch(url, {cache:"no-store"});
+          if(!r.ok) throw new Error("HTTP " + r.status + " (" + r.statusText + ")");
+          const text = await r.text();
+          let data;
+          try{ data = JSON.parse(text); }
+          catch(e){ throw new Error("JSON 파싱 실패: " + (e && e.message ? e.message : e)); }
+          return { data, url };
+        }catch(e){
+          lastErr = `- 시도 URL: ${url}\n  오류: ${(e && e.message) ? e.message : e}`;
+        }
+      }
+      return { data:null, url:null, err:lastErr };
     }
 
-    async function main(){
-      applyTexts();
-
-      document.getElementById("btnLang").addEventListener("click", ()=>{
-        const next = (getLang()==="KR") ? "MN" : "KR";
-        setLang(next);
-        applyTexts();
-        // 현재 화면 다시 그리기
-        if(currentLevel) showLessons(currentLevel);
-        else showBooks();
+    async function boot(){
+      setHeader();
+      document.getElementById("btnHome").addEventListener("click", goHome);
+      document.getElementById("btnCollapse").addEventListener("click", ()=>{
+        document.getElementById("panel").style.display = "none";
+        activeBookId = "";
+        renderBooks();
+        window.scrollTo({top:0, behavior:"smooth"});
       });
 
-      document.getElementById("btnBack").addEventListener("click", showBooks);
-
-      try{
-        await loadManifest();
-
-        // URL에 level=1B 같이 들어오면 그 레벨로 바로 열기
-        const u = new URL(location.href);
-        const level = u.searchParams.get("level");
-        if(level && (MANIFEST.levels || []).some(x=>x.level===level)){
-          showLessons(level);
-        } else {
-          showBooks();
-        }
-      }catch(e){
-        document.getElementById("bookGrid").innerHTML =
-          "<div class='muted'>manifest.json을 불러오지 못했습니다. 경로를 확인하세요.</div>";
-        console.log(e);
+      const { data, url, err } = await loadManifest();
+      if(!data){
+        const links = MANIFEST_CANDIDATES.map(u=>(
+          `<div>• <a href="${esc(u)}" style="color:#b9c9ff" target="_blank" rel="noopener">${esc(u)}</a></div>`
+        )).join("");
+        setErr(
+          `<div style="font-weight:800;margin-bottom:6px">manifest.json을 불러오지 못했습니다.</div>
+           <div style="margin-bottom:10px;white-space:pre-wrap">${esc(err || "")}</div>
+           <div style="opacity:.9;margin-bottom:6px">아래 링크 중 하나를 눌러 “파일이 실제로 열리는지(404 여부)” 확인하세요:</div>
+           ${links}
+           <div style="margin-top:10px;opacity:.85">
+             ※ 보통 원인: (1) 파일 경로/대소문자 오류 (2) manifest.json 문법 오류(콤마/괄호) (3) 커밋/배포 미반영
+           </div>`
+        );
+        return;
       }
+
+      manifest = data;
+      clearErr();
+
+      if(!manifest || !Array.isArray(manifest.books)){
+        setErr(`<div style="font-weight:800;margin-bottom:6px">manifest.json 형식 오류</div>
+                <div>books[] 배열이 필요합니다.</div>
+                <div style="margin-top:8px;opacity:.85">로드된 URL: <span class="mono">${esc(url || "")}</span></div>`);
+        return;
+      }
+
+      renderBooks();
+      const first = (manifest.books[0]||{}).id || "";
+      if(first) selectBook(first);
     }
 
-    main();
+    boot();
   </script>
 </body>
 </html>
