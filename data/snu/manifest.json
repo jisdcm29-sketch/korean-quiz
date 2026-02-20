@@ -1,59 +1,641 @@
-{
-  "title": "서울대 한국어 (데이터 기반)",
-  "levels": [
-    {
-      "level": "1A",
-      "lessons": [
-        { "id": "1A-01", "title_kr": "1과", "title_mn": "1-р хичээл", "data": "../data/snu/1A/lesson01.json" },
-        { "id": "1A-02", "title_kr": "2과", "title_mn": "2-р хичээл", "data": "../data/snu/1A/lesson02.json" },
-        { "id": "1A-03", "title_kr": "3과", "title_mn": "3-р хичээл", "data": "../data/snu/1A/lesson03.json" },
-        { "id": "1A-04", "title_kr": "4과", "title_mn": "4-р хичээл", "data": "../data/snu/1A/lesson04.json" },
-        { "id": "1A-05", "title_kr": "5과", "title_mn": "5-р хичээл", "data": "../data/snu/1A/lesson05.json" },
-        { "id": "1A-06", "title_kr": "6과", "title_mn": "6-р хичээл", "data": "../data/snu/1A/lesson06.json" },
-        { "id": "1A-07", "title_kr": "7과", "title_mn": "7-р хичээл", "data": "../data/snu/1A/lesson07.json" },
-        { "id": "1A-08", "title_kr": "8과", "title_mn": "8-р хичээл", "data": "../data/snu/1A/lesson08.json" }
-      ]
-    },
-    {
-      "level": "1B",
-      "lessons": [
-        { "id": "1B-09", "title_kr": "9과", "title_mn": "9-р хичээл", "data": "../data/snu/1B/lesson09.json" },
-        { "id": "1B-10", "title_kr": "10과", "title_mn": "10-р хичээл", "data": "../data/snu/1B/lesson10.json" },
-        { "id": "1B-11", "title_kr": "11과", "title_mn": "11-р хичээл", "data": "../data/snu/1B/lesson11.json" },
-        { "id": "1B-12", "title_kr": "12과", "title_mn": "12-р хичээл", "data": "../data/snu/1B/lesson12.json" },
-        { "id": "1B-13", "title_kr": "13과", "title_mn": "13-р хичээл", "data": "../data/snu/1B/lesson13.json" },
-        { "id": "1B-14", "title_kr": "14과", "title_mn": "14-р хичээл", "data": "../data/snu/1B/lesson14.json" },
-        { "id": "1B-15", "title_kr": "15과", "title_mn": "15-р хичээл", "data": "../data/snu/1B/lesson15.json" },
-        { "id": "1B-16", "title_kr": "16과", "title_mn": "16-р хичээл", "data": "../data/snu/1B/lesson16.json" }
-      ]
-    },
-    {
-      "level": "2A",
-      "lessons": [
-        { "id": "2A-01", "title_kr": "1과", "title_mn": "1-р хичээл", "data": "../data/snu/2A/lesson01.json" },
-        { "id": "2A-02", "title_kr": "2과", "title_mn": "2-р хичээл", "data": "../data/snu/2A/lesson02.json" },
-        { "id": "2A-03", "title_kr": "3과", "title_mn": "3-р хичээл", "data": "../data/snu/2A/lesson03.json" },
-        { "id": "2A-04", "title_kr": "4과", "title_mn": "4-р хичээл", "data": "../data/snu/2A/lesson04.json" },
-        { "id": "2A-05", "title_kr": "5과", "title_mn": "5-р хичээл", "data": "../data/snu/2A/lesson05.json" },
-        { "id": "2A-06", "title_kr": "6과", "title_mn": "6-р хичээл", "data": "../data/snu/2A/lesson06.json" },
-        { "id": "2A-07", "title_kr": "7과", "title_mn": "7-р хичээл", "data": "../data/snu/2A/lesson07.json" },
-        { "id": "2A-08", "title_kr": "8과", "title_mn": "8-р хичээл", "data": "../data/snu/2A/lesson08.json" },
-        { "id": "2A-09", "title_kr": "9과", "title_mn": "9-р хичээл", "data": "../data/snu/2A/lesson09.json" }
-      ]
-    },
-    {
-      "level": "2B",
-      "lessons": [
-        { "id": "2B-10", "title_kr": "10과", "title_mn": "10-р хичээл", "data": "../data/snu/2B/lesson10.json" },
-        { "id": "2B-11", "title_kr": "11과", "title_mn": "11-р хичээл", "data": "../data/snu/2B/lesson11.json" },
-        { "id": "2B-12", "title_kr": "12과", "title_mn": "12-р хичээл", "data": "../data/snu/2B/lesson12.json" },
-        { "id": "2B-13", "title_kr": "13과", "title_mn": "13-р хичээл", "data": "../data/snu/2B/lesson13.json" },
-        { "id": "2B-14", "title_kr": "14과", "title_mn": "14-р хичээл", "data": "../data/snu/2B/lesson14.json" },
-        { "id": "2B-15", "title_kr": "15과", "title_mn": "15-р хичээл", "data": "../data/snu/2B/lesson15.json" },
-        { "id": "2B-16", "title_kr": "16과", "title_mn": "16-р хичээл", "data": "../data/snu/2B/lesson16.json" },
-        { "id": "2B-17", "title_kr": "17과", "title_mn": "17-р хичээл", "data": "../data/snu/2B/lesson17.json" },
-        { "id": "2B-18", "title_kr": "18과", "title_mn": "18-р хичээл", "data": "../data/snu/2B/lesson18.json" }
-      ]
-    }
-  ]
-}
+diff --git a/data/snu/manifest.json b/data/snu/manifest.json
+index 6666666..7777777 100644
+--- a/data/snu/manifest.json
++++ b/data/snu/manifest.json
+@@ -1,199 +1,343 @@
+ {
+   "version": 1,
+   "updated_at": "2026-02-20",
+   "books": [
+     {
+       "id": "1A",
+       "title": "서울대 1A",
+       "subtitle": "01~08과",
+       "lessons": [
+         { "no": 1, "label": "1과", "title": "", "data": "../data/snu/1A/lesson01.json" },
+         { "no": 2, "label": "2과", "title": "", "data": "../data/snu/1A/lesson02.json" },
+         { "no": 3, "label": "3과", "title": "", "data": "../data/snu/1A/lesson03.json" },
+         { "no": 4, "label": "4과", "title": "", "data": "../data/snu/1A/lesson04.json" },
+         { "no": 5, "label": "5과", "title": "", "data": "../data/snu/1A/lesson05.json" },
+         { "no": 6, "label": "6과", "title": "", "data": "../data/snu/1A/lesson06.json" },
+         { "no": 7, "label": "7과", "title": "", "data": "../data/snu/1A/lesson07.json" },
+         { "no": 8, "label": "8과", "title": "", "data": "../data/snu/1A/lesson08.json" }
+       ]
+     },
+     {
+       "id": "1B",
+       "title": "서울대 1B",
+       "subtitle": "09~16과",
+       "lessons": [
+         { "no": 9,  "label": "9과",  "title": "", "data": "../data/snu/1B/lesson09.json" },
+         { "no": 10, "label": "10과", "title": "", "data": "../data/snu/1B/lesson10.json" },
+         { "no": 11, "label": "11과", "title": "", "data": "../data/snu/1B/lesson11.json" },
+         { "no": 12, "label": "12과", "title": "", "data": "../data/snu/1B/lesson12.json" },
+         { "no": 13, "label": "13과", "title": "", "data": "../data/snu/1B/lesson13.json" },
+         { "no": 14, "label": "14과", "title": "", "data": "../data/snu/1B/lesson14.json" },
+         { "no": 15, "label": "15과", "title": "", "data": "../data/snu/1B/lesson15.json" },
+         { "no": 16, "label": "16과", "title": "", "data": "../data/snu/1B/lesson16.json" }
+       ]
+     },
+     {
+       "id": "2A",
+       "title": "서울대 2A",
+       "subtitle": "01~09과",
+       "lessons": [
+         { "no": 1, "label": "1과", "title": "", "data": "../data/snu/2A/lesson01.json" },
+         { "no": 2, "label": "2과", "title": "", "data": "../data/snu/2A/lesson02.json" },
+         { "no": 3, "label": "3과", "title": "", "data": "../data/snu/2A/lesson03.json" },
+         { "no": 4, "label": "4과", "title": "", "data": "../data/snu/2A/lesson04.json" },
+         { "no": 5, "label": "5과", "title": "", "data": "../data/snu/2A/lesson05.json" },
+         { "no": 6, "label": "6과", "title": "", "data": "../data/snu/2A/lesson06.json" },
+         { "no": 7, "label": "7과", "title": "", "data": "../data/snu/2A/lesson07.json" },
+         { "no": 8, "label": "8과", "title": "", "data": "../data/snu/2A/lesson08.json" },
+         { "no": 9, "label": "9과", "title": "", "data": "../data/snu/2A/lesson09.json" }
+       ]
+     },
+     {
+       "id": "2B",
+       "title": "서울대 2B",
+       "subtitle": "10~18과",
+       "lessons": [
+         { "no": 10, "label": "10과", "title": "", "data": "../data/snu/2B/lesson10.json" },
+         { "no": 11, "label": "11과", "title": "", "data": "../data/snu/2B/lesson11.json" },
+         { "no": 12, "label": "12과", "title": "", "data": "../data/snu/2B/lesson12.json" },
+         { "no": 13, "label": "13과", "title": "", "data": "../data/snu/2B/lesson13.json" },
+         { "no": 14, "label": "14과", "title": "", "data": "../data/snu/2B/lesson14.json" },
+         { "no": 15, "label": "15과", "title": "", "data": "../data/snu/2B/lesson15.json" },
+         { "no": 16, "label": "16과", "title": "", "data": "../data/snu/2B/lesson16.json" },
+         { "no": 17, "label": "17과", "title": "", "data": "../data/snu/2B/lesson17.json" },
+         { "no": 18, "label": "18과", "title": "", "data": "../data/snu/2B/lesson18.json" }
+       ]
+     },
++    {
++      "id": "3A",
++      "title": "서울대 3A",
++      "subtitle": "01~09과",
++      "lessons": [
++        { "no": 1, "label": "1과", "title": "", "data": "../data/snu/3A/lesson01.json" },
++        { "no": 2, "label": "2과", "title": "", "data": "../data/snu/3A/lesson02.json" },
++        { "no": 3, "label": "3과", "title": "", "data": "../data/snu/3A/lesson03.json" },
++        { "no": 4, "label": "4과", "title": "", "data": "../data/snu/3A/lesson04.json" },
++        { "no": 5, "label": "5과", "title": "", "data": "../data/snu/3A/lesson05.json" },
++        { "no": 6, "label": "6과", "title": "", "data": "../data/snu/3A/lesson06.json" },
++        { "no": 7, "label": "7과", "title": "", "data": "../data/snu/3A/lesson07.json" },
++        { "no": 8, "label": "8과", "title": "", "data": "../data/snu/3A/lesson08.json" },
++        { "no": 9, "label": "9과", "title": "", "data": "../data/snu/3A/lesson09.json" }
++      ]
++    },
++    {
++      "id": "3B",
++      "title": "서울대 3B",
++      "subtitle": "10~18과",
++      "lessons": [
++        { "no": 10, "label": "10과", "title": "", "data": "../data/snu/3B/lesson10.json" },
++        { "no": 11, "label": "11과", "title": "", "data": "../data/snu/3B/lesson11.json" },
++        { "no": 12, "label": "12과", "title": "", "data": "../data/snu/3B/lesson12.json" },
++        { "no": 13, "label": "13과", "title": "", "data": "../data/snu/3B/lesson13.json" },
++        { "no": 14, "label": "14과", "title": "", "data": "../data/snu/3B/lesson14.json" },
++        { "no": 15, "label": "15과", "title": "", "data": "../data/snu/3B/lesson15.json" },
++        { "no": 16, "label": "16과", "title": "", "data": "../data/snu/3B/lesson16.json" },
++        { "no": 17, "label": "17과", "title": "", "data": "../data/snu/3B/lesson17.json" },
++        { "no": 18, "label": "18과", "title": "", "data": "../data/snu/3B/lesson18.json" }
++      ]
++    },
++    {
++      "id": "4A",
++      "title": "서울대 4A",
++      "subtitle": "01~09과",
++      "lessons": [
++        { "no": 1, "label": "1과", "title": "", "data": "../data/snu/4A/lesson01.json" },
++        { "no": 2, "label": "2과", "title": "", "data": "../data/snu/4A/lesson02.json" },
++        { "no": 3, "label": "3과", "title": "", "data": "../data/snu/4A/lesson03.json" },
++        { "no": 4, "label": "4과", "title": "", "data": "../data/snu/4A/lesson04.json" },
++        { "no": 5, "label": "5과", "title": "", "data": "../data/snu/4A/lesson05.json" },
++        { "no": 6, "label": "6과", "title": "", "data": "../data/snu/4A/lesson06.json" },
++        { "no": 7, "label": "7과", "title": "", "data": "../data/snu/4A/lesson07.json" },
++        { "no": 8, "label": "8과", "title": "", "data": "../data/snu/4A/lesson08.json" },
++        { "no": 9, "label": "9과", "title": "", "data": "../data/snu/4A/lesson09.json" }
++      ]
++    },
++    {
++      "id": "4B",
++      "title": "서울대 4B",
++      "subtitle": "10~18과",
++      "lessons": [
++        { "no": 10, "label": "10과", "title": "", "data": "../data/snu/4B/lesson10.json" },
++        { "no": 11, "label": "11과", "title": "", "data": "../data/snu/4B/lesson11.json" },
++        { "no": 12, "label": "12과", "title": "", "data": "../data/snu/4B/lesson12.json" },
++        { "no": 13, "label": "13과", "title": "", "data": "../data/snu/4B/lesson13.json" },
++        { "no": 14, "label": "14과", "title": "", "data": "../data/snu/4B/lesson14.json" },
++        { "no": 15, "label": "15과", "title": "", "data": "../data/snu/4B/lesson15.json" },
++        { "no": 16, "label": "16과", "title": "", "data": "../data/snu/4B/lesson16.json" },
++        { "no": 17, "label": "17과", "title": "", "data": "../data/snu/4B/lesson17.json" },
++        { "no": 18, "label": "18과", "title": "", "data": "../data/snu/4B/lesson18.json" }
++      ]
++    }
+   ]
+ }
+diff --git a/data/snu/3A/lesson01.json b/data/snu/3A/lesson01.json
+new file mode 100644
+index 0000000..3a01010
+--- /dev/null
++++ b/data/snu/3A/lesson01.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "01", "title": "SNU 3A 01과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson01.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson02.json b/data/snu/3A/lesson02.json
+new file mode 100644
+index 0000000..3a02020
+--- /dev/null
++++ b/data/snu/3A/lesson02.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "02", "title": "SNU 3A 02과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson02.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson03.json b/data/snu/3A/lesson03.json
+new file mode 100644
+index 0000000..3a03030
+--- /dev/null
++++ b/data/snu/3A/lesson03.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "03", "title": "SNU 3A 03과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson03.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson04.json b/data/snu/3A/lesson04.json
+new file mode 100644
+index 0000000..3a04040
+--- /dev/null
++++ b/data/snu/3A/lesson04.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "04", "title": "SNU 3A 04과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson04.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson05.json b/data/snu/3A/lesson05.json
+new file mode 100644
+index 0000000..3a05050
+--- /dev/null
++++ b/data/snu/3A/lesson05.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "05", "title": "SNU 3A 05과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson05.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson06.json b/data/snu/3A/lesson06.json
+new file mode 100644
+index 0000000..3a06060
+--- /dev/null
++++ b/data/snu/3A/lesson06.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "06", "title": "SNU 3A 06과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson06.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson07.json b/data/snu/3A/lesson07.json
+new file mode 100644
+index 0000000..3a07070
+--- /dev/null
++++ b/data/snu/3A/lesson07.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "07", "title": "SNU 3A 07과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson07.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson08.json b/data/snu/3A/lesson08.json
+new file mode 100644
+index 0000000..3a08080
+--- /dev/null
++++ b/data/snu/3A/lesson08.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "08", "title": "SNU 3A 08과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson08.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3A/lesson09.json b/data/snu/3A/lesson09.json
+new file mode 100644
+index 0000000..3a09090
+--- /dev/null
++++ b/data/snu/3A/lesson09.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3A", "lesson": "09", "title": "SNU 3A 09과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3A-lesson09.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson10.json b/data/snu/3B/lesson10.json
+new file mode 100644
+index 0000000..3b10101
+--- /dev/null
++++ b/data/snu/3B/lesson10.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "10", "title": "SNU 3B 10과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson10.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson11.json b/data/snu/3B/lesson11.json
+new file mode 100644
+index 0000000..3b11111
+--- /dev/null
++++ b/data/snu/3B/lesson11.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "11", "title": "SNU 3B 11과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson11.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson12.json b/data/snu/3B/lesson12.json
+new file mode 100644
+index 0000000..3b12121
+--- /dev/null
++++ b/data/snu/3B/lesson12.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "12", "title": "SNU 3B 12과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson12.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson13.json b/data/snu/3B/lesson13.json
+new file mode 100644
+index 0000000..3b13131
+--- /dev/null
++++ b/data/snu/3B/lesson13.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "13", "title": "SNU 3B 13과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson13.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson14.json b/data/snu/3B/lesson14.json
+new file mode 100644
+index 0000000..3b14141
+--- /dev/null
++++ b/data/snu/3B/lesson14.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "14", "title": "SNU 3B 14과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson14.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson15.json b/data/snu/3B/lesson15.json
+new file mode 100644
+index 0000000..3b15151
+--- /dev/null
++++ b/data/snu/3B/lesson15.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "15", "title": "SNU 3B 15과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson15.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson16.json b/data/snu/3B/lesson16.json
+new file mode 100644
+index 0000000..3b16161
+--- /dev/null
++++ b/data/snu/3B/lesson16.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "16", "title": "SNU 3B 16과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson16.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson17.json b/data/snu/3B/lesson17.json
+new file mode 100644
+index 0000000..3b17171
+--- /dev/null
++++ b/data/snu/3B/lesson17.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "17", "title": "SNU 3B 17과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson17.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/3B/lesson18.json b/data/snu/3B/lesson18.json
+new file mode 100644
+index 0000000..3b18181
+--- /dev/null
++++ b/data/snu/3B/lesson18.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "3B", "lesson": "18", "title": "SNU 3B 18과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-3B-lesson18.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson01.json b/data/snu/4A/lesson01.json
+new file mode 100644
+index 0000000..4a01010
+--- /dev/null
++++ b/data/snu/4A/lesson01.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "01", "title": "SNU 4A 01과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson01.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson02.json b/data/snu/4A/lesson02.json
+new file mode 100644
+index 0000000..4a02020
+--- /dev/null
++++ b/data/snu/4A/lesson02.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "02", "title": "SNU 4A 02과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson02.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson03.json b/data/snu/4A/lesson03.json
+new file mode 100644
+index 0000000..4a03030
+--- /dev/null
++++ b/data/snu/4A/lesson03.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "03", "title": "SNU 4A 03과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson03.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson04.json b/data/snu/4A/lesson04.json
+new file mode 100644
+index 0000000..4a04040
+--- /dev/null
++++ b/data/snu/4A/lesson04.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "04", "title": "SNU 4A 04과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson04.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson05.json b/data/snu/4A/lesson05.json
+new file mode 100644
+index 0000000..4a05050
+--- /dev/null
++++ b/data/snu/4A/lesson05.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "05", "title": "SNU 4A 05과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson05.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson06.json b/data/snu/4A/lesson06.json
+new file mode 100644
+index 0000000..4a06060
+--- /dev/null
++++ b/data/snu/4A/lesson06.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "06", "title": "SNU 4A 06과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson06.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson07.json b/data/snu/4A/lesson07.json
+new file mode 100644
+index 0000000..4a07070
+--- /dev/null
++++ b/data/snu/4A/lesson07.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "07", "title": "SNU 4A 07과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson07.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson08.json b/data/snu/4A/lesson08.json
+new file mode 100644
+index 0000000..4a08080
+--- /dev/null
++++ b/data/snu/4A/lesson08.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "08", "title": "SNU 4A 08과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson08.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4A/lesson09.json b/data/snu/4A/lesson09.json
+new file mode 100644
+index 0000000..4a09090
+--- /dev/null
++++ b/data/snu/4A/lesson09.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4A", "lesson": "09", "title": "SNU 4A 09과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4A-lesson09.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson10.json b/data/snu/4B/lesson10.json
+new file mode 100644
+index 0000000..4b10101
+--- /dev/null
++++ b/data/snu/4B/lesson10.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "10", "title": "SNU 4B 10과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson10.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson11.json b/data/snu/4B/lesson11.json
+new file mode 100644
+index 0000000..4b11111
+--- /dev/null
++++ b/data/snu/4B/lesson11.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "11", "title": "SNU 4B 11과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson11.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson12.json b/data/snu/4B/lesson12.json
+new file mode 100644
+index 0000000..4b12121
+--- /dev/null
++++ b/data/snu/4B/lesson12.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "12", "title": "SNU 4B 12과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson12.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson13.json b/data/snu/4B/lesson13.json
+new file mode 100644
+index 0000000..4b13131
+--- /dev/null
++++ b/data/snu/4B/lesson13.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "13", "title": "SNU 4B 13과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson13.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson14.json b/data/snu/4B/lesson14.json
+new file mode 100644
+index 0000000..4b14141
+--- /dev/null
++++ b/data/snu/4B/lesson14.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "14", "title": "SNU 4B 14과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson14.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson15.json b/data/snu/4B/lesson15.json
+new file mode 100644
+index 0000000..4b15151
+--- /dev/null
++++ b/data/snu/4B/lesson15.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "15", "title": "SNU 4B 15과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson15.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson16.json b/data/snu/4B/lesson16.json
+new file mode 100644
+index 0000000..4b16161
+--- /dev/null
++++ b/data/snu/4B/lesson16.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "16", "title": "SNU 4B 16과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson16.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson17.json b/data/snu/4B/lesson17.json
+new file mode 100644
+index 0000000..4b17171
+--- /dev/null
++++ b/data/snu/4B/lesson17.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "17", "title": "SNU 4B 17과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson17.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
+diff --git a/data/snu/4B/lesson18.json b/data/snu/4B/lesson18.json
+new file mode 100644
+index 0000000..4b18181
+--- /dev/null
++++ b/data/snu/4B/lesson18.json
+@@ -0,0 +1,22 @@
++{
++  "meta": { "book": "SNU", "level": "4B", "lesson": "18", "title": "SNU 4B 18과", "published": true },
++  "vocab": [],
++  "grammar": [],
++  "legacy_vocab_url": "../SNU-4B-lesson18.html",
++  "legacy_grammar_url": "",
++  "notes": ""
++}
