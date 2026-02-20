@@ -7,7 +7,7 @@
   <style>
     :root{
       --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
-      --accent:#60a5fa;
+      --accent:#60a5fa;--danger:#f87171;
     }
     *{box-sizing:border-box}
     html,body{overflow-x:hidden}
@@ -18,18 +18,25 @@
       color:var(--text);
     }
     a{color:inherit;text-decoration:none}
-
     .topbar{
-      position:sticky;top:0;z-index:10;
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      position:sticky;top:0;z-index:50;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:12px 14px;
-      background:rgba(5,8,20,.75);backdrop-filter:blur(10px);
+      background:rgba(5,8,20,.78);backdrop-filter:blur(10px);
       border-bottom:1px solid var(--line);
     }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
+    .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
 
-    /* ✅ Mobile-first */
+    .btn{
+      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn:hover{border-color:rgba(96,165,250,.6)}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+
     .container{max-width:980px;margin:0 auto;padding:14px}
     .card{
       background:rgba(17,24,39,.9);
@@ -40,203 +47,299 @@
     }
     .muted{color:var(--muted);line-height:1.6}
     .small{font-size:12px}
-
-    .btn{
-      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block
-    }
-    .btnRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
-      background:#0b1020;color:var(--muted);font-size:13px
-    }
-
     .bar{height:1px;background:var(--line);margin:12px 0}
 
-    /* ✅ 카테고리 버튼: 모바일은 1열 */
     .grid{
       display:grid;
       grid-template-columns:1fr;
       gap:12px;
       margin-top:12px;
     }
-
-    /* ✅ 레벨 버튼: 모바일은 2열 */
+    .tile{
+      display:block;
+      padding:18px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .tile:hover{border-color:rgba(96,165,250,.6)}
+    .tileTitle{font-size:18px;font-weight:900;line-height:1.15}
+    .tileDesc{font-size:13px;line-height:1.25;margin-top:6px;color:var(--muted)}
     .levels{
       display:grid;
       grid-template-columns:repeat(2,1fr);
-      gap:12px;
+      gap:10px;
       margin-top:12px;
     }
-
-    .tileBtn{
-      padding:18px 16px;
-      border-radius:16px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);cursor:pointer;text-align:left;
-      min-height:74px;
+    .lvlBtn{
+      padding:14px 12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      color:var(--text);
+      cursor:pointer;
+      text-align:center;
+      font-weight:800;
+      -webkit-tap-highlight-color:transparent;
+      white-space:normal;
+      overflow-wrap:anywhere;
     }
-    .tileBtn:hover{border-color:rgba(96,165,250,.6)}
-
-    .levelBtn{
-      padding:16px 12px;
-      border-radius:16px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);cursor:pointer;text-align:center;
-      font-weight:900;
-      min-height:54px;
-      font-size:16px;
+    .lvlBtn:hover{border-color:rgba(96,165,250,.6)}
+    @media(min-width:860px){
+      .container{padding:16px}
+      .card{padding:16px}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .levels{grid-template-columns:repeat(5,1fr)}
     }
-    .levelBtn:hover{border-color:rgba(96,165,250,.6)}
+    @media(max-width:520px){
+      .container{padding:12px}
+      .card{padding:12px}
+      .tile{padding:16px 14px}
+      .tileTitle{font-size:18px}
+      .lvlBtn{padding:14px 10px}
+    }
 
     .err{
       border:1px solid rgba(248,113,113,.35);
       background:rgba(248,113,113,.06);
-      padding:12px;border-radius:14px
+      padding:12px;border-radius:14px;
+      margin-top:12px;
     }
-
-    /* ✅ PC에서만 확장(큰 화면) */
-    @media (min-width: 860px){
-      .container{padding:16px}
-      .card{padding:16px;border-radius:16px}
-      .grid{grid-template-columns:repeat(2,1fr)}
-      .levels{grid-template-columns:repeat(5,1fr)}
-      .levelBtn{font-size:14px}
-      .topbar{padding:12px 16px}
-    }
+    .hidden{display:none !important;}
   </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="dot"></span><a href="../index.html" id="homeLink">Korean Quiz</a></div>
-    <div class="btnRow">
-      <span class="pill" id="pillUser">학습자: -</span>
-      <span class="pill" id="pillToken">token: -</span>
-      <a class="btn" href="../index.html" id="btnDashboard">대시보드</a>
+    <div class="brand">
+      <span class="dot"></span>
+      <a id="homeLink" href="../index.html">Korean Quiz</a>
+    </div>
+    <div class="right">
+      <button class="btn" id="btnBack" type="button">←</button>
+      <button class="btn" id="btnLang" type="button">KR</button>
+      <a class="btn" id="btnDash" href="../index.html">대시보드</a>
     </div>
   </header>
 
   <main class="container">
     <section class="card">
-      <h1 style="margin:0 0 6px;">TOPIK I</h1>
-      <div class="muted">먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.</div>
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <h1 style="margin:0 0 6px;" id="title">TOPIK I</h1>
+          <div class="muted" id="subtitle">먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.</div>
+        </div>
+        <div class="muted small" id="status"></div>
+      </div>
 
       <div class="bar"></div>
 
-      <div class="grid" id="catGrid"></div>
-
-      <div id="levelArea" style="display:none;">
-        <div class="bar"></div>
-        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
-          <div>
-            <div class="muted small">선택됨</div>
-            <div style="font-weight:900;font-size:18px;" id="selectedTitle">-</div>
-          </div>
-          <button class="btn" id="btnBackCats" type="button">영역 다시 선택</button>
-        </div>
-        <div class="levels" id="levelsGrid"></div>
+      <div id="catWrap">
+        <div class="grid" id="catGrid"></div>
       </div>
 
-      <div id="errBox" style="display:none;margin-top:12px;" class="err"></div>
+      <div id="levelWrap" class="hidden">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+          <div>
+            <div class="muted small" id="pickedLabel">선택됨</div>
+            <div style="font-weight:900;font-size:18px;margin-top:4px" id="pickedTitle">-</div>
+          </div>
+          <button class="btn" id="btnReset" type="button">영역 다시 선택</button>
+        </div>
+        <div class="levels" id="levelGrid"></div>
+      </div>
+
+      <div id="errBox" class="err hidden"></div>
     </section>
   </main>
 
   <script>
-    function getParam(k){
-      const u = new URL(location.href);
-      return u.searchParams.get(k) || "";
-    }
-    function esc(s){
-      return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
-    }
-
-    // name/klass/token 그대로 전달
-    const passthrough = new URLSearchParams();
-    ["name","klass","token"].forEach(k=>{
-      const v = getParam(k);
-      if(v) passthrough.set(k, v);
-    });
-    const qs = passthrough.toString();
-    const withQS = (url)=>{
-      if(!qs) return url;
-      return url + (url.includes("?") ? "&" : "?") + qs;
+    const I18N = {
+      KR: {
+        dashboard:"대시보드",
+        title:"TOPIK I",
+        subtitle:"먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.",
+        picked:"선택됨",
+        reset:"영역 다시 선택",
+        loading:"불러오는 중...",
+        loaded:"로드 완료",
+        errManifest:"manifest.json을 불러오지 못했습니다."
+      },
+      MN: {
+        dashboard:"Самбар",
+        title:"TOPIK I",
+        subtitle:"Эхлээд хэсэг (товч) сонгоод, дараа нь Level (1~10) сонгоно.",
+        picked:"Сонгосон",
+        reset:"Хэсэг дахин сонгох",
+        loading:"Ачаалж байна...",
+        loaded:"Ачааллаа",
+        errManifest:"manifest.json уншиж чадсангүй."
+      }
     };
 
-    // 상단 표시/링크
-    document.getElementById("pillUser").textContent = "학습자: " + (getParam("name") || "-");
-    document.getElementById("pillToken").textContent = "token: " + (getParam("token") || "-");
-    document.getElementById("btnDashboard").href = withQS("../index.html");
-    document.getElementById("homeLink").href = withQS("../index.html");
+    function getLang(){
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toUpperCase();
+      const s = (localStorage.getItem("kq_lang")||localStorage.getItem("lang")||"").toUpperCase();
+      const pick = (q==="MN"||q==="KR") ? q : s;
+      return (pick==="MN") ? "MN" : "KR";
+    }
+    function setLang(l){
+      localStorage.setItem("kq_lang", l);
+      localStorage.setItem("lang", l);
+    }
+    function tr(k){
+      const L = getLang();
+      return (I18N[L] && I18N[L][k]) ? I18N[L][k] : (I18N.KR[k] || k);
+    }
 
-    const MANIFEST_URL = "../data/topik1/manifest.json";
-    const catGrid = document.getElementById("catGrid");
-    const levelArea = document.getElementById("levelArea");
-    const levelsGrid = document.getElementById("levelsGrid");
-    const selectedTitle = document.getElementById("selectedTitle");
+    function passthroughQS(){
+      const u = new URL(location.href);
+      const p = new URLSearchParams();
+      ["name","klass","token","lang"].forEach(k=>{
+        const v = u.searchParams.get(k);
+        if(v) p.set(k, v);
+      });
+      if(!p.get("lang")) p.set("lang", getLang());
+      return p.toString();
+    }
+    function withQS(url){
+      const qs = passthroughQS();
+      return url + (url.includes("?") ? "&" : "?") + qs;
+    }
+
+    const btnLang = document.getElementById("btnLang");
+    const btnBack = document.getElementById("btnBack");
+    const btnDash = document.getElementById("btnDash");
+    const homeLink = document.getElementById("homeLink");
+    const statusEl = document.getElementById("status");
     const errBox = document.getElementById("errBox");
 
+    const catWrap = document.getElementById("catWrap");
+    const catGrid = document.getElementById("catGrid");
+    const levelWrap = document.getElementById("levelWrap");
+    const levelGrid = document.getElementById("levelGrid");
+    const pickedLabel = document.getElementById("pickedLabel");
+    const pickedTitle = document.getElementById("pickedTitle");
+    const btnReset = document.getElementById("btnReset");
+
     let MANIFEST = null;
-    let selectedCat = null;
+    let PICKED_CAT = null;
+
+    function applyTexts(){
+      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
+      document.getElementById("title").textContent = tr("title");
+      document.getElementById("subtitle").textContent = tr("subtitle");
+      pickedLabel.textContent = tr("picked");
+      btnReset.textContent = tr("reset");
+      btnDash.textContent = tr("dashboard");
+      btnLang.textContent = getLang();
+
+      const qs = passthroughQS();
+      homeLink.href = "../index.html" + (qs ? "?" + qs : "");
+      btnDash.href = "../index.html" + (qs ? "?" + qs : "");
+    }
 
     function showErr(msg){
-      errBox.style.display = "";
-      errBox.innerHTML = msg;
+      errBox.textContent = msg;
+      errBox.classList.remove("hidden");
+    }
+    function clearErr(){
+      errBox.classList.add("hidden");
+      errBox.textContent = "";
     }
 
     function renderCategories(){
       catGrid.innerHTML = "";
-      (MANIFEST.categories || []).forEach(cat=>{
-        const btn = document.createElement("button");
-        btn.className = "tileBtn";
-        btn.type = "button";
-        btn.innerHTML =
-          '<div style="font-size:18px;font-weight:900;">' + esc(cat.title) + '</div>' +
-          '<div class="muted" style="font-size:13px;margin-top:6px;">' + esc(cat.subtitle || "") + '</div>';
-        btn.addEventListener("click", ()=>{
-          selectedCat = cat;
+      if(!MANIFEST || !Array.isArray(MANIFEST.categories)) return;
+
+      MANIFEST.categories.forEach(cat=>{
+        const a = document.createElement("a");
+        a.className = "tile";
+        a.href = "javascript:void(0)";
+        a.innerHTML = `
+          <div class="tileTitle">${cat.title || cat.id || "-"}</div>
+          <div class="tileDesc">${cat.subtitle || ""}</div>
+        `;
+        a.addEventListener("click", ()=>{
+          PICKED_CAT = cat;
           renderLevels();
         });
-        catGrid.appendChild(btn);
+        catGrid.appendChild(a);
       });
     }
 
     function renderLevels(){
-      levelArea.style.display = "";
-      selectedTitle.textContent = selectedCat.title;
-      levelsGrid.innerHTML = "";
+      if(!PICKED_CAT) return;
 
-      const levelNames = selectedCat.levels || [];
-      for(let i=1;i<=10;i++){
-        const name = levelNames[i-1] || ("Level " + i);
-        const a = document.createElement("a");
-        a.className = "levelBtn";
-        a.href = withQS("./level.html?cat=" + encodeURIComponent(selectedCat.id) + "&level=" + i);
-        a.textContent = name;
-        levelsGrid.appendChild(a);
-      }
-      window.scrollTo({ top: levelArea.offsetTop - 80, behavior: "smooth" });
+      pickedTitle.textContent = PICKED_CAT.title || PICKED_CAT.id || "-";
+      levelGrid.innerHTML = "";
+
+      const levels = Array.isArray(PICKED_CAT.levels) ? PICKED_CAT.levels : [];
+      levels.forEach(lv=>{
+        const b = document.createElement("button");
+        b.type = "button";
+        b.className = "lvlBtn";
+        b.textContent = lv;
+
+        b.addEventListener("click", ()=>{
+          const u = new URL("./level.html", location.href);
+          u.searchParams.set("cat", PICKED_CAT.id || "");
+          u.searchParams.set("level", lv);
+          u.searchParams.set("manifest", "../data/topik1/manifest.json");
+          const qs = passthroughQS();
+          if(qs){
+            const p = new URLSearchParams(qs);
+            p.forEach((v,k)=>u.searchParams.set(k,v));
+          }
+          location.href = u.toString();
+        });
+
+        levelGrid.appendChild(b);
+      });
+
+      catWrap.classList.add("hidden");
+      levelWrap.classList.remove("hidden");
     }
 
-    document.getElementById("btnBackCats").addEventListener("click", ()=>{
-      levelArea.style.display = "none";
-      selectedCat = null;
-      window.scrollTo({ top: 0, behavior: "smooth" });
+    btnReset.addEventListener("click", ()=>{
+      PICKED_CAT = null;
+      levelWrap.classList.add("hidden");
+      catWrap.classList.remove("hidden");
     });
 
-    async function main(){
+    btnBack.addEventListener("click", ()=>{
+      if(history.length > 1) history.back();
+      else location.href = withQS("../index.html");
+    });
+
+    btnLang.addEventListener("click", ()=>{
+      const next = (getLang()==="KR") ? "MN" : "KR";
+      setLang(next);
+      applyTexts();
+      if(PICKED_CAT) renderLevels();
+    });
+
+    async function loadManifest(){
+      clearErr();
+      applyTexts();
+      statusEl.textContent = tr("loading");
+
       try{
-        const res = await fetch(MANIFEST_URL, { cache:"no-store" });
-        if(!res.ok) throw new Error("HTTP " + res.status + " / " + MANIFEST_URL);
+        const url = new URL("../data/topik1/manifest.json", location.href).toString();
+        const res = await fetch(url, { cache:"no-store" });
+        if(!res.ok) throw new Error("HTTP " + res.status);
         MANIFEST = await res.json();
+
+        statusEl.textContent = tr("loaded");
         renderCategories();
       }catch(e){
-        showErr(
-          "manifest.json을 불러오지 못했습니다.<br/>" +
-          "<div class='muted' style='margin-top:6px'>확인: <a style='color:#b9c9ff' target='_blank' rel='noopener' href='"+MANIFEST_URL+"'>"+MANIFEST_URL+"</a></div>" +
-          "<div class='muted' style='margin-top:6px'>오류: "+esc(e.message||String(e))+"</div>"
-        );
+        statusEl.textContent = "오류";
+        showErr(tr("errManifest") + " (" + (e.message || e) + ")");
       }
     }
-    main();
+
+    loadManifest();
   </script>
 </body>
 </html>
