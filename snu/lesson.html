@@ -138,6 +138,93 @@
     }
   }
 </style>
+  <!-- ✅ Mobile Quiz Layout Patch v2 (Question centered + +1pt vs choices + tighter spacing + no-scroll fit) -->
+<style>
+  /* 가로 스크롤(옆으로 밀림) 방지 */
+  html, body { overflow-x: hidden !important; }
+
+  /* ✅ “질문이 왼쪽으로 쏠리는 문제”를 강제로 중앙 정렬 */
+  /* 질문 텍스트 후보를 최대한 넓게 커버 */
+  #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word,
+  .questionWord, .question-word, .wordQuestion, .word-question,
+  .card .question, .card .q, .quizCard .question, .quiz-card .question,
+  .quizCard h2, .quizCard h3, .quiz-card h2, .quiz-card h3 {
+    display: block !important;
+    width: 100% !important;
+    text-align: center !important;
+    margin-left: auto !important;
+    margin-right: auto !important;
+  }
+
+  /* 모바일에서 “퀴즈가 화면 안에 다 보이게” 더 꽉 차게 */
+  @media (max-width: 520px) {
+
+    /* 상단/부가 영역이 너무 크면 줄여서 퀴즈에 공간을 줌 */
+    header, .topbar, .toolbar, .header, .controls, .controlRow, .tabs, .tabRow {
+      margin-bottom: 6px !important;
+      padding-bottom: 0 !important;
+    }
+
+    /* 설명/안내 문구가 길면 너무 공간을 차지하므로 더 작게 */
+    .hint, .help, .desc, .description, .note, .subText, .smallNote {
+      font-size: 11px !important;
+      line-height: 1.2 !important;
+      margin: 4px auto !important;
+    }
+
+    /* ✅ 퀴즈 카드 자체를 화면 폭에 맞춰서 꽉 채움 */
+    #quizArea, #testArea, .quiz-area, .test-area, .vocab-test, .quizCard, .quiz-card,
+    .card, .panel, .container .card {
+      width: min(96vw, 680px) !important;
+      margin-left: auto !important;
+      margin-right: auto !important;
+      padding-top: 8px !important;
+      padding-bottom: 8px !important;
+    }
+
+    /* ✅ 핵심: 글자 크기 (질문이 선택지보다 1pt 더 크게) */
+    /* 선택지 */
+    #choices button, #choiceList button, .choices button, .choice button,
+    .choiceBtn, .choice-btn, .optionBtn, .option-btn {
+      font-size: 22px !important;
+      padding: 12px 12px !important;   /* 기존보다 패딩 줄여서 화면에 더 많이 보이게 */
+      margin: 6px auto !important;     /* ✅ 간격 줄이기 */
+      max-width: 520px !important;
+      width: 100% !important;
+      line-height: 1.15 !important;
+    }
+
+    /* 질문(단어) = 선택지보다 1pt 크게 */
+    #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word,
+    .questionWord, .wordQuestion, .word-question,
+    .quizCard h2, .quizCard h3, .quiz-card h2, .quiz-card h3 {
+      font-size: 23px !important;      /* ✅ 22 + 1 */
+      font-weight: 900 !important;
+      line-height: 1.15 !important;
+      margin: 6px auto 10px auto !important;
+      text-align: center !important;
+    }
+
+    /* ✅ 선택지 리스트가 flex/grid라면 간격 강제 축소 */
+    #choices, #choiceList, .choices, .options, .optionList {
+      gap: 6px !important;
+    }
+
+    /* ✅ 화면 아래로 “스크롤해야 선택지가 다 보이는 문제” 완화:
+       카드 바깥 여백을 줄이고, 버튼 높이를 줄여 한 화면에 들어오게 함 */
+    .wrap, .page, .main, .content, .container {
+      padding-bottom: 8px !important;
+    }
+
+    /* 버튼 안의 긴 텍스트는 줄바꿈 허용(옆 스크롤 방지) */
+    #choices button, #choiceList button, .choices button,
+    .choiceBtn, .optionBtn {
+      white-space: normal !important;
+      overflow-wrap: anywhere !important;
+      word-break: keep-all !important;
+    }
+  }
+</style>
 </head>
 <body>
   <header class="topbar">
