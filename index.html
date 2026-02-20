@@ -58,7 +58,6 @@
     .small{font-size:12px}
     .bar{height:1px;background:var(--line);margin:12px 0}
 
-    /* ===== Mobile-first Login Layout ===== */
     .loginGrid{
       display:grid;
       grid-template-columns:1fr;
@@ -91,7 +90,6 @@
     .seg span{font-size:14px}
     .wideBtn{width:100%;padding:14px 14px;border-radius:16px;font-weight:900;font-size:16px}
 
-    /* ===== Mobile-first Dashboard Tiles ===== */
     .tiles{
       display:grid;
       grid-template-columns:1fr;
@@ -113,7 +111,6 @@
     .tileDesc{font-size:14px;line-height:1.25;margin-top:6px;color:var(--text)}
     .tileMeta{font-size:12px;line-height:1.2;margin-top:6px;color:var(--muted);opacity:.95}
 
-    /* ===== Larger screens ===== */
     @media (min-width: 860px){
       .container{padding:16px}
       .card{padding:16px;border-radius:16px}
@@ -125,7 +122,6 @@
       .loginGrid{grid-template-columns:1fr 1fr}
     }
 
-    /* Hide/Show views */
     .hidden{display:none !important;}
   </style>
 </head>
@@ -133,7 +129,7 @@
   <header class="topbar">
     <div class="brand">
       <span class="dot"></span>
-      <span id="appTitle">Korean Quiz</span>
+      <span>Korean Quiz</span>
     </div>
 
     <div class="right">
@@ -145,7 +141,6 @@
   </header>
 
   <main class="container">
-    <!-- ===== Login View (mobile/pc 공통) ===== -->
     <section class="card" id="viewLogin">
       <h1 style="margin:0 0 6px;" id="loginTitle">로그인</h1>
       <div class="muted" id="loginDesc">
@@ -198,7 +193,6 @@
       <div id="loginErr" class="muted small" style="margin-top:10px;color:#ffd6d6;display:none;"></div>
     </section>
 
-    <!-- ===== Dashboard View ===== -->
     <section class="card hidden" id="viewDash">
       <h1 style="margin:0 0 6px;" id="dashTitle">대시보드</h1>
       <div class="muted" id="dashDesc">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
@@ -207,7 +201,7 @@
 
       <div class="tiles">
         <a class="tile" id="tileBOOK" href="./snu/index.html">
-          <div class="tileTitle" id="tileBookTitle">서울대 (새 방식)</div>
+          <div class="tileTitle" id="tileBookTitle">서울대</div>
           <div class="tileDesc" id="tileBookDesc">교재/과 선택 → 레슨</div>
           <div class="tileMeta" id="tileBookMeta">SNU 1A~4B (데이터 방식 확장)</div>
         </a>
@@ -252,7 +246,7 @@
         tip: "팁: 링크가 안 열리면 “구글 검색창”이 아니라 “주소창(URL)”에 주소를 넣어야 합니다.",
         learner: "학습자",
         klass: "반",
-        snuTitle: "서울대 (새 방식)",
+        snuTitle: "서울대",
         snuDesc: "교재/과 선택 → 레슨",
         snuMeta: "SNU 1A~4B (데이터 방식 확장)",
         t1Desc: "어휘 · 문법 · 읽기평가 · 듣기평가",
@@ -278,7 +272,7 @@
         tip: "Зөвлөгөө: Линк нээгдэхгүй бол Google хайлтын талбар биш, URL хаягийн мөрөнд оруулна уу.",
         learner: "Сурагч",
         klass: "Анги",
-        snuTitle: "СӨҮ (шинэ)",
+        snuTitle: "СӨҮ",
         snuDesc: "Ном/хичээл сонгох → хичээл",
         snuMeta: "SNU 1A~4B (өгөгдлийн өргөтгөл)",
         t1Desc: "Үг · Дүрэм · Унших · Сонсох",
@@ -308,14 +302,12 @@
       return u.searchParams.get(k) || "";
     }
 
-    // 파라미터 유지(name/klass/token)
     function buildPassthrough(){
       const p = new URLSearchParams();
       ["name","klass","token","lang"].forEach(k=>{
         const v = getParam(k);
         if(v) p.set(k, v);
       });
-      // lang 파라미터가 없으면 현재 언어를 붙여줌(모바일에서 언어 유지)
       if(!p.get("lang")) p.set("lang", getLang());
       return p;
     }
@@ -324,7 +316,6 @@
       return url + (url.includes("?") ? "&" : "?") + qs;
     }
 
-    // 세션(로컬 저장)
     const SESSION_KEY = "kq_session_v1";
     function loadSession(){
       try{
@@ -332,14 +323,9 @@
         return raw ? JSON.parse(raw) : null;
       }catch(e){ return null; }
     }
-    function saveSession(s){
-      localStorage.setItem(SESSION_KEY, JSON.stringify(s));
-    }
-    function clearSession(){
-      localStorage.removeItem(SESSION_KEY);
-    }
+    function saveSession(s){ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
+    function clearSession(){ localStorage.removeItem(SESSION_KEY); }
 
-    // UI refs
     const viewLogin = document.getElementById("viewLogin");
     const viewDash  = document.getElementById("viewDash");
     const btnLang   = document.getElementById("btnLang");
@@ -347,7 +333,6 @@
     const pillUser  = document.getElementById("pillUser");
     const pillKlass = document.getElementById("pillKlass");
 
-    // Login refs
     const inpId = document.getElementById("inpId");
     const inpPw = document.getElementById("inpPw");
     const btnStart = document.getElementById("btnStart");
@@ -357,7 +342,6 @@
       document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
       btnLang.textContent = getLang();
 
-      // Login texts
       document.getElementById("loginTitle").textContent = tr("loginTitle");
       document.getElementById("loginDesc").textContent  = tr("loginDesc");
       document.getElementById("lblId").textContent = tr("id");
@@ -371,7 +355,6 @@
       document.getElementById("loginNote").innerHTML = tr("loginNote");
       btnLogout.textContent = tr("logout");
 
-      // Dashboard texts
       document.getElementById("dashTitle").textContent = tr("dashTitle");
       document.getElementById("dashDesc").textContent  = tr("dashDesc");
       document.getElementById("tipText").textContent   = tr("tip");
@@ -391,8 +374,6 @@
       btnLogout.classList.add("hidden");
       pillUser.classList.add("hidden");
       pillKlass.classList.add("hidden");
-      // 로그인 화면에서도 언어 버튼이 상단에 보이도록 유지(이미 있음)
-      // 기존 화면(백업) 링크에도 파라미터 전달
       document.getElementById("btnLegacy").href = withQS("./lessonHub.html");
     }
 
@@ -403,11 +384,9 @@
       pillUser.classList.remove("hidden");
       pillKlass.classList.remove("hidden");
 
-      // 상단 pill
       pillUser.textContent  = tr("learner") + ": " + (session?.id || "-");
       pillKlass.textContent = tr("klass") + ": " + (session?.role || "-");
 
-      // 타일 링크에 파라미터 붙이기 (모바일에서 token/name 유지)
       document.getElementById("tileBOOK").href = withQS("./snu/index.html");
       document.getElementById("tileT1").href   = withQS("./topik1/index.html");
       document.getElementById("tileT2").href   = withQS("./topik2/index.html");
@@ -418,25 +397,19 @@
       return el ? el.value : "BOOK";
     }
 
-    // 언어 토글
     btnLang.addEventListener("click", ()=>{
       const next = (getLang()==="KR") ? "MN" : "KR";
       setLang(next);
       applyTexts();
-
-      // 화면 유지(로그인/대시보드)
       const s = loadSession();
       if(s) showDashboard(s); else showLogin();
     });
 
-    // 로그아웃
     btnLogout.addEventListener("click", ()=>{
       clearSession();
-      // URL 파라미터는 그대로 두고 로그인으로
       showLogin();
     });
 
-    // 로그인 시작
     btnStart.addEventListener("click", ()=>{
       loginErr.style.display = "none";
       const id = (inpId.value || "").trim();
@@ -446,32 +419,22 @@
         return;
       }
       const role = currentRole();
-
-      // 세션 저장 (비밀번호는 저장하지 않음)
       saveSession({ id, role, at: Date.now() });
-
-      // 대시보드로
       showDashboard(loadSession());
     });
 
-    // 엔터키로 Start
     [inpId, inpPw].forEach(el=>{
       el.addEventListener("keydown", (e)=>{
         if(e.key === "Enter") btnStart.click();
       });
     });
 
-    // 초기화
     (function init(){
       applyTexts();
-
-      // 모바일에서도 항상 로그인부터 보이게:
-      // 세션이 없으면 로그인, 있으면 대시보드
       const s = loadSession();
       if(s) showDashboard(s);
       else showLogin();
 
-      // 로그인 입력 기본값 (URL name 있으면)
       const qName = getParam("name");
       if(qName && !inpId.value) inpId.value = qName;
     })();
