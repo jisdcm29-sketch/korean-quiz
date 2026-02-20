@@ -3,11 +3,11 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>Korean Quiz Dashboard</title>
+  <title>Korean Quiz</title>
   <style>
     :root{
       --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
-      --accent:#60a5fa;
+      --accent:#60a5fa;--danger:#f87171;
     }
     *{box-sizing:border-box}
     html,body{overflow-x:hidden}
@@ -21,19 +21,30 @@
     a{color:inherit;text-decoration:none}
 
     .topbar{
-      position:sticky;top:0;z-index:10;
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      position:sticky;top:0;z-index:50;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
       padding:12px 14px;
-      background:rgba(5,8,20,.75);backdrop-filter:blur(10px);
+      background:rgba(5,8,20,.78);backdrop-filter:blur(10px);
       border-bottom:1px solid var(--line);
     }
     .brand{display:flex;align-items:center;gap:10px;font-weight:900}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
+    .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+
     .pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:8px 12px;border-radius:999px;border:1px solid var(--line);
       background:#0b1020;color:var(--muted);font-size:13px
     }
+    .btn{
+      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn:hover{border-color:rgba(96,165,250,.6)}
+    .btn.primary{background:linear-gradient(135deg, rgba(96,165,250,.25), rgba(96,165,250,.08));border-color:rgba(96,165,250,.6)}
+    .btn.danger{border-color:rgba(248,113,113,.55);color:#ffd6d6}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
 
     .container{max-width:980px;margin:0 auto;padding:14px}
     .card{
@@ -44,9 +55,43 @@
       box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
     .muted{color:var(--muted);line-height:1.6}
+    .small{font-size:12px}
     .bar{height:1px;background:var(--line);margin:12px 0}
 
-    /* ✅ Mobile-first: 타일은 1열 + 큰 버튼 */
+    /* ===== Mobile-first Login Layout ===== */
+    .loginGrid{
+      display:grid;
+      grid-template-columns:1fr;
+      gap:12px;
+      margin-top:12px;
+    }
+    .field label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
+    .field input{
+      width:100%;
+      padding:14px 14px;
+      border-radius:14px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      color:var(--text);
+      outline:none;
+      font-size:16px;
+    }
+    .field input:focus{border-color:rgba(96,165,250,.7)}
+    .segRow{
+      display:flex;gap:10px;flex-wrap:wrap;
+      margin-top:6px;
+    }
+    .seg{
+      flex:1 1 140px;
+      display:flex;align-items:center;gap:10px;
+      padding:12px 12px;border-radius:999px;border:1px solid var(--line);
+      background:#0b1020;cursor:pointer;
+    }
+    .seg input{transform:scale(1.1)}
+    .seg span{font-size:14px}
+    .wideBtn{width:100%;padding:14px 14px;border-radius:16px;font-weight:900;font-size:16px}
+
+    /* ===== Mobile-first Dashboard Tiles ===== */
     .tiles{
       display:grid;
       grid-template-columns:1fr;
@@ -68,7 +113,7 @@
     .tileDesc{font-size:14px;line-height:1.25;margin-top:6px;color:var(--text)}
     .tileMeta{font-size:12px;line-height:1.2;margin-top:6px;color:var(--muted);opacity:.95}
 
-    /* ✅ PC에서만 확장 */
+    /* ===== Larger screens ===== */
     @media (min-width: 860px){
       .container{padding:16px}
       .card{padding:16px;border-radius:16px}
@@ -76,84 +121,360 @@
       .tile{min-height:110px}
       .tileTitle{font-size:18px}
       .tileDesc{font-size:13px}
+      .topbar{padding:12px 16px}
+      .loginGrid{grid-template-columns:1fr 1fr}
     }
+
+    /* Hide/Show views */
+    .hidden{display:none !important;}
   </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="dot"></span><span>Korean Quiz</span></div>
-    <div style="display:flex;gap:8px;flex-wrap:wrap;align-items:center">
-      <span class="pill" id="pillUser">학습자: -</span>
-      <span class="pill" id="pillKlass">반: -</span>
+    <div class="brand">
+      <span class="dot"></span>
+      <span id="appTitle">Korean Quiz</span>
+    </div>
+
+    <div class="right">
+      <button class="btn" id="btnLang" type="button">KR</button>
+      <button class="btn danger hidden" id="btnLogout" type="button">로그아웃</button>
+      <span class="pill hidden" id="pillUser">학습자: -</span>
+      <span class="pill hidden" id="pillKlass">반: -</span>
     </div>
   </header>
 
   <main class="container">
-    <section class="card">
-      <h1 style="margin:0 0 6px;">대시보드</h1>
-      <div class="muted">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
+    <!-- ===== Login View (mobile/pc 공통) ===== -->
+    <section class="card" id="viewLogin">
+      <h1 style="margin:0 0 6px;" id="loginTitle">로그인</h1>
+      <div class="muted" id="loginDesc">
+        지금은 “간단 로그인(로컬 저장)”로 시작합니다. (나중에 실제 로그인으로 교체 가능)
+      </div>
+
+      <div class="loginGrid" style="margin-top:12px;">
+        <div class="field">
+          <label for="inpId" id="lblId">아이디</label>
+          <input id="inpId" type="text" placeholder="예: student01" autocomplete="username"/>
+        </div>
+
+        <div class="field">
+          <label for="inpPw" id="lblPw">비밀번호</label>
+          <input id="inpPw" type="password" placeholder="임시" autocomplete="current-password"/>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <div class="muted small" id="lblRole">권한</div>
+        <div class="segRow" role="radiogroup" aria-label="role">
+          <label class="seg">
+            <input type="radio" name="role" value="BOOK" checked/>
+            <span id="roleBook">BOOK(교재)</span>
+          </label>
+          <label class="seg">
+            <input type="radio" name="role" value="TOPIK"/>
+            <span id="roleTopik">TOPIK(시험)</span>
+          </label>
+          <label class="seg">
+            <input type="radio" name="role" value="ALL"/>
+            <span id="roleAll">ALL(VIP)</span>
+          </label>
+        </div>
+      </div>
+
+      <div style="margin-top:12px;">
+        <button class="btn primary wideBtn" id="btnStart" type="button">Start</button>
+      </div>
+
+      <div class="muted small" style="margin-top:10px;" id="loginNote">
+        안내: 이 로그인은 “전환을 빠르게” 하기 위한 임시 버전입니다.<br/>
+        추후 실제 로그인/결제(예: Supabase/Firebase)로 바꿀 수 있습니다.
+      </div>
+
+      <div style="margin-top:12px;">
+        <a class="btn" id="btnLegacy" href="./lessonHub.html">기존 화면(백업) 보기</a>
+      </div>
+
+      <div id="loginErr" class="muted small" style="margin-top:10px;color:#ffd6d6;display:none;"></div>
+    </section>
+
+    <!-- ===== Dashboard View ===== -->
+    <section class="card hidden" id="viewDash">
+      <h1 style="margin:0 0 6px;" id="dashTitle">대시보드</h1>
+      <div class="muted" id="dashDesc">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
 
       <div class="bar"></div>
 
       <div class="tiles">
-        <!-- BOOK / 서울대 -->
         <a class="tile" id="tileBOOK" href="./snu/index.html">
-          <div class="tileTitle">서울대 (새 방식)</div>
-          <div class="tileDesc">교재/과 선택 → 레슨</div>
-          <div class="tileMeta">SNU 1A~4B (데이터 방식 확장)</div>
+          <div class="tileTitle" id="tileBookTitle">서울대 (새 방식)</div>
+          <div class="tileDesc" id="tileBookDesc">교재/과 선택 → 레슨</div>
+          <div class="tileMeta" id="tileBookMeta">SNU 1A~4B (데이터 방식 확장)</div>
         </a>
 
-        <!-- TOPIK I -->
         <a class="tile" id="tileT1" href="./topik1/index.html">
-          <div class="tileTitle" id="tT1">TOPIK I</div>
-          <div class="tileDesc" id="dT1">어휘 · 문법 · 읽기평가 · 듣기평가</div>
-          <div class="tileMeta" id="mT1">레벨 1~10</div>
+          <div class="tileTitle" id="tileT1Title">TOPIK I</div>
+          <div class="tileDesc" id="tileT1Desc">어휘 · 문법 · 읽기평가 · 듣기평가</div>
+          <div class="tileMeta" id="tileT1Meta">레벨 1~10</div>
         </a>
 
-        <!-- TOPIK II -->
         <a class="tile" id="tileT2" href="./topik2/index.html">
-          <div class="tileTitle" id="tT2">TOPIK II</div>
-          <div class="tileDesc" id="dT2">어휘 · 문법 · 읽기/듣기 유형 · 모의평가 · 쓰기</div>
-          <div class="tileMeta" id="mT2">레벨 1~10</div>
+          <div class="tileTitle" id="tileT2Title">TOPIK II</div>
+          <div class="tileDesc" id="tileT2Desc">어휘 · 문법 · 읽기/듣기 유형 · 모의평가 · 쓰기</div>
+          <div class="tileMeta" id="tileT2Meta">레벨 1~10</div>
         </a>
       </div>
 
       <div class="bar"></div>
-      <div class="muted" style="font-size:12px;">
+      <div class="muted small" id="tipText">
         팁: 링크가 안 열리면 “구글 검색창”이 아니라 “주소창(URL)”에 주소를 넣어야 합니다.
       </div>
     </section>
   </main>
 
   <script>
+    const I18N = {
+      KR: {
+        logout: "로그아웃",
+        loginTitle: "로그인",
+        loginDesc: "지금은 “간단 로그인(로컬 저장)”로 시작합니다. (나중에 실제 로그인으로 교체 가능)",
+        id: "아이디",
+        pw: "비밀번호",
+        role: "권한",
+        roleBook: "BOOK(교재)",
+        roleTopik: "TOPIK(시험)",
+        roleAll: "ALL(VIP)",
+        start: "Start",
+        legacy: "기존 화면(백업) 보기",
+        loginNote: "안내: 이 로그인은 “전환을 빠르게” 하기 위한 임시 버전입니다.<br/>추후 실제 로그인/결제(예: Supabase/Firebase)로 바꿀 수 있습니다.",
+        dashTitle: "대시보드",
+        dashDesc: "모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.",
+        tip: "팁: 링크가 안 열리면 “구글 검색창”이 아니라 “주소창(URL)”에 주소를 넣어야 합니다.",
+        learner: "학습자",
+        klass: "반",
+        snuTitle: "서울대 (새 방식)",
+        snuDesc: "교재/과 선택 → 레슨",
+        snuMeta: "SNU 1A~4B (데이터 방식 확장)",
+        t1Desc: "어휘 · 문법 · 읽기평가 · 듣기평가",
+        t2Desc: "어휘 · 문법 · 읽기/듣기 유형 · 모의평가 · 쓰기",
+        level: "레벨 1~10",
+        needId: "아이디를 입력하세요."
+      },
+      MN: {
+        logout: "Гарах",
+        loginTitle: "Нэвтрэх",
+        loginDesc: "Одоогоор “энгийн нэвтрэлт(локал хадгалалт)” ашиглана. (Дараа нь жинхэнэ нэвтрэлтээр сольж болно)",
+        id: "ID",
+        pw: "Нууц үг",
+        role: "Эрх",
+        roleBook: "BOOK(Ном)",
+        roleTopik: "TOPIK(Шалгалт)",
+        roleAll: "ALL(VIP)",
+        start: "Start",
+        legacy: "Хуучин дэлгэц (нөөц) харах",
+        loginNote: "Тайлбар: Энэ нь түр хувилбар (хурдан шилжих).<br/>Дараа нь жинхэнэ нэвтрэлт/төлбөр (ж: Supabase/Firebase) болгон сольж болно.",
+        dashTitle: "Самбар",
+        dashDesc: "Утасны хувилбар (том товч). Сонгоно уу.",
+        tip: "Зөвлөгөө: Линк нээгдэхгүй бол Google хайлтын талбар биш, URL хаягийн мөрөнд оруулна уу.",
+        learner: "Сурагч",
+        klass: "Анги",
+        snuTitle: "СӨҮ (шинэ)",
+        snuDesc: "Ном/хичээл сонгох → хичээл",
+        snuMeta: "SNU 1A~4B (өгөгдлийн өргөтгөл)",
+        t1Desc: "Үг · Дүрэм · Унших · Сонсох",
+        t2Desc: "Үг · Дүрэм · Унших/Сонсох төрөл · Мок · Бичих",
+        level: "Level 1~10",
+        needId: "ID оруулна уу."
+      }
+    };
+
+    function getLang(){
+      const q = (new URL(location.href).searchParams.get("lang")||"").toUpperCase();
+      const s = (localStorage.getItem("kq_lang")||localStorage.getItem("lang")||"").toUpperCase();
+      const pick = (q==="MN"||q==="KR") ? q : s;
+      return (pick==="MN") ? "MN" : "KR";
+    }
+    function setLang(l){
+      localStorage.setItem("kq_lang", l);
+      localStorage.setItem("lang", l);
+    }
+    function tr(k){
+      const L = getLang();
+      return (I18N[L] && I18N[L][k]) ? I18N[L][k] : (I18N.KR[k] || k);
+    }
+
     function getParam(k){
       const u = new URL(location.href);
       return u.searchParams.get(k) || "";
     }
 
-    // 상단 표시
-    document.getElementById("pillUser").textContent = "학습자: " + (getParam("name") || "-");
-    document.getElementById("pillKlass").textContent = "반: " + (getParam("klass") || "-");
-
-    // ✅ URL 파라미터(name/klass/token) 유지해서 다음 페이지로 전달
-    const passthrough = new URLSearchParams();
-    ["name","klass","token"].forEach(k=>{
-      const v = getParam(k);
-      if(v) passthrough.set(k, v);
-    });
-    const qs = passthrough.toString();
-    const withQS = (url)=>{
-      if(!qs) return url;
+    // 파라미터 유지(name/klass/token)
+    function buildPassthrough(){
+      const p = new URLSearchParams();
+      ["name","klass","token","lang"].forEach(k=>{
+        const v = getParam(k);
+        if(v) p.set(k, v);
+      });
+      // lang 파라미터가 없으면 현재 언어를 붙여줌(모바일에서 언어 유지)
+      if(!p.get("lang")) p.set("lang", getLang());
+      return p;
+    }
+    function withQS(url){
+      const qs = buildPassthrough().toString();
       return url + (url.includes("?") ? "&" : "?") + qs;
-    };
+    }
 
-    // 모든 타일 링크에 파라미터 붙이기
-    const ids = ["tileBOOK","tileT1","tileT2"];
-    ids.forEach(id=>{
-      const a = document.getElementById(id);
-      if(!a) return;
-      a.href = withQS(a.getAttribute("href"));
+    // 세션(로컬 저장)
+    const SESSION_KEY = "kq_session_v1";
+    function loadSession(){
+      try{
+        const raw = localStorage.getItem(SESSION_KEY);
+        return raw ? JSON.parse(raw) : null;
+      }catch(e){ return null; }
+    }
+    function saveSession(s){
+      localStorage.setItem(SESSION_KEY, JSON.stringify(s));
+    }
+    function clearSession(){
+      localStorage.removeItem(SESSION_KEY);
+    }
+
+    // UI refs
+    const viewLogin = document.getElementById("viewLogin");
+    const viewDash  = document.getElementById("viewDash");
+    const btnLang   = document.getElementById("btnLang");
+    const btnLogout = document.getElementById("btnLogout");
+    const pillUser  = document.getElementById("pillUser");
+    const pillKlass = document.getElementById("pillKlass");
+
+    // Login refs
+    const inpId = document.getElementById("inpId");
+    const inpPw = document.getElementById("inpPw");
+    const btnStart = document.getElementById("btnStart");
+    const loginErr = document.getElementById("loginErr");
+
+    function applyTexts(){
+      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
+      btnLang.textContent = getLang();
+
+      // Login texts
+      document.getElementById("loginTitle").textContent = tr("loginTitle");
+      document.getElementById("loginDesc").textContent  = tr("loginDesc");
+      document.getElementById("lblId").textContent = tr("id");
+      document.getElementById("lblPw").textContent = tr("pw");
+      document.getElementById("lblRole").textContent = tr("role");
+      document.getElementById("roleBook").textContent = tr("roleBook");
+      document.getElementById("roleTopik").textContent = tr("roleTopik");
+      document.getElementById("roleAll").textContent = tr("roleAll");
+      document.getElementById("btnStart").textContent = tr("start");
+      document.getElementById("btnLegacy").textContent = tr("legacy");
+      document.getElementById("loginNote").innerHTML = tr("loginNote");
+      btnLogout.textContent = tr("logout");
+
+      // Dashboard texts
+      document.getElementById("dashTitle").textContent = tr("dashTitle");
+      document.getElementById("dashDesc").textContent  = tr("dashDesc");
+      document.getElementById("tipText").textContent   = tr("tip");
+
+      document.getElementById("tileBookTitle").textContent = tr("snuTitle");
+      document.getElementById("tileBookDesc").textContent  = tr("snuDesc");
+      document.getElementById("tileBookMeta").textContent  = tr("snuMeta");
+      document.getElementById("tileT1Desc").textContent    = tr("t1Desc");
+      document.getElementById("tileT2Desc").textContent    = tr("t2Desc");
+      document.getElementById("tileT1Meta").textContent    = tr("level");
+      document.getElementById("tileT2Meta").textContent    = tr("level");
+    }
+
+    function showLogin(){
+      viewLogin.classList.remove("hidden");
+      viewDash.classList.add("hidden");
+      btnLogout.classList.add("hidden");
+      pillUser.classList.add("hidden");
+      pillKlass.classList.add("hidden");
+      // 로그인 화면에서도 언어 버튼이 상단에 보이도록 유지(이미 있음)
+      // 기존 화면(백업) 링크에도 파라미터 전달
+      document.getElementById("btnLegacy").href = withQS("./lessonHub.html");
+    }
+
+    function showDashboard(session){
+      viewLogin.classList.add("hidden");
+      viewDash.classList.remove("hidden");
+      btnLogout.classList.remove("hidden");
+      pillUser.classList.remove("hidden");
+      pillKlass.classList.remove("hidden");
+
+      // 상단 pill
+      pillUser.textContent  = tr("learner") + ": " + (session?.id || "-");
+      pillKlass.textContent = tr("klass") + ": " + (session?.role || "-");
+
+      // 타일 링크에 파라미터 붙이기 (모바일에서 token/name 유지)
+      document.getElementById("tileBOOK").href = withQS("./snu/index.html");
+      document.getElementById("tileT1").href   = withQS("./topik1/index.html");
+      document.getElementById("tileT2").href   = withQS("./topik2/index.html");
+    }
+
+    function currentRole(){
+      const el = document.querySelector('input[name="role"]:checked');
+      return el ? el.value : "BOOK";
+    }
+
+    // 언어 토글
+    btnLang.addEventListener("click", ()=>{
+      const next = (getLang()==="KR") ? "MN" : "KR";
+      setLang(next);
+      applyTexts();
+
+      // 화면 유지(로그인/대시보드)
+      const s = loadSession();
+      if(s) showDashboard(s); else showLogin();
     });
+
+    // 로그아웃
+    btnLogout.addEventListener("click", ()=>{
+      clearSession();
+      // URL 파라미터는 그대로 두고 로그인으로
+      showLogin();
+    });
+
+    // 로그인 시작
+    btnStart.addEventListener("click", ()=>{
+      loginErr.style.display = "none";
+      const id = (inpId.value || "").trim();
+      if(!id){
+        loginErr.style.display = "";
+        loginErr.textContent = tr("needId");
+        return;
+      }
+      const role = currentRole();
+
+      // 세션 저장 (비밀번호는 저장하지 않음)
+      saveSession({ id, role, at: Date.now() });
+
+      // 대시보드로
+      showDashboard(loadSession());
+    });
+
+    // 엔터키로 Start
+    [inpId, inpPw].forEach(el=>{
+      el.addEventListener("keydown", (e)=>{
+        if(e.key === "Enter") btnStart.click();
+      });
+    });
+
+    // 초기화
+    (function init(){
+      applyTexts();
+
+      // 모바일에서도 항상 로그인부터 보이게:
+      // 세션이 없으면 로그인, 있으면 대시보드
+      const s = loadSession();
+      if(s) showDashboard(s);
+      else showLogin();
+
+      // 로그인 입력 기본값 (URL name 있으면)
+      const qName = getParam("name");
+      if(qName && !inpId.value) inpId.value = qName;
+    })();
   </script>
 </body>
 </html>
