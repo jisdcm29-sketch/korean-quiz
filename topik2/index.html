@@ -10,6 +10,7 @@
       --accent:#60a5fa;
     }
     *{box-sizing:border-box}
+    html,body{overflow-x:hidden}
     body{
       margin:0;
       font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
@@ -17,61 +18,87 @@
       color:var(--text);
     }
     a{color:inherit;text-decoration:none}
+
     .topbar{
       position:sticky;top:0;z-index:10;
       display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);
+      padding:12px 14px;
+      background:rgba(5,8,20,.75);backdrop-filter:blur(10px);
       border-bottom:1px solid var(--line);
     }
     .brand{display:flex;align-items:center;gap:10px;font-weight:800}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
-    .container{max-width:980px;margin:0 auto;padding:16px}
+
+    .container{max-width:980px;margin:0 auto;padding:14px}
     .card{
       background:rgba(17,24,39,.9);
       border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
+      border-radius:18px;
+      padding:14px;
       box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
     .muted{color:var(--muted);line-height:1.6}
+    .small{font-size:12px}
+
     .btn{
-      padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
       background:#0b1020;color:var(--text);cursor:pointer;display:inline-block
     }
-    .btnRow{display:flex;gap:8px;flex-wrap:wrap}
+    .btnRow{display:flex;gap:8px;flex-wrap:wrap;align-items:center}
     .pill{
       display:inline-flex;align-items:center;gap:8px;
-      padding:6px 10px;border-radius:999px;border:1px solid var(--line);
-      background:#0b1020;color:var(--muted);font-size:12px
+      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
+      background:#0b1020;color:var(--muted);font-size:13px
     }
+
+    .bar{height:1px;background:var(--line);margin:12px 0}
+
     .grid{
       display:grid;
-      grid-template-columns:repeat(2,1fr);
-      gap:10px;
+      grid-template-columns:1fr;
+      gap:12px;
       margin-top:12px;
     }
-    @media(max-width:560px){.grid{grid-template-columns:1fr}}
+
     .levels{
       display:grid;
-      grid-template-columns:repeat(5,1fr);
-      gap:10px;
+      grid-template-columns:repeat(2,1fr);
+      gap:12px;
       margin-top:12px;
     }
-    @media(max-width:560px){.levels{grid-template-columns:repeat(2,1fr)}}
+
     .tileBtn{
-      padding:14px 12px;border-radius:14px;border:1px solid var(--line);
+      padding:18px 16px;
+      border-radius:16px;border:1px solid var(--line);
       background:#0b1020;color:var(--text);cursor:pointer;text-align:left;
+      min-height:74px;
     }
     .tileBtn:hover{border-color:rgba(96,165,250,.6)}
+
     .levelBtn{
-      padding:14px 12px;border-radius:14px;border:1px solid var(--line);
+      padding:16px 12px;
+      border-radius:16px;border:1px solid var(--line);
       background:#0b1020;color:var(--text);cursor:pointer;text-align:center;
-      font-weight:800;
+      font-weight:900;
+      min-height:54px;
+      font-size:16px;
     }
     .levelBtn:hover{border-color:rgba(96,165,250,.6)}
-    .bar{height:1px;background:var(--line);margin:12px 0}
-    .err{border:1px solid rgba(248,113,113,.35);background:rgba(248,113,113,.06);padding:12px;border-radius:14px}
-    .small{font-size:12px}
+
+    .err{
+      border:1px solid rgba(248,113,113,.35);
+      background:rgba(248,113,113,.06);
+      padding:12px;border-radius:14px
+    }
+
+    @media (min-width: 860px){
+      .container{padding:16px}
+      .card{padding:16px;border-radius:16px}
+      .grid{grid-template-columns:repeat(2,1fr)}
+      .levels{grid-template-columns:repeat(5,1fr)}
+      .levelBtn{font-size:14px}
+      .topbar{padding:12px 16px}
+    }
   </style>
 </head>
 <body>
@@ -118,7 +145,6 @@
       return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
     }
 
-    // name/klass/token 그대로 전달
     const passthrough = new URLSearchParams();
     ["name","klass","token"].forEach(k=>{
       const v = getParam(k);
@@ -130,7 +156,6 @@
       return url + (url.includes("?") ? "&" : "?") + qs;
     };
 
-    // 상단 표시/링크
     document.getElementById("pillUser").textContent = "학습자: " + (getParam("name") || "-");
     document.getElementById("pillToken").textContent = "token: " + (getParam("token") || "-");
     document.getElementById("btnDashboard").href = withQS("../index.html");
@@ -157,10 +182,9 @@
         const btn = document.createElement("button");
         btn.className = "tileBtn";
         btn.type = "button";
-        btn.innerHTML = `
-          <div style="font-size:16px;font-weight:900;">${esc(cat.title)}</div>
-          <div class="muted" style="font-size:12px;margin-top:4px;">${esc(cat.subtitle || "")}</div>
-        `;
+        btn.innerHTML =
+          '<div style="font-size:18px;font-weight:900;">' + esc(cat.title) + '</div>' +
+          '<div class="muted" style="font-size:13px;margin-top:6px;">' + esc(cat.subtitle || "") + '</div>';
         btn.addEventListener("click", ()=>{
           selectedCat = cat;
           renderLevels();
@@ -179,7 +203,7 @@
         const name = levelNames[i-1] || ("Level " + i);
         const a = document.createElement("a");
         a.className = "levelBtn";
-        a.href = withQS(`./level.html?cat=${encodeURIComponent(selectedCat.id)}&level=${i}`);
+        a.href = withQS("./level.html?cat=" + encodeURIComponent(selectedCat.id) + "&level=" + i);
         a.textContent = name;
         levelsGrid.appendChild(a);
       }
@@ -202,8 +226,7 @@
         showErr(
           "manifest.json을 불러오지 못했습니다.<br/>" +
           "<div class='muted' style='margin-top:6px'>확인: <a style='color:#b9c9ff' target='_blank' rel='noopener' href='"+MANIFEST_URL+"'>"+MANIFEST_URL+"</a></div>" +
-          "<div class='muted' style='margin-top:6px'>오류: "+esc(e.message||String(e))+"</div>" +
-          "<div class='muted' style='margin-top:6px'>※ 파일 내용에 <b>diff --git</b> 같은 글이 있으면, JSON/HTML이 아니라서 깨집니다.</div>"
+          "<div class='muted' style='margin-top:6px'>오류: " + esc(e.message||String(e)) + "</div>"
         );
       }
     }
