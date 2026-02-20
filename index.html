@@ -21,6 +21,7 @@
       color:var(--text);
     }
     a{color:inherit;text-decoration:none}
+
     .topbar{
       position:sticky;top:0;z-index:50;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -42,6 +43,7 @@
       -webkit-tap-highlight-color:transparent;
     }
     .btn:hover{border-color:rgba(96,165,250,.6)}
+
     .container{max-width:980px;margin:0 auto;padding:14px}
     .card{
       background:rgba(17,24,39,.9);
@@ -61,17 +63,28 @@
       margin-top:10px;
     }
 
+    /* ✅ 타일(버튼): 글자 중앙 정렬 + 가운데 배치 */
     .tile{
-      display:block;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
       padding:18px 16px;
       border-radius:18px;
       border:1px solid var(--line);
       background:#0b1020;
       -webkit-tap-highlight-color:transparent;
+      min-height:74px;
     }
     .tile:hover{filter:brightness(1.06)}
-    .tileTitle{font-size:22px;font-weight:950;line-height:1.1}
-    .tileSub{margin-top:8px;font-size:13px;color:var(--muted);display:none}
+    .tileInner{width:100%}
+    .tileTitle{
+      font-size:22px;
+      font-weight:950;
+      line-height:1.1;
+      width:100%;
+      text-align:center;
+    }
 
     #tileSnu{
       background:linear-gradient(135deg,var(--snuA), rgba(17,24,39,.92));
@@ -91,15 +104,14 @@
       .card{padding:16px}
       .grid{grid-template-columns:repeat(3,1fr)}
       .tileTitle{font-size:24px}
-      .tileSub{display:none}
     }
     @media(max-width:520px){
       .container{padding:10px}
       .card{padding:12px}
-      .tile{padding:16px 14px}
+      .tile{padding:16px 14px; min-height:68px;}
       .tileTitle{font-size:20px}
-      .tileSub{display:none}
       .right .pill{display:none}
+      .muted{font-size:13px}
     }
   </style>
 </head>
@@ -119,28 +131,31 @@
 
   <main class="container">
     <section class="card">
-      <div class="muted" id="hintLine">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
+      <div class="muted" id="hintLine" style="text-align:center;">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
       <div class="bar"></div>
 
       <div class="grid">
         <a class="tile" id="tileSnu" href="./snu/index.html">
-          <div class="tileTitle" id="tSnu">서울대</div>
-          <div class="tileSub" id="sSnu"></div>
+          <div class="tileInner">
+            <div class="tileTitle" id="tSnu">서울대</div>
+          </div>
         </a>
 
         <a class="tile" id="tileT1" href="./topik1/index.html">
-          <div class="tileTitle" id="tT1">TOPIK I</div>
-          <div class="tileSub" id="sT1"></div>
+          <div class="tileInner">
+            <div class="tileTitle" id="tT1">TOPIK I</div>
+          </div>
         </a>
 
         <a class="tile" id="tileT2" href="./topik2/index.html">
-          <div class="tileTitle" id="tT2">TOPIK II</div>
-          <div class="tileSub" id="sT2"></div>
+          <div class="tileInner">
+            <div class="tileTitle" id="tT2">TOPIK II</div>
+          </div>
         </a>
       </div>
 
       <div class="bar"></div>
-      <div class="muted small" id="tipLine">
+      <div class="muted small" id="tipLine" style="text-align:center;">
         팁: 링크가 안 열리면 “구글 검색창”이 아니라 “주소창(URL)”에 주소를 넣어야 합니다.
       </div>
     </section>
@@ -162,7 +177,7 @@
         tip: "Зөвлөгөө: Линк нээгдэхгүй бол “Google хайлт” биш “URL хаягийн мөр”-д оруулна уу.",
         learner: "Сурагч: ",
         klass: "Анги: ",
-        snu: "СӨҮ",
+        snu: "SNU",
         t1: "TOPIK I",
         t2: "TOPIK II"
       }
@@ -183,7 +198,6 @@
       const L = getLang();
       return (I18N[L] && I18N[L][k]) ? I18N[L][k] : (I18N.KR[k] || k);
     }
-
     function getParam(k){
       const u = new URL(location.href);
       return u.searchParams.get(k) || "";
@@ -222,7 +236,6 @@
       document.getElementById("tT2").textContent = tr("t2");
 
       document.getElementById("brandHome").href = withQS("./index.html");
-
       document.getElementById("tileSnu").href = withQS("./snu/index.html");
       document.getElementById("tileT1").href = withQS("./topik1/index.html");
       document.getElementById("tileT2").href = withQS("./topik2/index.html");
