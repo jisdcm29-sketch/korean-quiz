@@ -114,6 +114,7 @@
       <a href="../index.html" id="homeLink">Korean Quiz</a>
     </div>
     <div class="btnRow">
+      <button class="btn" id="btnBack" type="button">←</button>
       <button class="btn" id="btnLang" type="button">KR</button>
       <a class="btn" href="./index.html" id="btnSnuList">서울대 목록</a>
       <a class="btn" href="../index.html" id="btnDashboard">대시보드</a>
@@ -517,6 +518,11 @@
 
     async function main(){
       applyTexts();
+
+      document.getElementById("btnBack").addEventListener("click", ()=>{
+        if(history.length > 1) history.back();
+        else location.href = "./index.html";
+      });
 
       document.getElementById("tab-vocab").addEventListener("click", ()=>setActiveTab("vocab"));
       document.getElementById("tab-quiz").addEventListener("click", ()=>setActiveTab("quiz"));
