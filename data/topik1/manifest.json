@@ -1,1 +1,30 @@
-
+{
+  "version": 1,
+  "updated_at": "2026-02-20",
+  "categories": [
+    {
+      "id": "vocab",
+      "title": "어휘",
+      "subtitle": "레벨 1~10",
+      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+    },
+    {
+      "id": "grammar",
+      "title": "문법",
+      "subtitle": "레벨 1~10",
+      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+    },
+    {
+      "id": "reading",
+      "title": "읽기평가",
+      "subtitle": "레벨 1~10",
+      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+    },
+    {
+      "id": "listening",
+      "title": "듣기평가",
+      "subtitle": "레벨 1~10",
+      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+    }
+  ]
+}
