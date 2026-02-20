@@ -1,0 +1,48 @@
+diff --git a/data/topik2/manifest.json b/data/topik2/manifest.json
+new file mode 100644
+index 0000000..t2manif1
+--- /dev/null
++++ b/data/topik2/manifest.json
+@@ -0,0 +1,70 @@
++{
++  "version": 1,
++  "updated_at": "2026-02-20",
++  "categories": [
++    {
++      "id": "vocab",
++      "title": "어휘",
++      "subtitle": "레벨 1~10",
++      "levels": ["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
++    },
++    {
++      "id": "grammar",
++      "title": "문법",
++      "subtitle": "레벨 1~10",
++      "levels": ["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
++    },
++    {
++      "id": "reading_type",
++      "title": "읽기 유형",
++      "subtitle": "레벨 1~10",
++      "levels": ["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
++    },
++    {
++      "id": "listening_type",
++      "title": "듣기 유형",
++      "subtitle": "레벨 1~10",
++      "levels": ["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
++    },
++    {
++      "id": "reading_mock",
++      "title": "읽기 모의평가",
++      "subtitle": "레벨 1~10",
++      "levels": ["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
++    },
++    {
++      "id": "listening_mock",
++      "title": "듣기 모의평가",
++      "subtitle": "레벨 1~10",
++      "levels": ["Level 1","Level 2","Level 3","Level 4","Level 5","Level 6","Level 7","Level 8","Level 9","Level 10"]
++    }
++  ]
++}
