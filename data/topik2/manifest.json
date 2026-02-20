@@ -1,9 +1,3 @@
-diff --git a/data/topik2/manifest.json b/data/topik2/manifest.json
-new file mode 100644
-index 0000000..t2manif1
---- /dev/null
-+++ b/data/topik2/manifest.json
-@@ -0,0 +1,70 @@
 +{
 +  "version": 1,
 +  "updated_at": "2026-02-20",
