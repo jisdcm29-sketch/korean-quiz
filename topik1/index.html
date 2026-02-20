@@ -18,31 +18,57 @@
       color:var(--text);
     }
     a{color:inherit;text-decoration:none}
+    button{font-family:inherit}
+    .hidden{display:none !important;}
 
+    /* ===== Topbar ===== */
     .topbar{
       position:sticky;top:0;z-index:50;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:12px 14px;
+      padding:12px 12px;
       background:rgba(5,8,20,.78);backdrop-filter:blur(10px);
       border-bottom:1px solid var(--line);
     }
     .brand{display:flex;align-items:center;gap:10px;font-weight:900}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
-    .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    .right{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
     .pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:8px 12px;border-radius:999px;border:1px solid var(--line);
       background:#0b1020;color:var(--muted);font-size:13px
     }
-    .btn{
-      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block;
-      -webkit-tap-highlight-color:transparent;
-    }
-    .btn:hover{border-color:rgba(96,165,250,.6)}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
 
-    .container{max-width:980px;margin:0 auto;padding:14px}
+    /* ✅ 큰 버튼 + 선명한 색 */
+    .btn{
+      display:inline-flex;align-items:center;justify-content:center;
+      border-radius:16px;border:1px solid var(--line);
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+      min-height:46px;
+      padding:12px 16px;
+      font-size:16px;
+      font-weight:900;
+      color:var(--text);
+      background:#0b1020;
+      white-space:nowrap;
+    }
+    .btn:hover{filter:brightness(1.06)}
+    .btn:active{transform:translateY(1px)}
+    .btnBack{
+      background:linear-gradient(135deg,rgba(96,165,250,.22), rgba(11,16,32,.95));
+      border-color:rgba(96,165,250,.55);
+    }
+    .btnLang{
+      background:linear-gradient(135deg,rgba(52,211,153,.20), rgba(11,16,32,.95));
+      border-color:rgba(52,211,153,.55);
+    }
+    .btnHome{
+      background:linear-gradient(135deg,rgba(248,113,113,.18), rgba(11,16,32,.95));
+      border-color:rgba(248,113,113,.48);
+    }
+
+    /* ===== Layout ===== */
+    .container{max-width:980px;margin:0 auto;padding:12px}
     .card{
       background:rgba(17,24,39,.9);
       border:1px solid var(--line);
@@ -50,79 +76,81 @@
       padding:14px;
       box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
+    .titleRow{
+      display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end
+    }
+    .h1{
+      font-size:26px;
+      font-weight:950;
+      margin:0;
+      letter-spacing:.2px;
+    }
     .muted{color:var(--muted);line-height:1.6}
     .small{font-size:12px}
     .bar{height:1px;background:var(--line);margin:12px 0}
-    .hidden{display:none !important;}
 
-    /* ✅ 버튼 글자 크게 + 중앙 정렬 */
+    /* ===== Buttons grid ===== */
     .grid{
       display:grid;
       grid-template-columns:repeat(2,1fr);
       gap:10px;
       margin-top:12px;
     }
+    @media (min-width: 700px){
+      .grid{grid-template-columns:repeat(4,1fr)}
+    }
+
     .tile{
-      display:flex;
-      align-items:center;
-      justify-content:center;
+      display:flex;align-items:center;justify-content:center;
       text-align:center;
       padding:18px 14px;
       border-radius:18px;
       border:1px solid var(--line);
       background:#0b1020;
+      min-height:92px;
       -webkit-tap-highlight-color:transparent;
-      min-height:88px;
+      cursor:pointer;
     }
     .tile:hover{filter:brightness(1.06)}
-    .tileInner{width:100%}
+    .tile:active{transform:translateY(1px)}
     .tileTitle{
-      font-size:22px;
+      font-size:20px;
       font-weight:950;
-      line-height:1.1;
-      width:100%;
+      line-height:1.15;
       text-align:center;
-      letter-spacing:.2px;
     }
     .tileMeta{
       font-size:12px;
-      line-height:1.2;
       margin-top:6px;
       color:rgba(229,231,235,.78);
-      width:100%;
       text-align:center;
     }
 
-    /* ✅ 영역(카테고리)별 색상 */
+    /* category colors */
     .cat-vocab{background:linear-gradient(135deg,rgba(52,211,153,.18), rgba(11,16,32,.96));border-color:rgba(52,211,153,.46);}
     .cat-grammar{background:linear-gradient(135deg,rgba(96,165,250,.20), rgba(11,16,32,.96));border-color:rgba(96,165,250,.50);}
-    .cat-reading_eval{background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.42);}
-    .cat-listening_eval{background:linear-gradient(135deg,rgba(248,113,113,.16), rgba(11,16,32,.96));border-color:rgba(248,113,113,.40);}
     .cat-reading{background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.42);}
     .cat-listening{background:linear-gradient(135deg,rgba(248,113,113,.16), rgba(11,16,32,.96));border-color:rgba(248,113,113,.40);}
-    /* ✅ 레벨 버튼 */
+
+    /* level buttons */
     .levelBtn{
+      display:flex;align-items:center;justify-content:center;
+      width:100%;
       padding:16px 12px;
-      border-radius:16px;
+      border-radius:18px;
       border:1px solid var(--line);
-      background:#0b1020;
+      background:linear-gradient(135deg,rgba(96,165,250,.10), rgba(11,16,32,.96));
+      border-color:rgba(96,165,250,.26);
       color:var(--text);
-      cursor:pointer;
-      text-align:center;
       font-weight:950;
-      -webkit-tap-highlight-color:transparent;
-      white-space:normal;
-      overflow-wrap:anywhere;
-      min-height:62px;
       font-size:18px;
-      line-height:1.05;
-      letter-spacing:.2px;
+      min-height:64px;
+      cursor:pointer;
+      -webkit-tap-highlight-color:transparent;
+      white-space:nowrap;
     }
-    .levelBtn:hover{filter:brightness(1.06);border-color:rgba(96,165,250,.55)}
-    .lv-a{background:linear-gradient(135deg,rgba(96,165,250,.16), rgba(11,16,32,.96));border-color:rgba(96,165,250,.40);}
-    .lv-b{background:linear-gradient(135deg,rgba(52,211,153,.14), rgba(11,16,32,.96));border-color:rgba(52,211,153,.34);}
-    .lv-c{background:linear-gradient(135deg,rgba(251,191,36,.14), rgba(11,16,32,.96));border-color:rgba(251,191,36,.32);}
-    .lv-d{background:linear-gradient(135deg,rgba(248,113,113,.12), rgba(11,16,32,.96));border-color:rgba(248,113,113,.30);}
+    .levelBtn:hover{filter:brightness(1.06)}
+    .levelBtn:active{transform:translateY(1px)}
 
     .err{
       border:1px solid rgba(248,113,113,.35);
@@ -133,18 +161,21 @@
       white-space:pre-wrap;
     }
 
-    @media (min-width: 700px){
-      .grid{grid-template-columns:repeat(4,1fr)}
-    }
+    /* ✅ 모바일에서 “2배 느낌” */
     @media (max-width: 520px){
       .container{padding:10px}
       .card{padding:12px}
-      .grid{gap:8px}
-      .tile{padding:16px 12px;min-height:84px}
-      .tileTitle{font-size:22px}
-      .tileMeta{font-size:11px;margin-top:4px}
-      .levelBtn{padding:16px 10px;min-height:60px;font-size:19px}
       .right .pill{display:none}
+      .btn{
+        min-height:54px;
+        padding:14px 18px;
+        font-size:18px;
+        border-radius:18px;
+      }
+      .h1{font-size:26px}
+      .tile{min-height:96px}
+      .tileTitle{font-size:22px}
+      .levelBtn{min-height:70px;font-size:19px}
     }
   </style>
 </head>
@@ -153,42 +184,46 @@
   <header class="topbar">
     <div class="brand">
       <span class="dot"></span>
-      <a id="homeLink" href="../index.html">Korean Quiz</a>
+      <a id="brandLink" href="../index.html">Korean Quiz</a>
     </div>
     <div class="right">
       <span class="pill" id="pillName">학습자: -</span>
       <span class="pill" id="pillToken">token: -</span>
-      <button class="btn" id="btnBack" type="button">←</button>
-      <button class="btn" id="btnLang" type="button">KR</button>
-      <a class="btn" id="btnDash" href="../index.html">홈</a>
+
+      <button class="btn btnBack" id="btnBack" type="button">←</button>
+      <button class="btn btnLang" id="btnLang" type="button">KR</button>
+      <a class="btn btnHome" id="btnHome" href="../index.html">홈</a>
     </div>
   </header>
 
   <main class="container">
     <section class="card">
-      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end">
+      <div class="titleRow">
         <div>
-          <div style="font-weight:950;font-size:26px;line-height:1.1" id="pageTitle">TOPIK I</div>
-          <div class="muted" id="subtitle" style="margin-top:6px;">먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.</div>
+          <h1 class="h1" id="title">TOPIK I</h1>
+          <div class="muted" id="subtitle">먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.</div>
         </div>
         <div class="muted small" id="status"></div>
       </div>
 
       <div class="bar"></div>
 
+      <!-- CATEGORIES -->
       <div id="catWrap">
         <div class="grid" id="catGrid"></div>
       </div>
 
+      <!-- LEVELS -->
       <div id="levelWrap" class="hidden">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
-          <div style="min-width:200px">
+          <div>
             <div class="muted small" id="pickedLabel">선택됨</div>
-            <div style="font-weight:950;font-size:22px;margin-top:4px" id="pickedCatTitle">-</div>
-            <div class="muted small" id="pickedCatSub" style="margin-top:2px;"></div>
+            <div style="font-weight:950;font-size:22px;margin-top:4px" id="pickedCat">-</div>
+            <div class="muted small" id="pickedSub" style="margin-top:2px;"></div>
           </div>
           <button class="btn" id="btnReset" type="button">영역 다시 선택</button>
         </div>
+
         <div class="grid" id="levelGrid"></div>
       </div>
 
@@ -199,36 +234,35 @@
   <script>
     const I18N = {
       KR: {
-        home: "홈",
-        loading: "불러오는 중...",
-        loaded: "로드 완료",
-        manifestFail: "manifest.json을 불러오지 못했습니다.",
-        subtitle: "먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.",
-        selected: "선택됨",
-        reset: "영역 다시 선택",
-        learner: "학습자: ",
-        // 버튼 이름(표시는 나중에 쉽게 바꾸도록 여기만 수정하면 됨)
-        catTitleMap: {
-          vocab: "어휘",
-          grammar: "문법",
-         reading: "읽기평가",
-         listening: "듣기평가"
+        home:"홈",
+        loading:"불러오는 중...",
+        loaded:"로드 완료",
+        manifestFail:"manifest.json을 불러오지 못했습니다.",
+        subtitle:"먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.",
+        picked:"선택됨",
+        reset:"영역 다시 선택",
+        learner:"학습자: ",
+        catTitleMap:{
+          vocab:"어휘",
+          grammar:"문법",
+          reading:"읽기평가",
+          listening:"듣기평가"
         }
       },
       MN: {
-        home: "Нүүр",
-        loading: "Ачаалж байна...",
-        loaded: "Ачааллаа",
-        manifestFail: "manifest.json уншиж чадсангүй.",
-        subtitle: "Эхлээд хэсгийг (товч) сонгоод, дараа нь түвшин (1~10)-ийг сонгоно.",
-        selected: "Сонгосон",
-        reset: "Хэсэг дахин сонгох",
-        learner: "Сурагч: ",
-        catTitleMap: {
-          vocab: "Үг",
-          grammar: "Дүрэм",
-          reading: "Унших үнэлгээ",
-          listening: "Сонсох үнэлгээ"
+        home:"Нүүр",
+        loading:"Ачаалж байна...",
+        loaded:"Ачааллаа",
+        manifestFail:"manifest.json уншиж чадсангүй.",
+        subtitle:"Эхлээд хэсгийг (товч) сонгоод, дараа нь түвшин (1~10)-ийг сонгоно.",
+        picked:"Сонгосон",
+        reset:"Хэсэг дахин сонгох",
+        learner:"Сурагч: ",
+        catTitleMap:{
+          vocab:"Үг",
+          grammar:"Дүрэм",
+          reading:"Унших үнэлгээ",
+          listening:"Сонсох үнэлгээ"
         }
       }
     };
@@ -248,10 +282,10 @@
       const L = getLang();
       return (I18N[L] && I18N[L][k]) ? I18N[L][k] : (I18N.KR[k] || k);
     }
-    function getTitleForCat(catId, fallback){
+    function catTitle(id){
       const L = getLang();
-      const m = (I18N[L] && I18N[L].catTitleMap) ? I18N[L].catTitleMap : I18N.KR.catTitleMap;
-      return m[catId] || fallback || catId;
+      const map = (I18N[L] && I18N[L].catTitleMap) ? I18N[L].catTitleMap : I18N.KR.catTitleMap;
+      return map[id] || id;
     }
 
     function getParam(k){
@@ -270,8 +304,30 @@
     }
     function withQS(url){
       const qs = passthroughQS();
-      return url + (url.includes("?") ? "&" : "?") + qs;
+      return url + (qs ? (url.includes("?") ? "&" : "?") + qs : "");
     }
+
+    const brandLink = document.getElementById("brandLink");
+    const btnHome = document.getElementById("btnHome");
+    const btnLang = document.getElementById("btnLang");
+    const btnBack = document.getElementById("btnBack");
+    const statusEl = document.getElementById("status");
+    const subtitleEl = document.getElementById("subtitle");
+    const pillName = document.getElementById("pillName");
+    const pillToken = document.getElementById("pillToken");
+
+    const catWrap = document.getElementById("catWrap");
+    const catGrid = document.getElementById("catGrid");
+    const levelWrap = document.getElementById("levelWrap");
+    const levelGrid = document.getElementById("levelGrid");
+    const pickedLabel = document.getElementById("pickedLabel");
+    const pickedCat = document.getElementById("pickedCat");
+    const pickedSub = document.getElementById("pickedSub");
+    const btnReset = document.getElementById("btnReset");
+    const errBox = document.getElementById("errBox");
+
+    let MANIFEST = null;
+    let PICKED = null;
 
     function showErr(msg){
       errBox.textContent = msg;
@@ -282,111 +338,77 @@
       errBox.textContent = "";
     }
 
-    function catClass(id){
-      return "cat-" + String(id||"").toLowerCase().replace(/[^a-z0-9_]/g,"");
-    }
-    function levelColorClass(idx){
-      const arr = ["lv-a","lv-b","lv-c","lv-d"];
-      return arr[idx % arr.length];
-    }
-
-    const homeLink = document.getElementById("homeLink");
-    const btnDash = document.getElementById("btnDash");
-    const btnLang = document.getElementById("btnLang");
-    const btnBack = document.getElementById("btnBack");
-    const statusEl = document.getElementById("status");
-    const subtitleEl = document.getElementById("subtitle");
-    const pickedLabel = document.getElementById("pickedLabel");
-    const btnReset = document.getElementById("btnReset");
-    const catWrap = document.getElementById("catWrap");
-    const levelWrap = document.getElementById("levelWrap");
-    const catGrid = document.getElementById("catGrid");
-    const levelGrid = document.getElementById("levelGrid");
-    const pickedCatTitle = document.getElementById("pickedCatTitle");
-    const pickedCatSub = document.getElementById("pickedCatSub");
-    const errBox = document.getElementById("errBox");
-
-    let MANIFEST = null;
-    let PICKED_CAT = null;
-
     function applyTop(){
-      const qs = passthroughQS();
-      homeLink.href = "../index.html" + (qs ? "?" + qs : "");
-      btnDash.href = "../index.html" + (qs ? "?" + qs : "");
-      btnDash.textContent = tr("home");
+      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
+      brandLink.href = withQS("../index.html");
+      btnHome.href = withQS("../index.html");
+      btnHome.textContent = tr("home");
       btnLang.textContent = getLang();
+      subtitleEl.textContent = tr("subtitle");
+      pickedLabel.textContent = tr("picked");
+      btnReset.textContent = tr("reset");
 
       const name = getParam("name") || "-";
       const token = getParam("token") || "-";
-      document.getElementById("pillName").textContent = tr("learner") + name;
-      document.getElementById("pillToken").textContent = "token: " + token;
+      pillName.textContent = tr("learner") + name;
+      pillToken.textContent = "token: " + token;
 
-      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
-      subtitleEl.textContent = tr("subtitle");
-      pickedLabel.textContent = tr("selected");
-      btnReset.textContent = tr("reset");
+      renderCats();       // 언어 바뀌면 버튼 텍스트도 즉시 갱신
+      if(PICKED) renderLevels(PICKED);
+    }
+
+    function backToCats(){
+      PICKED = null;
+      levelWrap.classList.add("hidden");
+      catWrap.classList.remove("hidden");
+    }
+
+    function catClass(id){
+      return "cat-" + id;
     }
 
     function renderCats(){
-      catGrid.innerHTML = "";
       if(!MANIFEST || !Array.isArray(MANIFEST.categories)) return;
-
+      catGrid.innerHTML = "";
       MANIFEST.categories.forEach(c=>{
-        const a = document.createElement("a");
-        a.className = "tile " + catClass(c.id);
-        a.href = "javascript:void(0)";
-        a.innerHTML = `
-          <div class="tileInner">
-            <div class="tileTitle">${getTitleForCat(c.id, c.title)}</div>
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "tile " + catClass(c.id);
+        btn.innerHTML = `
+          <div>
+            <div class="tileTitle">${catTitle(c.id)}</div>
             <div class="tileMeta">${c.subtitle || ""}</div>
           </div>
         `;
-        a.addEventListener("click", ()=>{
-          PICKED_CAT = c;
-          renderLevels();
+        btn.addEventListener("click", ()=>{
+          PICKED = c;
+          renderLevels(c);
         });
-        catGrid.appendChild(a);
+        catGrid.appendChild(btn);
       });
     }
 
-    function renderLevels(){
-      if(!PICKED_CAT) return;
-
-      pickedCatTitle.textContent = getTitleForCat(PICKED_CAT.id, PICKED_CAT.title);
-      pickedCatSub.textContent = PICKED_CAT.subtitle || "";
+    function renderLevels(cat){
+      pickedCat.textContent = catTitle(cat.id);
+      pickedSub.textContent = cat.subtitle || "";
 
       levelGrid.innerHTML = "";
-      const levels = Array.isArray(PICKED_CAT.levels) ? PICKED_CAT.levels : [];
+      const levels = Array.isArray(cat.levels) ? cat.levels : [];
       levels.forEach((lv, idx)=>{
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "levelBtn " + levelColorClass(idx);
-        btn.textContent = lv;
-
-        btn.addEventListener("click", ()=>{
-          const u = new URL("./level.html", location.href);
-          u.searchParams.set("cat", PICKED_CAT.id);
-          u.searchParams.set("level", lv);
-
-          const p = new URLSearchParams(passthroughQS());
-          p.forEach((v,k)=>{
-            if(k !== "cat" && k !== "level") u.searchParams.set(k, v);
-          });
-
-          location.href = u.toString();
-        });
-
-        levelGrid.appendChild(btn);
+        const a = document.createElement("a");
+        a.className = "levelBtn";
+        a.textContent = lv;
+        const u = new URL("./level.html", location.href);
+        u.searchParams.set("cat", cat.id);
+        u.searchParams.set("level", String(idx + 1));
+        const pass = new URLSearchParams(passthroughQS());
+        pass.forEach((v,k)=> u.searchParams.set(k, v));
+        a.href = u.toString();
+        levelGrid.appendChild(a);
       });
 
       catWrap.classList.add("hidden");
       levelWrap.classList.remove("hidden");
-    }
-
-    function backToCats(){
-      PICKED_CAT = null;
-      levelWrap.classList.add("hidden");
-      catWrap.classList.remove("hidden");
     }
 
     btnReset.addEventListener("click", backToCats);
@@ -404,8 +426,6 @@
       const next = (getLang()==="KR") ? "MN" : "KR";
       setLang(next);
       applyTop();
-      if(PICKED_CAT) renderLevels();
-      else renderCats();
     });
 
     async function loadManifest(){
