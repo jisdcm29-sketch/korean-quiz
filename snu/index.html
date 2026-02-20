@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>서울대 한국어</title>
+  <title>SNU</title>
   <style>
     :root{
       --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
@@ -59,8 +59,8 @@
 
     .grid{
       display:grid;
-      grid-template-columns:1fr;
-      gap:12px;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
       margin-top:12px;
     }
     .tile{
@@ -73,7 +73,6 @@
     }
     .tile:hover{border-color:rgba(96,165,250,.6)}
     .tileTitle{font-size:18px;font-weight:900;line-height:1.15}
-    .tileDesc{font-size:13px;line-height:1.25;margin-top:6px;color:var(--muted)}
     .tileMeta{font-size:12px;line-height:1.2;margin-top:6px;color:var(--muted);opacity:.95}
 
     .lessonGrid{
@@ -106,19 +105,23 @@
       color:#ffd6d6;
     }
 
+    @media (min-width: 700px){
+      .grid{grid-template-columns:repeat(4,1fr)}
+    }
     @media (min-width: 860px){
       .container{padding:16px}
       .card{padding:16px}
-      .grid{grid-template-columns:repeat(4,1fr)}
       .lessonGrid{grid-template-columns:repeat(4,1fr)}
     }
     @media (max-width: 520px){
-      .container{padding:12px}
+      .container{padding:10px}
       .card{padding:12px}
-      .tile{padding:16px 14px}
-      .tileTitle{font-size:18px}
+      .grid{gap:8px}
+      .tile{padding:12px 12px}
+      .tileTitle{font-size:16px}
+      .tileMeta{font-size:11px;margin-top:4px}
       .lessonGrid{grid-template-columns:repeat(2,1fr)}
-      .lessonBtn{padding:14px 10px}
+      .lessonBtn{padding:12px 10px;min-height:52px}
     }
   </style>
 </head>
@@ -143,25 +146,22 @@
     <section class="card">
       <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end">
         <div>
-          <h1 style="margin:0 0 6px;" id="title">서울대 한국어</h1>
-          <div class="muted" id="subtitle">교재 선택 → 해당 교재 과만 펼쳐짐</div>
+          <div class="muted" id="subtitle">교재 선택 → 해당 교재 과만 표시</div>
         </div>
         <div class="muted small" id="status"></div>
       </div>
 
       <div class="bar"></div>
 
-      <!-- 1) 교재 화면(처음에 보임) -->
       <div id="bookWrap">
-        <div class="muted small" style="margin-bottom:8px;">교재를 먼저 고르세요.</div>
+        <div class="muted small" id="pickHelp" style="margin-bottom:8px;">교재를 먼저 고르세요.</div>
         <div class="grid" id="bookGrid"></div>
       </div>
 
-      <!-- 2) 과(레슨) 화면(교재를 누르면 보임) -->
       <div id="lessonWrap" class="hidden">
         <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
           <div>
-            <div class="muted small">선택됨</div>
+            <div class="muted small" id="pickedLabel">선택됨</div>
             <div style="font-weight:900;font-size:18px;margin-top:4px" id="pickedBookTitle">-</div>
             <div class="muted small" id="pickedBookSub" style="margin-top:2px;"></div>
           </div>
@@ -184,7 +184,9 @@
         loaded: "로드 완료",
         manifestFail: "manifest.json을 불러오지 못했습니다.",
         pickHelp: "교재를 먼저 고르세요.",
-        selected: "선택됨"
+        selected: "선택됨",
+        subtitle: "교재 선택 → 해당 교재 과만 표시",
+        learner: "학습자: "
       },
       MN: {
         home: "Нүүр",
@@ -193,7 +195,9 @@
         loaded: "Ачааллаа",
         manifestFail: "manifest.json уншиж чадсангүй.",
         pickHelp: "Эхлээд ном сонгоно уу.",
-        selected: "Сонгосон"
+        selected: "Сонгосон",
+        subtitle: "Ном сонгох → тухайн номын хичээлүүдийг л харуулна",
+        learner: "Сурагч: "
       }
     };
 
@@ -231,6 +235,11 @@
       return url + (url.includes("?") ? "&" : "?") + qs;
     }
 
+    function shortBookTitle(s){
+      const t = String(s || "").trim();
+      return t.replace(/^서울대\s*/,"").replace(/^서울대한국어\s*/,"").trim() || t;
+    }
+
     const bookWrap = document.getElementById("bookWrap");
     const bookGrid = document.getElementById("bookGrid");
     const lessonWrap = document.getElementById("lessonWrap");
@@ -266,8 +275,13 @@
 
       const name = getParam("name") || "-";
       const token = getParam("token") || "-";
-      document.getElementById("pillName").textContent = (getLang()==="MN" ? "Сурагч: " : "학습자: ") + name;
+      document.getElementById("pillName").textContent = tr("learner") + name;
       document.getElementById("pillToken").textContent = "token: " + token;
+
+      document.getElementById("subtitle").textContent = tr("subtitle");
+      document.getElementById("pickHelp").textContent = tr("pickHelp");
+      document.getElementById("pickedLabel").textContent = tr("selected");
+      btnReset.textContent = tr("reset");
     }
 
     function renderBooks(){
@@ -279,7 +293,7 @@
         a.className = "tile";
         a.href = "javascript:void(0)";
         a.innerHTML = `
-          <div class="tileTitle">${b.title || b.id || "-"}</div>
+          <div class="tileTitle">${shortBookTitle(b.title || b.id || "-")}</div>
           <div class="tileMeta">${b.subtitle || ""}</div>
         `;
         a.addEventListener("click", ()=>{
@@ -293,7 +307,7 @@
     function renderLessons(){
       if(!PICKED_BOOK) return;
 
-      pickedBookTitle.textContent = PICKED_BOOK.title || PICKED_BOOK.id || "-";
+      pickedBookTitle.textContent = shortBookTitle(PICKED_BOOK.title || PICKED_BOOK.id || "-");
       pickedBookSub.textContent = PICKED_BOOK.subtitle || "";
 
       lessonGrid.innerHTML = "";
