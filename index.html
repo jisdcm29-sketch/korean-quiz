@@ -14,7 +14,6 @@
       --primary:#3b82f6;
       --green:#22c55e;
       --amber:#f59e0b;
-      --danger:#ef4444;
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:22px;
     }
@@ -50,11 +49,7 @@
       justify-content:space-between;
       gap:10px;
     }
-    .langToggle{
-      display:flex;
-      gap:8px;
-      align-items:center;
-    }
+    .langToggle{display:flex; gap:8px; align-items:center;}
     .langBtn{
       border:1px solid rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
@@ -82,40 +77,14 @@
       white-space:nowrap;
     }
 
-    .hdr{
-      padding:18px 18px 10px;
-      text-align:center;
-    }
-    .brand{
-      font-size:22px;
-      font-weight:800;
-      letter-spacing:.2px;
-      margin:0 0 6px;
-    }
-    .sub{
-      margin:0;
-      color:var(--muted);
-      font-size:14px;
-      line-height:1.45;
-    }
+    .hdr{padding:18px 18px 10px; text-align:center;}
+    .brand{font-size:22px; font-weight:800; letter-spacing:.2px; margin:0 0 6px;}
+    .sub{margin:0; color:var(--muted); font-size:14px; line-height:1.45;}
     .content{padding: 14px 16px 18px;}
-    .sectionTitle{
-      margin: 6px 0 12px;
-      font-size:16px;
-      font-weight:800;
-      text-align:center;
-    }
-    .field{
-      display:flex;
-      flex-direction:column;
-      gap:8px;
-      margin: 12px 0;
-    }
-    label{
-      font-size:14px;
-      color:var(--muted);
-      font-weight:700;
-    }
+    .sectionTitle{margin: 6px 0 12px; font-size:16px; font-weight:800; text-align:center;}
+
+    .field{display:flex; flex-direction:column; gap:8px; margin: 12px 0;}
+    label{font-size:14px; color:var(--muted); font-weight:700;}
     input, select{
       width:100%;
       border-radius: 16px;
@@ -163,13 +132,7 @@
       -webkit-tap-highlight-color: transparent;
     }
 
-    .note{
-      margin: 10px 0 0;
-      text-align:center;
-      color: var(--muted);
-      font-size:13px;
-      line-height:1.5;
-    }
+    .note{margin: 10px 0 0; text-align:center; color: var(--muted); font-size:13px; line-height:1.5;}
     .err{
       margin: 10px 0 0;
       padding: 10px 12px;
@@ -204,36 +167,13 @@
       border-bottom:1px solid var(--line);
       background: rgba(0,0,0,.18);
     }
-    .who{
-      display:flex;
-      flex-direction:column;
-      gap:2px;
-      min-width:0;
-    }
-    .who .name{
-      font-weight:900;
-      font-size:16px;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .who .klass{
-      font-size:13px;
-      color: var(--muted);
-      font-weight:900;
-    }
-    .gridBtns{
-      display:grid;
-      grid-template-columns: 1fr;
-      gap: 12px;
-      padding: 14px 16px 18px;
-    }
-    .smallRow{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-      padding: 0 16px 16px;
-    }
+    .who{display:flex; flex-direction:column; gap:2px; min-width:0;}
+    .who .name{font-weight:900; font-size:16px; white-space:nowrap; overflow:hidden; text-overflow:ellipsis;}
+    .who .klass{font-size:13px; color: var(--muted); font-weight:900;}
+
+    .gridBtns{display:grid; grid-template-columns: 1fr; gap: 12px; padding: 14px 16px 18px;}
+    .smallRow{display:grid; grid-template-columns: 1fr 1fr; gap: 10px; padding: 0 16px 16px;}
+
     .pill{
       display:inline-flex;
       align-items:center;
@@ -269,8 +209,9 @@
 
 <script>
 (() => {
-  // ====== CONFIG (필요 시 여기만 수정) ======
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbzcVBEqV-doBPWoCr9jcEMmfjBaiQ4hgGuWaZ2vFAx1b-S_0h59G_PUW77fz6wTTZQY/exec";
+  // ====== CONFIG (여기만 수정하면 됨) ======
+  // 1) 아래 URL을 “내가 배포한 웹앱 URL”로 바꿔주세요.
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
   const PASSWORD = "tae";
   const AUTO_LOGOUT_MIN = 30;
 
@@ -297,7 +238,7 @@
       wrongPw: "비밀번호가 틀렸습니다.",
       needName: "이름을 입력해 주세요.",
       needKlass: "반을 선택해 주세요.",
-      logging: "로그인 기록 저장 중…",
+      logging: "기록 저장 중…",
       loginOk: "로그인 완료! 선택 화면으로 이동합니다.",
       loginOkNoLog: "로그인 완료! (기록 전송은 네트워크 상황에 따라 실패할 수 있어요)",
       noteAfterLogin: "로그인 후 서울대 / TOPIK1 / TOPIK2를 선택할 수 있습니다.",
@@ -326,7 +267,7 @@
       wrongPw: "Нууц үг буруу байна.",
       needName: "Нэрээ оруулна уу.",
       needKlass: "Ангиа сонгоно уу.",
-      logging: "Нэвтрэлтийн тэмдэглэл илгээж байна…",
+      logging: "Бүртгэл илгээж байна…",
       loginOk: "Амжилттай! Сонголтын дэлгэц рүү шилжинэ.",
       loginOkNoLog: "Амжилттай! (Сүлжээнээс шалтгаалж илгээх амжилтгүй байж болно)",
       noteAfterLogin: "Нэвтэрсний дараа Seoul / TOPIK1 / TOPIK2-оос сонгоно.",
@@ -373,6 +314,9 @@
   function genToken(){
     return "t_" + Math.random().toString(16).slice(2) + "_" + now().toString(16);
   }
+  function genSessionId(){
+    return "s_" + Math.random().toString(16).slice(2) + "_" + now().toString(16);
+  }
 
   function getLang(){
     const v = localStorage.getItem(LANG_KEY);
@@ -392,7 +336,7 @@
       const raw = localStorage.getItem(LS_KEY);
       if (!raw) return null;
       const s = JSON.parse(raw);
-      if (!s || !s.name || !s.klass || !s.token) return null;
+      if (!s || !s.name || !s.klass || !s.token || !s.sessionId || !s.loginAt) return null;
       if (!s.lastActive) s.lastActive = now();
       return s;
     }catch(e){
@@ -458,6 +402,13 @@
     });
   }
 
+  function escapeHtml(str){
+    return (str||"").replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  // ===== 기록 전송 (로그 + 세션) =====
   async function sendLoginLog(session){
     const payload = {
       action: "log",
@@ -472,20 +423,43 @@
       ua: navigator.userAgent || "",
       lang: getLang()
     };
-    try{
-      await jsonp(SCRIPT_URL, payload, 8000);
-      return true;
-    }catch(e){
-      return false;
-    }
+    try{ await jsonp(SCRIPT_URL, payload, 8000); return true; }catch(e){ return false; }
   }
 
-  function escapeHtml(str){
-    return (str||"").replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
+  async function sendSessionStart(session){
+    const payload = {
+      action: "session_start",
+      sessionId: session.sessionId,
+      loginAt: session.loginAt,
+      token: session.token,
+      deviceId: getDeviceId(),
+      klass: session.klass,
+      name: session.name,
+      ua: navigator.userAgent || "",
+      lang: getLang()
+    };
+    try{ await jsonp(SCRIPT_URL, payload, 8000); return true; }catch(e){ return false; }
   }
 
+  async function sendSessionEnd(session, reason){
+    const logoutAt = new Date().toISOString();
+    const payload = {
+      action: "session_end",
+      sessionId: session.sessionId,
+      loginAt: session.loginAt,
+      logoutAt,
+      reason: reason || "logout",
+      token: session.token,
+      deviceId: getDeviceId(),
+      klass: session.klass,
+      name: session.name,
+      ua: navigator.userAgent || "",
+      lang: getLang()
+    };
+    try{ await jsonp(SCRIPT_URL, payload, 8000); return true; }catch(e){ return false; }
+  }
+
+  // ===== UI: TopBar =====
   function renderTopBar(){
     const lang = getLang();
     return `
@@ -506,7 +480,7 @@
     if ($mn) $mn.addEventListener("click", () => { setLang("mn"); onChange(); });
   }
 
-  // ====== UI Render ======
+  // ===== UI: Login =====
   function renderLogin(){
     $app.innerHTML = `
       ${renderTopBar()}
@@ -585,13 +559,19 @@
         name,
         klass,
         token: genToken(),
+        sessionId: genSessionId(),
         deviceId: getDeviceId(),
         lastActive: now(),
-        loginAt: now()
+        loginAt: new Date().toISOString()
       };
       writeSession(session);
 
       showOk(t("logging"));
+
+      // (1) 세션 시작(로그인 시간) 기록 → Sessions 시트에 저장
+      await sendSessionStart(session);
+
+      // (2) 기존 로그인 이벤트도 Log 시트에 남김(원하면 유지)
       const ok = await sendLoginLog(session);
       showOk(ok ? t("loginOk") : t("loginOkNoLog"));
 
@@ -603,10 +583,12 @@
     $name.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
   }
 
+  // ===== UI: Dashboard =====
   function renderDashboard(){
     const s = readSession();
     if (!s) return renderLogin();
     if (isExpired(s)){
+      (async () => { await sendSessionEnd(s, "timeout"); })();
       clearSession();
       return renderLogin();
     }
@@ -644,7 +626,9 @@
 
     bindTopBar(renderDashboard);
 
-    document.getElementById("btnLogout").addEventListener("click", () => {
+    document.getElementById("btnLogout").addEventListener("click", async () => {
+      const ss = readSession();
+      if (ss) await sendSessionEnd(ss, "manual");
       clearSession();
       renderLogin();
     });
@@ -666,7 +650,7 @@
     }
   }
 
-  // ====== Auto logout by inactivity ======
+  // ===== 자동 로그아웃(30분 미사용) =====
   let inactivityTimer = null;
   const activityEvents = ["pointerdown","pointermove","keydown","scroll","touchstart","click"];
 
@@ -678,8 +662,11 @@
     inactivityTimer = setTimeout(() => {
       const ss = readSession();
       if (ss && isExpired(ss)){
-        clearSession();
-        renderLogin();
+        (async () => {
+          await sendSessionEnd(ss, "timeout");
+          clearSession();
+          renderLogin();
+        })();
       }
     }, (AUTO_LOGOUT_MIN * 60 * 1000) + 500);
   }
@@ -692,16 +679,20 @@
     }, {passive:true});
   });
 
+  // 추가 안전: 10초마다 만료 체크
   setInterval(() => {
     const s = readSession();
     if (!s) return;
     if (isExpired(s)){
-      clearSession();
-      renderLogin();
+      (async () => {
+        await sendSessionEnd(s, "timeout");
+        clearSession();
+        renderLogin();
+      })();
     }
   }, 10_000);
 
-  // ====== Boot ======
+  // ===== Boot =====
   document.documentElement.lang = getLang();
   const s = readSession();
   if (s && !isExpired(s)){
