@@ -7,7 +7,10 @@
   <style>
     :root{
       --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
-      --accent:#60a5fa;--danger:#f87171;
+      --accent:#60a5fa;
+      --snuA:rgba(96,165,250,.18);
+      --t1A:rgba(52,211,153,.16);
+      --t2A:rgba(248,113,113,.14);
     }
     *{box-sizing:border-box}
     html,body{overflow-x:hidden}
@@ -16,10 +19,8 @@
       font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
       background:linear-gradient(180deg,#050814,var(--bg));
       color:var(--text);
-      font-size:16px;
     }
     a{color:inherit;text-decoration:none}
-
     .topbar{
       position:sticky;top:0;z-index:50;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -30,7 +31,6 @@
     .brand{display:flex;align-items:center;gap:10px;font-weight:900}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
     .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-
     .pill{
       display:inline-flex;align-items:center;gap:8px;
       padding:8px 12px;border-radius:999px;border:1px solid var(--line);
@@ -42,10 +42,6 @@
       -webkit-tap-highlight-color:transparent;
     }
     .btn:hover{border-color:rgba(96,165,250,.6)}
-    .btn.primary{background:linear-gradient(135deg, rgba(96,165,250,.25), rgba(96,165,250,.08));border-color:rgba(96,165,250,.6)}
-    .btn.danger{border-color:rgba(248,113,113,.55);color:#ffd6d6}
-    .btn:disabled{opacity:.6;cursor:not-allowed}
-
     .container{max-width:980px;margin:0 auto;padding:14px}
     .card{
       background:rgba(17,24,39,.9);
@@ -54,184 +50,97 @@
       padding:14px;
       box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
-    .muted{color:var(--muted);line-height:1.6}
+    .muted{color:var(--muted);line-height:1.5}
     .small{font-size:12px}
     .bar{height:1px;background:var(--line);margin:12px 0}
 
-    .loginGrid{
+    .grid{
       display:grid;
       grid-template-columns:1fr;
       gap:12px;
-      margin-top:12px;
+      margin-top:10px;
     }
-    .field label{display:block;color:var(--muted);font-size:13px;margin-bottom:6px}
-    .field input{
-      width:100%;
-      padding:14px 14px;
-      border-radius:14px;
-      border:1px solid var(--line);
-      background:#0b1020;
-      color:var(--text);
-      outline:none;
-      font-size:16px;
-    }
-    .field input:focus{border-color:rgba(96,165,250,.7)}
-    .segRow{
-      display:flex;gap:10px;flex-wrap:wrap;
-      margin-top:6px;
-    }
-    .seg{
-      flex:1 1 140px;
-      display:flex;align-items:center;gap:10px;
-      padding:12px 12px;border-radius:999px;border:1px solid var(--line);
-      background:#0b1020;cursor:pointer;
-    }
-    .seg input{transform:scale(1.1)}
-    .seg span{font-size:14px}
-    .wideBtn{width:100%;padding:14px 14px;border-radius:16px;font-weight:900;font-size:16px}
 
-    .tiles{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:12px;
-      margin-top:12px;
-      align-items:stretch;
-    }
     .tile{
       display:block;
       padding:18px 16px;
       border-radius:18px;
       border:1px solid var(--line);
       background:#0b1020;
-      min-height:92px;
-      -webkit-tap-highlight-color: transparent;
+      -webkit-tap-highlight-color:transparent;
     }
-    .tile:hover{border-color:rgba(96,165,250,.6)}
-    .tileTitle{font-size:20px;font-weight:900;line-height:1.15}
-    .tileDesc{font-size:14px;line-height:1.25;margin-top:6px;color:var(--text)}
-    .tileMeta{font-size:12px;line-height:1.2;margin-top:6px;color:var(--muted);opacity:.95}
+    .tile:hover{filter:brightness(1.06)}
+    .tileTitle{font-size:22px;font-weight:950;line-height:1.1}
+    .tileSub{margin-top:8px;font-size:13px;color:var(--muted);display:none}
 
-    @media (min-width: 860px){
+    #tileSnu{
+      background:linear-gradient(135deg,var(--snuA), rgba(17,24,39,.92));
+      border-color:rgba(96,165,250,.45);
+    }
+    #tileT1{
+      background:linear-gradient(135deg,var(--t1A), rgba(17,24,39,.92));
+      border-color:rgba(52,211,153,.40);
+    }
+    #tileT2{
+      background:linear-gradient(135deg,var(--t2A), rgba(17,24,39,.92));
+      border-color:rgba(248,113,113,.38);
+    }
+
+    @media(min-width:860px){
       .container{padding:16px}
-      .card{padding:16px;border-radius:16px}
-      .tiles{grid-template-columns:repeat(3,1fr)}
-      .tile{min-height:110px}
-      .tileTitle{font-size:18px}
-      .tileDesc{font-size:13px}
-      .topbar{padding:12px 16px}
-      .loginGrid{grid-template-columns:1fr 1fr}
+      .card{padding:16px}
+      .grid{grid-template-columns:repeat(3,1fr)}
+      .tileTitle{font-size:24px}
+      .tileSub{display:none}
     }
-
-    .hidden{display:none !important;}
-
-    @media (max-width: 520px){
-      #viewDash.card { padding: 12px !important; }
-      #dashDesc { margin-top: 0 !important; }
-      #viewDash .bar { margin: 10px 0 !important; }
-      #viewDash .tiles { gap: 10px !important; margin-top: 10px !important; }
-      #viewDash .tile { padding: 16px 14px !important; min-height: 86px !important; }
-      #viewDash .tileTitle { font-size: 18px !important; }
-      #viewDash .tileDesc  { font-size: 13px !important; }
-      #viewDash .tileMeta  { font-size: 12px !important; }
+    @media(max-width:520px){
+      .container{padding:10px}
+      .card{padding:12px}
+      .tile{padding:16px 14px}
+      .tileTitle{font-size:20px}
+      .tileSub{display:none}
+      .right .pill{display:none}
     }
   </style>
 </head>
+
 <body>
   <header class="topbar">
     <div class="brand">
       <span class="dot"></span>
-      <span>Korean Quiz</span>
+      <a id="brandHome" href="./index.html">Korean Quiz</a>
     </div>
-
     <div class="right">
-      <button class="btn" id="btnBack" type="button">←</button>
+      <span class="pill" id="pillName">학습자: -</span>
+      <span class="pill" id="pillKlass">반: -</span>
       <button class="btn" id="btnLang" type="button">KR</button>
-      <button class="btn danger hidden" id="btnLogout" type="button">로그아웃</button>
-      <span class="pill hidden" id="pillUser">학습자: -</span>
-      <span class="pill hidden" id="pillKlass">반: -</span>
     </div>
   </header>
 
   <main class="container">
-    <section class="card" id="viewLogin">
-      <h1 style="margin:0 0 6px;" id="loginTitle">로그인</h1>
-      <div class="muted" id="loginDesc">
-        지금은 “간단 로그인(로컬 저장)”로 시작합니다. (나중에 실제 로그인으로 교체 가능)
-      </div>
-
-      <div class="loginGrid" style="margin-top:12px;">
-        <div class="field">
-          <label for="inpId" id="lblId">아이디</label>
-          <input id="inpId" type="text" placeholder="예: student01" autocomplete="username"/>
-        </div>
-
-        <div class="field">
-          <label for="inpPw" id="lblPw">비밀번호</label>
-          <input id="inpPw" type="password" placeholder="임시" autocomplete="current-password"/>
-        </div>
-      </div>
-
-      <div style="margin-top:12px;">
-        <div class="muted small" id="lblRole">권한</div>
-        <div class="segRow" role="radiogroup" aria-label="role">
-          <label class="seg">
-            <input type="radio" name="role" value="BOOK" checked/>
-            <span id="roleBook">BOOK(교재)</span>
-          </label>
-          <label class="seg">
-            <input type="radio" name="role" value="TOPIK"/>
-            <span id="roleTopik">TOPIK(시험)</span>
-          </label>
-          <label class="seg">
-            <input type="radio" name="role" value="ALL"/>
-            <span id="roleAll">ALL(VIP)</span>
-          </label>
-        </div>
-      </div>
-
-      <div style="margin-top:12px;">
-        <button class="btn primary wideBtn" id="btnStart" type="button">Start</button>
-      </div>
-
-      <div class="muted small" style="margin-top:10px;" id="loginNote">
-        안내: 이 로그인은 “전환을 빠르게” 하기 위한 임시 버전입니다.<br/>
-        추후 실제 로그인/결제(예: Supabase/Firebase)로 바꿀 수 있습니다.
-      </div>
-
-      <div style="margin-top:12px;">
-        <a class="btn" id="btnLegacy" href="./lessonHub.html">기존 화면(백업) 보기</a>
-      </div>
-
-      <div id="loginErr" class="muted small" style="margin-top:10px;color:#ffd6d6;display:none;"></div>
-    </section>
-
-    <section class="card hidden" id="viewDash">
-      <div class="muted" id="dashDesc">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
-
+    <section class="card">
+      <div class="muted" id="hintLine">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
       <div class="bar"></div>
 
-      <div class="tiles">
-        <a class="tile" id="tileBOOK" href="./snu/index.html">
-          <div class="tileTitle" id="tileBookTitle">서울대</div>
-          <div class="tileDesc" id="tileBookDesc">교재/과 선택 → 레슨</div>
-          <div class="tileMeta" id="tileBookMeta">SNU 1A~4B (데이터 방식 확장)</div>
+      <div class="grid">
+        <a class="tile" id="tileSnu" href="./snu/index.html">
+          <div class="tileTitle" id="tSnu">서울대</div>
+          <div class="tileSub" id="sSnu"></div>
         </a>
 
         <a class="tile" id="tileT1" href="./topik1/index.html">
-          <div class="tileTitle" id="tileT1Title">TOPIK I</div>
-          <div class="tileDesc" id="tileT1Desc">어휘 · 문법 · 읽기평가 · 듣기평가</div>
-          <div class="tileMeta" id="tileT1Meta">레벨 1~10</div>
+          <div class="tileTitle" id="tT1">TOPIK I</div>
+          <div class="tileSub" id="sT1"></div>
         </a>
 
         <a class="tile" id="tileT2" href="./topik2/index.html">
-          <div class="tileTitle" id="tileT2Title">TOPIK II</div>
-          <div class="tileDesc" id="tileT2Desc">어휘 · 문법 · 읽기/듣기 유형 · 모의평가 · 쓰기</div>
-          <div class="tileMeta" id="tileT2Meta">레벨 1~10</div>
+          <div class="tileTitle" id="tT2">TOPIK II</div>
+          <div class="tileSub" id="sT2"></div>
         </a>
       </div>
 
       <div class="bar"></div>
-      <div class="muted small" id="tipText">
+      <div class="muted small" id="tipLine">
         팁: 링크가 안 열리면 “구글 검색창”이 아니라 “주소창(URL)”에 주소를 넣어야 합니다.
       </div>
     </section>
@@ -240,59 +149,28 @@
   <script>
     const I18N = {
       KR: {
-        logout: "로그아웃",
-        loginTitle: "로그인",
-        loginDesc: "지금은 “간단 로그인(로컬 저장)”로 시작합니다. (나중에 실제 로그인으로 교체 가능)",
-        id: "아이디",
-        pw: "비밀번호",
-        role: "권한",
-        roleBook: "BOOK(교재)",
-        roleTopik: "TOPIK(시험)",
-        roleAll: "ALL(VIP)",
-        start: "Start",
-        legacy: "기존 화면(백업) 보기",
-        loginNote: "안내: 이 로그인은 “전환을 빠르게” 하기 위한 임시 버전입니다.<br/>추후 실제 로그인/결제(예: Supabase/Firebase)로 바꿀 수 있습니다.",
-        dashDesc: "모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.",
+        hint: "모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.",
         tip: "팁: 링크가 안 열리면 “구글 검색창”이 아니라 “주소창(URL)”에 주소를 넣어야 합니다.",
-        learner: "학습자",
-        klass: "반",
-        snuTitle: "서울대",
-        snuDesc: "교재/과 선택 → 레슨",
-        snuMeta: "SNU 1A~4B (데이터 방식 확장)",
-        t1Desc: "어휘 · 문법 · 읽기평가 · 듣기평가",
-        t2Desc: "어휘 · 문법 · 읽기/듣기 유형 · 모의평가 · 쓰기",
-        level: "레벨 1~10",
-        needId: "아이디를 입력하세요."
+        learner: "학습자: ",
+        klass: "반: ",
+        snu: "서울대",
+        t1: "TOPIK I",
+        t2: "TOPIK II"
       },
       MN: {
-        logout: "Гарах",
-        loginTitle: "Нэвтрэх",
-        loginDesc: "Одоогоор “энгийн нэвтрэлт(локал хадгалалт)” ашиглана. (Дараа нь жинхэнэ нэвтрэлтээр сольж болно)",
-        id: "ID",
-        pw: "Нууц үг",
-        role: "Эрх",
-        roleBook: "BOOK(Ном)",
-        roleTopik: "TOPIK(Шалгалт)",
-        roleAll: "ALL(VIP)",
-        start: "Start",
-        legacy: "Хуучин дэлгэц (нөөц) харах",
-        loginNote: "Тайлбар: Энэ нь түр хувилбар (хурдан шилжих).<br/>Дараа нь жинхэнэ нэвтрэлт/төлбөр (ж: Supabase/Firebase) болгон сольж болно.",
-        dashDesc: "Утасны хувилбар (том товч). Сонгоно уу.",
-        tip: "Зөвлөгөө: Линк нээгдэхгүй бол Google хайлтын талбар биш, URL хаягийн мөрөнд оруулна уу.",
-        learner: "Сурагч",
-        klass: "Анги",
-        snuTitle: "СӨҮ",
-        snuDesc: "Ном/хичээл сонгох → хичээл",
-        snuMeta: "SNU 1A~4B (өгөгдлийн өргөтгөл)",
-        t1Desc: "Үг · Дүрэм · Унших · Сонсох",
-        t2Desc: "Үг · Дүрэм · Унших/Сонсох төрөл · Мок · Бичих",
-        level: "Level 1~10",
-        needId: "ID оруулна уу."
+        hint: "Гар утасны горим (том товч). Хүссэн цэсээ дарна уу.",
+        tip: "Зөвлөгөө: Линк нээгдэхгүй бол “Google хайлт” биш “URL хаягийн мөр”-д оруулна уу.",
+        learner: "Сурагч: ",
+        klass: "Анги: ",
+        snu: "СӨҮ",
+        t1: "TOPIK I",
+        t2: "TOPIK II"
       }
     };
 
     function getLang(){
-      const q = (new URL(location.href).searchParams.get("lang")||"").toUpperCase();
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toUpperCase();
       const s = (localStorage.getItem("kq_lang")||localStorage.getItem("lang")||"").toUpperCase();
       const pick = (q==="MN"||q==="KR") ? q : s;
       return (pick==="MN") ? "MN" : "KR";
@@ -310,148 +188,53 @@
       const u = new URL(location.href);
       return u.searchParams.get(k) || "";
     }
-
-    function buildPassthrough(){
+    function passthroughQS(){
+      const u = new URL(location.href);
       const p = new URLSearchParams();
       ["name","klass","token","lang"].forEach(k=>{
-        const v = getParam(k);
+        const v = u.searchParams.get(k);
         if(v) p.set(k, v);
       });
       if(!p.get("lang")) p.set("lang", getLang());
-      return p;
+      return p.toString();
     }
     function withQS(url){
-      const qs = buildPassthrough().toString();
+      const qs = passthroughQS();
       return url + (url.includes("?") ? "&" : "?") + qs;
     }
 
-    const SESSION_KEY = "kq_session_v1";
-    function loadSession(){
-      try{
-        const raw = localStorage.getItem(SESSION_KEY);
-        return raw ? JSON.parse(raw) : null;
-      }catch(e){ return null; }
-    }
-    function saveSession(s){ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }
-    function clearSession(){ localStorage.removeItem(SESSION_KEY); }
+    function applyUI(){
+      const L = getLang();
+      document.documentElement.lang = (L==="MN") ? "mn" : "ko";
 
-    const viewLogin = document.getElementById("viewLogin");
-    const viewDash  = document.getElementById("viewDash");
-    const btnBack   = document.getElementById("btnBack");
-    const btnLang   = document.getElementById("btnLang");
-    const btnLogout = document.getElementById("btnLogout");
-    const pillUser  = document.getElementById("pillUser");
-    const pillKlass = document.getElementById("pillKlass");
+      document.getElementById("btnLang").textContent = L;
 
-    const inpId = document.getElementById("inpId");
-    const inpPw = document.getElementById("inpPw");
-    const btnStart = document.getElementById("btnStart");
-    const loginErr = document.getElementById("loginErr");
+      document.getElementById("hintLine").textContent = tr("hint");
+      document.getElementById("tipLine").textContent = tr("tip");
 
-    function applyTexts(){
-      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
-      btnLang.textContent = getLang();
+      const name = getParam("name") || "-";
+      const klass = getParam("klass") || "-";
+      document.getElementById("pillName").textContent = tr("learner") + name;
+      document.getElementById("pillKlass").textContent = tr("klass") + klass;
 
-      document.getElementById("loginTitle").textContent = tr("loginTitle");
-      document.getElementById("loginDesc").textContent  = tr("loginDesc");
-      document.getElementById("lblId").textContent = tr("id");
-      document.getElementById("lblPw").textContent = tr("pw");
-      document.getElementById("lblRole").textContent = tr("role");
-      document.getElementById("roleBook").textContent = tr("roleBook");
-      document.getElementById("roleTopik").textContent = tr("roleTopik");
-      document.getElementById("roleAll").textContent = tr("roleAll");
-      document.getElementById("btnStart").textContent = tr("start");
-      document.getElementById("btnLegacy").textContent = tr("legacy");
-      document.getElementById("loginNote").innerHTML = tr("loginNote");
-      btnLogout.textContent = tr("logout");
+      document.getElementById("tSnu").textContent = tr("snu");
+      document.getElementById("tT1").textContent = tr("t1");
+      document.getElementById("tT2").textContent = tr("t2");
 
-      document.getElementById("dashDesc").textContent  = tr("dashDesc");
-      document.getElementById("tipText").textContent   = tr("tip");
+      document.getElementById("brandHome").href = withQS("./index.html");
 
-      document.getElementById("tileBookTitle").textContent = tr("snuTitle");
-      document.getElementById("tileBookDesc").textContent  = tr("snuDesc");
-      document.getElementById("tileBookMeta").textContent  = tr("snuMeta");
-      document.getElementById("tileT1Desc").textContent    = tr("t1Desc");
-      document.getElementById("tileT2Desc").textContent    = tr("t2Desc");
-      document.getElementById("tileT1Meta").textContent    = tr("level");
-      document.getElementById("tileT2Meta").textContent    = tr("level");
+      document.getElementById("tileSnu").href = withQS("./snu/index.html");
+      document.getElementById("tileT1").href = withQS("./topik1/index.html");
+      document.getElementById("tileT2").href = withQS("./topik2/index.html");
     }
 
-    function showLogin(){
-      viewLogin.classList.remove("hidden");
-      viewDash.classList.add("hidden");
-      btnLogout.classList.add("hidden");
-      pillUser.classList.add("hidden");
-      pillKlass.classList.add("hidden");
-      document.getElementById("btnLegacy").href = withQS("./lessonHub.html");
-    }
-
-    function showDashboard(session){
-      viewLogin.classList.add("hidden");
-      viewDash.classList.remove("hidden");
-      btnLogout.classList.remove("hidden");
-      pillUser.classList.remove("hidden");
-      pillKlass.classList.remove("hidden");
-
-      pillUser.textContent  = tr("learner") + ": " + (session?.id || "-");
-      pillKlass.textContent = tr("klass") + ": " + (session?.role || "-");
-
-      document.getElementById("tileBOOK").href = withQS("./snu/index.html");
-      document.getElementById("tileT1").href   = withQS("./topik1/index.html");
-      document.getElementById("tileT2").href   = withQS("./topik2/index.html");
-    }
-
-    function currentRole(){
-      const el = document.querySelector('input[name="role"]:checked');
-      return el ? el.value : "BOOK";
-    }
-
-    btnBack.addEventListener("click", ()=>{
-      if(history.length > 1) history.back();
-      else location.href = "./index.html";
-    });
-
-    btnLang.addEventListener("click", ()=>{
+    document.getElementById("btnLang").addEventListener("click", ()=>{
       const next = (getLang()==="KR") ? "MN" : "KR";
       setLang(next);
-      applyTexts();
-      const s = loadSession();
-      if(s) showDashboard(s); else showLogin();
+      applyUI();
     });
 
-    btnLogout.addEventListener("click", ()=>{
-      clearSession();
-      showLogin();
-    });
-
-    btnStart.addEventListener("click", ()=>{
-      loginErr.style.display = "none";
-      const id = (inpId.value || "").trim();
-      if(!id){
-        loginErr.style.display = "";
-        loginErr.textContent = tr("needId");
-        return;
-      }
-      const role = currentRole();
-      saveSession({ id, role, at: Date.now() });
-      showDashboard(loadSession());
-    });
-
-    [inpId, inpPw].forEach(el=>{
-      el.addEventListener("keydown", (e)=>{
-        if(e.key === "Enter") btnStart.click();
-      });
-    });
-
-    (function init(){
-      applyTexts();
-      const s = loadSession();
-      if(s) showDashboard(s);
-      else showLogin();
-
-      const qName = getParam("name");
-      if(qName && !inpId.value) inpId.value = qName;
-    })();
+    applyUI();
   </script>
 </body>
 </html>
