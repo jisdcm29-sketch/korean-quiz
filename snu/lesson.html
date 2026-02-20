@@ -32,14 +32,6 @@
     .dot{width:10px;height:10px;border-radius:999px;background:var(--blue)}
     .btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
 
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:10px 12px;border-radius:999px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);font-weight:850;font-size:13px;
-      box-shadow:0 8px 18px rgba(0,0,0,.18);
-      white-space:nowrap;
-    }
-
     .btn{
       padding:12px 16px;
       border-radius:16px;
@@ -71,14 +63,6 @@
       border-color:rgba(52,211,153,.55);
       min-width:64px;
       font-size:16px;
-    }
-    .btnLogout{
-      background:linear-gradient(135deg,rgba(248,113,113,.16), rgba(11,16,32,.96));
-      border-color:rgba(248,113,113,.46);
-      font-size:14px;
-      padding:10px 12px;
-      min-height:44px;
-      border-radius:14px;
     }
 
     .card{
@@ -122,13 +106,13 @@
     th{color:var(--muted);text-align:left;font-weight:800}
     td b{font-weight:950}
 
-    /* ===== QUIZ UI ===== */
     .qbox{
       border:1px solid var(--line);
       background:#0b1020;
       border-radius:18px;
       padding:14px;
     }
+
     .qHead{
       margin-bottom:10px;
       text-align:center;
@@ -192,78 +176,14 @@
       border-color:rgba(251,191,36,.46);
     }
 
-    /* ===== LOGIN OVERLAY ===== */
-    .overlay{
-      position:fixed;inset:0;
-      background:rgba(0,0,0,.55);
-      backdrop-filter:blur(10px);
-      display:none;
-      align-items:center;
-      justify-content:center;
-      padding:14px;
-      z-index:999;
-    }
-    .overlay.show{display:flex}
-    .loginCard{
-      width:min(520px, 94vw);
-      background:rgba(17,24,39,.92);
-      border:1px solid var(--line);
-      border-radius:22px;
-      box-shadow:0 18px 55px rgba(0,0,0,.40);
-      padding:16px;
-    }
-    .loginTitle{
-      font-size:22px;font-weight:950;margin:2px 0 10px;
-      letter-spacing:.2px;
-    }
-    .formRow{display:grid;grid-template-columns:1fr;gap:10px;margin-top:10px}
-    .label{font-size:13px;color:var(--muted);font-weight:800}
-    .input, .select{
-      width:100%;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:#0b1020;
-      color:var(--text);
-      font-size:16px;
-      font-weight:850;
-      outline:none;
-      box-shadow:0 10px 22px rgba(0,0,0,.18);
-    }
-    .loginBtn{
-      width:100%;
-      margin-top:12px;
-      background:linear-gradient(135deg,rgba(96,165,250,.22), rgba(11,16,32,.96));
-      border-color:rgba(96,165,250,.55);
-      font-size:16px;
-      font-weight:950;
-      min-height:52px;
-      border-radius:16px;
-    }
-    .loginHint{margin-top:10px;color:var(--muted);font-size:13px;line-height:1.45}
-    .loginError{
-      margin-top:10px;
-      color:#fecaca;
-      background:rgba(248,113,113,.10);
-      border:1px solid rgba(248,113,113,.35);
-      padding:10px 12px;border-radius:14px;
-      display:none;
-      font-size:13px;
-      line-height:1.4;
-    }
-
-    /* ===== ✅ 모바일 우선 레이아웃 ===== */
     @media(max-width:520px){
       .container{padding:10px}
       .card{padding:14px;border-radius:18px}
 
       .btnRow{flex-wrap:nowrap;gap:8px}
-      .btn{min-height:52px;font-size:16px;padding:10px 12px;border-radius:14px}
-      .btnBack{font-size:19px;min-width:54px}
-      .btnLang{min-width:64px;font-size:16px}
-      .btnLogout{min-height:48px;font-size:14px}
-
-      .pill{font-size:12px;padding:9px 10px}
+      .btn{min-height:50px;font-size:15px;padding:10px 12px;border-radius:14px}
+      .btnBack{font-size:18px;min-width:52px}
+      .btnLang{min-width:60px}
 
       .tabs{
         display:grid;
@@ -302,11 +222,12 @@
         text-align:center;
       }
 
+      #panel-mixed .btnRow{display:flex;justify-content:flex-start}
       #btnNewMixed{font-size:13px;padding:10px 10px;min-height:44px;border-radius:14px}
 
-      .qText{font-size:28px;}
+      .qText{font-size:26px;}
       .choices{gap:6px;}
-      .choice{font-size:23px;min-height:48px;padding:12px 10px;}
+      .choice{font-size:22px;min-height:48px;padding:12px 10px;}
     }
   </style>
 </head>
@@ -319,10 +240,8 @@
     </div>
 
     <div class="btnRow">
-      <span class="pill" id="pillUser" style="display:none;"></span>
       <button class="btn btnBack" id="btnBack" type="button" aria-label="back">←</button>
       <button class="btn btnLang" id="btnLang" type="button">KR</button>
-      <button class="btn btnLogout" id="btnLogout" type="button" style="display:none;">로그아웃</button>
     </div>
   </header>
 
@@ -378,62 +297,7 @@
     </section>
   </main>
 
-  <!-- LOGIN OVERLAY -->
-  <div class="overlay" id="loginOverlay" role="dialog" aria-modal="true" aria-label="login">
-    <div class="loginCard">
-      <div class="loginTitle" id="loginTitle">로그인</div>
-      <div class="muted small" id="loginSub">이름/비밀번호/반을 입력(선택)하세요.</div>
-
-      <div class="formRow">
-        <div>
-          <div class="label" id="lblPw">비밀번호</div>
-          <input class="input" id="inpPw" type="password" autocomplete="current-password" inputmode="text" placeholder="비밀번호" />
-        </div>
-        <div>
-          <div class="label" id="lblName">이름</div>
-          <input class="input" id="inpName" type="text" autocomplete="name" inputmode="text" placeholder="예: tae" />
-        </div>
-        <div>
-          <div class="label" id="lblClass">반</div>
-          <select class="select" id="selClass">
-            <option value="BBTA1반">BBTA1반</option>
-            <option value="EKO1반">EKO1반</option>
-            <option value="EKO2반">EKO2반</option>
-            <option value="토픽반">토픽반</option>
-            <option value="기타반">기타반</option>
-          </select>
-        </div>
-      </div>
-
-      <button class="btn loginBtn" id="btnLogin" type="button">Start</button>
-      <div class="loginError" id="loginError"></div>
-      <div class="loginHint" id="loginHint">
-        * 로그인 정보는 이 기기에 임시 저장됩니다. (권한 기능 없음: 로그인하면 모두 사용 가능)
-      </div>
-    </div>
-  </div>
-
   <script>
-    /*
-      ✅ 구글시트 자동 기록(로그인/로그아웃/자동로그아웃)을 하려면
-      1) Google Apps Script를 "웹 앱으로 배포"해서 URL을 만듭니다.
-      2) 아래 GAS_WEBAPP_URL에 그 URL을 붙여넣으세요.
-      3) GAS 쪽에서 doPost(e)로 JSON을 받아 시트에 append 하도록 구현하면 됩니다.
-    */
-    const GAS_WEBAPP_URL = ""; // 예: "https://script.google.com/macros/s/XXXXXXXXXXXX/exec"
-
-    const APP = {
-      PASSWORD: "tae",
-      AUTO_LOGOUT_MINUTES: 30,
-      STORAGE: {
-        name: "kq_name",
-        klass: "kq_klass",
-        token: "kq_token",
-        lastActive: "kq_last_active",
-        session: "kq_session_id"
-      }
-    };
-
     const I18N = {
       KR: {
         loading: "불러오는 중...",
@@ -458,16 +322,7 @@
         correct: "정답!",
         wrong: "오답!",
         answer: "정답",
-        cant: "퀴즈를 만들 수 없습니다. (데이터 확인 필요)",
-        loginTitle: "로그인",
-        loginSub: "이름/비밀번호/반을 입력(선택)하세요.",
-        lblPw: "비밀번호",
-        lblName: "이름",
-        lblClass: "반",
-        start: "Start",
-        logout: "로그아웃",
-        pwWrong: "비밀번호가 틀렸습니다.",
-        fillName: "이름을 입력해 주세요."
+        cant: "퀴즈를 만들 수 없습니다. (데이터 확인 필요)"
       },
       MN: {
         loading: "Ачаалж байна...",
@@ -492,16 +347,7 @@
         correct: "Зөв!",
         wrong: "Буруу!",
         answer: "Зөв хариулт",
-        cant: "Шалгалт үүсгэж чадсангүй. (өгөгдөл шалгана уу)",
-        loginTitle: "Нэвтрэх",
-        loginSub: "Нэр/нууц үг/ангийг оруулна уу.",
-        lblPw: "Нууц үг",
-        lblName: "Нэр",
-        lblClass: "Анги",
-        start: "Start",
-        logout: "Гарах",
-        pwWrong: "Нууц үг буруу байна.",
-        fillName: "Нэрээ оруулна уу."
+        cant: "Шалгалт үүсгэж чадсангүй. (өгөгдөл шалгана уу)"
       }
     };
 
@@ -527,13 +373,6 @@
       const u = new URL(location.href);
       return u.searchParams.get(name);
     }
-    function setParam(name, value){
-      const u = new URL(location.href);
-      if(value===null || value===undefined || value==="") u.searchParams.delete(name);
-      else u.searchParams.set(name, value);
-      history.replaceState(null, "", u.toString());
-    }
-
     function shuffle(arr){
       const a = arr.slice();
       for(let i=a.length-1;i>0;i--){
@@ -557,158 +396,6 @@
       });
     }
 
-    // ===== USER CONTEXT (LOGIN) =====
-    function newSessionId(){
-      return "sess_" + Math.random().toString(16).slice(2) + "_" + Date.now();
-    }
-
-    function getUserContext(){
-      const name = (localStorage.getItem(APP.STORAGE.name) || "").trim();
-      const klass = (localStorage.getItem(APP.STORAGE.klass) || "").trim();
-      const token = (localStorage.getItem(APP.STORAGE.token) || "").trim();
-      const sessionId = (localStorage.getItem(APP.STORAGE.session) || "").trim();
-      return { name, klass, token, sessionId };
-    }
-
-    function setUserContext({name, klass, token}){
-      localStorage.setItem(APP.STORAGE.name, name || "");
-      localStorage.setItem(APP.STORAGE.klass, klass || "");
-      if(token !== undefined) localStorage.setItem(APP.STORAGE.token, token || "");
-      if(!localStorage.getItem(APP.STORAGE.session)) localStorage.setItem(APP.STORAGE.session, newSessionId());
-
-      // URL에도 넣어서 유지(원하면 빼도 됨)
-      setParam("name", name || "");
-      setParam("klass", klass || "");
-    }
-
-    function clearUserContext(){
-      localStorage.removeItem(APP.STORAGE.name);
-      localStorage.removeItem(APP.STORAGE.klass);
-      localStorage.removeItem(APP.STORAGE.lastActive);
-      localStorage.removeItem(APP.STORAGE.session);
-      setParam("name","");
-      setParam("klass","");
-    }
-
-    function showUserPill(){
-      const pill = document.getElementById("pillUser");
-      const btnLogout = document.getElementById("btnLogout");
-      const {name, klass} = getUserContext();
-      if(name || klass){
-        pill.style.display = "";
-        pill.textContent = `${name || "-"} · ${klass || "-"}`;
-        btnLogout.style.display = "";
-      }else{
-        pill.style.display = "none";
-        btnLogout.style.display = "none";
-      }
-    }
-
-    function openLogin(){
-      document.getElementById("loginError").style.display = "none";
-      const ov = document.getElementById("loginOverlay");
-      ov.classList.add("show");
-      // 기본값
-      const ctx = getUserContext();
-      const inpName = document.getElementById("inpName");
-      const inpPw = document.getElementById("inpPw");
-      const sel = document.getElementById("selClass");
-      inpName.value = ctx.name || "tae";
-      inpPw.value = "";
-      if(ctx.klass) sel.value = ctx.klass;
-      setTimeout(()=>inpPw.focus(), 50);
-    }
-    function closeLogin(){
-      const ov = document.getElementById("loginOverlay");
-      ov.classList.remove("show");
-    }
-
-    function applyLoginTexts(){
-      document.getElementById("loginTitle").textContent = tr("loginTitle");
-      document.getElementById("loginSub").textContent = tr("loginSub");
-      document.getElementById("lblPw").textContent = tr("lblPw");
-      document.getElementById("lblName").textContent = tr("lblName");
-      document.getElementById("lblClass").textContent = tr("lblClass");
-      document.getElementById("btnLogin").textContent = tr("start");
-      document.getElementById("btnLogout").textContent = tr("logout");
-    }
-
-    function ensureLoginOrShow(){
-      const {name, klass} = getUserContext();
-      if(!name || !klass){
-        openLogin();
-        return false;
-      }
-      return true;
-    }
-
-    // ===== Google Sheet Logging via GAS =====
-    async function sendToSheet(payload){
-      if(!GAS_WEBAPP_URL || !/^https?:\/\//.test(GAS_WEBAPP_URL)) return;
-      try{
-        await fetch(GAS_WEBAPP_URL, {
-          method: "POST",
-          headers: {"Content-Type":"application/json"},
-          body: JSON.stringify(payload),
-          mode: "cors",
-          cache: "no-store"
-        });
-      }catch(e){
-        // 실패해도 앱은 계속 동작
-        console.log("GAS log failed:", e);
-      }
-    }
-
-    function buildLogPayload(eventName, extra){
-      const ctx = getUserContext();
-      return {
-        event: eventName,
-        name: ctx.name || "",
-        klass: ctx.klass || "",
-        sessionId: ctx.sessionId || "",
-        lang: getLang(),
-        page: location.pathname,
-        url: location.href,
-        ts: new Date().toISOString(),
-        ua: navigator.userAgent,
-        ...((extra && typeof extra === "object") ? extra : {})
-      };
-    }
-
-    // ===== Auto Logout after inactivity =====
-    function touchActive(){
-      localStorage.setItem(APP.STORAGE.lastActive, String(Date.now()));
-    }
-    function minutesSinceActive(){
-      const v = parseInt(localStorage.getItem(APP.STORAGE.lastActive) || "0", 10);
-      if(!v) return Infinity;
-      return (Date.now() - v) / 60000;
-    }
-    async function autoLogoutIfNeeded(){
-      if(!getUserContext().name) return;
-      if(minutesSinceActive() >= APP.AUTO_LOGOUT_MINUTES){
-        await doLogout("auto");
-      }
-    }
-    function startActivityWatch(){
-      const events = ["pointerdown","touchstart","keydown","scroll","mousemove"];
-      const handler = ()=>touchActive();
-      events.forEach(ev=>window.addEventListener(ev, handler, {passive:true}));
-      touchActive();
-      setInterval(autoLogoutIfNeeded, 15000);
-      document.addEventListener("visibilitychange", ()=>{
-        if(!document.hidden) touchActive();
-      });
-    }
-
-    async function doLogout(reason){
-      await sendToSheet(buildLogPayload("logout", {reason: reason || "manual"}));
-      clearUserContext();
-      showUserPill();
-      openLogin();
-    }
-
-    // ===== QUIZ =====
     let LESSON = null;
     let QUIZ_MODE = "KO2MN";
 
@@ -728,9 +415,6 @@
       document.getElementById("btnNew").textContent = tr("newQ");
       document.getElementById("btnNewMixed").textContent = tr("newQ");
       document.getElementById("btnMode").textContent = (QUIZ_MODE==="KO2MN") ? tr("modeK2M") : tr("modeM2K");
-
-      applyLoginTexts();
-      showUserPill();
     }
 
     function renderVocab(d){
@@ -845,7 +529,6 @@
         btn.textContent = ch;
 
         btn.addEventListener("click", ()=>{
-          touchActive();
           const ok = ch === q.correct;
           result.style.display = "";
           result.classList.remove("ok","bad");
@@ -925,22 +608,21 @@
 
     async function main(){
       applyTexts();
-      startActivityWatch();
 
-      document.getElementById("tab-vocab").addEventListener("click", ()=>{ touchActive(); setActiveTab("vocab"); });
-      document.getElementById("tab-quiz").addEventListener("click", ()=>{ touchActive(); setActiveTab("quiz"); });
-      document.getElementById("tab-grammar").addEventListener("click", ()=>{ touchActive(); setActiveTab("grammar"); });
-      document.getElementById("tab-mixed").addEventListener("click", ()=>{ touchActive(); setActiveTab("mixed"); });
+      document.getElementById("btnBack").addEventListener("click", ()=>history.back());
 
-      document.getElementById("btnBack").addEventListener("click", ()=>{ touchActive(); history.back(); });
-
-      document.getElementById("btnLogout").addEventListener("click", ()=>doLogout("manual"));
+      document.getElementById("tab-vocab").addEventListener("click", ()=>setActiveTab("vocab"));
+      document.getElementById("tab-quiz").addEventListener("click", ()=>setActiveTab("quiz"));
+      document.getElementById("tab-grammar").addEventListener("click", ()=>setActiveTab("grammar"));
+      document.getElementById("tab-mixed").addEventListener("click", ()=>setActiveTab("mixed"));
 
       document.getElementById("btnLang").addEventListener("click", ()=>{
-        touchActive();
         const next = (getLang()==="KR") ? "MN" : "KR";
         setLang(next);
-        setParam("lang", next);
+        const u = new URL(location.href);
+        u.searchParams.set("lang", next);
+        history.replaceState(null, "", u.toString());
+
         applyTexts();
         if(LESSON){
           renderVocab(LESSON);
@@ -950,70 +632,19 @@
         }
       });
 
-      function showLoginError(msg){
-        const el = document.getElementById("loginError");
-        el.textContent = msg;
-        el.style.display = "";
-      }
-
-      document.getElementById("btnLogin").addEventListener("click", async ()=>{
-        touchActive();
-        const pw = (document.getElementById("inpPw").value || "").trim();
-        const name = (document.getElementById("inpName").value || "").trim();
-        const klass = (document.getElementById("selClass").value || "").trim();
-
-        if(pw !== APP.PASSWORD){
-          showLoginError(tr("pwWrong"));
-          return;
-        }
-        if(!name){
-          showLoginError(tr("fillName"));
-          return;
-        }
-
-        // 세션 설정
-        if(!localStorage.getItem(APP.STORAGE.session)) localStorage.setItem(APP.STORAGE.session, newSessionId());
-        setUserContext({name, klass});
-        showUserPill();
-        closeLogin();
-
-        // 로그인 기록(구글시트)
-        await sendToSheet(buildLogPayload("login", {reason:"manual"}));
-      });
-
-      // 엔터로 로그인
-      document.getElementById("inpPw").addEventListener("keydown", (e)=>{
-        if(e.key === "Enter") document.getElementById("btnLogin").click();
-      });
-      document.getElementById("inpName").addEventListener("keydown", (e)=>{
-        if(e.key === "Enter") document.getElementById("btnLogin").click();
-      });
-
       document.getElementById("btnMode").addEventListener("click", ()=>{
-        touchActive();
         QUIZ_MODE = (QUIZ_MODE==="KO2MN") ? "MN2KO" : "KO2MN";
         applyTexts();
         if(LESSON) renderQuiz(LESSON);
       });
 
       document.getElementById("btnNew").addEventListener("click", ()=>{
-        touchActive();
         if(LESSON) renderQuiz(LESSON);
       });
 
       document.getElementById("btnNewMixed").addEventListener("click", ()=>{
-        touchActive();
         if(LESSON) renderMixed(LESSON);
       });
-
-      // ✅ 로그인 없으면 먼저 로그인 창
-      if(!ensureLoginOrShow()){
-        applyTexts();
-        return;
-      }else{
-        // 로그인 상태면 로드 시에도 한 번 기록(원하면 제거 가능)
-        await sendToSheet(buildLogPayload("open_lesson"));
-      }
 
       const dataPath = getParam("data");
       const title = document.getElementById("title");
