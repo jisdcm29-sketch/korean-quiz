@@ -3,157 +3,208 @@
 <head>
   <meta charset="utf-8"/>
   <meta name="viewport" content="width=device-width, initial-scale=1"/>
-  <title>TOPIK I</title>
+  <title>TOPIK I (새 방식)</title>
   <style>
-    :root{--bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;--accent:#60a5fa;--ok:#34d399;--bad:#f87171;}
+    :root{
+      --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
+      --accent:#60a5fa;
+    }
     *{box-sizing:border-box}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);}
+    body{
+      margin:0;
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
+      background:linear-gradient(180deg,#050814,var(--bg));
+      color:var(--text);
+    }
     a{color:inherit;text-decoration:none}
-    .topbar{position:sticky;top:0;display:flex;align-items:center;justify-content:space-between;padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
+    .topbar{
+      position:sticky;top:0;z-index:10;
+      display:flex;align-items:center;justify-content:space-between;gap:12px;
+      padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+    }
     .brand{display:flex;align-items:center;gap:10px;font-weight:800}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
     .container{max-width:980px;margin:0 auto;padding:16px}
-    .card{background:rgba(17,24,39,.9);border:1px solid var(--line);border-radius:16px;padding:16px;box-shadow:0 10px 30px rgba(0,0,0,.25);}
+    .card{
+      background:rgba(17,24,39,.9);
+      border:1px solid var(--line);
+      border-radius:16px;
+      padding:16px;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
+    }
     .muted{color:var(--muted);line-height:1.6}
-    .btnRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
-    .btn{padding:10px 12px;border-radius:12px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer}
-    .pill{display:inline-block;padding:4px 10px;border:1px solid var(--line);border-radius:999px;background:#0b1020;color:var(--muted);font-size:12px;margin-left:8px}
-    .qwrap{display:grid;gap:12px;margin-top:12px}
-    .qhead{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end}
-    .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
-    @media (max-width:800px){ .choices{grid-template-columns:1fr} }
-    .choice{padding:12px;border-radius:14px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer;text-align:left}
-    .choice:hover{border-color:rgba(96,165,250,.6)}
-    .result{margin-top:10px;padding:12px;border-radius:14px;border:1px solid var(--line);background:rgba(11,16,32,.7)}
-    .ok{border-color:rgba(52,211,153,.6)}
-    .bad{border-color:rgba(248,113,113,.6)}
-    .small{font-size:13px}
+    .btn{
+      padding:10px 12px;border-radius:12px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block
+    }
+    .btnRow{display:flex;gap:8px;flex-wrap:wrap}
+    .pill{
+      display:inline-flex;align-items:center;gap:8px;
+      padding:6px 10px;border-radius:999px;border:1px solid var(--line);
+      background:#0b1020;color:var(--muted);font-size:12px
+    }
+    .grid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    @media(max-width:560px){.grid{grid-template-columns:1fr}}
+    .levels{
+      display:grid;
+      grid-template-columns:repeat(5,1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    @media(max-width:560px){.levels{grid-template-columns:repeat(2,1fr)}}
+    .tileBtn{
+      padding:14px 12px;border-radius:14px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer;text-align:left;
+    }
+    .tileBtn:hover{border-color:rgba(96,165,250,.6)}
+    .levelBtn{
+      padding:14px 12px;border-radius:14px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer;text-align:center;
+      font-weight:800;
+    }
+    .levelBtn:hover{border-color:rgba(96,165,250,.6)}
     .bar{height:1px;background:var(--line);margin:12px 0}
+    .err{border:1px solid rgba(248,113,113,.35);background:rgba(248,113,113,.06);padding:12px;border-radius:14px}
+    .small{font-size:12px}
   </style>
 </head>
 <body>
   <header class="topbar">
-    <div class="brand"><span class="dot"></span><a href="../index.html">Korean Quiz</a></div>
-    <div class="btnRow" style="margin:0">
-      <a class="btn" href="../index.html">대시보드</a>
+    <div class="brand"><span class="dot"></span><a href="../index.html" id="homeLink">Korean Quiz</a></div>
+    <div class="btnRow">
+      <span class="pill" id="pillUser">학습자: -</span>
+      <span class="pill" id="pillToken">token: -</span>
+      <a class="btn" href="../index.html" id="btnDashboard">대시보드</a>
     </div>
   </header>
 
   <main class="container">
     <section class="card">
-      <div class="qhead">
-        <div>
-          <h1 style="margin:0 0 6px;">TOPIK I <span class="pill">JSON 테스트</span></h1>
-          <div class="muted small">data/topik1_sample.json 파일을 읽어 문제를 보여줍니다.</div>
-        </div>
-        <div class="muted small" id="status">불러오는 중...</div>
-      </div>
+      <h1 style="margin:0 0 6px;">TOPIK I (새 방식)</h1>
+      <div class="muted">먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.</div>
 
       <div class="bar"></div>
 
-      <div id="app" class="qwrap"></div>
+      <div class="grid" id="catGrid"></div>
+
+      <div id="levelArea" style="display:none;">
+        <div class="bar"></div>
+        <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;">
+          <div>
+            <div class="muted small">선택됨</div>
+            <div style="font-weight:900;font-size:18px;" id="selectedTitle">-</div>
+          </div>
+          <button class="btn" id="btnBackCats" type="button">영역 다시 선택</button>
+        </div>
+        <div class="levels" id="levelsGrid"></div>
+      </div>
+
+      <div id="errBox" style="display:none;margin-top:12px;" class="err"></div>
     </section>
   </main>
 
   <script>
-    const DATA_URL = "../data/topik1_sample.json";
-
-    function el(tag, attrs={}, children=[]) {
-      const e = document.createElement(tag);
-      Object.entries(attrs).forEach(([k,v])=>{
-        if(k === "class") e.className = v;
-        else if(k === "html") e.innerHTML = v;
-        else e.setAttribute(k, v);
-      });
-      children.forEach(c => e.appendChild(c));
-      return e;
+    function getParam(k){
+      const u = new URL(location.href);
+      return u.searchParams.get(k) || "";
+    }
+    function esc(s){
+      return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m]));
     }
 
-    function renderQuestion(item, idx) {
-      const wrap = el("div", { class:"card" });
+    const passthrough = new URLSearchParams();
+    ["name","klass","token"].forEach(k=>{
+      const v = getParam(k);
+      if(v) passthrough.set(k, v);
+    });
+    const qs = passthrough.toString();
+    const withQS = (url)=>{
+      if(!qs) return url;
+      return url + (url.includes("?") ? "&" : "?") + qs;
+    };
 
-      const title = el("div", { class:"qhead" }, [
-        el("div", {}, [
-          el("h2", { style:"margin:0 0 6px;" }, [document.createTextNode(`${idx+1}. ${item.question_kr}`)]),
-          el("div", { class:"muted small" }, [document.createTextNode(`유형: ${item.type}`)])
-        ]),
-        el("div", { class:"muted small" }, [document.createTextNode(item.id || "")])
-      ]);
+    document.getElementById("pillUser").textContent = "학습자: " + (getParam("name") || "-");
+    document.getElementById("pillToken").textContent = "token: " + (getParam("token") || "-");
+    document.getElementById("btnDashboard").href = withQS("../index.html");
+    document.getElementById("homeLink").href = withQS("../index.html");
 
-      const choicesWrap = el("div", { class:"choices" });
-      const result = el("div", { class:"result muted", style:"display:none;" });
+    const MANIFEST_URL = "../data/topik1/manifest.json";
+    const catGrid = document.getElementById("catGrid");
+    const levelArea = document.getElementById("levelArea");
+    const levelsGrid = document.getElementById("levelsGrid");
+    const selectedTitle = document.getElementById("selectedTitle");
+    const errBox = document.getElementById("errBox");
 
-      function showResult(isCorrect, pickedIndex) {
-        const correctIndex = item.answer_index;
-        const correctText = item.choices[correctIndex];
-        const pickedText = item.choices[pickedIndex];
+    let MANIFEST = null;
+    let selectedCat = null;
 
-        result.style.display = "";
-        result.classList.remove("ok","bad","muted");
-        result.classList.add(isCorrect ? "ok" : "bad");
+    function showErr(msg){
+      errBox.style.display = "";
+      errBox.innerHTML = msg;
+    }
 
-        const msg = isCorrect ? "정답!" : "오답!";
-        const explain = item.explain_kr ? `<div class="muted small" style="margin-top:6px;">해설: ${item.explain_kr}</div>` : "";
-
-        result.innerHTML =
-          `<div><b>${msg}</b> (선택: ${pickedText})</div>` +
-          `<div class="muted small" style="margin-top:6px;">정답: ${correctText}</div>` +
-          explain;
-
-        // 한 번 답하면 버튼 잠그기
-        [...choicesWrap.querySelectorAll("button")].forEach(b => b.disabled = true);
-      }
-
-      item.choices.forEach((c, ci) => {
-        const btn = el("button", { class:"choice", type:"button" }, [document.createTextNode(c)]);
+    function renderCategories(){
+      catGrid.innerHTML = "";
+      (MANIFEST.categories || []).forEach(cat=>{
+        const btn = document.createElement("button");
+        btn.className = "tileBtn";
+        btn.type = "button";
+        btn.innerHTML = `
+          <div style="font-size:16px;font-weight:900;">${esc(cat.title)}</div>
+          <div class="muted" style="font-size:12px;margin-top:4px;">${esc(cat.subtitle || "")}</div>
+        `;
         btn.addEventListener("click", ()=>{
-          const isCorrect = ci === item.answer_index;
-          showResult(isCorrect, ci);
+          selectedCat = cat;
+          renderLevels();
         });
-        choicesWrap.appendChild(btn);
+        catGrid.appendChild(btn);
       });
-
-      wrap.appendChild(title);
-      wrap.appendChild(choicesWrap);
-      wrap.appendChild(result);
-      return wrap;
     }
+
+    function renderLevels(){
+      levelArea.style.display = "";
+      selectedTitle.textContent = selectedCat.title;
+      levelsGrid.innerHTML = "";
+
+      const levelNames = selectedCat.levels || [];
+      for(let i=1;i<=10;i++){
+        const name = levelNames[i-1] || ("Level " + i);
+        const a = document.createElement("a");
+        a.className = "levelBtn";
+        a.href = withQS(`./level.html?cat=${encodeURIComponent(selectedCat.id)}&level=${i}`);
+        a.textContent = name;
+        levelsGrid.appendChild(a);
+      }
+      window.scrollTo({ top: levelArea.offsetTop - 80, behavior: "smooth" });
+    }
+
+    document.getElementById("btnBackCats").addEventListener("click", ()=>{
+      levelArea.style.display = "none";
+      selectedCat = null;
+      window.scrollTo({ top: 0, behavior: "smooth" });
+    });
 
     async function main(){
-      const status = document.getElementById("status");
-      const app = document.getElementById("app");
-
       try{
-        const res = await fetch(DATA_URL, { cache: "no-store" });
-        if(!res.ok) throw new Error("JSON을 불러올 수 없습니다: " + res.status);
-        const data = await res.json();
-
-        status.textContent = `불러옴: ${data.title || "TOPIK I"} / 문제 ${data.items?.length || 0}개`;
-
-        app.innerHTML = "";
-        (data.items || []).forEach((item, idx)=>{
-          app.appendChild(renderQuestion(item, idx));
-        });
-
-        if(!(data.items || []).length){
-          app.appendChild(el("div", { class:"muted" }, [document.createTextNode("문제가 없습니다. JSON 파일을 확인하세요.")]));
-        }
-      } catch(err){
-        status.textContent = "오류";
-        app.innerHTML = "";
-        app.appendChild(el("div", { class:"card" }, [
-          el("h2", {}, [document.createTextNode("JSON 로드 실패")]),
-          el("div", { class:"muted" }, [document.createTextNode("아래를 확인하세요:")]),
-          el("ul", { class:"muted" }, [
-            el("li", {}, [document.createTextNode("파일 경로가 맞는지: data/topik1_sample.json")]),
-            el("li", {}, [document.createTextNode("JSON 형식이 깨지지 않았는지(쉼표, 따옴표)")]),
-            el("li", {}, [document.createTextNode("GitHub Pages 반영이 완료됐는지(1~2분 걸릴 수 있음)")])
-          ]),
-          el("div", { class:"muted small", style:"margin-top:10px;" }, [document.createTextNode(String(err))])
-        ]));
+        const res = await fetch(MANIFEST_URL, { cache:"no-store" });
+        if(!res.ok) throw new Error("HTTP " + res.status + " / " + MANIFEST_URL);
+        MANIFEST = await res.json();
+        renderCategories();
+      }catch(e){
+        showErr(
+          "manifest.json을 불러오지 못했습니다.<br/>" +
+          "<div class='muted' style='margin-top:6px'>확인: <a style='color:#b9c9ff' target='_blank' rel='noopener' href='"+MANIFEST_URL+"'>"+MANIFEST_URL+"</a></div>" +
+          "<div class='muted' style='margin-top:6px'>오류: "+esc(e.message||String(e))+"</div>" +
+          "<div class='muted' style='margin-top:6px'>※ 파일 내용에 <b>diff --git</b> 같은 글이 있으면, JSON/HTML이 아니라서 깨집니다.</div>"
+        );
       }
     }
-
     main();
   </script>
 </body>
