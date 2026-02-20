@@ -8,14 +8,12 @@
   <style>
     :root{
       --bg:#0b1220;
-      --card:#121b2f;
-      --card2:#0f172a;
       --text:#e7ecff;
       --muted:#aab6e6;
       --line:rgba(255,255,255,.10);
       --primary:#3b82f6;
-      --primary2:#22c55e;
-      --warn:#f59e0b;
+      --green:#22c55e;
+      --amber:#f59e0b;
       --danger:#ef4444;
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:22px;
@@ -42,6 +40,48 @@
       box-shadow: var(--shadow);
       overflow:hidden;
     }
+
+    .topBar{
+      padding: 10px 12px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.16);
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .langToggle{
+      display:flex;
+      gap:8px;
+      align-items:center;
+    }
+    .langBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(231,236,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight:900;
+      font-size:14px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      min-width:84px;
+      text-align:center;
+    }
+    .langBtn.active{
+      background: linear-gradient(180deg, rgba(79,140,255,.95), rgba(37,99,235,.95));
+      border-color: rgba(79,140,255,.9);
+      color:#fff;
+      box-shadow: 0 8px 18px rgba(37,99,235,.25);
+    }
+    .topHint{
+      font-size:12px;
+      color: rgba(231,236,255,.55);
+      font-weight:800;
+      white-space:nowrap;
+    }
+
     .hdr{
       padding:18px 18px 10px;
       text-align:center;
@@ -87,11 +127,7 @@
       outline:none;
     }
     input::placeholder{color: rgba(231,236,255,.45)}
-    .row2{
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 12px;
-    }
+
     .btn{
       width:100%;
       border:0;
@@ -122,8 +158,11 @@
       font-size:16px;
       padding: 12px 12px;
       border-radius: 16px;
-      font-weight:800;
+      font-weight:900;
+      cursor:pointer;
+      -webkit-tap-highlight-color: transparent;
     }
+
     .note{
       margin: 10px 0 0;
       text-align:center;
@@ -139,7 +178,7 @@
       border:1px solid rgba(239,68,68,.35);
       color: #ffd3d3;
       font-size:14px;
-      font-weight:700;
+      font-weight:800;
       text-align:center;
       display:none;
     }
@@ -151,10 +190,11 @@
       border:1px solid rgba(34,197,94,.35);
       color: #d6ffe6;
       font-size:14px;
-      font-weight:800;
+      font-weight:900;
       text-align:center;
       display:none;
     }
+
     .dashTop{
       display:flex;
       align-items:center;
@@ -180,7 +220,7 @@
     .who .klass{
       font-size:13px;
       color: var(--muted);
-      font-weight:800;
+      font-weight:900;
     }
     .gridBtns{
       display:grid;
@@ -206,6 +246,9 @@
       padding: 6px 10px;
       border-radius: 999px;
       gap:8px;
+      min-height:32px;
+      text-align:center;
+      line-height:1.2;
     }
     .footerMini{
       padding: 12px 16px 16px;
@@ -231,11 +274,73 @@
   const PASSWORD = "tae";
   const AUTO_LOGOUT_MIN = 30;
 
-  // 버튼 이동 경로(현재 레포 구조에 맞게 조정 가능)
   const PATHS = {
     SNU: "/korean-quiz/snu/index.html",
     TOPIK1: "/korean-quiz/topik1/index.html",
     TOPIK2: "/korean-quiz/topik2/index.html",
+  };
+
+  // ====== i18n ======
+  const LANG_KEY = "kq_lang_v1"; // 'ko' | 'mn'
+  const I18N = {
+    ko: {
+      topHint: "언어 선택",
+      appTitle: "Korean Quiz",
+      loginSubtitle: "비밀번호 입력 후 시작합니다",
+      loginTitle: "로그인",
+      pw: "비밀번호",
+      pwPh: "tae",
+      name: "이름",
+      namePh: "예: 바트",
+      klass: "반 선택",
+      loginBtn: "로그인",
+      wrongPw: "비밀번호가 틀렸습니다.",
+      needName: "이름을 입력해 주세요.",
+      needKlass: "반을 선택해 주세요.",
+      logging: "로그인 기록 저장 중…",
+      loginOk: "로그인 완료! 선택 화면으로 이동합니다.",
+      loginOkNoLog: "로그인 완료! (기록 전송은 네트워크 상황에 따라 실패할 수 있어요)",
+      noteAfterLogin: "로그인 후 서울대 / TOPIK1 / TOPIK2를 선택할 수 있습니다.",
+      autoLogout: "자동 로그아웃",
+      dashTitle: "선택",
+      dashSub: "아래에서 학습을 선택하세요",
+      logout: "로그아웃",
+      snu: "서울대",
+      topik1: "TOPIK 1",
+      topik2: "TOPIK 2",
+      pillName: "이름",
+      pillKlass: "반",
+      footer: "이동 시 name/klass/token/lang 파라미터가 자동으로 전달됩니다."
+    },
+    mn: {
+      topHint: "Хэл",
+      appTitle: "Korean Quiz",
+      loginSubtitle: "Нууц үгээ оруулаад эхэлнэ",
+      loginTitle: "Нэвтрэх",
+      pw: "Нууц үг",
+      pwPh: "tae",
+      name: "Нэр",
+      namePh: "Жишээ: Бат",
+      klass: "Анги сонгох",
+      loginBtn: "Нэвтрэх",
+      wrongPw: "Нууц үг буруу байна.",
+      needName: "Нэрээ оруулна уу.",
+      needKlass: "Ангиа сонгоно уу.",
+      logging: "Нэвтрэлтийн тэмдэглэл илгээж байна…",
+      loginOk: "Амжилттай! Сонголтын дэлгэц рүү шилжинэ.",
+      loginOkNoLog: "Амжилттай! (Сүлжээнээс шалтгаалж илгээх амжилтгүй байж болно)",
+      noteAfterLogin: "Нэвтэрсний дараа Seoul / TOPIK1 / TOPIK2-оос сонгоно.",
+      autoLogout: "Автоматаар гарах",
+      dashTitle: "Сонгох",
+      dashSub: "Доороос хичээлээ сонгоно уу",
+      logout: "Гарах",
+      snu: "Seoul",
+      topik1: "TOPIK 1",
+      topik2: "TOPIK 2",
+      pillName: "Нэр",
+      pillKlass: "Анги",
+      footer: "Шилжих үед name/klass/token/lang параметр автоматаар дамжина."
+    }
   };
 
   // ====== Utils ======
@@ -267,6 +372,19 @@
 
   function genToken(){
     return "t_" + Math.random().toString(16).slice(2) + "_" + now().toString(16);
+  }
+
+  function getLang(){
+    const v = localStorage.getItem(LANG_KEY);
+    return (v === "mn" || v === "ko") ? v : "ko";
+  }
+  function setLang(v){
+    localStorage.setItem(LANG_KEY, (v === "mn") ? "mn" : "ko");
+    document.documentElement.lang = getLang();
+  }
+  function t(key){
+    const lang = getLang();
+    return (I18N[lang] && I18N[lang][key]) ? I18N[lang][key] : (I18N.ko[key] || key);
   }
 
   function readSession(){
@@ -341,8 +459,6 @@
   }
 
   async function sendLoginLog(session){
-    // 권한 제거(모두 사용) 정책이므로, 로그인 자체를 "시도 기록"으로 남김.
-    // Apps Script가 token 검증을 하더라도 최소한의 필드로 전송(실패해도 앱 진행).
     const payload = {
       action: "log",
       token: session.token,
@@ -353,7 +469,8 @@
       lesson: "index",
       score: 0,
       attempts: 0,
-      ua: navigator.userAgent || ""
+      ua: navigator.userAgent || "",
+      lang: getLang()
     };
     try{
       await jsonp(SCRIPT_URL, payload, 8000);
@@ -363,28 +480,55 @@
     }
   }
 
+  function escapeHtml(str){
+    return (str||"").replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  function renderTopBar(){
+    const lang = getLang();
+    return `
+      <div class="topBar">
+        <div class="langToggle" role="group" aria-label="Language toggle">
+          <button class="langBtn ${lang==="ko" ? "active":""}" id="langKo">한국어</button>
+          <button class="langBtn ${lang==="mn" ? "active":""}" id="langMn">Монгол</button>
+        </div>
+        <div class="topHint">${escapeHtml(t("topHint"))}</div>
+      </div>
+    `;
+  }
+
+  function bindTopBar(onChange){
+    const $ko = document.getElementById("langKo");
+    const $mn = document.getElementById("langMn");
+    if ($ko) $ko.addEventListener("click", () => { setLang("ko"); onChange(); });
+    if ($mn) $mn.addEventListener("click", () => { setLang("mn"); onChange(); });
+  }
+
   // ====== UI Render ======
   function renderLogin(){
     $app.innerHTML = `
+      ${renderTopBar()}
       <div class="hdr">
-        <p class="brand">Korean Quiz</p>
-        <p class="sub">비밀번호 입력 후 시작합니다</p>
+        <p class="brand">${escapeHtml(t("appTitle"))}</p>
+        <p class="sub">${escapeHtml(t("loginSubtitle"))}</p>
       </div>
       <div class="content">
-        <div class="sectionTitle">로그인</div>
+        <div class="sectionTitle">${escapeHtml(t("loginTitle"))}</div>
 
         <div class="field">
-          <label for="pw">비밀번호</label>
-          <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="tae" />
+          <label for="pw">${escapeHtml(t("pw"))}</label>
+          <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="${escapeHtml(t("pwPh"))}" />
         </div>
 
         <div class="field">
-          <label for="name">이름</label>
-          <input id="name" type="text" inputmode="text" autocomplete="name" placeholder="예: 바트" />
+          <label for="name">${escapeHtml(t("name"))}</label>
+          <input id="name" type="text" inputmode="text" autocomplete="name" placeholder="${escapeHtml(t("namePh"))}" />
         </div>
 
         <div class="field">
-          <label for="klass">반 선택</label>
+          <label for="klass">${escapeHtml(t("klass"))}</label>
           <select id="klass">
             <option value="BBTA1반">BBTA1반</option>
             <option value="EKO1반">EKO1반</option>
@@ -394,19 +538,21 @@
           </select>
         </div>
 
-        <button class="btn btnPrimary" id="btnLogin">로그인</button>
+        <button class="btn btnPrimary" id="btnLogin">${escapeHtml(t("loginBtn"))}</button>
         <div class="err" id="err"></div>
         <div class="ok" id="ok"></div>
 
         <p class="note">
-          로그인 후 <b>서울대 / TOPIK1 / TOPIK2</b>를 선택할 수 있습니다.<br/>
-          <span class="pill">자동 로그아웃 ${AUTO_LOGOUT_MIN}분</span>
+          ${escapeHtml(t("noteAfterLogin"))}<br/>
+          <span class="pill">${escapeHtml(t("autoLogout"))} ${AUTO_LOGOUT_MIN}분</span>
         </p>
       </div>
       <div class="footerMini">
         <span class="mono">device</span>는 자동 생성되어 기록됩니다.
       </div>
     `;
+
+    bindTopBar(renderLogin);
 
     const $pw = document.getElementById("pw");
     const $name = document.getElementById("name");
@@ -431,9 +577,9 @@
       const name = safeTrim($name.value);
       const klass = safeTrim($klass.value);
 
-      if (pw !== PASSWORD) return showErr("비밀번호가 틀렸습니다.");
-      if (!name) return showErr("이름을 입력해 주세요.");
-      if (!klass) return showErr("반을 선택해 주세요.");
+      if (pw !== PASSWORD) return showErr(t("wrongPw"));
+      if (!name) return showErr(t("needName"));
+      if (!klass) return showErr(t("needKlass"));
 
       const session = {
         name,
@@ -445,9 +591,9 @@
       };
       writeSession(session);
 
-      showOk("로그인 기록 저장 중…");
+      showOk(t("logging"));
       const ok = await sendLoginLog(session);
-      showOk(ok ? "로그인 완료! 선택 화면으로 이동합니다." : "로그인 완료! (기록 전송은 네트워크 상황에 따라 실패할 수 있어요)");
+      showOk(ok ? t("loginOk") : t("loginOkNoLog"));
 
       setTimeout(() => renderDashboard(), 350);
     }
@@ -466,34 +612,37 @@
     }
 
     $app.innerHTML = `
+      ${renderTopBar()}
       <div class="dashTop">
         <div class="who">
           <div class="name">${escapeHtml(s.name)}</div>
           <div class="klass">${escapeHtml(s.klass)} · <span class="mono">${AUTO_LOGOUT_MIN}m</span> auto</div>
         </div>
-        <button class="btn btnGhost" id="btnLogout">로그아웃</button>
+        <button class="btnGhost" id="btnLogout">${escapeHtml(t("logout"))}</button>
       </div>
 
       <div class="hdr" style="padding-top:14px">
-        <p class="brand" style="margin-bottom:4px">선택</p>
-        <p class="sub">아래에서 학습을 선택하세요</p>
+        <p class="brand" style="margin-bottom:4px">${escapeHtml(t("dashTitle"))}</p>
+        <p class="sub">${escapeHtml(t("dashSub"))}</p>
       </div>
 
       <div class="gridBtns">
-        <button class="btn btnPrimary" id="goSnu">서울대</button>
-        <button class="btn btnGreen" id="goTopik1">TOPIK 1</button>
-        <button class="btn btnAmber" id="goTopik2">TOPIK 2</button>
+        <button class="btn btnPrimary" id="goSnu">${escapeHtml(t("snu"))}</button>
+        <button class="btn btnGreen" id="goTopik1">${escapeHtml(t("topik1"))}</button>
+        <button class="btn btnAmber" id="goTopik2">${escapeHtml(t("topik2"))}</button>
       </div>
 
       <div class="smallRow">
-        <div class="pill"><span>이름</span><b>${escapeHtml(s.name)}</b></div>
-        <div class="pill"><span>반</span><b>${escapeHtml(s.klass)}</b></div>
+        <div class="pill"><span>${escapeHtml(t("pillName"))}</span><b>${escapeHtml(s.name)}</b></div>
+        <div class="pill"><span>${escapeHtml(t("pillKlass"))}</span><b>${escapeHtml(s.klass)}</b></div>
       </div>
 
       <div class="footerMini">
-        이동 시 <span class="mono">name/klass/token</span> 파라미터가 자동으로 전달됩니다.
+        ${escapeHtml(t("footer"))}
       </div>
     `;
+
+    bindTopBar(renderDashboard);
 
     document.getElementById("btnLogout").addEventListener("click", () => {
       clearSession();
@@ -510,16 +659,11 @@
       const url = buildUrlWithParams(path, {
         name: ss.name,
         klass: ss.klass,
-        token: ss.token
+        token: ss.token,
+        lang: getLang()
       });
       location.href = url;
     }
-  }
-
-  function escapeHtml(str){
-    return (str||"").replace(/[&<>"']/g, (m) => ({
-      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-    }[m]));
   }
 
   // ====== Auto logout by inactivity ======
@@ -532,7 +676,6 @@
     updateLastActive();
     if (inactivityTimer) clearTimeout(inactivityTimer);
     inactivityTimer = setTimeout(() => {
-      // 만료되면 즉시 로그아웃
       const ss = readSession();
       if (ss && isExpired(ss)){
         clearSession();
@@ -549,7 +692,6 @@
     }, {passive:true});
   });
 
-  // 추가 안전: 주기적 만료 체크
   setInterval(() => {
     const s = readSession();
     if (!s) return;
@@ -560,6 +702,7 @@
   }, 10_000);
 
   // ====== Boot ======
+  document.documentElement.lang = getLang();
   const s = readSession();
   if (s && !isExpired(s)){
     resetInactivity();
