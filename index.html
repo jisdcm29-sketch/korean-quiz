@@ -1,518 +1,574 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
   <title>Korean Quiz</title>
   <style>
     :root{
-      --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
-      --blue:#60a5fa;--green:#34d399;--red:#f87171;
+      --bg:#0b1220;
+      --card:#121b2f;
+      --card2:#0f172a;
+      --text:#e7ecff;
+      --muted:#aab6e6;
+      --line:rgba(255,255,255,.10);
+      --primary:#3b82f6;
+      --primary2:#22c55e;
+      --warn:#f59e0b;
+      --danger:#ef4444;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:22px;
     }
     *{box-sizing:border-box}
-    html,body{overflow-x:hidden}
     body{
       margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
-      background:linear-gradient(180deg,#050814,var(--bg));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+      background: radial-gradient(1000px 800px at 30% -10%, rgba(59,130,246,.35), transparent 55%),
+                  radial-gradient(900px 700px at 90% 0%, rgba(34,197,94,.18), transparent 50%),
+                  var(--bg);
       color:var(--text);
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px 14px 22px;
     }
-    a{color:inherit;text-decoration:none}
-    button,input{font-family:inherit}
-    .hidden{display:none !important;}
-
-    /* Topbar */
-    .topbar{
-      position:sticky;top:0;z-index:60;
-      display:flex;align-items:center;justify-content:space-between;gap:10px;
-      padding:12px 12px;
-      background:rgba(5,8,20,.78);backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line);
-    }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:950}
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--blue)}
-    .right{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
-
-    .pill{
-      display:inline-flex;align-items:center;gap:8px;
-      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
-      background:#0b1020;color:var(--muted);font-size:13px
-    }
-
-    /* Big buttons (mobile-first) */
-    .btn{
-      display:inline-flex;align-items:center;justify-content:center;
-      border-radius:18px;border:1px solid var(--line);
-      cursor:pointer;
-      -webkit-tap-highlight-color:transparent;
-      min-height:54px;
-      padding:14px 18px;
-      font-size:18px;
-      font-weight:950;
-      color:var(--text);
-      background:#0b1020;
-      white-space:nowrap;
-    }
-    .btn:hover{filter:brightness(1.06)}
-    .btn:active{transform:translateY(1px)}
-    .btnLang{
-      background:linear-gradient(135deg,rgba(52,211,153,.20), rgba(11,16,32,.95));
-      border-color:rgba(52,211,153,.55);
-    }
-    .btnLogout{
-      background:linear-gradient(135deg,rgba(248,113,113,.18), rgba(11,16,32,.95));
-      border-color:rgba(248,113,113,.50);
-    }
-
-    /* Layout */
-    .container{max-width:980px;margin:0 auto;padding:12px}
+    .wrap{width:min(520px, 100%);}
     .card{
-      background:rgba(17,24,39,.9);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid var(--line);
-      border-radius:20px;
-      padding:14px;
-      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
-    .h1{
-      margin:0;
-      font-size:24px;
-      font-weight:950;
-      letter-spacing:.2px;
-    }
-    .muted{color:var(--muted);line-height:1.6}
-    .small{font-size:12px}
-    .bar{height:1px;background:var(--line);margin:12px 0}
-
-    /* Dashboard tiles */
-    .tileRow{
-      display:grid;
-      grid-template-columns:1fr;
-      gap:12px;
-      margin-top:10px;
-    }
-    .tile{
-      display:flex;align-items:center;justify-content:center;
+    .hdr{
+      padding:18px 18px 10px;
       text-align:center;
-      padding:18px 14px;
-      border-radius:20px;
-      border:1px solid var(--line);
-      min-height:88px;
-      cursor:pointer;
-      -webkit-tap-highlight-color:transparent;
-      color:var(--text);
     }
-    .tile, .tile *{color:var(--text) !important;}
-    .tileTitle{font-size:22px;font-weight:950;letter-spacing:.3px}
-    .tileMeta{margin-top:6px;font-size:13px;color:rgba(229,231,235,.78) !important}
-
-    .t-snu{background:linear-gradient(135deg,rgba(96,165,250,.18), rgba(11,16,32,.96));border-color:rgba(96,165,250,.45);}
-    .t-t1{background:linear-gradient(135deg,rgba(52,211,153,.16), rgba(11,16,32,.96));border-color:rgba(52,211,153,.42);}
-    .t-t2{background:linear-gradient(135deg,rgba(248,113,113,.14), rgba(11,16,32,.96));border-color:rgba(248,113,113,.38);}
-
-    /* Login */
-    .formGrid{display:grid;grid-template-columns:1fr;gap:10px;margin-top:12px}
-    .label{font-size:13px;color:rgba(229,231,235,.86);margin:0 0 6px 2px}
-    .input{
-      width:100%;
-      padding:14px 14px;
-      border-radius:16px;
-      border:1px solid var(--line);
-      background:#0b1020;
-      color:var(--text);
+    .brand{
+      font-size:22px;
+      font-weight:800;
+      letter-spacing:.2px;
+      margin:0 0 6px;
+    }
+    .sub{
+      margin:0;
+      color:var(--muted);
+      font-size:14px;
+      line-height:1.45;
+    }
+    .content{padding: 14px 16px 18px;}
+    .sectionTitle{
+      margin: 6px 0 12px;
       font-size:16px;
+      font-weight:800;
+      text-align:center;
+    }
+    .field{
+      display:flex;
+      flex-direction:column;
+      gap:8px;
+      margin: 12px 0;
+    }
+    label{
+      font-size:14px;
+      color:var(--muted);
+      font-weight:700;
+    }
+    input, select{
+      width:100%;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,15,25,.55);
+      color: var(--text);
+      padding: 14px 14px;
+      font-size:18px;
       outline:none;
     }
-    .input:focus{border-color:rgba(96,165,250,.7)}
-    .radioRow{display:flex;gap:10px;flex-wrap:wrap;margin-top:6px}
-    .radio{
-      display:flex;align-items:center;gap:8px;
-      padding:12px 14px;border-radius:999px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);cursor:pointer;
-      min-height:48px;
+    input::placeholder{color: rgba(231,236,255,.45)}
+    .row2{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 12px;
     }
-    .radio input{transform:scale(1.2)}
-    .primary{
+    .btn{
       width:100%;
-      background:linear-gradient(135deg,rgba(96,165,250,.35), rgba(11,16,32,.96));
-      border-color:rgba(96,165,250,.55);
-      font-size:18px;
-      min-height:58px;
+      border:0;
+      border-radius: 18px;
+      padding: 15px 14px;
+      font-size:20px;
+      font-weight:900;
+      color:white;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(0,0,0,.30);
+      transition: transform .06s ease, filter .15s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{transform: translateY(1px) scale(.99)}
+    .btnPrimary{background: linear-gradient(180deg, #4f8cff, #2563eb);}
+    .btnGreen{background: linear-gradient(180deg, #34d399, #16a34a);}
+    .btnAmber{background: linear-gradient(180deg, #fbbf24, #f59e0b); color:#1b1406;}
+    .btnGhost{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow:none;
+      color: var(--text);
+      font-size:16px;
+      padding: 12px 12px;
+      border-radius: 16px;
+      font-weight:800;
+    }
+    .note{
+      margin: 10px 0 0;
+      text-align:center;
+      color: var(--muted);
+      font-size:13px;
+      line-height:1.5;
     }
     .err{
-      margin-top:10px;
-      border:1px solid rgba(248,113,113,.35);
-      background:rgba(248,113,113,.06);
-      padding:12px;border-radius:14px;
-      color:#ffd6d6;
-      white-space:pre-wrap;
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(239,68,68,.14);
+      border:1px solid rgba(239,68,68,.35);
+      color: #ffd3d3;
+      font-size:14px;
+      font-weight:700;
+      text-align:center;
+      display:none;
     }
-
-    /* Desktop tweaks */
-    @media(min-width:760px){
-      .container{padding:16px}
-      .h1{font-size:28px}
-      .tileRow{grid-template-columns:repeat(3,1fr)}
-      .formGrid{grid-template-columns:1fr 1fr}
-      .primary{grid-column:1 / -1}
+    .ok{
+      margin: 10px 0 0;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(34,197,94,.14);
+      border:1px solid rgba(34,197,94,.35);
+      color: #d6ffe6;
+      font-size:14px;
+      font-weight:800;
+      text-align:center;
+      display:none;
     }
-    @media(max-width:520px){
-      .pill{display:none}
-      .tileTitle{font-size:24px}
-      .tile{min-height:96px}
+    .dashTop{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 12px 14px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.18);
     }
+    .who{
+      display:flex;
+      flex-direction:column;
+      gap:2px;
+      min-width:0;
+    }
+    .who .name{
+      font-weight:900;
+      font-size:16px;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .who .klass{
+      font-size:13px;
+      color: var(--muted);
+      font-weight:800;
+    }
+    .gridBtns{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+      padding: 14px 16px 18px;
+    }
+    .smallRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px;
+      padding: 0 16px 16px;
+    }
+    .pill{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:900;
+      color: rgba(231,236,255,.85);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 6px 10px;
+      border-radius: 999px;
+      gap:8px;
+    }
+    .footerMini{
+      padding: 12px 16px 16px;
+      border-top:1px solid var(--line);
+      color: rgba(231,236,255,.55);
+      font-size:12px;
+      text-align:center;
+      line-height:1.5;
+    }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
   </style>
 </head>
 
 <body>
-  <header class="topbar">
-    <div class="brand">
-      <span class="dot"></span>
-      <a id="brandLink" href="./index.html">Korean Quiz</a>
-    </div>
-    <div class="right">
-      <span class="pill" id="pillName">학습자: -</span>
-      <span class="pill" id="pillKlass">반: -</span>
+  <div class="wrap">
+    <div class="card" id="app"></div>
+  </div>
 
-      <button class="btn btnLang" id="btnLang" type="button">KR</button>
-      <button class="btn btnLogout hidden" id="btnLogout" type="button">로그아웃</button>
-    </div>
-  </header>
+<script>
+(() => {
+  // ====== CONFIG (필요 시 여기만 수정) ======
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
+  const PASSWORD = "tae";
+  const AUTO_LOGOUT_MIN = 30;
 
-  <main class="container">
-    <!-- LOGIN CARD -->
-    <section class="card" id="loginCard">
-      <h1 class="h1" id="loginTitle">로그인</h1>
-      <div class="muted" id="loginSubtitle" style="margin-top:6px;">
-        지금은 “간단 로그인(로컬 저장)”입니다. (나중에 실제 로그인으로 교체 가능)
-      </div>
+  // 버튼 이동 경로(현재 레포 구조에 맞게 조정 가능)
+  const PATHS = {
+    SNU: "/korean-quiz/snu/index.html",
+    TOPIK1: "/korean-quiz/topik1/index.html",
+    TOPIK2: "/korean-quiz/topik2/index.html",
+  };
 
-      <div class="bar"></div>
+  // ====== Utils ======
+  const $app = document.getElementById("app");
+  const LS_KEY = "kq_session_v1";
+  const DEV_KEY = "kq_deviceId_v1";
 
-      <div class="formGrid">
-        <div>
-          <div class="label" id="lblName">아이디(학습자)</div>
-          <input class="input" id="inpName" placeholder="예: student01" autocomplete="username"/>
-        </div>
-        <div>
-          <div class="label" id="lblKlass">반(클래스)</div>
-          <input class="input" id="inpKlass" placeholder="예: A반" autocomplete="organization"/>
-        </div>
+  const now = () => Date.now();
 
-        <div style="grid-column:1 / -1;">
-          <div class="label" id="lblRole">권한</div>
-          <div class="radioRow" role="radiogroup" aria-label="role">
-            <label class="radio"><input type="radio" name="role" value="BOOK" checked/> <span id="roleBook">BOOK(교재)</span></label>
-            <label class="radio"><input type="radio" name="role" value="TOPIK"/> <span id="roleTopik">TOPIK(시험)</span></label>
-            <label class="radio"><input type="radio" name="role" value="ALL"/> <span id="roleAll">ALL(VIP)</span></label>
-          </div>
-        </div>
+  function qs(obj){
+    const p = new URLSearchParams();
+    Object.keys(obj).forEach(k => {
+      if (obj[k] === undefined || obj[k] === null) return;
+      p.set(k, String(obj[k]));
+    });
+    return p.toString();
+  }
 
-        <button class="btn primary" id="btnStart" type="button">Start</button>
-      </div>
+  function getDeviceId(){
+    let id = localStorage.getItem(DEV_KEY);
+    if (!id){
+      id = "dev_" + Math.random().toString(16).slice(2) + "_" + now().toString(16);
+      localStorage.setItem(DEV_KEY, id);
+    }
+    return id;
+  }
 
-      <div class="err hidden" id="loginErr"></div>
-    </section>
+  function safeTrim(s){ return (s || "").toString().trim(); }
 
-    <!-- DASHBOARD CARD -->
-    <section class="card hidden" id="dashCard">
-      <div class="muted" id="dashHint">모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.</div>
+  function genToken(){
+    return "t_" + Math.random().toString(16).slice(2) + "_" + now().toString(16);
+  }
 
-      <div class="bar"></div>
+  function readSession(){
+    try{
+      const raw = localStorage.getItem(LS_KEY);
+      if (!raw) return null;
+      const s = JSON.parse(raw);
+      if (!s || !s.name || !s.klass || !s.token) return null;
+      if (!s.lastActive) s.lastActive = now();
+      return s;
+    }catch(e){
+      return null;
+    }
+  }
 
-      <div class="tileRow">
-        <a class="tile t-snu" id="tileSnu" href="./snu/index.html">
-          <div>
-            <div class="tileTitle" id="tSnu">서울대</div>
-          </div>
-        </a>
+  function writeSession(s){
+    localStorage.setItem(LS_KEY, JSON.stringify(s));
+  }
 
-        <a class="tile t-t1" id="tileT1" href="./topik1/index.html">
-          <div>
-            <div class="tileTitle" id="tT1">TOPIK I</div>
-          </div>
-        </a>
+  function clearSession(){
+    localStorage.removeItem(LS_KEY);
+  }
 
-        <a class="tile t-t2" id="tileT2" href="./topik2/index.html">
-          <div>
-            <div class="tileTitle" id="tT2">TOPIK II</div>
-          </div>
-        </a>
-      </div>
-    </section>
-  </main>
+  function updateLastActive(){
+    const s = readSession();
+    if (!s) return;
+    s.lastActive = now();
+    writeSession(s);
+  }
 
-  <script>
-    const I18N = {
-      KR: {
-        login:"로그인",
-        loginSub:"지금은 “간단 로그인(로컬 저장)”입니다. (나중에 실제 로그인으로 교체 가능)",
-        name:"아이디(학습자)",
-        klass:"반(클래스)",
-        role:"권한",
-        roleBook:"BOOK(교재)",
-        roleTopik:"TOPIK(시험)",
-        roleAll:"ALL(VIP)",
-        start:"Start",
-        logout:"로그아웃",
-        learner:"학습자: ",
-        klassPill:"반: ",
-        hint:"모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.",
-        snu:"서울대",
-        snuMN:"SNU",
-        needName:"아이디(학습자)를 입력해 주세요.",
-        needKlass:"반(클래스)을 입력해 주세요."
-      },
-      MN: {
-        login:"Нэвтрэх",
-        loginSub:"Одоохондоо “энгийн нэвтрэлт (локал хадгалалт)”. (Дараа нь жинхэнэ нэвтрэлтээр сольж болно)",
-        name:"Сурагч (ID)",
-        klass:"Анги",
-        role:"Эрх",
-        roleBook:"BOOK (Ном)",
-        roleTopik:"TOPIK (Шалгалт)",
-        roleAll:"ALL (VIP)",
-        start:"Start",
-        logout:"Гарах",
-        learner:"Сурагч: ",
-        klassPill:"Анги: ",
-        hint:"Гар утасны горим (том товч). Цэсээ сонгоно уу.",
-        snu:"SNU",
-        snuMN:"SNU",
-        needName:"Сурагч (ID)-аа оруулна уу.",
-        needKlass:"Ангиа оруулна уу."
+  function isExpired(s){
+    const maxMs = AUTO_LOGOUT_MIN * 60 * 1000;
+    return (now() - (s.lastActive || 0)) > maxMs;
+  }
+
+  function buildUrlWithParams(basePath, params){
+    const u = new URL(basePath, location.origin);
+    Object.keys(params).forEach(k => u.searchParams.set(k, params[k]));
+    return u.toString();
+  }
+
+  // JSONP helper
+  function jsonp(url, params, timeoutMs = 8000){
+    return new Promise((resolve, reject) => {
+      const cb = "cb_" + Math.random().toString(16).slice(2);
+      const timer = setTimeout(() => {
+        cleanup();
+        reject(new Error("JSONP timeout"));
+      }, timeoutMs);
+
+      function cleanup(){
+        clearTimeout(timer);
+        try{ delete window[cb]; }catch(e){}
+        if (script && script.parentNode) script.parentNode.removeChild(script);
       }
+
+      window[cb] = (data) => {
+        cleanup();
+        resolve(data);
+      };
+
+      const full = url + (url.includes("?") ? "&" : "?") + qs({...params, callback: cb});
+      const script = document.createElement("script");
+      script.src = full;
+      script.async = true;
+      script.onerror = () => {
+        cleanup();
+        reject(new Error("JSONP network error"));
+      };
+      document.head.appendChild(script);
+    });
+  }
+
+  async function sendLoginLog(session){
+    // 권한 제거(모두 사용) 정책이므로, 로그인 자체를 "시도 기록"으로 남김.
+    // Apps Script가 token 검증을 하더라도 최소한의 필드로 전송(실패해도 앱 진행).
+    const payload = {
+      action: "log",
+      token: session.token,
+      deviceId: getDeviceId(),
+      klass: session.klass,
+      name: session.name,
+      book: "LOGIN",
+      lesson: "index",
+      score: 0,
+      attempts: 0,
+      ua: navigator.userAgent || ""
     };
-
-    function getLang(){
-      const u = new URL(location.href);
-      const q = (u.searchParams.get("lang")||"").toUpperCase();
-      const s = (localStorage.getItem("kq_lang")||localStorage.getItem("lang")||"").toUpperCase();
-      const pick = (q==="MN"||q==="KR") ? q : s;
-      return (pick==="MN") ? "MN" : "KR";
+    try{
+      await jsonp(SCRIPT_URL, payload, 8000);
+      return true;
+    }catch(e){
+      return false;
     }
-    function setLang(l){
-      localStorage.setItem("kq_lang", l);
-      localStorage.setItem("lang", l);
-    }
-    function tr(k){
-      const L = getLang();
-      return (I18N[L] && I18N[L][k]) ? I18N[L][k] : (I18N.KR[k] || k);
-    }
+  }
 
-    function qs(){
-      const u = new URL(location.href);
-      const p = new URLSearchParams();
-      ["name","klass","token","lang"].forEach(k=>{
-        const v = u.searchParams.get(k);
-        if(v) p.set(k, v);
-      });
-      if(!p.get("lang")) p.set("lang", getLang());
-      return p.toString();
-    }
-    function withQS(url){
-      const s = qs();
-      return url + (s ? (url.includes("?") ? "&" : "?") + s : "");
-    }
+  // ====== UI Render ======
+  function renderLogin(){
+    $app.innerHTML = `
+      <div class="hdr">
+        <p class="brand">Korean Quiz</p>
+        <p class="sub">비밀번호 입력 후 시작합니다</p>
+      </div>
+      <div class="content">
+        <div class="sectionTitle">로그인</div>
 
-    function makeToken(){
-      const a = new Uint32Array(2);
-      (crypto && crypto.getRandomValues) ? crypto.getRandomValues(a) : (a[0]=Date.now(), a[1]=Math.random()*1e9);
-      return "t_" + a[0].toString(16) + a[1].toString(16);
-    }
+        <div class="field">
+          <label for="pw">비밀번호</label>
+          <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="tae" />
+        </div>
 
-    const brandLink = document.getElementById("brandLink");
-    const btnLang = document.getElementById("btnLang");
-    const btnLogout = document.getElementById("btnLogout");
+        <div class="field">
+          <label for="name">이름</label>
+          <input id="name" type="text" inputmode="text" autocomplete="name" placeholder="예: 바트" />
+        </div>
 
-    const pillName = document.getElementById("pillName");
-    const pillKlass = document.getElementById("pillKlass");
+        <div class="field">
+          <label for="klass">반 선택</label>
+          <select id="klass">
+            <option value="BBTA1반">BBTA1반</option>
+            <option value="EKO1반">EKO1반</option>
+            <option value="EKO2반">EKO2반</option>
+            <option value="토픽반">토픽반</option>
+            <option value="기타반">기타반</option>
+          </select>
+        </div>
 
-    const loginCard = document.getElementById("loginCard");
-    const dashCard = document.getElementById("dashCard");
+        <button class="btn btnPrimary" id="btnLogin">로그인</button>
+        <div class="err" id="err"></div>
+        <div class="ok" id="ok"></div>
 
-    const loginTitle = document.getElementById("loginTitle");
-    const loginSubtitle = document.getElementById("loginSubtitle");
-    const lblName = document.getElementById("lblName");
-    const lblKlass = document.getElementById("lblKlass");
-    const lblRole = document.getElementById("lblRole");
-    const roleBook = document.getElementById("roleBook");
-    const roleTopik = document.getElementById("roleTopik");
-    const roleAll = document.getElementById("roleAll");
-    const btnStart = document.getElementById("btnStart");
-    const loginErr = document.getElementById("loginErr");
+        <p class="note">
+          로그인 후 <b>서울대 / TOPIK1 / TOPIK2</b>를 선택할 수 있습니다.<br/>
+          <span class="pill">자동 로그아웃 ${AUTO_LOGOUT_MIN}분</span>
+        </p>
+      </div>
+      <div class="footerMini">
+        <span class="mono">device</span>는 자동 생성되어 기록됩니다.
+      </div>
+    `;
 
-    const dashHint = document.getElementById("dashHint");
-    const tSnu = document.getElementById("tSnu");
-    const tT1 = document.getElementById("tT1");
-    const tT2 = document.getElementById("tT2");
-
-    const inpName = document.getElementById("inpName");
-    const inpKlass = document.getElementById("inpKlass");
-
-    const tileSnu = document.getElementById("tileSnu");
-    const tileT1 = document.getElementById("tileT1");
-    const tileT2 = document.getElementById("tileT2");
-
-    function getSession(){
-      try{
-        const raw = localStorage.getItem("kq_session");
-        return raw ? JSON.parse(raw) : null;
-      }catch(e){ return null; }
-    }
-    function setSession(s){
-      localStorage.setItem("kq_session", JSON.stringify(s));
-    }
-    function clearSession(){
-      localStorage.removeItem("kq_session");
-    }
+    const $pw = document.getElementById("pw");
+    const $name = document.getElementById("name");
+    const $klass = document.getElementById("klass");
+    const $err = document.getElementById("err");
+    const $ok = document.getElementById("ok");
+    const $btn = document.getElementById("btnLogin");
 
     function showErr(msg){
-      loginErr.textContent = msg;
-      loginErr.classList.remove("hidden");
+      $ok.style.display = "none";
+      $err.textContent = msg;
+      $err.style.display = "block";
     }
-    function hideErr(){
-      loginErr.textContent = "";
-      loginErr.classList.add("hidden");
-    }
-
-    function applyTexts(){
-      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
-      btnLang.textContent = getLang();
-      btnLogout.textContent = tr("logout");
-
-      loginTitle.textContent = tr("login");
-      loginSubtitle.textContent = tr("loginSub");
-      lblName.textContent = tr("name");
-      lblKlass.textContent = tr("klass");
-      lblRole.textContent = tr("role");
-      roleBook.textContent = tr("roleBook");
-      roleTopik.textContent = tr("roleTopik");
-      roleAll.textContent = tr("roleAll");
-      btnStart.textContent = tr("start");
-
-      dashHint.textContent = tr("hint");
-
-      // SNU는 MN에서 "SNU"로 표기
-      tSnu.textContent = (getLang()==="MN") ? tr("snuMN") : tr("snu");
-      tT1.textContent = "TOPIK I";
-      tT2.textContent = "TOPIK II";
-
-      // 링크에 현재 쿼리(name/klass/token/lang) 유지
-      brandLink.href = withQS("./index.html");
-      tileSnu.href = withQS("./snu/index.html");
-      tileT1.href = withQS("./topik1/index.html");
-      tileT2.href = withQS("./topik2/index.html");
+    function showOk(msg){
+      $err.style.display = "none";
+      $ok.textContent = msg;
+      $ok.style.display = "block";
     }
 
-    function syncPills(name, klass){
-      pillName.textContent = tr("learner") + (name || "-");
-      pillKlass.textContent = tr("klassPill") + (klass || "-");
+    async function doLogin(){
+      const pw = safeTrim($pw.value);
+      const name = safeTrim($name.value);
+      const klass = safeTrim($klass.value);
+
+      if (pw !== PASSWORD) return showErr("비밀번호가 틀렸습니다.");
+      if (!name) return showErr("이름을 입력해 주세요.");
+      if (!klass) return showErr("반을 선택해 주세요.");
+
+      const session = {
+        name,
+        klass,
+        token: genToken(),
+        deviceId: getDeviceId(),
+        lastActive: now(),
+        loginAt: now()
+      };
+      writeSession(session);
+
+      showOk("로그인 기록 저장 중…");
+      const ok = await sendLoginLog(session);
+      showOk(ok ? "로그인 완료! 선택 화면으로 이동합니다." : "로그인 완료! (기록 전송은 네트워크 상황에 따라 실패할 수 있어요)");
+
+      setTimeout(() => renderDashboard(), 350);
     }
 
-    function setUrlParams(name, klass, token){
-      const u = new URL(location.href);
-      u.searchParams.set("name", name);
-      u.searchParams.set("klass", klass);
-      u.searchParams.set("token", token);
-      u.searchParams.set("lang", getLang());
-      history.replaceState(null, "", u.toString());
-    }
+    $btn.addEventListener("click", doLogin);
+    $pw.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
+    $name.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
+  }
 
-    function enterDashboard(name, klass, token){
-      syncPills(name, klass);
-      setUrlParams(name, klass, token);
-
-      loginCard.classList.add("hidden");
-      dashCard.classList.remove("hidden");
-      btnLogout.classList.remove("hidden");
-      hideErr();
-
-      applyTexts();
-    }
-
-    function enterLogin(){
-      syncPills("-", "-");
-      loginCard.classList.remove("hidden");
-      dashCard.classList.add("hidden");
-      btnLogout.classList.add("hidden");
-      hideErr();
-
-      applyTexts();
-    }
-
-    // Start click
-    btnStart.addEventListener("click", ()=>{
-      hideErr();
-      const name = (inpName.value || "").trim();
-      const klass = (inpKlass.value || "").trim();
-      if(!name){ showErr(tr("needName")); return; }
-      if(!klass){ showErr(tr("needKlass")); return; }
-
-      const role = (document.querySelector("input[name='role']:checked") || {}).value || "BOOK";
-      const token = makeToken();
-
-      const session = { name, klass, role, token, lang:getLang(), at: Date.now() };
-      setSession(session);
-
-      enterDashboard(name, klass, token);
-    });
-
-    // Logout
-    btnLogout.addEventListener("click", ()=>{
+  function renderDashboard(){
+    const s = readSession();
+    if (!s) return renderLogin();
+    if (isExpired(s)){
       clearSession();
-      const u = new URL(location.href);
-      ["name","klass","token"].forEach(k=>u.searchParams.delete(k));
-      u.searchParams.set("lang", getLang());
-      history.replaceState(null, "", u.toString());
-      enterLogin();
+      return renderLogin();
+    }
+
+    $app.innerHTML = `
+      <div class="dashTop">
+        <div class="who">
+          <div class="name">${escapeHtml(s.name)}</div>
+          <div class="klass">${escapeHtml(s.klass)} · <span class="mono">${AUTO_LOGOUT_MIN}m</span> auto</div>
+        </div>
+        <button class="btn btnGhost" id="btnLogout">로그아웃</button>
+      </div>
+
+      <div class="hdr" style="padding-top:14px">
+        <p class="brand" style="margin-bottom:4px">선택</p>
+        <p class="sub">아래에서 학습을 선택하세요</p>
+      </div>
+
+      <div class="gridBtns">
+        <button class="btn btnPrimary" id="goSnu">서울대</button>
+        <button class="btn btnGreen" id="goTopik1">TOPIK 1</button>
+        <button class="btn btnAmber" id="goTopik2">TOPIK 2</button>
+      </div>
+
+      <div class="smallRow">
+        <div class="pill"><span>이름</span><b>${escapeHtml(s.name)}</b></div>
+        <div class="pill"><span>반</span><b>${escapeHtml(s.klass)}</b></div>
+      </div>
+
+      <div class="footerMini">
+        이동 시 <span class="mono">name/klass/token</span> 파라미터가 자동으로 전달됩니다.
+      </div>
+    `;
+
+    document.getElementById("btnLogout").addEventListener("click", () => {
+      clearSession();
+      renderLogin();
     });
 
-    // Lang toggle
-    btnLang.addEventListener("click", ()=>{
-      const next = (getLang()==="KR") ? "MN" : "KR";
-      setLang(next);
-      applyTexts();
+    document.getElementById("goSnu").addEventListener("click", () => nav(PATHS.SNU));
+    document.getElementById("goTopik1").addEventListener("click", () => nav(PATHS.TOPIK1));
+    document.getElementById("goTopik2").addEventListener("click", () => nav(PATHS.TOPIK2));
 
-      // url에도 반영
-      const u = new URL(location.href);
-      u.searchParams.set("lang", next);
-      history.replaceState(null, "", u.toString());
+    function nav(path){
+      updateLastActive();
+      const ss = readSession();
+      const url = buildUrlWithParams(path, {
+        name: ss.name,
+        klass: ss.klass,
+        token: ss.token
+      });
+      location.href = url;
+    }
+  }
 
-      // SNU 표기/문구 즉시 갱신
-      const s = getSession();
-      if(s && (u.searchParams.get("token") || s.token)) {
-        // 대시보드 상태면 유지
+  function escapeHtml(str){
+    return (str||"").replace(/[&<>"']/g, (m) => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+
+  // ====== Auto logout by inactivity ======
+  let inactivityTimer = null;
+  const activityEvents = ["pointerdown","pointermove","keydown","scroll","touchstart","click"];
+
+  function resetInactivity(){
+    const s = readSession();
+    if (!s) return;
+    updateLastActive();
+    if (inactivityTimer) clearTimeout(inactivityTimer);
+    inactivityTimer = setTimeout(() => {
+      // 만료되면 즉시 로그아웃
+      const ss = readSession();
+      if (ss && isExpired(ss)){
+        clearSession();
+        renderLogin();
       }
-    });
+    }, (AUTO_LOGOUT_MIN * 60 * 1000) + 500);
+  }
 
-    // Boot
-    (function boot(){
-      // 1) URL에 name/klass/token 있으면 그걸 우선 사용
-      const u = new URL(location.href);
-      const name = (u.searchParams.get("name") || "").trim();
-      const klass = (u.searchParams.get("klass") || "").trim();
-      const token = (u.searchParams.get("token") || "").trim();
+  activityEvents.forEach(evt => {
+    window.addEventListener(evt, () => {
+      const s = readSession();
+      if (!s) return;
+      resetInactivity();
+    }, {passive:true});
+  });
 
-      // 2) 없으면 localStorage 세션 사용
-      const s = getSession();
+  // 추가 안전: 주기적 만료 체크
+  setInterval(() => {
+    const s = readSession();
+    if (!s) return;
+    if (isExpired(s)){
+      clearSession();
+      renderLogin();
+    }
+  }, 10_000);
 
-      // 3) 언어 초기화: URL lang > session lang > localStorage
-      const qLang = (u.searchParams.get("lang")||"").toUpperCase();
-      if(qLang==="KR" || qLang==="MN") setLang(qLang);
-      else if(s && (s.lang==="KR" || s.lang==="MN")) setLang(s.lang);
-
-      applyTexts();
-
-      if(name && klass && token){
-        enterDashboard(name, klass, token);
-        return;
-      }
-      if(s && s.name && s.klass && s.token){
-        enterDashboard(s.name, s.klass, s.token);
-        return;
-      }
-      enterLogin();
-    })();
-  </script>
+  // ====== Boot ======
+  const s = readSession();
+  if (s && !isExpired(s)){
+    resetInactivity();
+    renderDashboard();
+  }else{
+    clearSession();
+    renderLogin();
+  }
+})();
+</script>
 </body>
 </html>
