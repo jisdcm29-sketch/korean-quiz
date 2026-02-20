@@ -22,18 +22,18 @@
     button{font-family:inherit}
     .container{max-width:980px;margin:0 auto;padding:16px}
 
-    /* ===== TOPBAR (대시보드 버튼 제거 버전) ===== */
+    /* ===== TOPBAR (서울대 목록 버튼 제거) ===== */
     .topbar{
       position:sticky;top:0;z-index:30;
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:12px 12px;background:rgba(5,8,20,.78);backdrop-filter:blur(10px);
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:10px 10px;background:rgba(5,8,20,.78);backdrop-filter:blur(10px);
       border-bottom:1px solid var(--line);
     }
     .brand{display:flex;align-items:center;gap:10px;font-weight:950}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--blue)}
     .btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
 
-    /* 공통 버튼: 크기 업 + 선명한 색 */
+    /* 공통 버튼 */
     .btn{
       padding:12px 16px;
       border-radius:16px;
@@ -50,10 +50,10 @@
       letter-spacing:.2px;
       -webkit-tap-highlight-color:transparent;
       box-shadow:0 8px 18px rgba(0,0,0,.22);
+      white-space:nowrap;
     }
     .btn:active{transform:translateY(1px)}
     .btn:hover{filter:brightness(1.06)}
-
     .btnBack{
       background:linear-gradient(135deg,rgba(167,139,250,.25), rgba(11,16,32,.96));
       border-color:rgba(167,139,250,.55);
@@ -63,12 +63,7 @@
     .btnLang{
       background:linear-gradient(135deg,rgba(52,211,153,.22), rgba(11,16,32,.96));
       border-color:rgba(52,211,153,.55);
-      font-size:16px;
       min-width:64px;
-    }
-    .btnList{
-      background:linear-gradient(135deg,rgba(96,165,250,.22), rgba(11,16,32,.96));
-      border-color:rgba(96,165,250,.55);
       font-size:16px;
     }
 
@@ -84,7 +79,7 @@
     .small{font-size:13px}
     .bar{height:1px;background:var(--line);margin:12px 0}
 
-    /* ===== TABS (색 + 크기 업) ===== */
+    /* ===== TABS ===== */
     .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     .tab{
       padding:12px 16px;
@@ -98,6 +93,7 @@
       min-height:48px;
       box-shadow:0 8px 18px rgba(0,0,0,.18);
       -webkit-tap-highlight-color:transparent;
+      white-space:nowrap;
     }
     .tab:active{transform:translateY(1px)}
     .tab.active{filter:brightness(1.08)}
@@ -153,7 +149,7 @@
     .result.ok{border-color:rgba(52,211,153,.6)}
     .result.bad{border-color:rgba(248,113,113,.6)}
 
-    /* 퀴즈 상단 버튼들(방향/새문제/레거시)도 선명하게 */
+    /* 퀴즈 상단 버튼들 */
     .btnMode{
       background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96));
       border-color:rgba(34,211,238,.52);
@@ -167,14 +163,64 @@
       border-color:rgba(251,191,36,.46);
     }
 
-    /* 모바일: 버튼/글자 더 크게 */
+    /* ===== ✅ 모바일 우선 레이아웃 정리 (핵심) ===== */
     @media(max-width:520px){
-      .container{padding:12px}
-      .btn{min-height:52px;font-size:17px;padding:12px 16px}
-      .btnBack{font-size:20px;min-width:60px}
-      .tab{min-height:52px;font-size:17px;padding:12px 16px}
-      .qText{font-size:24px}
-      .choice{font-size:22px;padding:14px 12px}
+      .container{padding:10px}
+      .card{padding:14px;border-radius:18px}
+
+      /* 상단바 버튼이 줄바꿈으로 어지럽지 않게 */
+      .btnRow{flex-wrap:nowrap;gap:8px}
+      .btn{min-height:50px;font-size:15px;padding:10px 12px;border-radius:14px}
+      .btnBack{font-size:18px;min-width:52px}
+      .btnLang{min-width:60px}
+
+      /* ✅ 탭 4개를 "한 줄"로 고정 (4열 그리드) */
+      .tabs{
+        display:grid;
+        grid-template-columns:repeat(4,1fr);
+        gap:8px;
+        margin-top:10px;
+      }
+      .tab{
+        min-height:44px;
+        font-size:13px;
+        padding:10px 8px;
+        border-radius:14px;
+        text-align:center;
+      }
+
+      /* ✅ 방향/새문제/레거시는 모바일에서 한 줄(2개) + 아래(레거시)로 */
+      #panel-quiz .btnRow{
+        display:grid;
+        grid-template-columns:1fr 1fr;
+        gap:8px;
+        align-items:stretch;
+      }
+      #btnMode, #btnNew{
+        width:100%;
+        font-size:13px;
+        padding:10px 10px;
+        min-height:44px;
+        border-radius:14px;
+      }
+      /* 레거시 버튼은 아래로 내려서 정리(무질서 방지) */
+      #legacyBtnQuiz{
+        grid-column:1 / -1;
+        width:100%;
+        font-size:13px;
+        padding:10px 10px;
+        min-height:44px;
+        border-radius:14px;
+        text-align:center;
+      }
+
+      /* 종합 테스트 패널도 버튼 작게 */
+      #panel-mixed .btnRow{display:flex;justify-content:flex-start}
+      #btnNewMixed{font-size:13px;padding:10px 10px;min-height:44px;border-radius:14px}
+
+      /* 퀴즈 글자 */
+      .qText{font-size:20px}
+      .choice{font-size:18px;padding:12px 10px;min-height:48px}
     }
   </style>
 </head>
@@ -189,8 +235,7 @@
     <div class="btnRow">
       <button class="btn btnBack" id="btnBack" type="button" aria-label="back">←</button>
       <button class="btn btnLang" id="btnLang" type="button">KR</button>
-      <a class="btn btnList" href="./index.html" id="btnSnuList">서울대 목록</a>
-      <!-- ✅ 대시보드 버튼 삭제 (요청사항) -->
+      <!-- ✅ 서울대 목록 버튼 삭제 (요청사항) -->
     </div>
   </header>
 
@@ -204,7 +249,6 @@
         <div class="muted small" id="status"></div>
       </div>
 
-      <!-- ✅ 탭 순서: 어휘보기 → 어휘테스트 → 문법 → 종합테스트 -->
       <div class="tabs" role="tablist" aria-label="lesson tabs">
         <button class="tab tab-vocab active" id="tab-vocab" type="button">어휘 보기</button>
         <button class="tab tab-quiz" id="tab-quiz" type="button">어휘 테스트</button>
@@ -250,7 +294,6 @@
   <script>
     const I18N = {
       KR: {
-        snuList: "서울대 목록",
         loading: "불러오는 중...",
         loaded: "로드 완료",
         vocabView: "어휘 보기",
@@ -276,7 +319,6 @@
         cant: "퀴즈를 만들 수 없습니다. (데이터 확인 필요)"
       },
       MN: {
-        snuList: "СӨҮ (жагсаалт)",
         loading: "Ачаалж байна...",
         loaded: "Ачааллаа",
         vocabView: "Үг харах",
@@ -315,10 +357,10 @@
       localStorage.setItem("lang", l);
       localStorage.setItem("kq_lang", l);
     }
-    function tr(key, arg1, arg2){
+    function tr(key, a, b){
       const L = getLang();
       const v = (I18N[L] && I18N[L][key]) ? I18N[L][key] : I18N.KR[key];
-      return (typeof v === "function") ? v(arg1, arg2) : v;
+      return (typeof v === "function") ? v(a, b) : v;
     }
 
     function getParam(name){
@@ -349,12 +391,11 @@
     }
 
     let LESSON = null;
-    let QUIZ_MODE = "KO2MN"; // or MN2KO
+    let QUIZ_MODE = "KO2MN";
 
     function applyTexts(){
       document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
       document.getElementById("btnLang").textContent = getLang();
-      document.getElementById("btnSnuList").textContent = tr("snuList");
       document.getElementById("subtitle").textContent = tr("loading");
 
       document.getElementById("tab-vocab").textContent = tr("vocabView");
@@ -446,7 +487,7 @@
       const distractors = shuffle(uniq).slice(0, 3);
       const choices = shuffle([correct, ...distractors]);
 
-      return { type:"vocab", prompt, correct, choices };
+      return { prompt, correct, choices };
     }
 
     function renderQuestionInto(containerEl, q){
@@ -524,18 +565,16 @@
     }
 
     function buildMixedQuestion(d){
-      // 1) json에 mixed_questions가 있으면 그걸 우선 (형식: {prompt, correct, choices})
       const mq = Array.isArray(d.mixed_questions) ? d.mixed_questions : [];
       const usable = mq.filter(x => x && x.prompt && x.correct && Array.isArray(x.choices) && x.choices.length >= 2);
       if(usable.length){
         const pick = usable[Math.floor(Math.random()*usable.length)];
-        const choices = shuffle(Array.from(new Set(pick.choices)).slice(0,4));
-        while(choices.length < 4 && pick.correct) choices.push(pick.correct);
-        const fixed = shuffle(Array.from(new Set([pick.correct, ...choices])).slice(0,4));
-        return { type:"mixed", prompt: pick.prompt, correct: pick.correct, choices: fixed.length===4 ? fixed : shuffle([pick.correct, ...fixed]).slice(0,4) };
+        const uniq = Array.from(new Set([pick.correct, ...pick.choices])).filter(Boolean);
+        const fixed = shuffle(uniq).slice(0,4);
+        while(fixed.length < 4 && pick.correct) fixed.push(pick.correct);
+        const finalChoices = shuffle(Array.from(new Set(fixed))).slice(0,4);
+        return { prompt: pick.prompt, correct: pick.correct, choices: finalChoices };
       }
-
-      // 2) 없으면 vocab만으로 출제(문법 데이터가 현재 구조상 객관식으로 바로 쓰기 어려움)
       const vocab = d.vocab || [];
       return pickVocabQuestion(vocab);
     }
@@ -563,15 +602,11 @@
       document.getElementById("tab-grammar").addEventListener("click", ()=>setActiveTab("grammar"));
       document.getElementById("tab-mixed").addEventListener("click", ()=>setActiveTab("mixed"));
 
-      document.getElementById("btnBack").addEventListener("click", ()=>{
-        history.back();
-      });
+      document.getElementById("btnBack").addEventListener("click", ()=>history.back());
 
       document.getElementById("btnLang").addEventListener("click", ()=>{
         const next = (getLang()==="KR") ? "MN" : "KR";
         setLang(next);
-
-        // URL lang도 같이 바꿔서 새로고침에도 유지
         const u = new URL(location.href);
         u.searchParams.set("lang", next);
         history.replaceState(null, "", u.toString());
@@ -621,7 +656,6 @@
         const d = await res.json();
         LESSON = d;
 
-        // meta 구조/기존 구조 모두 대응
         const level = (d.meta && d.meta.level) ? d.meta.level : (d.level || "");
         const lesson = (d.meta && d.meta.lesson) ? d.meta.lesson : (d.lesson || "");
         const tkr = (d.meta && d.meta.title) ? d.meta.title : (d.title_kr || "");
