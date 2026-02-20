@@ -1,328 +1,376 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8" />
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>SNU Hub</title>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>서울대 한국어</title>
   <style>
     :root{
-      --bg:#0b1220;
-      --card:#111a2e;
-      --text:#eaf0ff;
-      --muted:#a9b6d6;
-      --line:rgba(255,255,255,.10);
-      --accent:#7aa2ff;
-      --btn:#1b2a4a;
-      --danger:#ff6b6b;
+      --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
+      --accent:#60a5fa;--bad:#f87171;
     }
     *{box-sizing:border-box}
+    html,body{overflow-x:hidden}
     body{
       margin:0;
-      font-family:-apple-system,BlinkMacSystemFont,"Segoe UI",Roboto,Helvetica,Arial,"Apple Color Emoji","Segoe UI Emoji";
-      background:linear-gradient(180deg,#060a14, var(--bg));
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
+      background:linear-gradient(180deg,#050814,var(--bg));
       color:var(--text);
     }
-    .wrap{max-width:980px;margin:0 auto;padding:18px 14px 40px}
-    .topbar{display:flex;gap:10px;align-items:center;justify-content:space-between;margin-bottom:14px}
-    .title{display:flex;flex-direction:column;gap:2px}
-    .title h1{font-size:18px;margin:0}
-    .title .sub{font-size:12px;color:var(--muted)}
+    a{color:inherit;text-decoration:none}
+    .container{max-width:980px;margin:0 auto;padding:14px}
+
+    .topbar{
+      position:sticky;top:0;z-index:50;
+      display:flex;align-items:center;justify-content:space-between;gap:10px;
+      padding:12px 14px;
+      background:rgba(5,8,20,.78);backdrop-filter:blur(10px);
+      border-bottom:1px solid var(--line);
+    }
+    .brand{display:flex;align-items:center;gap:10px;font-weight:900}
+    .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
+    .right{display:flex;gap:8px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+
+    .btn{
+      padding:12px 14px;border-radius:14px;border:1px solid var(--line);
+      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .btn:hover{border-color:rgba(96,165,250,.6)}
+    .btn:disabled{opacity:.6;cursor:not-allowed}
+
     .pill{
       display:inline-flex;align-items:center;gap:8px;
-      background:rgba(255,255,255,.06);
-      border:1px solid var(--line);
-      padding:8px 10px;border-radius:999px;
-      color:var(--muted);font-size:12px;
-      max-width:70vw;
-      overflow:hidden;text-overflow:ellipsis;white-space:nowrap;
+      padding:8px 12px;border-radius:999px;border:1px solid var(--line);
+      background:#0b1020;color:var(--muted);font-size:13px
     }
-    .row{display:flex;gap:10px;flex-wrap:wrap;align-items:center}
-    .btn{
-      appearance:none;border:1px solid var(--line);
-      background:var(--btn);color:var(--text);
-      padding:10px 12px;border-radius:12px;
-      font-size:14px;cursor:pointer;
-    }
-    .btn:active{transform:translateY(1px)}
-    .btn.secondary{background:transparent}
-    .grid{
-      display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      margin-top:12px;
-    }
-    @media (min-width:760px){
-      .grid{grid-template-columns:repeat(4,minmax(0,1fr))}
-    }
-    .book{
-      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.03));
+
+    .card{
+      background:rgba(17,24,39,.9);
       border:1px solid var(--line);
       border-radius:18px;
       padding:14px;
-      cursor:pointer;
-      min-height:88px;
-      display:flex;flex-direction:column;justify-content:space-between;gap:10px;
-      user-select:none;
+      box-shadow:0 10px 30px rgba(0,0,0,.25);
     }
-    .book.active{outline:2px solid rgba(122,162,255,.55)}
-    .book .k{font-size:16px;font-weight:700}
-    .book .m{font-size:12px;color:var(--muted)}
-    .panel{
-      margin-top:12px;
-      background:rgba(255,255,255,.04);
-      border:1px solid var(--line);
-      border-radius:18px;
-      overflow:hidden;
-    }
-    .panelHead{
-      display:flex;align-items:center;justify-content:space-between;
-      padding:12px 14px;
-      background:linear-gradient(180deg,rgba(255,255,255,.06),rgba(255,255,255,.02));
-      border-bottom:1px solid var(--line);
-    }
-    .panelHead .left{display:flex;flex-direction:column;gap:2px}
-    .panelHead .left .h{font-size:15px;font-weight:700}
-    .panelHead .left .s{font-size:12px;color:var(--muted)}
-    .lessons{
+    .muted{color:var(--muted);line-height:1.6}
+    .small{font-size:12px}
+    .bar{height:1px;background:var(--line);margin:12px 0}
+    .hidden{display:none !important;}
+
+    .grid{
       display:grid;
-      grid-template-columns:repeat(2,minmax(0,1fr));
-      gap:10px;
-      padding:12px;
-    }
-    @media (min-width:760px){
-      .lessons{grid-template-columns:repeat(4,minmax(0,1fr))}
-    }
-    .lesson{
-      background:rgba(15,23,48,.55);
-      border:1px solid var(--line);
-      border-radius:16px;
-      padding:12px;
-      display:flex;flex-direction:column;gap:8px;
-      cursor:pointer;
-      text-decoration:none;color:inherit;
-      min-height:78px;
-    }
-    .lesson:hover{border-color:rgba(122,162,255,.45)}
-    .lesson .n{font-weight:800;font-size:14px}
-    .lesson .t{font-size:12px;color:var(--muted);line-height:1.2}
-    .warn{
+      grid-template-columns:1fr;
+      gap:12px;
       margin-top:12px;
-      border:1px solid rgba(255,107,107,.35);
-      background:rgba(255,107,107,.08);
-      color:#ffd6d6;
-      padding:10px 12px;
-      border-radius:14px;
-      font-size:12px;
     }
-    .footerNote{margin-top:14px;color:var(--muted);font-size:12px;line-height:1.4}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Liberation Mono","Courier New",monospace}
-    a{color:inherit}
+    .tile{
+      display:block;
+      padding:18px 16px;
+      border-radius:18px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      -webkit-tap-highlight-color:transparent;
+    }
+    .tile:hover{border-color:rgba(96,165,250,.6)}
+    .tileTitle{font-size:18px;font-weight:900;line-height:1.15}
+    .tileDesc{font-size:13px;line-height:1.25;margin-top:6px;color:var(--muted)}
+    .tileMeta{font-size:12px;line-height:1.2;margin-top:6px;color:var(--muted);opacity:.95}
+
+    .lessonGrid{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:10px;
+      margin-top:12px;
+    }
+    .lessonBtn{
+      padding:14px 12px;
+      border-radius:16px;
+      border:1px solid var(--line);
+      background:#0b1020;
+      color:var(--text);
+      cursor:pointer;
+      text-align:center;
+      font-weight:900;
+      -webkit-tap-highlight-color:transparent;
+      white-space:normal;
+      overflow-wrap:anywhere;
+      min-height:56px;
+    }
+    .lessonBtn:hover{border-color:rgba(96,165,250,.6)}
+
+    .err{
+      border:1px solid rgba(248,113,113,.35);
+      background:rgba(248,113,113,.06);
+      padding:12px;border-radius:14px;
+      margin-top:12px;
+      color:#ffd6d6;
+    }
+
+    @media (min-width: 860px){
+      .container{padding:16px}
+      .card{padding:16px}
+      .grid{grid-template-columns:repeat(4,1fr)}
+      .lessonGrid{grid-template-columns:repeat(4,1fr)}
+    }
+    @media (max-width: 520px){
+      .container{padding:12px}
+      .card{padding:12px}
+      .tile{padding:16px 14px}
+      .tileTitle{font-size:18px}
+      .lessonGrid{grid-template-columns:repeat(2,1fr)}
+      .lessonBtn{padding:14px 10px}
+    }
   </style>
 </head>
+
 <body>
-  <div class="wrap">
-    <div class="topbar">
-      <div class="title">
-        <h1>서울대 한국어</h1>
-        <div class="sub">교재 선택 → 해당 교재 과만 펼쳐짐</div>
-      </div>
-      <div class="row">
-        <button class="btn secondary" id="btnHome">홈</button>
-      </div>
+  <header class="topbar">
+    <div class="brand">
+      <span class="dot"></span>
+      <a id="homeLink" href="../index.html">Korean Quiz</a>
     </div>
 
-    <div class="row" style="margin-bottom:8px">
-      <div class="pill" id="who"></div>
-      <div class="pill mono" id="params"></div>
+    <div class="right">
+      <span class="pill" id="pillName">학습자: -</span>
+      <span class="pill" id="pillToken">token: -</span>
+      <button class="btn" id="btnBack" type="button">←</button>
+      <button class="btn" id="btnLang" type="button">KR</button>
+      <a class="btn" id="btnDash" href="../index.html">홈</a>
     </div>
+  </header>
 
-    <div class="grid" id="bookGrid"></div>
-
-    <div class="panel" id="panel" style="display:none">
-      <div class="panelHead">
-        <div class="left">
-          <div class="h" id="panelTitle">-</div>
-          <div class="s" id="panelSub">-</div>
+  <main class="container">
+    <section class="card">
+      <div style="display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end">
+        <div>
+          <h1 style="margin:0 0 6px;" id="title">서울대 한국어</h1>
+          <div class="muted" id="subtitle">교재 선택 → 해당 교재 과만 펼쳐짐</div>
         </div>
-        <div class="row">
-          <button class="btn secondary" id="btnCollapse">접기</button>
-        </div>
+        <div class="muted small" id="status"></div>
       </div>
-      <div class="lessons" id="lessonGrid"></div>
-    </div>
 
-    <div class="warn" id="errBox" style="display:none"></div>
+      <div class="bar"></div>
 
-    <div class="footerNote">
-      <div>• 레슨 링크는 <span class="mono">/snu/lesson.html?data=...</span> 형태로 생성됩니다.</div>
-      <div>• name/klass/token 파라미터는 그대로 전달됩니다.</div>
-    </div>
-  </div>
+      <!-- 1) 교재 화면(처음에 보임) -->
+      <div id="bookWrap">
+        <div class="muted small" style="margin-bottom:8px;">교재를 먼저 고르세요.</div>
+        <div class="grid" id="bookGrid"></div>
+      </div>
+
+      <!-- 2) 과(레슨) 화면(교재를 누르면 보임) -->
+      <div id="lessonWrap" class="hidden">
+        <div style="display:flex;justify-content:space-between;gap:10px;flex-wrap:wrap;align-items:center">
+          <div>
+            <div class="muted small">선택됨</div>
+            <div style="font-weight:900;font-size:18px;margin-top:4px" id="pickedBookTitle">-</div>
+            <div class="muted small" id="pickedBookSub" style="margin-top:2px;"></div>
+          </div>
+          <button class="btn" id="btnReset" type="button">교재 다시 선택</button>
+        </div>
+
+        <div class="lessonGrid" id="lessonGrid"></div>
+      </div>
+
+      <div id="errBox" class="err hidden"></div>
+    </section>
+  </main>
 
   <script>
-    // ✅ GitHub Pages(/korean-quiz/) / 로컬 / 서브폴더 등에서 manifest.json을 안정적으로 찾기 위한 후보들
-    const MANIFEST_CANDIDATES = (function(){
-      const path = location.pathname || "";
-      const m = path.match(/^(.*)\/snu\/index\.html$/);
-      const repoBase = m ? m[1] : ""; // 예: /korean-quiz
-      const abs1 = new URL("../data/snu/manifest.json", location.href).toString(); // 상대경로를 절대 URL로 변환(가장 안전)
-      const abs2 = repoBase ? (location.origin + repoBase + "/data/snu/manifest.json") : "";
-      const abs3 = location.origin + "/data/snu/manifest.json"; // 루트 배치한 경우 대비
-      const list = [abs1, abs2, abs3].filter(Boolean);
-      return Array.from(new Set(list));
-    })();
+    const I18N = {
+      KR: {
+        home: "홈",
+        reset: "교재 다시 선택",
+        loading: "불러오는 중...",
+        loaded: "로드 완료",
+        manifestFail: "manifest.json을 불러오지 못했습니다.",
+        pickHelp: "교재를 먼저 고르세요.",
+        selected: "선택됨"
+      },
+      MN: {
+        home: "Нүүр",
+        reset: "Ном дахин сонгох",
+        loading: "Ачаалж байна...",
+        loaded: "Ачааллаа",
+        manifestFail: "manifest.json уншиж чадсангүй.",
+        pickHelp: "Эхлээд ном сонгоно уу.",
+        selected: "Сонгосон"
+      }
+    };
 
-    function qs(k){ return new URLSearchParams(location.search).get(k) || ""; }
-    function esc(s){ return (s||"").replace(/[&<>"']/g, m=>({ "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;" }[m])); }
-
-    function buildCarryParams(){
-      const name = qs("name");
-      const klass = qs("klass");
-      const token = qs("token");
+    function getLang(){
+      const u = new URL(location.href);
+      const q = (u.searchParams.get("lang")||"").toUpperCase();
+      const s = (localStorage.getItem("kq_lang")||localStorage.getItem("lang")||"").toUpperCase();
+      const pick = (q==="MN"||q==="KR") ? q : s;
+      return (pick==="MN") ? "MN" : "KR";
+    }
+    function setLang(l){
+      localStorage.setItem("kq_lang", l);
+      localStorage.setItem("lang", l);
+    }
+    function tr(k){
+      const L = getLang();
+      return (I18N[L] && I18N[L][k]) ? I18N[L][k] : (I18N.KR[k] || k);
+    }
+    function getParam(k){
+      const u = new URL(location.href);
+      return u.searchParams.get(k) || "";
+    }
+    function passthroughQS(){
+      const u = new URL(location.href);
       const p = new URLSearchParams();
-      if(name) p.set("name", name);
-      if(klass) p.set("klass", klass);
-      if(token) p.set("token", token);
-      const s = p.toString();
-      return s ? ("&" + s) : "";
+      ["name","klass","token","lang"].forEach(k=>{
+        const v = u.searchParams.get(k);
+        if(v) p.set(k, v);
+      });
+      if(!p.get("lang")) p.set("lang", getLang());
+      return p.toString();
+    }
+    function withQS(url){
+      const qs = passthroughQS();
+      return url + (url.includes("?") ? "&" : "?") + qs;
     }
 
-    function goHome(){
-      const carry = buildCarryParams().replace(/^&/,"");
-      location.href = "../index.html" + (carry ? ("?" + carry) : "");
+    const bookWrap = document.getElementById("bookWrap");
+    const bookGrid = document.getElementById("bookGrid");
+    const lessonWrap = document.getElementById("lessonWrap");
+    const lessonGrid = document.getElementById("lessonGrid");
+    const pickedBookTitle = document.getElementById("pickedBookTitle");
+    const pickedBookSub = document.getElementById("pickedBookSub");
+    const btnReset = document.getElementById("btnReset");
+    const btnLang = document.getElementById("btnLang");
+    const btnBack = document.getElementById("btnBack");
+    const btnDash = document.getElementById("btnDash");
+    const homeLink = document.getElementById("homeLink");
+    const statusEl = document.getElementById("status");
+    const errBox = document.getElementById("errBox");
+
+    let MANIFEST = null;
+    let PICKED_BOOK = null;
+
+    function showErr(msg){
+      errBox.textContent = msg;
+      errBox.classList.remove("hidden");
     }
-
-    let manifest = null;
-    let activeBookId = "";
-
-    function setErr(msgHtml){
-      const el = document.getElementById("errBox");
-      el.style.display = "block";
-      el.innerHTML = msgHtml;
-    }
-
     function clearErr(){
-      const el = document.getElementById("errBox");
-      el.style.display = "none";
-      el.innerHTML = "";
+      errBox.classList.add("hidden");
+      errBox.textContent = "";
     }
 
-    function setHeader(){
-      const name = qs("name") || "학습자";
-      const klass = qs("klass") || "-";
-      document.getElementById("who").textContent = `👤 ${name} / ${klass}`;
-      const token = qs("token");
-      document.getElementById("params").textContent = `token=${token ? token.slice(0,6)+"…" : "-"}`;
+    function applyTopLinks(){
+      const qs = passthroughQS();
+      homeLink.href = "../index.html" + (qs ? "?" + qs : "");
+      btnDash.href = "../index.html" + (qs ? "?" + qs : "");
+      btnDash.textContent = tr("home");
+      btnLang.textContent = getLang();
+
+      const name = getParam("name") || "-";
+      const token = getParam("token") || "-";
+      document.getElementById("pillName").textContent = (getLang()==="MN" ? "Сурагч: " : "학습자: ") + name;
+      document.getElementById("pillToken").textContent = "token: " + token;
     }
 
     function renderBooks(){
-      const grid = document.getElementById("bookGrid");
-      grid.innerHTML = "";
-      (manifest.books||[]).forEach(b=>{
-        const div = document.createElement("div");
-        div.className = "book" + (b.id===activeBookId ? " active":"");
-        div.innerHTML = `
-          <div class="k">${esc(b.title || b.id)}</div>
-          <div class="m">${esc(b.subtitle || ((b.lessons||[]).length + "과"))}</div>
-        `;
-        div.addEventListener("click", ()=>selectBook(b.id));
-        grid.appendChild(div);
-      });
-    }
+      bookGrid.innerHTML = "";
+      if(!MANIFEST || !Array.isArray(MANIFEST.books)) return;
 
-    function renderLessons(book){
-      const panel = document.getElementById("panel");
-      const lg = document.getElementById("lessonGrid");
-      lg.innerHTML = "";
-      document.getElementById("panelTitle").textContent = book.title || book.id;
-      document.getElementById("panelSub").textContent =
-        (book.subtitle || "") + (book.subtitle ? " · " : "") + ((book.lessons||[]).length + "과");
-
-      const carry = buildCarryParams();
-      (book.lessons||[]).forEach(ls=>{
+      MANIFEST.books.forEach(b=>{
         const a = document.createElement("a");
-        a.className = "lesson";
-        const dataPath = ls.data || "";
-        a.href = `lesson.html?data=${encodeURIComponent(dataPath)}${carry}`;
+        a.className = "tile";
+        a.href = "javascript:void(0)";
         a.innerHTML = `
-          <div class="n">${esc(ls.label || ("Lesson " + (ls.no||"")))}</div>
-          <div class="t">${esc(ls.title || "")}</div>
+          <div class="tileTitle">${b.title || b.id || "-"}</div>
+          <div class="tileMeta">${b.subtitle || ""}</div>
         `;
-        lg.appendChild(a);
+        a.addEventListener("click", ()=>{
+          PICKED_BOOK = b;
+          renderLessons();
+        });
+        bookGrid.appendChild(a);
+      });
+    }
+
+    function renderLessons(){
+      if(!PICKED_BOOK) return;
+
+      pickedBookTitle.textContent = PICKED_BOOK.title || PICKED_BOOK.id || "-";
+      pickedBookSub.textContent = PICKED_BOOK.subtitle || "";
+
+      lessonGrid.innerHTML = "";
+      const lessons = Array.isArray(PICKED_BOOK.lessons) ? PICKED_BOOK.lessons : [];
+
+      lessons.forEach(lsn=>{
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lessonBtn";
+        btn.textContent = lsn.label || (lsn.no ? (lsn.no + "과") : "레슨");
+
+        btn.addEventListener("click", ()=>{
+          const dataPath = lsn.data || "";
+          const u = new URL("./lesson.html", location.href);
+          u.searchParams.set("data", dataPath);
+
+          const qs = passthroughQS();
+          if(qs){
+            const p = new URLSearchParams(qs);
+            p.forEach((v,k)=>{
+              if(k !== "data") u.searchParams.set(k, v);
+            });
+          }
+          location.href = u.toString();
+        });
+
+        lessonGrid.appendChild(btn);
       });
 
-      panel.style.display = "block";
-      panel.scrollIntoView({behavior:"smooth", block:"start"});
+      bookWrap.classList.add("hidden");
+      lessonWrap.classList.remove("hidden");
     }
 
-    function selectBook(id){
-      activeBookId = id;
-      renderBooks();
-      const book = (manifest.books||[]).find(b=>b.id===id);
-      if(book) renderLessons(book);
+    function backToBooks(){
+      PICKED_BOOK = null;
+      lessonWrap.classList.add("hidden");
+      bookWrap.classList.remove("hidden");
     }
+
+    btnReset.addEventListener("click", backToBooks);
+
+    btnBack.addEventListener("click", ()=>{
+      if(!lessonWrap.classList.contains("hidden")){
+        backToBooks();
+        return;
+      }
+      if(history.length > 1) history.back();
+      else location.href = withQS("../index.html");
+    });
+
+    btnLang.addEventListener("click", ()=>{
+      const next = (getLang()==="KR") ? "MN" : "KR";
+      setLang(next);
+      applyTopLinks();
+      if(PICKED_BOOK) renderLessons();
+    });
 
     async function loadManifest(){
-      let lastErr = "";
-      for(const url of MANIFEST_CANDIDATES){
-        try{
-          const r = await fetch(url, {cache:"no-store"});
-          if(!r.ok) throw new Error("HTTP " + r.status + " (" + r.statusText + ")");
-          const text = await r.text();
-          let data;
-          try{ data = JSON.parse(text); }
-          catch(e){ throw new Error("JSON 파싱 실패: " + (e && e.message ? e.message : e)); }
-          return { data, url };
-        }catch(e){
-          lastErr = `- 시도 URL: ${url}\n  오류: ${(e && e.message) ? e.message : e}`;
-        }
-      }
-      return { data:null, url:null, err:lastErr };
-    }
-
-    async function boot(){
-      setHeader();
-      document.getElementById("btnHome").addEventListener("click", goHome);
-      document.getElementById("btnCollapse").addEventListener("click", ()=>{
-        document.getElementById("panel").style.display = "none";
-        activeBookId = "";
-        renderBooks();
-        window.scrollTo({top:0, behavior:"smooth"});
-      });
-
-      const { data, url, err } = await loadManifest();
-      if(!data){
-        const links = MANIFEST_CANDIDATES.map(u=>(
-          `<div>• <a href="${esc(u)}" style="color:#b9c9ff" target="_blank" rel="noopener">${esc(u)}</a></div>`
-        )).join("");
-        setErr(
-          `<div style="font-weight:800;margin-bottom:6px">manifest.json을 불러오지 못했습니다.</div>
-           <div style="margin-bottom:10px;white-space:pre-wrap">${esc(err || "")}</div>
-           <div style="opacity:.9;margin-bottom:6px">아래 링크 중 하나를 눌러 “파일이 실제로 열리는지(404 여부)” 확인하세요:</div>
-           ${links}
-           <div style="margin-top:10px;opacity:.85">
-             ※ 보통 원인: (1) 파일 경로/대소문자 오류 (2) manifest.json 문법 오류(콤마/괄호) (3) 커밋/배포 미반영
-           </div>`
-        );
-        return;
-      }
-
-      manifest = data;
       clearErr();
+      applyTopLinks();
+      statusEl.textContent = tr("loading");
+      document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
 
-      if(!manifest || !Array.isArray(manifest.books)){
-        setErr(`<div style="font-weight:800;margin-bottom:6px">manifest.json 형식 오류</div>
-                <div>books[] 배열이 필요합니다.</div>
-                <div style="margin-top:8px;opacity:.85">로드된 URL: <span class="mono">${esc(url || "")}</span></div>`);
-        return;
+      try{
+        const url = new URL("../data/snu/manifest.json", location.href).toString();
+        const res = await fetch(url, { cache:"no-store" });
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        MANIFEST = await res.json();
+        statusEl.textContent = tr("loaded");
+        renderBooks();
+      }catch(e){
+        statusEl.textContent = "오류";
+        showErr(tr("manifestFail") + " (" + (e.message || e) + ")");
       }
-
-      renderBooks();
-      const first = (manifest.books[0]||{}).id || "";
-      if(first) selectBook(first);
     }
 
-    boot();
+    loadManifest();
   </script>
 </body>
 </html>
