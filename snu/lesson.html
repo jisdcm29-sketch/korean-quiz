@@ -68,6 +68,76 @@
     .result.bad{border-color:rgba(248,113,113,.6)}
     .small{font-size:13px}
   </style>
+  <!-- ✅ Mobile Quiz Readability Patch (Question/Choices bigger + centered) -->
+<style>
+  /* 퀴즈(문제/선택지) 영역을 가운데로 */
+  #quizArea, #testArea, .quiz-area, .test-area, .vocab-test, .quizCard, .quiz-card {
+    margin-left: auto !important;
+    margin-right: auto !important;
+    text-align: center !important;
+  }
+
+  /* 문제(단어) 텍스트: 크게 + 중앙정렬 */
+  #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word {
+    font-weight: 800 !important;
+    line-height: 1.15 !important;
+    word-break: keep-all !important;
+    overflow-wrap: anywhere !important;
+    text-align: center !important;
+    margin: 10px auto 14px auto !important;
+  }
+
+  /* 선택지 버튼: 크게 + 터치하기 쉽게 + 중앙 */
+  #choices button, #choiceList button, .choices button, .choice button,
+  .choiceBtn, .choice-btn, .optionBtn, .option-btn {
+    width: 100% !important;
+    max-width: 520px !important;
+    margin: 10px auto !important;
+    padding: 16px 14px !important;
+    border-radius: 16px !important;
+    text-align: center !important;
+    line-height: 1.2 !important;
+  }
+
+  /* 버튼 안의 글자도 중앙 */
+  #choices button *, #choiceList button *, .choices button *, .choiceBtn *, .optionBtn * {
+    text-align: center !important;
+  }
+
+  /* 📱 휴대폰에서 글자 크게 + 위쪽 잡다한 영역은 작게 */
+  @media (max-width: 520px) {
+    /* 안내/설명 글이 크면 퀴즈가 작아 보이므로 축소 */
+    .hint, .help, .desc, .description, .note, .subText, .smallNote {
+      font-size: 12px !important;
+      line-height: 1.25 !important;
+      margin: 6px auto !important;
+      max-width: 95vw !important;
+    }
+
+    /* 퀴즈 카드(영역) 폭을 휴대폰에 맞춤 */
+    #quizArea, #testArea, .quiz-area, .test-area, .vocab-test, .quizCard, .quiz-card {
+      width: min(94vw, 640px) !important;
+      margin-top: 10px !important;
+      padding-top: 10px !important;
+    }
+
+    /* ✅ 핵심: 문제/선택지 글자 크기 */
+    #questionText, #testQuestion, .questionText, .test-question, .qText, .question, .question-word {
+      font-size: 34px !important; /* 문제(단어) */
+    }
+
+    #choices button, #choiceList button, .choices button, .choice button,
+    .choiceBtn, .choice-btn, .optionBtn, .option-btn {
+      font-size: 22px !important; /* 선택지 */
+    }
+
+    /* 버튼 안에 작은 글씨가 있으면 조금만 작게 */
+    #choices button small, .choices button small, .choiceBtn small, .optionBtn small {
+      font-size: 14px !important;
+      opacity: .85 !important;
+    }
+  }
+</style>
 </head>
 <body>
   <header class="topbar">
