@@ -22,7 +22,6 @@
     button{font-family:inherit}
     .container{max-width:980px;margin:0 auto;padding:16px}
 
-    /* ===== TOPBAR (서울대 목록 버튼 제거) ===== */
     .topbar{
       position:sticky;top:0;z-index:30;
       display:flex;align-items:center;justify-content:space-between;gap:10px;
@@ -33,7 +32,6 @@
     .dot{width:10px;height:10px;border-radius:999px;background:var(--blue)}
     .btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
 
-    /* 공통 버튼 */
     .btn{
       padding:12px 16px;
       border-radius:16px;
@@ -67,7 +65,6 @@
       font-size:16px;
     }
 
-    /* ===== CARD ===== */
     .card{
       background:rgba(17,24,39,.9);
       border:1px solid var(--line);
@@ -79,7 +76,6 @@
     .small{font-size:13px}
     .bar{height:1px;background:var(--line);margin:12px 0}
 
-    /* ===== TABS ===== */
     .tabs{display:flex;gap:10px;flex-wrap:wrap;margin-top:12px}
     .tab{
       padding:12px 16px;
@@ -96,7 +92,7 @@
       white-space:nowrap;
     }
     .tab:active{transform:translateY(1px)}
-    .tab.active{filter:brightness(1.08)}
+    .tab.active{filter:brightness(1.10)}
     .tab.tab-vocab{background:linear-gradient(135deg,rgba(52,211,153,.18), rgba(11,16,32,.96));border-color:rgba(52,211,153,.50);}
     .tab.tab-quiz{background:linear-gradient(135deg,rgba(96,165,250,.20), rgba(11,16,32,.96));border-color:rgba(96,165,250,.55);}
     .tab.tab-grammar{background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.50);}
@@ -105,15 +101,29 @@
     .panel{display:none;margin-top:12px}
     .panel.active{display:block}
 
-    /* ===== VOCAB TABLE (예문 컬럼 삭제) ===== */
     table{width:100%;border-collapse:collapse;margin-top:10px}
     th,td{border-bottom:1px solid var(--line);padding:12px;vertical-align:top}
     th{color:var(--muted);text-align:left;font-weight:800}
     td b{font-weight:950}
 
     /* ===== QUIZ UI ===== */
-    .qbox{border:1px solid var(--line);background:#0b1020;border-radius:18px;padding:14px}
-    .qHead{margin-bottom:10px;text-align:center}
+    .qbox{
+      border:1px solid var(--line);
+      background:#0b1020;
+      border-radius:18px;
+      padding:14px;
+    }
+
+    /* ✅ 문제 영역: 바탕색으로 “구분” (요청사항) */
+    .qHead{
+      margin-bottom:10px;
+      text-align:center;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(96,165,250,.20);
+      background:linear-gradient(135deg,rgba(96,165,250,.14), rgba(11,16,32,.96));
+      box-shadow:0 10px 22px rgba(0,0,0,.14);
+    }
     .qLabel{color:var(--muted);font-size:13px;font-weight:800}
     .qText{
       font-weight:950;
@@ -121,14 +131,21 @@
       margin-top:8px;
       text-align:center;
       line-height:1.12;
-      font-size:22px;
+      font-size:24px;            /* ✅ 문제 글씨 키움 */
       word-break:keep-all;
       overflow-wrap:anywhere;
     }
-    .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
+
+    /* ✅ 선택지 간격 줄여서 글씨 키울 여유 확보 */
+    .choices{
+      display:grid;
+      grid-template-columns:repeat(2,1fr);
+      gap:8px;                  /* ✅ 기존 10 → 8 */
+      margin-top:10px;
+    }
     @media(max-width:800px){.choices{grid-template-columns:1fr}}
     .choice{
-      padding:14px 14px;
+      padding:13px 12px;        /* ✅ 조금 줄여서 더 많이 보이게 */
       border-radius:18px;
       border:1px solid var(--line);
       background:linear-gradient(135deg,rgba(255,255,255,.04), rgba(11,16,32,.96));
@@ -136,8 +153,8 @@
       cursor:pointer;
       text-align:center;
       font-weight:900;
-      font-size:20px;
-      min-height:54px;
+      font-size:21px;           /* ✅ 선택지 글씨 키움 */
+      min-height:52px;          /* ✅ 조금 낮춰서 한 화면에 더 들어오게 */
       box-shadow:0 10px 22px rgba(0,0,0,.18);
       white-space:normal;
       overflow-wrap:anywhere;
@@ -149,7 +166,6 @@
     .result.ok{border-color:rgba(52,211,153,.6)}
     .result.bad{border-color:rgba(248,113,113,.6)}
 
-    /* 퀴즈 상단 버튼들 */
     .btnMode{
       background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96));
       border-color:rgba(34,211,238,.52);
@@ -163,18 +179,17 @@
       border-color:rgba(251,191,36,.46);
     }
 
-    /* ===== ✅ 모바일 우선 레이아웃 정리 (핵심) ===== */
+    /* ===== ✅ 모바일 우선 레이아웃 ===== */
     @media(max-width:520px){
       .container{padding:10px}
       .card{padding:14px;border-radius:18px}
 
-      /* 상단바 버튼이 줄바꿈으로 어지럽지 않게 */
       .btnRow{flex-wrap:nowrap;gap:8px}
       .btn{min-height:50px;font-size:15px;padding:10px 12px;border-radius:14px}
       .btnBack{font-size:18px;min-width:52px}
       .btnLang{min-width:60px}
 
-      /* ✅ 탭 4개를 "한 줄"로 고정 (4열 그리드) */
+      /* 탭 4개 한 줄 */
       .tabs{
         display:grid;
         grid-template-columns:repeat(4,1fr);
@@ -189,7 +204,7 @@
         text-align:center;
       }
 
-      /* ✅ 방향/새문제/레거시는 모바일에서 한 줄(2개) + 아래(레거시)로 */
+      /* 방향+새문제 1줄(2칸), 레거시는 아래 */
       #panel-quiz .btnRow{
         display:grid;
         grid-template-columns:1fr 1fr;
@@ -203,7 +218,6 @@
         min-height:44px;
         border-radius:14px;
       }
-      /* 레거시 버튼은 아래로 내려서 정리(무질서 방지) */
       #legacyBtnQuiz{
         grid-column:1 / -1;
         width:100%;
@@ -214,13 +228,13 @@
         text-align:center;
       }
 
-      /* 종합 테스트 패널도 버튼 작게 */
       #panel-mixed .btnRow{display:flex;justify-content:flex-start}
       #btnNewMixed{font-size:13px;padding:10px 10px;min-height:44px;border-radius:14px}
 
-      /* 퀴즈 글자 */
-      .qText{font-size:20px}
-      .choice{font-size:18px;padding:12px 10px;min-height:48px}
+      /* ✅ 모바일에서 문제/선택지 더 키움 + 선택지 간격 더 줄임 */
+      .qText{font-size:26px;}           /* ✅ 문제 글씨 더 큼 */
+      .choices{gap:6px;}                /* ✅ 간격 더 줄임 */
+      .choice{font-size:22px;min-height:48px;padding:12px 10px;} /* ✅ 선택지 글씨 더 큼 */
     }
   </style>
 </head>
@@ -235,7 +249,6 @@
     <div class="btnRow">
       <button class="btn btnBack" id="btnBack" type="button" aria-label="back">←</button>
       <button class="btn btnLang" id="btnLang" type="button">KR</button>
-      <!-- ✅ 서울대 목록 버튼 삭제 (요청사항) -->
     </div>
   </header>
 
@@ -594,6 +607,12 @@
       renderQuestionInto(mixedDiv, q);
     }
 
+    function makeLessonLabel(lessonRaw){
+      const n = parseInt(String(lessonRaw || "").replace(/[^\d]/g,""), 10);
+      if(Number.isFinite(n)) return `${n}과`;
+      return lessonRaw ? String(lessonRaw) : "";
+    }
+
     async function main(){
       applyTexts();
 
@@ -658,11 +677,11 @@
 
         const level = (d.meta && d.meta.level) ? d.meta.level : (d.level || "");
         const lesson = (d.meta && d.meta.lesson) ? d.meta.lesson : (d.lesson || "");
-        const tkr = (d.meta && d.meta.title) ? d.meta.title : (d.title_kr || "");
+        const lessonLabel = makeLessonLabel(lesson);
         const tmn = d.title_mn || (d.meta && d.meta.title_mn) || "";
 
-        const headText = `${level} ${lesson} · ${tkr}`.trim();
-        title.textContent = headText || "레슨";
+        /* ✅ 요청 형식: "1A 1과" */
+        title.textContent = `${level} ${lessonLabel}`.trim() || "레슨";
         subtitle.textContent = tmn || "";
         status.textContent = tr("loaded");
 
