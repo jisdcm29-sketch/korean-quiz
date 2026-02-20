@@ -123,6 +123,17 @@
     }
 
     .hidden{display:none !important;}
+
+    @media (max-width: 520px){
+      #viewDash.card { padding: 12px !important; }
+      #dashDesc { margin-top: 0 !important; }
+      #viewDash .bar { margin: 10px 0 !important; }
+      #viewDash .tiles { gap: 10px !important; margin-top: 10px !important; }
+      #viewDash .tile { padding: 16px 14px !important; min-height: 86px !important; }
+      #viewDash .tileTitle { font-size: 18px !important; }
+      #viewDash .tileDesc  { font-size: 13px !important; }
+      #viewDash .tileMeta  { font-size: 12px !important; }
+    }
   </style>
 </head>
 <body>
@@ -133,6 +144,7 @@
     </div>
 
     <div class="right">
+      <button class="btn" id="btnBack" type="button">←</button>
       <button class="btn" id="btnLang" type="button">KR</button>
       <button class="btn danger hidden" id="btnLogout" type="button">로그아웃</button>
       <span class="pill hidden" id="pillUser">학습자: -</span>
@@ -240,7 +252,6 @@
         start: "Start",
         legacy: "기존 화면(백업) 보기",
         loginNote: "안내: 이 로그인은 “전환을 빠르게” 하기 위한 임시 버전입니다.<br/>추후 실제 로그인/결제(예: Supabase/Firebase)로 바꿀 수 있습니다.",
-        dashTitle: "대시보드",
         dashDesc: "모바일 우선(큰 버튼). 원하는 메뉴를 누르세요.",
         tip: "팁: 링크가 안 열리면 “구글 검색창”이 아니라 “주소창(URL)”에 주소를 넣어야 합니다.",
         learner: "학습자",
@@ -266,7 +277,6 @@
         start: "Start",
         legacy: "Хуучин дэлгэц (нөөц) харах",
         loginNote: "Тайлбар: Энэ нь түр хувилбар (хурдан шилжих).<br/>Дараа нь жинхэнэ нэвтрэлт/төлбөр (ж: Supabase/Firebase) болгон сольж болно.",
-        dashTitle: "Самбар",
         dashDesc: "Утасны хувилбар (том товч). Сонгоно уу.",
         tip: "Зөвлөгөө: Линк нээгдэхгүй бол Google хайлтын талбар биш, URL хаягийн мөрөнд оруулна уу.",
         learner: "Сурагч",
@@ -327,6 +337,7 @@
 
     const viewLogin = document.getElementById("viewLogin");
     const viewDash  = document.getElementById("viewDash");
+    const btnBack   = document.getElementById("btnBack");
     const btnLang   = document.getElementById("btnLang");
     const btnLogout = document.getElementById("btnLogout");
     const pillUser  = document.getElementById("pillUser");
@@ -354,7 +365,6 @@
       document.getElementById("loginNote").innerHTML = tr("loginNote");
       btnLogout.textContent = tr("logout");
 
-      document.getElementById("dashTitle").textContent = tr("dashTitle");
       document.getElementById("dashDesc").textContent  = tr("dashDesc");
       document.getElementById("tipText").textContent   = tr("tip");
 
@@ -395,6 +405,11 @@
       const el = document.querySelector('input[name="role"]:checked');
       return el ? el.value : "BOOK";
     }
+
+    btnBack.addEventListener("click", ()=>{
+      if(history.length > 1) history.back();
+      else location.href = "./index.html";
+    });
 
     btnLang.addEventListener("click", ()=>{
       const next = (getLang()==="KR") ? "MN" : "KR";
