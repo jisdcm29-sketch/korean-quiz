@@ -66,7 +66,7 @@
     .qbox .qLabel{color:var(--muted);font-size:13px}
     .qbox .qPrompt{
       font-weight:900;
-      font-size:22px;              /* 기본(PC/태블릿) */
+      font-size:22px;
       line-height:1.15;
       margin-top:8px;
       text-align:center;
@@ -74,19 +74,19 @@
       overflow-wrap:anywhere;
     }
 
-    /* 선택지: 기존 그리드(PC) */
+    /* PC/태블릿: 2열 */
     .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:10px;margin-top:10px}
     @media(max-width:800px){.choices{grid-template-columns:1fr}}
 
     .choice{
       padding:12px;border-radius:14px;border:1px solid var(--line);
       background:#0b1020;color:var(--text);cursor:pointer;
-      text-align:center;           /* ✅ 가운데 */
+      text-align:center;
       line-height:1.2;
       white-space:normal;
       overflow-wrap:anywhere;
       word-break:keep-all;
-      font-size:18px;              /* 기본(PC/태블릿) */
+      font-size:18px;
     }
     .choice:hover{border-color:rgba(96,165,250,.6)}
 
@@ -95,7 +95,7 @@
     .result.bad{border-color:rgba(248,113,113,.6)}
     .small{font-size:13px}
 
-    /* ===== ✅ Mobile: 질문 더 크게 + 중앙 + 간격 축소 + 한 화면에 더 많이 보이게 ===== */
+    /* ===== ✅ Mobile: 질문 더 크게 + 중앙 + 간격 축소 + 한 화면에 더 많이 ===== */
     @media (max-width: 520px){
       .container{padding:10px}
       .card{padding:12px}
@@ -105,33 +105,31 @@
       .tab{padding:9px 10px}
       .bar{margin:10px 0}
 
-      /* 퀴즈 박스 */
       .qbox{padding:12px}
       .qbox .qHead{display:flex;flex-direction:column;align-items:center}
       .qbox .qLabel{text-align:center}
 
-      /* ✅ 질문: 선택지보다 확실히 크게 */
+      /* ✅ 질문(단어/문법 prompt): 선택지보다 확실히 크게 */
       .qbox .qPrompt{
-        font-size:28px;            /* ✅ 질문 크게 */
+        font-size:28px;
         margin-top:8px;
         margin-bottom:6px;
         text-align:center;
       }
 
-      /* ✅ 선택지: 간격 줄이고(스크롤 줄이기) 글자 약간 작게 */
+      /* ✅ 선택지: 세로 + 간격 축소 */
       .choices{
-        display:flex;              /* ✅ 모바일은 세로로 고정 */
+        display:flex;
         flex-direction:column;
-        gap:6px;                   /* ✅ 간격 축소 */
+        gap:6px;
         margin-top:10px;
       }
       .choice{
-        font-size:20px;            /* ✅ 선택지(20) < 질문(28) */
-        padding:10px 12px;         /* ✅ 버튼 높이 줄여 한 화면에 더 많이 */
+        font-size:20px;
+        padding:10px 12px;
         border-radius:14px;
       }
 
-      /* 결과 박스도 조금 더 타이트 */
       .result{padding:10px;margin-top:8px}
       .muted.small{font-size:12px}
     }
@@ -161,6 +159,7 @@
       <div class="tabs" role="tablist" aria-label="lesson tabs">
         <button class="tab active" id="tab-vocab" type="button">어휘 보기</button>
         <button class="tab" id="tab-quiz" type="button">어휘 테스트</button>
+        <button class="tab" id="tab-mix" type="button">종합 테스트</button>
         <button class="tab" id="tab-grammar" type="button">문법</button>
       </div>
 
@@ -184,6 +183,16 @@
         <div id="quiz"></div>
       </div>
 
+      <div class="panel" id="panel-mix">
+        <div class="btnRow" style="margin-bottom:10px;">
+          <button class="btn" id="btnMixMode" type="button">방향: 한국어 → 몽골어</button>
+          <button class="btn" id="btnMixNew" type="button">새 문제</button>
+        </div>
+        <div class="muted small" id="mixHint"></div>
+        <div class="bar"></div>
+        <div id="mixQuiz"></div>
+      </div>
+
       <div class="panel" id="panel-grammar">
         <div id="grammar"></div>
       </div>
@@ -200,6 +209,7 @@
         loaded: "로드 완료",
         vocabView: "어휘 보기",
         vocabQuiz: "어휘 테스트",
+        mixQuiz: "종합 테스트",
         grammar: "문법",
         legacyVocab: "기존 어휘(HTML) 보기",
         legacyHtml: "기존 자료(HTML) 보기",
@@ -211,9 +221,17 @@
         noGrammar: "문법이 없습니다.",
         modeK2M: "방향: 한국어 → 몽골어",
         modeM2K: "방향: 몽골어 → 한국어",
+        mixModeK2M: "방향: 한국어 → 몽골어",
+        mixModeM2K: "방향: 몽골어 → 한국어",
         newQ: "새 문제",
+        mixNewQ: "새 문제",
         quizHint: (n)=> n ? `어휘 ${n}개로 테스트합니다. (4지선다, 랜덤)` : "어휘 데이터가 없어서 테스트를 만들 수 없습니다.",
-        qLabel: "문제",
+        mixHint: (v, g)=> {
+          const gv = (g>0) ? ` + 문법 ${g}개` : "";
+          return (v>0 || g>0) ? `어휘 ${v}개${gv}로 종합 테스트합니다. (4지선다, 랜덤)` : "어휘/문법 문제가 없어서 테스트를 만들 수 없습니다.";
+        },
+        vqLabel: "어휘",
+        gqLabel: "문법",
         correct: "정답!",
         wrong: "오답!",
         answer: "정답"
@@ -225,6 +243,7 @@
         loaded: "Ачааллаа",
         vocabView: "Үг харах",
         vocabQuiz: "Үг шалгалт",
+        mixQuiz: "Холимог шалгалт",
         grammar: "Дүрэм",
         legacyVocab: "Хуучин үгс (HTML) харах",
         legacyHtml: "Хуучин материал (HTML) харах",
@@ -236,9 +255,17 @@
         noGrammar: "Дүрэм байхгүй.",
         modeK2M: "Чиглэл: Солонгос → Монгол",
         modeM2K: "Чиглэл: Монгол → Солонгос",
+        mixModeK2M: "Чиглэл: Солонгос → Монгол",
+        mixModeM2K: "Чиглэл: Монгол → Солонгос",
         newQ: "Шинэ асуулт",
+        mixNewQ: "Шинэ асуулт",
         quizHint: (n)=> n ? `Үг ${n} ширхэгээр шалгана. (4 сонголт, санамсаргүй)` : "Үг байхгүй тул шалгалт үүсгэж чадсангүй.",
-        qLabel: "Асуулт",
+        mixHint: (v, g)=> {
+          const gv = (g>0) ? ` + дүрэм ${g}ш` : "";
+          return (v>0 || g>0) ? `Үг ${v}ш${gv} холимог шалгалт. (4 сонголт, санамсаргүй)` : "Үг/Дүрмийн асуулт алга.";
+        },
+        vqLabel: "Үг",
+        gqLabel: "Дүрэм",
         correct: "Зөв!",
         wrong: "Буруу!",
         answer: "Зөв хариулт"
@@ -259,10 +286,10 @@
       localStorage.setItem("kq_lang", l);
       localStorage.setItem("language", l);
     }
-    function tr(key, arg){
+    function tr(key, arg1, arg2){
       const L = getLang();
       const v = (I18N[L] && I18N[L][key]) ? I18N[L][key] : I18N.KR[key];
-      return (typeof v === "function") ? v(arg) : v;
+      return (typeof v === "function") ? v(arg1, arg2) : v;
     }
 
     function getParam(name){
@@ -282,6 +309,7 @@
       const tabs = [
         {t:document.getElementById("tab-vocab"), p:document.getElementById("panel-vocab"), k:"vocab"},
         {t:document.getElementById("tab-quiz"), p:document.getElementById("panel-quiz"), k:"quiz"},
+        {t:document.getElementById("tab-mix"), p:document.getElementById("panel-mix"), k:"mix"},
         {t:document.getElementById("tab-grammar"), p:document.getElementById("panel-grammar"), k:"grammar"}
       ];
       tabs.forEach(x=>{
@@ -292,7 +320,8 @@
     }
 
     let LESSON = null;
-    let QUIZ_MODE = "KO2MN"; // or MN2KO
+    let QUIZ_MODE = "KO2MN"; // 어휘 테스트 방향
+    let MIX_MODE  = "KO2MN"; // 종합 테스트의 어휘 방향
 
     function applyTexts(){
       document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
@@ -303,6 +332,7 @@
 
       document.getElementById("tab-vocab").textContent = tr("vocabView");
       document.getElementById("tab-quiz").textContent = tr("vocabQuiz");
+      document.getElementById("tab-mix").textContent = tr("mixQuiz");
       document.getElementById("tab-grammar").textContent = tr("grammar");
 
       document.getElementById("legacyBtnVocab").textContent = tr("legacyVocab");
@@ -310,6 +340,9 @@
 
       document.getElementById("btnNew").textContent = tr("newQ");
       document.getElementById("btnMode").textContent = (QUIZ_MODE==="KO2MN") ? tr("modeK2M") : tr("modeM2K");
+
+      document.getElementById("btnMixNew").textContent = tr("mixNewQ");
+      document.getElementById("btnMixMode").textContent = (MIX_MODE==="KO2MN") ? tr("mixModeK2M") : tr("mixModeM2K");
     }
 
     function renderVocab(d){
@@ -377,25 +410,23 @@
       }
     }
 
-    function pickQuestion(vocab){
-      const pool = (vocab || []).filter(v => (v && (v.ko || v.mn)));
+    function pickVocabQuestion(vocab, mode){
+      const pool = (vocab || []).filter(v => v && (v.ko || v.mn));
       if(!pool.length) return null;
 
-      // 유효한 문제(프롬프트/정답 모두 존재) 나올 때까지 최대 15번 재시도
+      const getPrompt = (v) => mode==="KO2MN" ? (v.ko||"") : (v.mn||"");
+      const getAnswer = (v) => mode==="KO2MN" ? (v.mn||"") : (v.ko||"");
+
       for(let tries=0; tries<15; tries++){
         const q = pool[Math.floor(Math.random()*pool.length)];
-        const getPrompt = (v) => QUIZ_MODE==="KO2MN" ? (v.ko||"") : (v.mn||"");
-        const getAnswer = (v) => QUIZ_MODE==="KO2MN" ? (v.mn||"") : (v.ko||"");
-
         const correct = getAnswer(q);
         const prompt = getPrompt(q);
         if(!prompt || !correct) continue;
 
         const others = pool.map(v => getAnswer(v)).filter(a => a && a !== correct);
         const uniq = Array.from(new Set(others));
-
-        // 3개 부족하면(데이터가 적으면) 같은 pool에서 더 뽑아 채우기
         let distractors = shuffle(uniq).slice(0, 3);
+
         while(distractors.length < 3){
           const r = pool[Math.floor(Math.random()*pool.length)];
           const cand = getAnswer(r);
@@ -407,6 +438,29 @@
         if(choices.length === 4) return { prompt, correct, choices };
       }
       return null;
+    }
+
+    // JSON에 이런 식으로 넣으면 종합 테스트에서 문법 문제도 섞임:
+    // "grammar_quiz":[{"q":"-(으)ㄹ 수 있다","a":"~할 수 있다","choices":["~할 수 있다","~해야 한다","~때문에","~지만"]}]
+    function pickGrammarQuestion(d){
+      const gq = d.grammar_quiz || [];
+      const pool = gq.filter(x => x && x.q && x.a && Array.isArray(x.choices) && x.choices.length >= 4);
+      if(!pool.length) return null;
+
+      const it = pool[Math.floor(Math.random()*pool.length)];
+      const correct = it.a;
+
+      const uniq = Array.from(new Set((it.choices||[]).filter(c=>c)));
+      const list = uniq.includes(correct) ? uniq : [correct, ...uniq];
+      let choices = shuffle(list).slice(0,4);
+
+      while(choices.length < 4){
+        const r = pool[Math.floor(Math.random()*pool.length)];
+        const cand = (r.choices||[])[Math.floor(Math.random()*(r.choices||[]).length)];
+        if(cand && !choices.includes(cand)) choices.push(cand);
+      }
+
+      return { prompt: it.q, correct, choices };
     }
 
     function renderQuiz(d){
@@ -430,7 +484,7 @@
         return;
       }
 
-      const q = pickQuestion(vocab);
+      const q = pickVocabQuestion(vocab, QUIZ_MODE);
       if(!q){
         quizDiv.innerHTML = "<div class='muted'>퀴즈를 만들 수 없습니다. (ko/mn 값 확인)</div>";
         return;
@@ -441,7 +495,7 @@
 
       const head = document.createElement("div");
       head.className = "qHead";
-      head.innerHTML = `<div class="qLabel">${tr("qLabel")}</div>
+      head.innerHTML = `<div class="qLabel">${tr("vqLabel")}</div>
                         <div class="qPrompt" id="questionText">${q.prompt}</div>`;
       box.appendChild(head);
 
@@ -482,11 +536,92 @@
       quizDiv.appendChild(box);
     }
 
+    function renderMixQuiz(d){
+      const mixDiv = document.getElementById("mixQuiz");
+      const hint = document.getElementById("mixHint");
+      mixDiv.innerHTML = "";
+
+      const vocab = d.vocab || [];
+      const gqCount = (d.grammar_quiz || []).length;
+      hint.textContent = tr("mixHint", vocab.length, gqCount);
+
+      const hasV = vocab.length > 0;
+      const hasG = gqCount > 0;
+
+      if(!hasV && !hasG){
+        mixDiv.innerHTML = `<div class='muted'>${tr("noVocab")}</div>`;
+        return;
+      }
+
+      // 문법 데이터가 있으면 30% 확률로 문법 문제, 나머지는 어휘 문제
+      let isGrammar = false;
+      if(hasG && hasV) isGrammar = Math.random() < 0.30;
+      else if(hasG && !hasV) isGrammar = true;
+
+      const q = isGrammar ? pickGrammarQuestion(d) : pickVocabQuestion(vocab, MIX_MODE);
+
+      // fallback
+      const finalQ = q || (isGrammar ? pickVocabQuestion(vocab, MIX_MODE) : pickGrammarQuestion(d));
+      const finalIsGrammar = q ? isGrammar : !isGrammar;
+
+      if(!finalQ){
+        mixDiv.innerHTML = "<div class='muted'>종합 테스트 문제를 만들 수 없습니다. (데이터 확인)</div>";
+        return;
+      }
+
+      const box = document.createElement("div");
+      box.className = "qbox";
+
+      const head = document.createElement("div");
+      head.className = "qHead";
+      const label = finalIsGrammar ? tr("gqLabel") : tr("vqLabel");
+      head.innerHTML = `<div class="qLabel">${label}</div>
+                        <div class="qPrompt" id="mixQuestionText">${finalQ.prompt}</div>`;
+      box.appendChild(head);
+
+      const choicesWrap = document.createElement("div");
+      choicesWrap.className = "choices";
+      choicesWrap.id = "mixChoices";
+
+      const result = document.createElement("div");
+      result.className = "result";
+      result.style.display = "none";
+
+      function lock(){
+        [...choicesWrap.querySelectorAll("button")].forEach(b=>b.disabled=true);
+      }
+
+      finalQ.choices.forEach(ch=>{
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "choice";
+        btn.textContent = ch;
+
+        btn.addEventListener("click", ()=>{
+          const ok = ch === finalQ.correct;
+          result.style.display = "";
+          result.classList.remove("ok","bad");
+          result.classList.add(ok ? "ok" : "bad");
+          result.innerHTML = ok
+            ? `<b>${tr("correct")}</b> <span class="muted small">(${tr("answer")}: ${finalQ.correct})</span>`
+            : `<b>${tr("wrong")}</b> <span class="muted small">${tr("answer")}: ${finalQ.correct}</span>`;
+          lock();
+        });
+
+        choicesWrap.appendChild(btn);
+      });
+
+      box.appendChild(choicesWrap);
+      box.appendChild(result);
+      mixDiv.appendChild(box);
+    }
+
     async function main(){
       applyTexts();
 
       document.getElementById("tab-vocab").addEventListener("click", ()=>setActiveTab("vocab"));
       document.getElementById("tab-quiz").addEventListener("click", ()=>setActiveTab("quiz"));
+      document.getElementById("tab-mix").addEventListener("click", ()=>setActiveTab("mix"));
       document.getElementById("tab-grammar").addEventListener("click", ()=>setActiveTab("grammar"));
 
       document.getElementById("btnLang").addEventListener("click", ()=>{
@@ -497,6 +632,7 @@
           renderVocab(LESSON);
           renderGrammar(LESSON);
           renderQuiz(LESSON);
+          renderMixQuiz(LESSON);
         }
       });
 
@@ -508,6 +644,16 @@
 
       document.getElementById("btnNew").addEventListener("click", ()=>{
         if(LESSON) renderQuiz(LESSON);
+      });
+
+      document.getElementById("btnMixMode").addEventListener("click", ()=>{
+        MIX_MODE = (MIX_MODE==="KO2MN") ? "MN2KO" : "KO2MN";
+        applyTexts();
+        if(LESSON) renderMixQuiz(LESSON);
+      });
+
+      document.getElementById("btnMixNew").addEventListener("click", ()=>{
+        if(LESSON) renderMixQuiz(LESSON);
       });
 
       const dataPath = getParam("data");
@@ -546,6 +692,7 @@
         renderVocab(d);
         renderGrammar(d);
         renderQuiz(d);
+        renderMixQuiz(d);
 
       }catch(err){
         subtitle.textContent = "불러오기 오류: " + (err.message || err);
