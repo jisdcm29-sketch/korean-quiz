@@ -286,8 +286,16 @@
   // (선택) 로그 남기기: 당신의 Apps Script 웹앱 URL
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
 
+  // ===== Pages 베이스 경로 자동 인식 (예: /korean-quiz) =====
+  function getRepoBase(){
+    // 예: /korean-quiz/topik2/flashcards.html -> /korean-quiz
+    const p = location.pathname.split("/").filter(Boolean);
+    return p.length ? ("/" + p[0]) : "";
+  }
+  const REPO_BASE = getRepoBase();
+
   // TOPIK II 허브(뒤로가기)
-  const TOPIK2_HOME = "/korean-quiz/topik2/index.html";
+  const TOPIK2_HOME = REPO_BASE + "/topik2/index.html";
 
   // ====== Helpers ======
   const $app = document.getElementById("app");
@@ -552,7 +560,10 @@
     // GitHub Pages 기준 상대경로를 그대로 fetch (URL 인코딩 포함)
     // state.file이 "/data/..." 또는 "data/..." 모두 허용
     const path = state.file.startsWith("/") ? state.file : ("/" + state.file);
-    const url = new URL(path, location.origin);
+
+    // 중요: project pages는 /korean-quiz 같은 베이스가 붙음
+    const url = new URL(REPO_BASE + path, location.origin);
+
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText);
     const json = await res.json();
