@@ -6,7 +6,7 @@
       "id": "vocab",
       "title": "어휘",
       "subtitle": "레벨 1~10",
-      "levels": ["인물 태도 어휘", "접속사(기능별)", "사동-피동 어휘", "감정 어휘", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+      "levels": ["인물 태도 어휘", "접속사(기능별)", "사동-피동 어휘", "감정 어휘", "관용표현1", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
     },
     {
       "id": "grammar",
