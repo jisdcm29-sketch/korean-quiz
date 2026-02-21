@@ -11,9 +11,23 @@
       --text:#e7ecff;
       --muted:#aab6e6;
       --line:rgba(255,255,255,.10);
-      --primary:#3b82f6;
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:22px;
+
+      --blueA: rgba(59,130,246,.16);
+      --blueB: rgba(59,130,246,.36);
+
+      --greenA: rgba(34,197,94,.14);
+      --greenB: rgba(34,197,94,.32);
+
+      --amberA: rgba(245,158,11,.14);
+      --amberB: rgba(245,158,11,.34);
+
+      --koA: rgba(59,130,246,.14);
+      --koB: rgba(59,130,246,.34);
+
+      --mnA: rgba(34,197,94,.14);
+      --mnB: rgba(34,197,94,.34);
     }
     *{box-sizing:border-box}
     body{
@@ -90,10 +104,8 @@
       white-space:nowrap;
     }
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
-    .hdr{
-      padding: 14px 16px 6px;
-      text-align:center;
-    }
+
+    .hdr{padding: 14px 16px 6px; text-align:center;}
     .title{margin:0; font-size:20px; font-weight:1000; letter-spacing:.2px;}
     .subtitle{margin:6px 0 0; color: var(--muted); font-size:13px; font-weight:800; line-height:1.35;}
 
@@ -108,7 +120,7 @@
       background: rgba(0,0,0,.10);
       border-radius: 16px;
     }
-    .deckLeft{min-width:0}
+    .deckLeft{min-width:0; width:100%;}
     .deckName{
       font-size:14px;
       font-weight:1000;
@@ -117,12 +129,12 @@
       text-overflow:ellipsis;
     }
     .deckMeta{
-      margin-top:4px;
+      margin-top:6px;
       font-size:12px;
       color: rgba(231,236,255,.65);
       font-weight:900;
       display:flex;
-      gap:10px;
+      gap:8px;
       flex-wrap:wrap;
       align-items:center;
     }
@@ -137,34 +149,48 @@
       border: 1px solid rgba(255,255,255,.12);
       padding: 6px 10px;
       border-radius: 999px;
-      gap:8px;
       min-height:32px;
       text-align:center;
       line-height:1.2;
       white-space:nowrap;
     }
+
+    /* ✅ 기능(한국어/몽골어) 한 줄에 같이 보이게: 줄바꿈 금지 + 가로 스크롤 허용 */
+    .funcTop{
+      display:flex;
+      gap:8px;
+      flex-wrap:nowrap;          /* <- 핵심: 아래로 내려가지 않게 */
+      align-items:center;
+      overflow-x:auto;           /* 좁으면 좌우로 살짝 스크롤 */
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+      padding-bottom: 2px;
+    }
+    .funcTop::-webkit-scrollbar{height:6px}
+    .funcTop::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
+
     .pillFunc{
       display:inline-flex;
       align-items:center;
       justify-content:center;
       font-size:12px;
       font-weight:1000;
-      color: rgba(231,236,255,.92);
-      background: rgba(59,130,246,.14);
-      border: 1px solid rgba(59,130,246,.35);
+      color: rgba(231,236,255,.95);
       padding: 6px 10px;
       border-radius: 999px;
-      gap:8px;
       min-height:32px;
       text-align:center;
       line-height:1.2;
       white-space:nowrap;
+      flex: 0 0 auto;
     }
-    .funcTop{
-      display:flex;
-      gap:10px;
-      flex-wrap:wrap;
-      align-items:center;
+    .pillFuncKo{
+      background: var(--koA);
+      border: 1px solid var(--koB);
+    }
+    .pillFuncMn{
+      background: var(--mnA);
+      border: 1px solid var(--mnB);
     }
 
     .cardBox{
@@ -200,15 +226,25 @@
       gap:10px;
     }
     .exItem{
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.12);
       border-radius: 16px;
       padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
     }
+    /* ✅ 예문 박스 배경색을 서로 다르게(더 선명) */
+    .exKoBox{
+      background: linear-gradient(180deg, var(--blueA), rgba(0,0,0,.10));
+      border-color: var(--blueB);
+    }
+    .exMnBox{
+      background: linear-gradient(180deg, var(--greenA), rgba(0,0,0,.10));
+      border-color: var(--greenB);
+    }
+
     .exLabel{
       font-size:12px;
       font-weight:1000;
-      color: rgba(231,236,255,.65);
+      color: rgba(231,236,255,.70);
       margin-bottom:6px;
     }
     .exText{
@@ -284,10 +320,8 @@
 
 <script>
 (() => {
-  // (선택) 로그 남기기: 당신의 Apps Script 웹앱 URL
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
 
-  // ===== Pages 베이스 경로 자동 인식 (예: /korean-quiz) =====
   function getRepoBase(){
     const p = location.pathname.split("/").filter(Boolean);
     return p.length ? ("/" + p[0]) : "";
@@ -335,7 +369,6 @@
     return u.toString();
   }
 
-  // JSONP (로그용)
   function jsonp(url, params, timeoutMs = 8000){
     return new Promise((resolve, reject) => {
       const cb = "cb_" + Math.random().toString(16).slice(2);
@@ -387,9 +420,8 @@
     }catch(e){}
   }
 
-  // ====== 언어 감지/보정(단어/예문 섞임 방지) ======
   const reHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
-  const reCyril  = /[\u0400-\u04FF]/; // 몽골어(키릴) 포함
+  const reCyril  = /[\u0400-\u04FF]/;
   function hasHangul(s){ return reHangul.test(s || ""); }
   function hasCyril(s){ return reCyril.test(s || ""); }
 
@@ -422,7 +454,6 @@
     return { ex_ko: a, ex_mn: b };
   }
 
-  // ====== 기능(분류) 분리: "기능 · 접속사" 형태를 분리해서 표시 ======
   function splitFuncAndWord(text){
     const t = safe(text).trim();
     const seps = [" · ", "|", " - ", " — ", " —", "—", "•"];
@@ -437,7 +468,6 @@
     return { func: "", word: t };
   }
 
-  // ====== State ======
   const state = {
     file: qs("file") || "",
     data: null,
@@ -483,12 +513,12 @@
             <div class="deckMeta">
               <span class="pill" id="posInfo">0 / 0</span>
               <span class="funcTop" id="funcTop" style="display:none;">
-                <span class="pillFunc" id="funcKo"></span>
-                <span class="pillFunc" id="funcMn"></span>
+                <span class="pillFunc pillFuncKo" id="funcKo"></span>
+                <span class="pillFunc pillFuncMn" id="funcMn"></span>
               </span>
             </div>
           </div>
-          <div class="pill"><span>Next</span> ▶</div>
+          <!-- ✅ 요청 반영: 여기 있던 Next 버튼(불필요) 제거 -->
         </div>
 
         <div class="cardBox">
@@ -496,11 +526,11 @@
           <div class="mnWord" id="mnWord"></div>
 
           <div class="exBox">
-            <div class="exItem">
+            <div class="exItem exKoBox">
               <div class="exLabel">예문 (한국어)</div>
               <div class="exText" id="exKo"></div>
             </div>
-            <div class="exItem">
+            <div class="exItem exMnBox">
               <div class="exLabel">Жишээ (Монгол)</div>
               <div class="exText" id="exMn"></div>
             </div>
@@ -564,17 +594,11 @@
 
     const it = items[state.idx] || {};
 
-    // 1) 단어 ko/mn 스왑 보정
     const fixed = fixPair(safe(it.ko).trim(), safe(it.mn).trim());
-
-    // 2) 기능/단어 분리 (기능 · 접속사)
     const koSplit = splitFuncAndWord(fixed.ko);
     const mnSplit = splitFuncAndWord(fixed.mn);
-
-    // 3) 예문 ex_ko/ex_mn 스왑/분리 보정
     const exFixed = splitExample(it.ex_ko, it.ex_mn);
 
-    // 기능 표시(둘 중 하나라도 있으면 보임)
     const funcKoVal = koSplit.func;
     const funcMnVal = mnSplit.func;
 
@@ -586,7 +610,6 @@
       $funcTop.style.display = "none";
     }
 
-    // 단어(접속사)만 크게 표시
     $koWord.textContent = koSplit.word || "(빈 단어)";
     $mnWord.textContent = mnSplit.word || "";
 
