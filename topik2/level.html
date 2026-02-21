@@ -123,17 +123,20 @@
       reading_mock:"읽기 모의평가",
       listening_mock:"듣기 모의평가"
     }[cat] || cat);
+// ===== ✅ SPECIAL: TOPIK2 어휘 Level 1/2 → flashcards로 바로 이동 =====
+if (cat === "vocab" && (level === "01" || level === "02")) {
+  const file = (level === "01")
+    ? "/data/topik2/vocab/level01_attitude.json"
+    : "/data/topik2/vocab/level02_connectors.json";
 
-    // ===== ✅ SPECIAL: TOPIK2 어휘 Level 1(인물 태도 어휘) → flashcards로 바로 이동 =====
-    // (level.html은 “레벨 자리(틀)”이었기 때문에, 여기서 예외 처리로 flashcards로 보내면 끝)
-    if (cat === "vocab" && level === "01") {
-      const file = "/data/topik2/vocab/level01_attitude.json";
-      const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
-      url.searchParams.set("file", file);
-      // 파라미터 유지
-      passthrough.forEach((v, k) => url.searchParams.set(k, v));
-      location.replace(url.toString());
-    } else {
+  const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
+  url.searchParams.set("file", file);
+
+  // 파라미터 유지
+  passthrough.forEach((v, k) => url.searchParams.set(k, v));
+
+  location.replace(url.toString());
+  } else {
       // ===== 기본(기존) 동작: data/topik2/{cat}/levelXX.json 존재 여부만 확인 =====
       document.getElementById("title").textContent = `TOPIK II · ${pretty} · Level ${parseInt(level,10)}`;
       document.getElementById("sub").textContent = "이 레벨은 JSON 데이터가 준비되면 자동으로 활성화됩니다.";
