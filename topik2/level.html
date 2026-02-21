@@ -123,15 +123,18 @@
       reading_mock:"읽기 모의평가",
       listening_mock:"듣기 모의평가"
     }[cat] || cat);
-// ===== ✅ SPECIAL: TOPIK2 어휘 Level 1/2 → flashcards로 바로 이동 =====
-if (cat === "vocab" && (level === "01" || level === "02")) {
-  const file = (level === "01")
-    ? "/data/topik2/vocab/level01_attitude.json"
-    : "/data/topik2/vocab/level02_connectors.json";
+// vocab 레벨별 커스텀 리다이렉트
+if (cat === "vocab" && (level === "01" || level === "02" || level === "03")) {
+  const file =
+    level === "01"
+      ? `${REPO_BASE}/data/topik2/vocab/level01_attitude.json`
+      : level === "02"
+        ? `${REPO_BASE}/data/topik2/vocab/level02_connectors.json`
+        : `${REPO_BASE}/data/topik2/vocab/level03_causative_passive.json`;
 
-  const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
-  url.searchParams.set("file", file);
-
+  location.replace(`${REPO_BASE}/topik2/flashcards.html?file=${encodeURIComponent(file)}`);
+  return;
+}
   // 파라미터 유지
   passthrough.forEach((v, k) => url.searchParams.set(k, v));
 
