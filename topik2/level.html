@@ -79,7 +79,7 @@
     (function ensureRepoBase(){
       try {
         if (typeof window.REPO_BASE === "string" && window.REPO_BASE.length) return;
-        const p = window.location.pathname;     // "/korean-quiz/topik2/level.html"
+        const p = window.location.pathname;
         const i = p.indexOf("/topik2/");
         window.REPO_BASE = (i >= 0) ? p.slice(0, i) : "";
       } catch (e) {
@@ -129,16 +129,18 @@
       listening_mock:"듣기 모의평가"
     }[cat] || cat);
 
-    // ===== vocab 레벨별 커스텀 리다이렉트 =====
-    if (cat === "vocab" && (level === "01" || level === "02" || level === "03")) {
+    // ===== vocab 레벨별 커스텀 리다이렉트 (01~04) =====
+    if (cat === "vocab" && (level === "01" || level === "02" || level === "03" || level === "04")) {
       const filePath =
         level === "01"
           ? `${REPO_BASE}/data/topik2/vocab/level01_attitude.json`
           : level === "02"
             ? `${REPO_BASE}/data/topik2/vocab/level02_connectors.json`
-            : `${REPO_BASE}/data/topik2/vocab/level03_causative_passive.json`;
+            : level === "03"
+              ? `${REPO_BASE}/data/topik2/vocab/level03_causative_passive.json`
+              : `${REPO_BASE}/data/topik2/vocab/level04_emotions.json`;
 
-      // ✅ file을 절대 URL로 고정(상대경로 재조합으로 인한 404 방지)
+      // file을 절대 URL로 고정
       const fileAbs = new URL(filePath, location.origin).toString();
 
       const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
