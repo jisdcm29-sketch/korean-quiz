@@ -131,16 +131,18 @@
 
     // ===== vocab 레벨별 커스텀 리다이렉트 =====
     if (cat === "vocab" && (level === "01" || level === "02" || level === "03")) {
-      const file =
+      const filePath =
         level === "01"
           ? `${REPO_BASE}/data/topik2/vocab/level01_attitude.json`
           : level === "02"
             ? `${REPO_BASE}/data/topik2/vocab/level02_connectors.json`
             : `${REPO_BASE}/data/topik2/vocab/level03_causative_passive.json`;
 
-      // 파라미터 유지하면서 flashcards로 이동
+      // ✅ file을 절대 URL로 고정(상대경로 재조합으로 인한 404 방지)
+      const fileAbs = new URL(filePath, location.origin).toString();
+
       const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
-      url.searchParams.set("file", file);
+      url.searchParams.set("file", fileAbs);
       passthrough.forEach((v, k) => url.searchParams.set(k, v));
       location.replace(url.toString());
     } else {
