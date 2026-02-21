@@ -124,6 +124,7 @@
       display:flex;
       gap:10px;
       flex-wrap:wrap;
+      align-items:center;
     }
     .pill{
       display:inline-flex;
@@ -159,6 +160,12 @@
       line-height:1.2;
       white-space:nowrap;
     }
+    .funcTop{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
 
     .cardBox{
       margin-top: 12px;
@@ -166,13 +173,6 @@
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(10,15,25,.38);
       padding: 14px 14px 16px;
-    }
-    .funcRow{
-      display:flex;
-      justify-content:center;
-      gap:10px;
-      flex-wrap:wrap;
-      margin: 4px 0 10px;
     }
     .koWord{
       text-align:center;
@@ -404,7 +404,6 @@
     const a = safe(exKo).trim();
     const b = safe(exMn).trim();
 
-    // ex_ko에 한글+키릴이 같이 있고, ex_mn이 비어있으면 -> 자동 분리
     if (a && !b && hasHangul(a) && hasCyril(a)){
       const idx = a.search(reCyril);
       if (idx > 0){
@@ -414,7 +413,6 @@
       }
     }
 
-    // 둘 다 있고, ex_ko가 키릴만 / ex_mn이 한글만이면 스왑
     if (a && b){
       const aIsMn = hasCyril(a) && !hasHangul(a);
       const bIsKo = hasHangul(b) && !hasCyril(b);
@@ -427,7 +425,6 @@
   // ====== 기능(분류) 분리: "기능 · 접속사" 형태를 분리해서 표시 ======
   function splitFuncAndWord(text){
     const t = safe(text).trim();
-    // 우선순위: " · " (가운데점) / "|" / " - " / "—"
     const seps = [" · ", "|", " - ", " — ", " —", "—", "•"];
     for (const sep of seps){
       const idx = t.indexOf(sep);
@@ -485,17 +482,16 @@
             <div class="deckName" id="deckName">로드 중…</div>
             <div class="deckMeta">
               <span class="pill" id="posInfo">0 / 0</span>
+              <span class="funcTop" id="funcTop" style="display:none;">
+                <span class="pillFunc" id="funcKo"></span>
+                <span class="pillFunc" id="funcMn"></span>
+              </span>
             </div>
           </div>
           <div class="pill"><span>Next</span> ▶</div>
         </div>
 
         <div class="cardBox">
-          <div class="funcRow" id="funcRow" style="display:none;">
-            <span class="pillFunc" id="funcKo"></span>
-            <span class="pillFunc" id="funcMn"></span>
-          </div>
-
           <div class="koWord" id="koWord">…</div>
           <div class="mnWord" id="mnWord"></div>
 
@@ -545,7 +541,7 @@
     const $exKo = document.getElementById("exKo");
     const $exMn = document.getElementById("exMn");
 
-    const $funcRow = document.getElementById("funcRow");
+    const $funcTop = document.getElementById("funcTop");
     const $funcKo = document.getElementById("funcKo");
     const $funcMn = document.getElementById("funcMn");
 
@@ -561,7 +557,7 @@
       $mnWord.textContent = "";
       $exKo.textContent = "";
       $exMn.textContent = "";
-      $funcRow.style.display = "none";
+      $funcTop.style.display = "none";
       showError("items 배열이 비어 있습니다.\nJSON에 items가 들어있는지 확인하세요.");
       return;
     }
@@ -583,11 +579,11 @@
     const funcMnVal = mnSplit.func;
 
     if (funcKoVal || funcMnVal){
-      $funcRow.style.display = "flex";
+      $funcTop.style.display = "flex";
       $funcKo.textContent = funcKoVal ? ("기능 · " + funcKoVal) : "기능";
       $funcMn.textContent = funcMnVal ? ("Үүрэг · " + funcMnVal) : "Үүрэг";
     } else {
-      $funcRow.style.display = "none";
+      $funcTop.style.display = "none";
     }
 
     // 단어(접속사)만 크게 표시
