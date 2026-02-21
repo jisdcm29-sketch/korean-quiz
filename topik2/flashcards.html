@@ -142,6 +142,23 @@
       line-height:1.2;
       white-space:nowrap;
     }
+    .pillFunc{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:1000;
+      color: rgba(231,236,255,.92);
+      background: rgba(59,130,246,.14);
+      border: 1px solid rgba(59,130,246,.35);
+      padding: 6px 10px;
+      border-radius: 999px;
+      gap:8px;
+      min-height:32px;
+      text-align:center;
+      line-height:1.2;
+      white-space:nowrap;
+    }
 
     .cardBox{
       margin-top: 12px;
@@ -149,6 +166,13 @@
       border: 1px solid rgba(255,255,255,.12);
       background: rgba(10,15,25,.38);
       padding: 14px 14px 16px;
+    }
+    .funcRow{
+      display:flex;
+      justify-content:center;
+      gap:10px;
+      flex-wrap:wrap;
+      margin: 4px 0 10px;
     }
     .koWord{
       text-align:center;
@@ -245,15 +269,6 @@
       display:none;
       white-space:pre-wrap;
       line-height:1.4;
-    }
-
-    .footerMini{
-      padding: 12px 16px 16px;
-      border-top:1px solid var(--line);
-      color: rgba(231,236,255,.55);
-      font-size:12px;
-      text-align:center;
-      line-height:1.5;
     }
 
     @media (min-width: 720px){
@@ -372,15 +387,13 @@
     }catch(e){}
   }
 
-  // ====== 언어 감지/보정(핵심) ======
+  // ====== 언어 감지/보정(단어/예문 섞임 방지) ======
   const reHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
   const reCyril  = /[\u0400-\u04FF]/; // 몽골어(키릴) 포함
-
   function hasHangul(s){ return reHangul.test(s || ""); }
   function hasCyril(s){ return reCyril.test(s || ""); }
 
   function fixPair(ko, mn){
-    // ko에 키릴이 있고, mn에 한글이 있으면 서로 바꿔치기
     const koIsMn = hasCyril(ko) && !hasHangul(ko);
     const mnIsKo = hasHangul(mn) && !hasCyril(mn);
     if (koIsMn && mnIsKo) return { ko: mn, mn: ko };
@@ -409,6 +422,22 @@
     }
 
     return { ex_ko: a, ex_mn: b };
+  }
+
+  // ====== 기능(분류) 분리: "기능 · 접속사" 형태를 분리해서 표시 ======
+  function splitFuncAndWord(text){
+    const t = safe(text).trim();
+    // 우선순위: " · " (가운데점) / "|" / " - " / "—"
+    const seps = [" · ", "|", " - ", " — ", " —", "—", "•"];
+    for (const sep of seps){
+      const idx = t.indexOf(sep);
+      if (idx > 0){
+        const func = t.slice(0, idx).trim();
+        const word = t.slice(idx + sep.length).trim();
+        if (func && word) return { func, word };
+      }
+    }
+    return { func: "", word: t };
   }
 
   // ====== State ======
@@ -456,13 +485,17 @@
             <div class="deckName" id="deckName">로드 중…</div>
             <div class="deckMeta">
               <span class="pill" id="posInfo">0 / 0</span>
-              <span class="pill mono" id="fileInfo"></span>
             </div>
           </div>
           <div class="pill"><span>Next</span> ▶</div>
         </div>
 
         <div class="cardBox">
+          <div class="funcRow" id="funcRow" style="display:none;">
+            <span class="pillFunc" id="funcKo"></span>
+            <span class="pillFunc" id="funcMn"></span>
+          </div>
+
           <div class="koWord" id="koWord">…</div>
           <div class="mnWord" id="mnWord"></div>
 
@@ -484,10 +517,6 @@
 
           <div class="err" id="err"></div>
         </div>
-      </div>
-
-      <div class="footerMini">
-        파일은 <span class="mono">?file=...</span> 로 불러옵니다. 예) <span class="mono">/data/topik2/vocab/level01_attitude.json</span>
       </div>
     `;
 
@@ -511,13 +540,15 @@
 
     const $deckName = document.getElementById("deckName");
     const $posInfo = document.getElementById("posInfo");
-    const $fileInfo = document.getElementById("fileInfo");
     const $koWord = document.getElementById("koWord");
     const $mnWord = document.getElementById("mnWord");
     const $exKo = document.getElementById("exKo");
     const $exMn = document.getElementById("exMn");
 
-    $fileInfo.textContent = state.file ? ("file=" + state.file) : "file=(none)";
+    const $funcRow = document.getElementById("funcRow");
+    const $funcKo = document.getElementById("funcKo");
+    const $funcMn = document.getElementById("funcMn");
+
     $posInfo.textContent = `${total ? (state.idx + 1) : 0} / ${total}`;
 
     const deckTitle = (getLang() === "mn")
@@ -530,6 +561,7 @@
       $mnWord.textContent = "";
       $exKo.textContent = "";
       $exMn.textContent = "";
+      $funcRow.style.display = "none";
       showError("items 배열이 비어 있습니다.\nJSON에 items가 들어있는지 확인하세요.");
       return;
     }
@@ -538,14 +570,30 @@
 
     // 1) 단어 ko/mn 스왑 보정
     const fixed = fixPair(safe(it.ko).trim(), safe(it.mn).trim());
-    const ko = fixed.ko;
-    const mn = fixed.mn;
 
-    // 2) 예문 ex_ko/ex_mn 스왑/분리 보정
+    // 2) 기능/단어 분리 (기능 · 접속사)
+    const koSplit = splitFuncAndWord(fixed.ko);
+    const mnSplit = splitFuncAndWord(fixed.mn);
+
+    // 3) 예문 ex_ko/ex_mn 스왑/분리 보정
     const exFixed = splitExample(it.ex_ko, it.ex_mn);
 
-    $koWord.textContent = ko || "(빈 단어)";
-    $mnWord.textContent = mn || "";
+    // 기능 표시(둘 중 하나라도 있으면 보임)
+    const funcKoVal = koSplit.func;
+    const funcMnVal = mnSplit.func;
+
+    if (funcKoVal || funcMnVal){
+      $funcRow.style.display = "flex";
+      $funcKo.textContent = funcKoVal ? ("기능 · " + funcKoVal) : "기능";
+      $funcMn.textContent = funcMnVal ? ("Үүрэг · " + funcMnVal) : "Үүрэг";
+    } else {
+      $funcRow.style.display = "none";
+    }
+
+    // 단어(접속사)만 크게 표시
+    $koWord.textContent = koSplit.word || "(빈 단어)";
+    $mnWord.textContent = mnSplit.word || "";
+
     $exKo.textContent = exFixed.ex_ko || "";
     $exMn.textContent = exFixed.ex_mn || "";
 
