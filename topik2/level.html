@@ -140,33 +140,41 @@
               ? `${REPO_BASE}/data/topik2/vocab/level03_causative_passive.json`
               : `${REPO_BASE}/data/topik2/vocab/level04_emotions.json`;
 
-      // file을 절대 URL로 고정
       const fileAbs = new URL(filePath, location.origin).toString();
-
       const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
       url.searchParams.set("file", fileAbs);
       passthrough.forEach((v, k) => url.searchParams.set(k, v));
       location.replace(url.toString());
-    } else {
-      // ===== 기본(자리) 화면 =====
-      document.getElementById("title").textContent = `TOPIK II · ${pretty} · Level ${parseInt(level,10)}`;
-      document.getElementById("sub").textContent = "이 레벨은 JSON 데이터가 준비되면 자동으로 활성화됩니다.";
-
-      const jsonPath = REPO_BASE + `/data/topik2/${encodeURIComponent(cat)}/level${level}.json`;
-      document.getElementById("dataUrl").textContent = jsonPath.replace(REPO_BASE, "..");
-
-      fetch(jsonPath, { cache:"no-store" })
-        .then(r=>{
-          if(!r.ok) throw new Error("HTTP " + r.status);
-          return r.json();
-        })
-        .then(_=>{
-          document.getElementById("msg").textContent = "✅ 데이터가 존재합니다. (다음 단계: 이 데이터를 퀴즈 화면으로 연결)";
-        })
-        .catch(_=>{
-          document.getElementById("msg").textContent = "⏳ 아직 데이터 파일이 없습니다. (정상) 나중에 JSON을 만들면 자동으로 연결됩니다.";
-        });
     }
+
+    // ===== grammar 레벨별 커스텀 리다이렉트 (01) =====
+    if (cat === "grammar" && level === "01") {
+      const filePath = `${REPO_BASE}/data/topik2/grammar/level01_connective_endings1.json`;
+      const fileAbs = new URL(filePath, location.origin).toString();
+      const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
+      url.searchParams.set("file", fileAbs);
+      passthrough.forEach((v, k) => url.searchParams.set(k, v));
+      location.replace(url.toString());
+    }
+
+    // ===== 기본(자리) 화면 =====
+    document.getElementById("title").textContent = `TOPIK II · ${pretty} · Level ${parseInt(level,10)}`;
+    document.getElementById("sub").textContent = "이 레벨은 JSON 데이터가 준비되면 자동으로 활성화됩니다.";
+
+    const jsonPath = REPO_BASE + `/data/topik2/${encodeURIComponent(cat)}/level${level}.json`;
+    document.getElementById("dataUrl").textContent = jsonPath.replace(REPO_BASE, "..");
+
+    fetch(jsonPath, { cache:"no-store" })
+      .then(r=>{
+        if(!r.ok) throw new Error("HTTP " + r.status);
+        return r.json();
+      })
+      .then(_=>{
+        document.getElementById("msg").textContent = "✅ 데이터가 존재합니다. (다음 단계: 이 데이터를 퀴즈 화면으로 연결)";
+      })
+      .catch(_=>{
+        document.getElementById("msg").textContent = "⏳ 아직 데이터 파일이 없습니다. (정상) 나중에 JSON을 만들면 자동으로 연결됩니다.";
+      });
   </script>
 </body>
 </html>
