@@ -1,0 +1,275 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <meta name="theme-color" content="#0b1220" />
+  <title>TOPIK2 인물 태도 JSON 만들기</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --text:#e7ecff;
+      --muted:#aab6e6;
+      --line:rgba(255,255,255,.10);
+      --primary:#3b82f6;
+      --green:#22c55e;
+      --danger:#ef4444;
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:22px;
+    }
+    *{box-sizing:border-box}
+    body{
+      margin:0;
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+      background: radial-gradient(1000px 800px at 30% -10%, rgba(59,130,246,.35), transparent 55%),
+                  radial-gradient(900px 700px at 90% 0%, rgba(34,197,94,.18), transparent 50%),
+                  var(--bg);
+      color:var(--text);
+      min-height:100svh;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      padding: 18px 14px 22px;
+    }
+    .wrap{width:min(900px, 100%);}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
+      overflow:hidden;
+    }
+    .hdr{
+      padding:16px 16px 10px;
+      border-bottom:1px solid var(--line);
+      text-align:center;
+    }
+    .title{
+      margin:0;
+      font-size:20px;
+      font-weight:1000;
+    }
+    .sub{
+      margin:6px 0 0;
+      font-size:13px;
+      color: var(--muted);
+      font-weight:800;
+      line-height:1.4;
+    }
+    .content{padding: 14px 14px 16px;}
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap: 12px;
+    }
+    @media (min-width: 900px){
+      .grid{grid-template-columns: 1fr 1fr;}
+    }
+    label{
+      font-size:13px;
+      color: var(--muted);
+      font-weight:900;
+      display:block;
+      margin: 0 0 8px;
+    }
+    input, textarea{
+      width:100%;
+      border-radius: 16px;
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(10,15,25,.55);
+      color: var(--text);
+      padding: 12px 12px;
+      font-size:14px;
+      outline:none;
+    }
+    textarea{min-height: 220px; resize:vertical; line-height:1.4;}
+    .btnRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      margin-top: 12px;
+    }
+    .btn{
+      width:100%;
+      border:0;
+      border-radius: 18px;
+      padding: 14px 12px;
+      font-size:16px;
+      font-weight:1000;
+      color:white;
+      cursor:pointer;
+      box-shadow: 0 10px 22px rgba(0,0,0,.30);
+      transition: transform .06s ease;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{transform: translateY(1px) scale(.99)}
+    .btnPrimary{background: linear-gradient(180deg, #4f8cff, #2563eb);}
+    .btnGreen{background: linear-gradient(180deg, #34d399, #16a34a);}
+    .note{
+      margin-top: 10px;
+      font-size:12px;
+      color: rgba(231,236,255,.65);
+      font-weight:800;
+      line-height:1.5;
+    }
+    .err{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(239,68,68,.14);
+      border:1px solid rgba(239,68,68,.35);
+      color: #ffd3d3;
+      font-size:13px;
+      font-weight:1000;
+      display:none;
+      white-space:pre-wrap;
+      line-height:1.45;
+    }
+    .ok{
+      margin-top: 10px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(34,197,94,.14);
+      border:1px solid rgba(34,197,94,.35);
+      color: #d6ffe6;
+      font-size:13px;
+      font-weight:1000;
+      display:none;
+      white-space:pre-wrap;
+      line-height:1.45;
+    }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
+  </style>
+</head>
+<body>
+  <div class="wrap">
+    <div class="card">
+      <div class="hdr">
+        <h1 class="title">TOPIK II · 인물 태도 어휘 JSON 만들기</h1>
+        <p class="sub">
+          PDF(또는 문서)에서 복사한 내용을 아래에 붙여넣고 “JSON 생성”을 누르면<br/>
+          <span class="mono">/data/topik2/vocab/level01_attitude.json</span>에 넣을 결과가 만들어집니다.
+        </p>
+      </div>
+
+      <div class="content">
+        <div class="grid">
+          <div>
+            <label>1) 제목(한국어)</label>
+            <input id="titleKr" value="인물 태도 어휘" />
+            <label style="margin-top:10px;">2) 제목(몽골어)</label>
+            <input id="titleMn" value="Хүний хандлагын үгс" />
+
+            <div class="note">
+              ✅ 입력 형식(간단): 한 줄에 4개를 탭(TAB) 또는 | 로 구분<br/>
+              <span class="mono">한국어  [TAB]  몽골어  [TAB]  예문(한국어)  [TAB]  예문(몽골어)</span><br/>
+              예문이 없으면 예문 칸은 비워도 됩니다.
+            </div>
+          </div>
+
+          <div>
+            <label>3) 단어 목록 붙여넣기(여기에 그대로 붙여넣기)</label>
+            <textarea id="src" placeholder="예)
+가정하다\tТооцох\t우리가 비가 올 상황을 가정해...\tБид бороо орохыг тооцож...
+감탄하다\tБишрэх\t...\t...
+(이런 식으로 여러 줄)"></textarea>
+
+            <div class="btnRow">
+              <button class="btn btnPrimary" id="btnBuild">JSON 생성</button>
+              <button class="btn btnGreen" id="btnCopy">결과 JSON 복사</button>
+            </div>
+
+            <div class="err" id="err"></div>
+            <div class="ok" id="ok"></div>
+          </div>
+        </div>
+
+        <div style="margin-top:14px;">
+          <label>4) 결과 JSON (이걸 그대로 복사해서 GitHub 파일에 붙여넣기)</label>
+          <textarea id="out" class="mono" style="min-height:260px;" readonly></textarea>
+        </div>
+
+        <div class="note">
+          📌 팁: PDF에서 복사할 때 줄이 깨지면, 엑셀/구글시트에 한번 붙여넣고 “4열(한국어/몽골어/예문KR/예문MN)”로 정리한 뒤,
+          다시 복사하면 가장 깔끔합니다.
+        </div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const $ = (id) => document.getElementById(id);
+
+  function showErr(msg){
+    $("ok").style.display = "none";
+    $("err").textContent = msg;
+    $("err").style.display = "block";
+  }
+  function showOk(msg){
+    $("err").style.display = "none";
+    $("ok").textContent = msg;
+    $("ok").style.display = "block";
+  }
+
+  function normalizeLine(line){
+    // 구분자: 탭, |, 다중 공백(2칸 이상)
+    let parts = line.split("\t");
+    if (parts.length < 2) parts = line.split("|").map(s => s.trim());
+    if (parts.length < 2) parts = line.split(/\s{2,}/); // 공백 2개 이상
+
+    // trim
+    parts = parts.map(s => (s || "").trim()).filter((_, i) => i < 6); // 안전
+    return parts;
+  }
+
+  function build(){
+    const title_kr = ($("titleKr").value || "").trim() || "인물 태도 어휘";
+    const title_mn = ($("titleMn").value || "").trim() || "Хүний хандлагын үгс";
+    const raw = $("src").value || "";
+    const lines = raw.split(/\r?\n/).map(s => s.trim()).filter(Boolean);
+
+    if (!lines.length) return showErr("붙여넣기한 내용이 비어 있습니다.");
+
+    const items = [];
+    for (const line of lines){
+      const p = normalizeLine(line);
+
+      // 최소: ko + mn
+      const ko = (p[0] || "").trim();
+      const mn = (p[1] || "").trim();
+      if (!ko || !mn) continue;
+
+      const ex_ko = (p[2] || "").trim();
+      const ex_mn = (p[3] || "").trim();
+
+      items.push({ ko, mn, ex_ko, ex_mn });
+    }
+
+    if (!items.length) return showErr("인식된 항목이 0개입니다. 각 줄에 '한국어 + 몽골어'는 반드시 있어야 합니다.");
+
+    const out = { title_kr, title_mn, items };
+    $("out").value = JSON.stringify(out, null, 2);
+    showOk(`완료! ${items.length}개 항목을 만들었습니다.\n이 JSON을 복사해서 /data/topik2/vocab/level01_attitude.json에 붙여넣으세요.`);
+  }
+
+  async function copyOut(){
+    const text = $("out").value || "";
+    if (!text) return showErr("먼저 JSON 생성 버튼을 눌러주세요.");
+    try{
+      await navigator.clipboard.writeText(text);
+      showOk("복사 완료! 이제 GitHub 파일에 붙여넣기만 하면 됩니다.");
+    }catch(e){
+      // iOS 등 예외: 수동 복사 안내
+      $("out").focus();
+      $("out").select();
+      showOk("자동 복사가 안 되면, 위 결과 JSON을 길게 눌러 전체 선택→복사하세요.");
+    }
+  }
+
+  $("btnBuild").addEventListener("click", build);
+  $("btnCopy").addEventListener("click", copyOut);
+})();
+</script>
+</body>
+</html>
