@@ -12,9 +12,6 @@
       --muted:#aab6e6;
       --line:rgba(255,255,255,.10);
       --primary:#3b82f6;
-      --green:#22c55e;
-      --amber:#f59e0b;
-      --danger:#ef4444;
       --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:22px;
     }
@@ -97,19 +94,8 @@
       padding: 14px 16px 6px;
       text-align:center;
     }
-    .title{
-      margin:0;
-      font-size:20px;
-      font-weight:1000;
-      letter-spacing:.2px;
-    }
-    .subtitle{
-      margin:6px 0 0;
-      color: var(--muted);
-      font-size:13px;
-      font-weight:800;
-      line-height:1.35;
-    }
+    .title{margin:0; font-size:20px; font-weight:1000; letter-spacing:.2px;}
+    .subtitle{margin:6px 0 0; color: var(--muted); font-size:13px; font-weight:800; line-height:1.35;}
 
     .content{padding: 12px 14px 16px;}
     .deckInfo{
@@ -206,6 +192,7 @@
       font-weight:900;
       line-height:1.35;
       word-break:keep-all;
+      white-space:pre-wrap;
     }
 
     .actions{
@@ -282,22 +269,17 @@
 
 <script>
 (() => {
-  // ====== CONFIG ======
   // (선택) 로그 남기기: 당신의 Apps Script 웹앱 URL
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
 
   // ===== Pages 베이스 경로 자동 인식 (예: /korean-quiz) =====
   function getRepoBase(){
-    // 예: /korean-quiz/topik2/flashcards.html -> /korean-quiz
     const p = location.pathname.split("/").filter(Boolean);
     return p.length ? ("/" + p[0]) : "";
   }
   const REPO_BASE = getRepoBase();
-
-  // TOPIK II 허브(뒤로가기)
   const TOPIK2_HOME = REPO_BASE + "/topik2/index.html";
 
-  // ====== Helpers ======
   const $app = document.getElementById("app");
   const DEV_KEY = "kq_deviceId_v1";
   const LANG_KEY = "kq_lang_v1";
@@ -307,7 +289,6 @@
   const esc = (str) => safe(str).replace(/[&<>"']/g, (m) => ({
     "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
   }[m]));
-
   const nowISO = () => new Date().toISOString();
 
   function getDeviceId(){
@@ -370,7 +351,6 @@
   }
 
   async function logEvent(action, extra){
-    // 실패해도 화면 진행(조용히)
     try{
       const payload = {
         action: "log",
@@ -390,6 +370,45 @@
       };
       await jsonp(SCRIPT_URL, payload, 8000);
     }catch(e){}
+  }
+
+  // ====== 언어 감지/보정(핵심) ======
+  const reHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
+  const reCyril  = /[\u0400-\u04FF]/; // 몽골어(키릴) 포함
+
+  function hasHangul(s){ return reHangul.test(s || ""); }
+  function hasCyril(s){ return reCyril.test(s || ""); }
+
+  function fixPair(ko, mn){
+    // ko에 키릴이 있고, mn에 한글이 있으면 서로 바꿔치기
+    const koIsMn = hasCyril(ko) && !hasHangul(ko);
+    const mnIsKo = hasHangul(mn) && !hasCyril(mn);
+    if (koIsMn && mnIsKo) return { ko: mn, mn: ko };
+    return { ko, mn };
+  }
+
+  function splitExample(exKo, exMn){
+    const a = safe(exKo).trim();
+    const b = safe(exMn).trim();
+
+    // ex_ko에 한글+키릴이 같이 있고, ex_mn이 비어있으면 -> 자동 분리
+    if (a && !b && hasHangul(a) && hasCyril(a)){
+      const idx = a.search(reCyril);
+      if (idx > 0){
+        const left = a.slice(0, idx).trim();
+        const right = a.slice(idx).trim();
+        return { ex_ko: left, ex_mn: right };
+      }
+    }
+
+    // 둘 다 있고, ex_ko가 키릴만 / ex_mn이 한글만이면 스왑
+    if (a && b){
+      const aIsMn = hasCyril(a) && !hasHangul(a);
+      const bIsKo = hasHangul(b) && !hasCyril(b);
+      if (aIsMn && bIsKo) return { ex_ko: b, ex_mn: a };
+    }
+
+    return { ex_ko: a, ex_mn: b };
   }
 
   // ====== State ======
@@ -482,8 +501,8 @@
       });
     });
 
-    document.getElementById("langKo").addEventListener("click", () => { setLang("ko"); render(); });
-    document.getElementById("langMn").addEventListener("click", () => { setLang("mn"); render(); });
+    document.getElementById("langKo").addEventListener("click", () => { setLang("ko"); render(true); });
+    document.getElementById("langMn").addEventListener("click", () => { setLang("mn"); render(true); });
   }
 
   function renderCard(){
@@ -516,10 +535,19 @@
     }
 
     const it = items[state.idx] || {};
-    $koWord.textContent = safe(it.ko) || "(빈 단어)";
-    $mnWord.textContent = safe(it.mn) || "";
-    $exKo.textContent = safe(it.ex_ko) || "";
-    $exMn.textContent = safe(it.ex_mn) || "";
+
+    // 1) 단어 ko/mn 스왑 보정
+    const fixed = fixPair(safe(it.ko).trim(), safe(it.mn).trim());
+    const ko = fixed.ko;
+    const mn = fixed.mn;
+
+    // 2) 예문 ex_ko/ex_mn 스왑/분리 보정
+    const exFixed = splitExample(it.ex_ko, it.ex_mn);
+
+    $koWord.textContent = ko || "(빈 단어)";
+    $mnWord.textContent = mn || "";
+    $exKo.textContent = exFixed.ex_ko || "";
+    $exMn.textContent = exFixed.ex_mn || "";
 
     document.getElementById("btnPrev").disabled = (state.idx <= 0);
     document.getElementById("btnPrev").style.opacity = (state.idx <= 0) ? 0.55 : 1;
@@ -542,7 +570,6 @@
       await logEvent("prev", { idx: state.idx, file: state.file });
     });
 
-    // 스페이스/엔터로 다음
     window.addEventListener("keydown", (e) => {
       if (e.key === " " || e.key === "Enter") {
         e.preventDefault();
@@ -556,35 +583,27 @@
     if (!state.file){
       throw new Error("URL에 file 파라미터가 없습니다. 예: ?file=/data/topik2/vocab/level01_attitude.json");
     }
-
-    // GitHub Pages 기준 상대경로를 그대로 fetch (URL 인코딩 포함)
-    // state.file이 "/data/..." 또는 "data/..." 모두 허용
     const path = state.file.startsWith("/") ? state.file : ("/" + state.file);
-
-    // 중요: project pages는 /korean-quiz 같은 베이스가 붙음
     const url = new URL(REPO_BASE + path, location.origin);
-
     const res = await fetch(url.toString(), { cache: "no-store" });
     if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText);
     const json = await res.json();
-
     if (!json || !Array.isArray(json.items)) {
       throw new Error("JSON 형식이 다릅니다. { title_kr, title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
     }
     state.data = json;
   }
 
-  async function render(){
+  async function render(keepIndex){
     document.documentElement.lang = getLang();
-    const title = "TOPIK II";
-    const sub = "단어 카드 · 다음 버튼으로 넘기기";
-    renderShell(title, sub);
+    renderShell("TOPIK II", "단어 카드 · 다음 버튼으로 넘기기");
 
     try{
       if (!state.data) {
         await loadData();
         await logEvent("start", { file: state.file });
       }
+      if (!keepIndex) state.idx = 0;
       renderCard();
       bindNav();
     }catch(e){
@@ -592,10 +611,8 @@
     }
   }
 
-  // 나갈 때(탭 닫기 등) 기록(가능하면)
   window.addEventListener("beforeunload", () => {
     const elapsedSec = Math.max(0, Math.round((Date.now() - state.startedAt) / 1000));
-    // beforeunload에서는 await 불가 → fire-and-forget
     try{
       jsonp(SCRIPT_URL, {
         action: "log",
@@ -616,7 +633,7 @@
     }catch(e){}
   });
 
-  render();
+  render(false);
 })();
 </script>
 </body>
