@@ -75,6 +75,18 @@
   </main>
 
   <script>
+    // ✅ 안전장치: 이 페이지에서 REPO_BASE가 없으면 자동으로 계산해서 설정
+// 예) /korean-quiz/topik2/level.html  -> REPO_BASE="/korean-quiz"
+(function ensureRepoBase(){
+  try {
+    if (typeof window.REPO_BASE === "string" && window.REPO_BASE.length) return;
+    const p = window.location.pathname;                 // "/korean-quiz/topik2/level.html"
+    const i = p.indexOf("/topik2/");
+    window.REPO_BASE = (i >= 0) ? p.slice(0, i) : "";   // "/korean-quiz"
+  } catch (e) {
+    window.REPO_BASE = "";
+  }
+})();
     // ===== repo base 자동 인식 (/korean-quiz) =====
     function getRepoBase(){
       const p = location.pathname.split("/").filter(Boolean);
