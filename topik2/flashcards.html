@@ -159,9 +159,9 @@
     .funcTop{
       display:flex;
       gap:8px;
-      flex-wrap:nowrap;          /* <- 핵심: 아래로 내려가지 않게 */
+      flex-wrap:nowrap;
       align-items:center;
-      overflow-x:auto;           /* 좁으면 좌우로 살짝 스크롤 */
+      overflow-x:auto;
       -webkit-overflow-scrolling: touch;
       max-width: 100%;
       padding-bottom: 2px;
@@ -231,7 +231,6 @@
       border: 1px solid rgba(255,255,255,.10);
       background: rgba(0,0,0,.12);
     }
-    /* ✅ 예문 박스 배경색을 서로 다르게(더 선명) */
     .exKoBox{
       background: linear-gradient(180deg, var(--blueA), rgba(0,0,0,.10));
       border-color: var(--blueB);
@@ -468,8 +467,26 @@
     return { func: "", word: t };
   }
 
+  // ✅ file 파라미터를 "항상 절대 URL"로 정규화 (404 방지)
+  function normalizeFileParam(){
+    const raw = qs("file") || "";
+    if (!raw) return "";
+
+    let v = raw;
+    try { v = decodeURIComponent(raw); } catch(_) {}
+
+    // file이 이미 https://... 이면 그대로 사용
+    if (/^https?:\/\//i.test(v)) return v;
+
+    // "/korean-quiz/..." 또는 "/data/..." 처럼 "/"로 시작하는 경우: origin 붙이기
+    if (v.startsWith("/")) return new URL(v, location.origin).toString();
+
+    // "data/..." 같은 상대경로: "/" 붙여서 origin 기준으로 절대화
+    return new URL("/" + v, location.origin).toString();
+  }
+
   const state = {
-    file: qs("file") || "",
+    file: normalizeFileParam(),   // ✅ 여기서 이미 절대 URL이 됨
     data: null,
     idx: 0,
     startedAt: Date.now()
@@ -518,7 +535,6 @@
               </span>
             </div>
           </div>
-          <!-- ✅ 요청 반영: 여기 있던 Next 버튼(불필요) 제거 -->
         </div>
 
         <div class="cardBox">
@@ -578,8 +594,8 @@
     $posInfo.textContent = `${total ? (state.idx + 1) : 0} / ${total}`;
 
     const deckTitle = (getLang() === "mn")
-      ? (state.data && state.data.title_mn) || (state.data && state.data.title_kr) || "Flashcards"
-      : (state.data && state.data.title_kr) || "Flashcards";
+      ? (state.data && state.data.title_mn) || (state.data && state.data.title_kr) || (state.data && state.data.title) || "Flashcards"
+      : (state.data && state.data.title_kr) || (state.data && state.data.title) || "Flashcards";
     $deckName.textContent = deckTitle;
 
     if (!total){
@@ -648,15 +664,13 @@
 
   async function loadData(){
     if (!state.file){
-      throw new Error("URL에 file 파라미터가 없습니다. 예: ?file=/data/topik2/vocab/level01_attitude.json");
+      throw new Error("URL에 file 파라미터가 없습니다.\n예: ?file=/data/topik2/vocab/level01_attitude.json");
     }
-    const path = state.file.startsWith("/") ? state.file : ("/" + state.file);
-    const url = new URL(REPO_BASE + path, location.origin);
-    const res = await fetch(url.toString(), { cache: "no-store" });
-    if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText);
+    const res = await fetch(state.file, { cache: "no-store" });
+    if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText + "\n" + state.file);
     const json = await res.json();
     if (!json || !Array.isArray(json.items)) {
-      throw new Error("JSON 형식이 다릅니다. { title_kr, title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
+      throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
     }
     state.data = json;
   }
