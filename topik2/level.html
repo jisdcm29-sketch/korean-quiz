@@ -147,9 +147,13 @@
       location.replace(url.toString());
     }
 
-    // ===== grammar 레벨별 커스텀 리다이렉트 (01) =====
-    if (cat === "grammar" && level === "01") {
-      const filePath = `${REPO_BASE}/data/topik2/grammar/level01_connective_endings1.json`;
+    // ===== grammar 레벨별 커스텀 리다이렉트 (01~02) =====
+    if (cat === "grammar" && (level === "01" || level === "02")) {
+      const filePath =
+        level === "01"
+          ? `${REPO_BASE}/data/topik2/grammar/level01_connective_endings1.json`
+          : `${REPO_BASE}/data/topik2/grammar/level02_final_endings1.json`;
+
       const fileAbs = new URL(filePath, location.origin).toString();
       const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
       url.searchParams.set("file", fileAbs);
