@@ -109,7 +109,7 @@
       "title": "쓰기",
       "subtitle": "레벨 1~10",
       "levels": [
-        "조사 결과 도입 및 나열 표현",
+        "도입·나열",
         "Level 2",
         "Level 3",
         "Level 4",
@@ -123,7 +123,7 @@
       "writing53": [
         {
           "id": "w53_level01",
-          "title_ko": "조사 결과 도입 및 나열 표현",
+          "title_ko": "도입·나열",
           "title_mn": "（placeholder）",
           "file": "/data/topik2/writing53/level01_intro_list.json",
           "slides": 25
