@@ -3,812 +3,643 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <meta name="theme-color" content="#0b1220" />
-  <title>Flashcards</title>
+  <title>TOPIK II Flashcards</title>
   <style>
     :root{
-      --bg:#0b1220;
-      --text:#e7ecff;
-      --muted:#aab6e6;
+      --bg1:#071226;
+      --bg2:#0b1b37;
+      --card:#0d1b2d;
+      --card2:#0f2239;
       --line:rgba(255,255,255,.10);
-      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --text:#eaf2ff;
+      --muted:rgba(234,242,255,.72);
+      --muted2:rgba(234,242,255,.58);
+      --accent:#2f6bff;
+      --accent2:#3aa0ff;
+      --good:#1bbf88;
+      --shadow:0 20px 60px rgba(0,0,0,.45);
       --radius:22px;
-
-      --blueA: rgba(59,130,246,.16);
-      --blueB: rgba(59,130,246,.36);
-
-      --greenA: rgba(34,197,94,.14);
-      --greenB: rgba(34,197,94,.32);
-
-      --amberA: rgba(245,158,11,.14);
-      --amberB: rgba(245,158,11,.34);
-
-      --koA: rgba(59,130,246,.14);
-      --koB: rgba(59,130,246,.34);
-
-      --mnA: rgba(34,197,94,.14);
-      --mnB: rgba(34,197,94,.34);
-
-      --descA: rgba(255,255,255,.06);
-      --descB: rgba(255,255,255,.12);
+      --radius2:16px;
+      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
+      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
     }
     *{box-sizing:border-box}
+    html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
-      background: radial-gradient(1000px 800px at 30% -10%, rgba(59,130,246,.35), transparent 55%),
-                  radial-gradient(900px 700px at 90% 0%, rgba(34,197,94,.18), transparent 50%),
-                  var(--bg);
+      font-family:var(--sans);
       color:var(--text);
-      min-height:100svh;
+      background:
+        radial-gradient(900px 520px at 70% 22%, rgba(47,107,255,.22), transparent 60%),
+        radial-gradient(700px 460px at 35% 60%, rgba(58,160,255,.12), transparent 65%),
+        linear-gradient(180deg, var(--bg2), var(--bg1));
       display:flex;
       align-items:center;
       justify-content:center;
-      padding: 18px 14px 22px;
-    }
-    .wrap{width:min(720px, 100%);}
-    .card{
-      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
-      border:1px solid var(--line);
-      border-radius: var(--radius);
-      box-shadow: var(--shadow);
-      overflow:hidden;
+      padding:18px 12px 26px;
     }
 
-    .topBar{
-      padding: 10px 12px;
-      border-bottom:1px solid var(--line);
-      background: rgba(0,0,0,.16);
+    .app{
+      width:min(980px, 100%);
+      background:rgba(9,18,33,.45);
+      border:1px solid rgba(255,255,255,.08);
+      border-radius:28px;
+      box-shadow:var(--shadow);
+      overflow:hidden;
+      backdrop-filter: blur(10px);
+    }
+
+    .topbar{
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:10px;
+      gap:12px;
+      padding:14px 14px 12px;
+      border-bottom:1px solid var(--line);
     }
-    .leftTop{display:flex; gap:10px; align-items:center; min-width:0;}
-    .btnSmall{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(231,236,255,.92);
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-weight:900;
-      font-size:14px;
+    .leftControls{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
+    .btn{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:800;
+      letter-spacing:.2px;
       cursor:pointer;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
+    }
+    .btn:active{transform:translateY(1px)}
+    .chip{
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      padding:10px 14px;
+      border-radius:999px;
+      font-weight:900;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+    }
+    .chip.active{
+      background:linear-gradient(180deg, rgba(47,107,255,.95), rgba(47,107,255,.72));
+      border-color:rgba(47,107,255,.85);
+      box-shadow:0 12px 30px rgba(47,107,255,.25);
+    }
+    .rightInfo{
+      text-align:right;
+      font-size:12px;
+      line-height:1.2;
+      color:var(--muted);
+      padding-right:4px;
       white-space:nowrap;
     }
-    .langToggle{display:flex; gap:8px; align-items:center;}
-    .langBtn{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(231,236,255,.92);
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-weight:900;
-      font-size:14px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      min-width:84px;
+    .rightInfo .strong{color:var(--text); font-weight:900}
+
+    .header{
+      padding:14px 16px 10px;
       text-align:center;
     }
-    .langBtn.active{
-      background: linear-gradient(180deg, rgba(79,140,255,.95), rgba(37,99,235,.95));
-      border-color: rgba(79,140,255,.9);
-      color:#fff;
-      box-shadow: 0 8px 18px rgba(37,99,235,.25);
+    .header h1{
+      margin:2px 0 2px;
+      font-size:20px;
+      letter-spacing:.4px;
     }
-    .rightTop{
-      display:flex; flex-direction:column; align-items:flex-end; gap:2px;
-      color: rgba(231,236,255,.65);
+    .header .sub{
+      margin:0;
       font-size:12px;
-      font-weight:900;
-      white-space:nowrap;
+      color:var(--muted);
     }
-    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
 
-    .hdr{padding: 14px 16px 6px; text-align:center;}
-    .title{margin:0; font-size:20px; font-weight:1000; letter-spacing:.2px;}
-    .subtitle{margin:6px 0 0; color: var(--muted); font-size:13px; font-weight:800; line-height:1.35;}
+    .container{
+      padding:10px 14px 16px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
 
-    .content{padding: 12px 14px 16px;}
-    .deckInfo{
+    .panel{
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      border-radius:var(--radius);
+      padding:12px;
+    }
+
+    .metaRow{
       display:flex;
-      align-items:center;
+      align-items:flex-start;
       justify-content:space-between;
       gap:10px;
-      padding: 10px 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.10);
-      border-radius: 16px;
+      padding:2px 4px 10px;
+      border-bottom:1px solid var(--line);
+      margin-bottom:12px;
     }
-    .deckLeft{min-width:0; width:100%;}
-    .deckName{
-      font-size:14px;
-      font-weight:1000;
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-    }
-    .deckMeta{
-      margin-top:6px;
-      font-size:12px;
-      color: rgba(231,236,255,.65);
-      font-weight:900;
+    .titleBox{
       display:flex;
+      flex-direction:column;
+      gap:6px;
+      align-items:flex-start;
+    }
+    .lessonTitle{
+      font-weight:900;
+      font-size:14px;
+      color:var(--text);
+      opacity:.95;
+    }
+    .counter{
+      display:inline-flex;
+      align-items:center;
+      gap:8px;
+      color:var(--muted);
+      font-weight:800;
+      font-size:12px;
+    }
+    .badge{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.12);
+      background:rgba(255,255,255,.06);
+      color:var(--text);
+      font-weight:900;
+      font-size:12px;
+      min-width:64px;
+    }
+
+    /* Word line */
+    .wordLine{
+      display:flex;
+      align-items:baseline;
+      justify-content:center;
+      gap:12px;
+      flex-wrap:wrap;
+      text-align:center;
+      padding:6px 8px 14px;
+    }
+    .wordKo{
+      font-weight:950;
+      font-size:38px;
+      letter-spacing:-.6px;
+      text-shadow:0 10px 30px rgba(0,0,0,.35);
+    }
+    .wordMn{
+      font-weight:900;
+      font-size:22px;
+      color:rgba(234,242,255,.88);
+      letter-spacing:-.2px;
+    }
+
+    /* 기능칩(자동) */
+    .funcChips{
+      display:flex;
+      justify-content:center;
       gap:8px;
       flex-wrap:wrap;
-      align-items:center;
+      padding:0 6px 10px;
     }
-    .pill{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-      font-weight:1000;
-      color: rgba(231,236,255,.85);
-      background: rgba(255,255,255,.08);
-      border: 1px solid rgba(255,255,255,.12);
-      padding: 6px 10px;
-      border-radius: 999px;
-      min-height:32px;
-      text-align:center;
-      line-height:1.2;
-      white-space:nowrap;
-    }
-
-    /* ✅ 기능(한국어/몽골어) 한 줄 고정 + 가로 스크롤 */
-    .funcTop{
-      display:flex;
-      gap:8px;
-      flex-wrap:nowrap;
-      align-items:center;
-      overflow-x:auto;
-      -webkit-overflow-scrolling: touch;
-      max-width: 100%;
-      padding-bottom: 2px;
-    }
-    .funcTop::-webkit-scrollbar{height:6px}
-    .funcTop::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
-
-    .pillFunc{
-      display:inline-flex;
-      align-items:center;
-      justify-content:center;
-      font-size:12px;
-      font-weight:1000;
-      color: rgba(231,236,255,.95);
-      padding: 6px 10px;
-      border-radius: 999px;
-      min-height:32px;
-      text-align:center;
-      line-height:1.2;
-      white-space:nowrap;
-      flex: 0 0 auto;
-    }
-    .pillFuncKo{
-      background: var(--koA);
-      border: 1px solid var(--koB);
-    }
-    .pillFuncMn{
-      background: var(--mnA);
-      border: 1px solid var(--mnB);
-    }
-
-    .cardBox{
-      margin-top: 12px;
-      border-radius: 20px;
-      border: 1px solid rgba(255,255,255,.12);
-      background: rgba(10,15,25,.38);
-      padding: 14px 14px 16px;
-    }
-
-    /* ✅ 1줄(가장 큼): 한국어 단어 + 몽골어 번역어를 같은 줄 */
-    .wordRow{
-      display:flex;
-      justify-content:center;
-      align-items:baseline;
-      gap: 12px;
-      flex-wrap:wrap; /* 모바일 줄바꿈 허용(너무 길면) */
-      text-align:center;
-      margin: 6px 0 10px;
-    }
-    .koWord{
-      font-size:34px;
-      font-weight:1000;
-      line-height:1.12;
-      margin:0;
-      word-break:keep-all;
-    }
-    .mnWordInline{
-      font-size:26px;
-      font-weight:1000;
-      line-height:1.12;
-      opacity:.95;
-      margin:0;
-      word-break:break-word;
-    }
-
-    /* ✅ 설명(가장 작음): 예문 위에 별도 칸으로 */
-    .descBox{
-      margin-top: 4px;
-      border-radius: 16px;
-      padding: 10px 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: linear-gradient(180deg, var(--descA), rgba(0,0,0,.10));
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:10px;
-    }
-    .descItem{
-      border-radius: 14px;
-      padding: 8px 10px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.10);
-    }
-    .descLabel{
-      font-size:11px;
-      font-weight:1000;
-      color: rgba(231,236,255,.62);
-      margin-bottom:6px;
-    }
-    .descText{
-      font-size:14px; /* ✅ 설명이 가장 작게 */
+    .funcChip{
+      border:1px solid rgba(58,160,255,.35);
+      background:rgba(58,160,255,.12);
+      color:rgba(234,242,255,.92);
+      padding:6px 10px;
+      border-radius:999px;
       font-weight:900;
-      line-height:1.35;
-      word-break:keep-all;
-      white-space:pre-wrap;
-      opacity:.95;
+      font-size:12px;
+      letter-spacing:.2px;
     }
 
-    .exBox{
-      margin-top: 10px;
-      border-top: 1px dashed rgba(255,255,255,.14);
-      padding-top: 10px;
+    /* Syn/Ant row — 모바일 우선 */
+    .synAntGrid{
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
+      margin-top:8px;
+      padding:2px 2px 10px;
     }
-    .exItem{
-      border-radius: 16px;
-      padding: 10px 12px;
-      border: 1px solid rgba(255,255,255,.10);
-      background: rgba(0,0,0,.12);
+    @media (min-width: 740px){
+      .synAntGrid{grid-template-columns:1fr 1fr;}
     }
-    .exKoBox{
-      background: linear-gradient(180deg, var(--blueA), rgba(0,0,0,.10));
-      border-color: var(--blueB);
+    .infoBox{
+      border:1px solid rgba(255,255,255,.10);
+      background:linear-gradient(180deg, rgba(13,27,45,.92), rgba(15,34,57,.70));
+      border-radius:18px;
+      padding:12px 12px;
+      min-height:74px;
+      display:flex;
+      flex-direction:column;
+      gap:8px;
     }
-    .exMnBox{
-      background: linear-gradient(180deg, var(--greenA), rgba(0,0,0,.10));
-      border-color: var(--greenB);
+    .infoLabel{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+    }
+    .labelText{
+      font-size:13px;
+      font-weight:1000;
+      color:rgba(234,242,255,.96);
+      letter-spacing:.2px;
+      padding:6px 10px;
+      border-radius:999px;
+      border:1px solid rgba(255,255,255,.14);
+      background:rgba(255,255,255,.06);
+      box-shadow:0 10px 26px rgba(0,0,0,.18);
+    }
+    .labelHint{
+      font-size:11px;
+      font-weight:800;
+      color:var(--muted2);
+    }
+    .infoText{
+      font-size:15px;
+      line-height:1.35;
+      font-weight:850;
+      color:rgba(234,242,255,.92);
+      word-break:keep-all;
+    }
+
+    /* 예문 2칸 */
+    .examplesGrid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+      padding-top:8px;
+      border-top:1px dashed rgba(255,255,255,.10);
+      margin-top:10px;
+    }
+    @media (min-width: 740px){
+      .examplesGrid{grid-template-columns:1fr 1fr;}
+    }
+    .exBox{
+      border:1px solid rgba(255,255,255,.10);
+      border-radius:18px;
+      padding:12px;
+      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+    }
+    .exBox.mn{
+      border-color:rgba(27,191,136,.22);
+      background:linear-gradient(180deg, rgba(27,191,136,.14), rgba(255,255,255,.02));
     }
     .exLabel{
       font-size:12px;
+      color:rgba(234,242,255,.92);
       font-weight:1000;
-      color: rgba(231,236,255,.70);
+      letter-spacing:.2px;
       margin-bottom:6px;
-    }
-    .exText{
-      font-size:18px; /* ✅ 예문이 두 번째로 크게 */
-      font-weight:900;
-      line-height:1.35;
-      word-break:keep-all;
-      white-space:pre-wrap;
-    }
-
-    .actions{
-      margin-top: 12px;
-      display:grid;
-      grid-template-columns: 1fr 1fr;
-      gap: 10px;
-    }
-    .btn{
-      width:100%;
-      border:0;
-      border-radius: 18px;
-      padding: 15px 14px;
-      font-size:20px;
-      font-weight:1000;
-      color:white;
-      cursor:pointer;
-      box-shadow: 0 10px 22px rgba(0,0,0,.30);
-      transition: transform .06s ease, filter .15s ease;
       display:flex;
       align-items:center;
-      justify-content:center;
+      justify-content:space-between;
       gap:10px;
-      user-select:none;
+    }
+    .exText{
+      font-size:18px;
+      font-weight:900;
+      line-height:1.4;
+      color:rgba(234,242,255,.95);
+      white-space:pre-wrap;
+      word-break:keep-all;
+    }
+
+    .navRow{
+      display:grid;
+      grid-template-columns: 1fr 1fr;
+      gap:10px;
+      padding-top:8px;
+    }
+    .navBtn{
+      border:none;
+      border-radius:18px;
+      padding:16px 14px;
+      font-size:20px;
+      font-weight:1000;
+      cursor:pointer;
+      color:rgba(234,242,255,.96);
+      background:rgba(255,255,255,.06);
+      border:1px solid rgba(255,255,255,.10);
       -webkit-tap-highlight-color: transparent;
     }
-    .btn:active{transform: translateY(1px) scale(.99)}
-    .btnPrimary{background: linear-gradient(180deg, #4f8cff, #2563eb);}
-    .btnGhost{
-      background: rgba(255,255,255,.06);
-      border: 1px solid rgba(255,255,255,.14);
-      box-shadow:none;
-      color: var(--text);
-      font-size:18px;
-      padding: 14px 12px;
-      border-radius: 18px;
-      font-weight:1000;
+    .navBtn.primary{
+      background:linear-gradient(180deg, rgba(47,107,255,.95), rgba(47,107,255,.70));
+      border-color:rgba(47,107,255,.72);
     }
+    .navBtn:active{transform:translateY(1px)}
 
-    .err{
-      margin-top: 12px;
-      padding: 10px 12px;
-      border-radius: 14px;
-      background: rgba(239,68,68,.14);
-      border:1px solid rgba(239,68,68,.35);
-      color: #ffd3d3;
-      font-size:14px;
-      font-weight:1000;
-      text-align:center;
-      display:none;
+    .error{
+      margin-top:10px;
+      padding:12px 12px;
+      border-radius:16px;
+      border:1px solid rgba(255,80,80,.28);
+      background:rgba(255,80,80,.12);
+      color:rgba(255,235,235,.95);
+      font-weight:900;
+      font-size:13px;
       white-space:pre-wrap;
-      line-height:1.4;
     }
 
-    @media (min-width: 720px){
-      .exBox{grid-template-columns: 1fr 1fr;}
-      .descBox{grid-template-columns: 1fr 1fr;}
+    .loading{
+      padding:10px 0 2px;
+      color:var(--muted);
+      font-weight:900;
+      font-size:13px;
+    }
+
+    /* 모바일 폰트 최적 */
+    @media (max-width: 420px){
+      .wordKo{font-size:34px}
+      .wordMn{font-size:19px}
+      .exText{font-size:17px}
+      .navBtn{font-size:19px}
+      .infoText{font-size:14.5px}
     }
   </style>
 </head>
 
 <body>
-  <div class="wrap">
-    <div class="card" id="app"></div>
+  <div class="app">
+    <div class="topbar">
+      <div class="leftControls">
+        <button class="btn" id="btnBack">← 뒤로</button>
+        <div class="chip active" id="chipKo">한국어</div>
+        <div class="chip" id="chipMn">Монгол</div>
+      </div>
+      <div class="rightInfo">
+        <div><span class="strong" id="whoName">-</span> · <span class="strong" id="whoClass">-</span></div>
+        <div id="langHint">lang=ko</div>
+      </div>
+    </div>
+
+    <div class="header">
+      <h1>TOPIK II</h1>
+      <p class="sub">단어 카드 · 다음 버튼으로 넘기기</p>
+    </div>
+
+    <div class="container">
+      <div class="panel">
+        <div class="metaRow">
+          <div class="titleBox">
+            <div class="lessonTitle" id="lessonTitle">로드 중…</div>
+            <div class="loading" id="loadingMsg">데이터를 불러오는 중입니다.</div>
+          </div>
+          <div class="counter">
+            <span class="badge" id="countBadge">0 / 0</span>
+          </div>
+        </div>
+
+        <div class="funcChips" id="funcChips" style="display:none;"></div>
+
+        <div class="wordLine">
+          <div class="wordKo" id="wordKo">…</div>
+          <div class="wordMn" id="wordMn">…</div>
+        </div>
+
+        <!-- 여기(두번째 캡처 영역) : 유의어/반의어 2칸 -->
+        <div class="synAntGrid">
+          <div class="infoBox">
+            <div class="infoLabel">
+              <div class="labelText" id="synLabel">유의어</div>
+              <div class="labelHint" id="synHint">선명하게 표시</div>
+            </div>
+            <div class="infoText" id="synText">-</div>
+          </div>
+          <div class="infoBox">
+            <div class="infoLabel">
+              <div class="labelText" id="antLabel">반의어</div>
+              <div class="labelHint" id="antHint">선명하게 표시</div>
+            </div>
+            <div class="infoText" id="antText">-</div>
+          </div>
+        </div>
+
+        <!-- 예문(2칸) -->
+        <div class="examplesGrid">
+          <div class="exBox">
+            <div class="exLabel">예문</div>
+            <div class="exText" id="exKo">-</div>
+          </div>
+          <div class="exBox mn">
+            <div class="exLabel">Жишээ</div>
+            <div class="exText" id="exMn">-</div>
+          </div>
+        </div>
+
+        <div class="navRow">
+          <button class="navBtn" id="btnPrev">이전</button>
+          <button class="navBtn primary" id="btnNext">다음</button>
+        </div>
+
+        <div class="error" id="errorBox" style="display:none;"></div>
+      </div>
+    </div>
   </div>
 
-<script>
-(() => {
-  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+  <script>
+    // ---- URL utils ----
+    const qs = new URLSearchParams(location.search);
+    const name = qs.get("name") || "";
+    const klass = qs.get("klass") || "";
+    const token = qs.get("token") || "";
+    const fileParam = qs.get("file") || "";
 
-  function getRepoBase(){
-    const p = location.pathname.split("/").filter(Boolean);
-    return p.length ? ("/" + p[0]) : "";
-  }
-  const REPO_BASE = getRepoBase();
-  const TOPIK2_HOME = REPO_BASE + "/topik2/index.html";
+    const $ = (id) => document.getElementById(id);
 
-  const $app = document.getElementById("app");
-  const DEV_KEY = "kq_deviceId_v1";
-  const LANG_KEY = "kq_lang_v1";
+    $("whoName").textContent = name || "-";
+    $("whoClass").textContent = klass || "-";
 
-  const qs = (k) => new URLSearchParams(location.search).get(k);
-  const safe = (s) => (s || "").toString();
-  const esc = (str) => safe(str).replace(/[&<>"']/g, (m) => ({
-    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
-  }[m]));
-  const nowISO = () => new Date().toISOString();
-
-  function getDeviceId(){
-    let id = localStorage.getItem(DEV_KEY);
-    if (!id){
-      id = "dev_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
-      localStorage.setItem(DEV_KEY, id);
+    // lang toggle (default ko)
+    let lang = (qs.get("lang") || "ko").toLowerCase() === "mn" ? "mn" : "ko";
+    function setLang(next){
+      lang = next;
+      $("langHint").textContent = "lang=" + lang;
+      $("chipKo").classList.toggle("active", lang === "ko");
+      $("chipMn").classList.toggle("active", lang === "mn");
+      // lang은 표시용/학습 편의용으로만 사용 (데이터는 항상 ko/mn 둘 다 보여줌)
     }
-    return id;
-  }
+    $("chipKo").addEventListener("click", () => setLang("ko"));
+    $("chipMn").addEventListener("click", () => setLang("mn"));
+    setLang(lang);
 
-  function getLang(){
-    const urlLang = qs("lang");
-    if (urlLang === "ko" || urlLang === "mn") return urlLang;
-    const v = localStorage.getItem(LANG_KEY);
-    return (v === "mn" || v === "ko") ? v : "ko";
-  }
-  function setLang(v){
-    localStorage.setItem(LANG_KEY, (v === "mn") ? "mn" : "ko");
-    document.documentElement.lang = getLang();
-  }
-
-  function buildUrl(base, params){
-    const u = new URL(base, location.origin);
-    Object.keys(params).forEach(k => {
-      if (params[k] === undefined || params[k] === null) return;
-      u.searchParams.set(k, String(params[k]));
+    // back
+    $("btnBack").addEventListener("click", () => {
+      // level.html로 돌아가되 현재 파라미터 유지
+      const backUrl = new URL(location.origin + "/korean-quiz/topik2/level.html");
+      // cat/level은 file 기반으로 복원 불가하니 유지 가능한 파라미터만 전달
+      if (name) backUrl.searchParams.set("name", name);
+      if (klass) backUrl.searchParams.set("klass", klass);
+      if (token) backUrl.searchParams.set("token", token);
+      location.href = backUrl.toString();
     });
-    return u.toString();
-  }
 
-  function jsonp(url, params, timeoutMs = 8000){
-    return new Promise((resolve, reject) => {
-      const cb = "cb_" + Math.random().toString(16).slice(2);
-      const timer = setTimeout(() => { cleanup(); reject(new Error("JSONP timeout")); }, timeoutMs);
+    // Normalize file URL robustly (absolute / relative / // / repo-base)
+    function normalizeFileUrl(input){
+      if(!input) return "";
+      let raw = input.trim();
 
-      function cleanup(){
-        clearTimeout(timer);
-        try{ delete window[cb]; }catch(e){}
-        if (script && script.parentNode) script.parentNode.removeChild(script);
+      try { raw = decodeURIComponent(raw); } catch(e) {}
+
+      // already absolute
+      if(/^https?:\/\//i.test(raw)) return raw;
+
+      // protocol-relative
+      if(/^\/\//.test(raw)) return location.protocol + raw;
+
+      // absolute path
+      if(raw.startsWith("/")){
+        return location.origin + raw;
       }
 
-      window[cb] = (data) => { cleanup(); resolve(data); };
+      // relative path -> resolve from current page
+      const base = new URL(location.href);
+      // remove filename
+      base.pathname = base.pathname.replace(/\/[^\/]*$/, "/");
+      return new URL(raw, base.toString()).toString();
+    }
 
-      const p = new URLSearchParams();
-      Object.keys(params).forEach(k => {
-        if (params[k] === undefined || params[k] === null) return;
-        p.set(k, String(params[k]));
-      });
-      p.set("callback", cb);
+    function showError(msg){
+      $("errorBox").style.display = "block";
+      $("errorBox").textContent = msg;
+      $("loadingMsg").textContent = "로드 실패";
+    }
 
-      const full = url + (url.includes("?") ? "&" : "?") + p.toString();
-      const script = document.createElement("script");
-      script.src = full;
-      script.async = true;
-      script.onerror = () => { cleanup(); reject(new Error("JSONP network error")); };
-      document.head.appendChild(script);
-    });
-  }
+    // ---- Data + render ----
+    let deck = null;
+    let items = [];
+    let idx = 0;
 
-  async function logEvent(action, extra){
-    try{
-      const payload = {
-        action: "log",
-        book: "TOPIK2",
-        lesson: "flashcards",
-        score: 0,
-        attempts: 0,
-        name: qs("name") || "",
-        klass: qs("klass") || "",
-        token: qs("token") || "",
-        deviceId: getDeviceId(),
-        ua: navigator.userAgent || "",
-        lang: getLang(),
-        ...extra,
-        event: action,
-        ts: nowISO()
-      };
-      await jsonp(SCRIPT_URL, payload, 8000);
-    }catch(e){}
-  }
-
-  const reHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
-  const reCyril  = /[\u0400-\u04FF]/;
-  function hasHangul(s){ return reHangul.test(s || ""); }
-  function hasCyril(s){ return reCyril.test(s || ""); }
-
-  function fixPair(ko, mn){
-    const koIsMn = hasCyril(ko) && !hasHangul(ko);
-    const mnIsKo = hasHangul(mn) && !hasCyril(mn);
-    if (koIsMn && mnIsKo) return { ko: mn, mn: ko };
-    return { ko, mn };
-  }
-
-  function splitExample(exKo, exMn){
-    const a = safe(exKo).trim();
-    const b = safe(exMn).trim();
-
-    if (a && !b && hasHangul(a) && hasCyril(a)){
-      const idx = a.search(reCyril);
-      if (idx > 0){
-        const left = a.slice(0, idx).trim();
-        const right = a.slice(idx).trim();
-        return { ex_ko: left, ex_mn: right };
+    function parseFuncChip(text){
+      // "기능 · 단어" 형태면 기능칩 분리
+      if(!text) return { func: "", head: text || "" };
+      const parts = text.split("·").map(s => s.trim()).filter(Boolean);
+      if(parts.length >= 2){
+        return { func: parts[0], head: parts.slice(1).join(" · ") };
       }
+      return { func: "", head: text };
     }
 
-    if (a && b){
-      const aIsMn = hasCyril(a) && !hasHangul(a);
-      const bIsKo = hasHangul(b) && !hasCyril(b);
-      if (aIsMn && bIsKo) return { ex_ko: b, ex_mn: a };
+    function cleanLabelPrefix(s){
+      if(!s) return "";
+      return String(s)
+        .replace(/^유의어\s*:\s*/,"")
+        .replace(/^반의어\s*:\s*/,"")
+        .trim();
     }
 
-    return { ex_ko: a, ex_mn: b };
-  }
-
-  function splitFuncAndWord(text){
-    const t = safe(text).trim();
-    const seps = [" · ", "|", " - ", " — ", " —", "—", "•"];
-    for (const sep of seps){
-      const idx = t.indexOf(sep);
-      if (idx > 0){
-        const func = t.slice(0, idx).trim();
-        const word = t.slice(idx + sep.length).trim();
-        if (func && word) return { func, word };
+    function fallbackSynAntFromEx(exKo){
+      // ex_ko 첫 줄에 "유의어: ... | 반의어: ..." 가 들어있는 경우를 지원
+      if(!exKo) return {syn:"", ant:"", ex:""};
+      const lines = String(exKo).split("\n");
+      if(lines.length >= 2 && (lines[0].includes("유의어") || lines[0].includes("반의어"))){
+        const first = lines[0];
+        let syn = "";
+        let ant = "";
+        const synMatch = first.match(/유의어\s*:\s*([^|]+)(\||$)/);
+        const antMatch = first.match(/반의어\s*:\s*(.+)$/);
+        if(synMatch) syn = synMatch[1].trim();
+        if(antMatch) ant = antMatch[1].trim();
+        return { syn, ant, ex: lines.slice(1).join("\n").trim() };
       }
+      return {syn:"", ant:"", ex: String(exKo).trim()};
     }
-    return { func: "", word: t };
-  }
 
-  // ✅ file 파라미터를 "항상 절대 URL"로 정규화 (404 방지)
-  function normalizeFileParam(){
-    const raw = qs("file") || "";
-    if (!raw) return "";
-
-    let v = raw;
-    try { v = decodeURIComponent(raw); } catch(_) {}
-
-    if (/^https?:\/\//i.test(v)) return v;
-    if (v.startsWith("/")) return new URL(v, location.origin).toString();
-    return new URL("/" + v, location.origin).toString();
-  }
-
-  // ✅ 설명/예문 분리: ex_ko/ex_mn에 줄바꿈이 있으면 (첫 줄=설명, 나머지=예문)
-  function splitDescAndExample(text){
-    const t = safe(text).trim();
-    if (!t) return { desc: "", ex: "" };
-    const lines = t.split("\n").map(s => s.trim()).filter(Boolean);
-    if (lines.length >= 2){
-      const desc = lines[0].replace(/^•\s*/, "").trim();
-      const ex = lines.slice(1).join("\n").trim();
-      return { desc, ex };
+    function setFuncChips(func){
+      const box = $("funcChips");
+      box.innerHTML = "";
+      if(!func){
+        box.style.display = "none";
+        return;
+      }
+      const chip = document.createElement("div");
+      chip.className = "funcChip";
+      chip.textContent = func;
+      box.appendChild(chip);
+      box.style.display = "flex";
     }
-    // 한 줄이면 전부 예문으로
-    return { desc: "", ex: t };
-  }
 
-  const state = {
-    file: normalizeFileParam(),
-    data: null,
-    idx: 0,
-    startedAt: Date.now()
-  };
+    function render(){
+      if(!items.length){
+        $("lessonTitle").textContent = deck?.title_kr || deck?.title || "데이터 없음";
+        $("countBadge").textContent = "0 / 0";
+        $("wordKo").textContent = "…";
+        $("wordMn").textContent = "…";
+        $("synText").textContent = "-";
+        $("antText").textContent = "-";
+        $("exKo").textContent = "-";
+        $("exMn").textContent = "-";
+        return;
+      }
+      const it = items[idx];
 
-  function showError(msg){
-    const $err = document.getElementById("err");
-    if (!$err) return;
-    $err.textContent = msg;
-    $err.style.display = "block";
-  }
+      $("lessonTitle").textContent = deck?.title_kr || deck?.title || "TOPIK II";
+      $("loadingMsg").textContent = "";
+      $("countBadge").textContent = (idx + 1) + " / " + items.length;
 
-  function renderShell(title, sub){
-    const lang = getLang();
-    const name = qs("name") || "";
-    const klass = qs("klass") || "";
-    $app.innerHTML = `
-      <div class="topBar">
-        <div class="leftTop">
-          <button class="btnSmall" id="btnBack">← 뒤로</button>
-          <div class="langToggle">
-            <button class="langBtn ${lang==="ko"?"active":""}" id="langKo">한국어</button>
-            <button class="langBtn ${lang==="mn"?"active":""}" id="langMn">Монгол</button>
-          </div>
-        </div>
-        <div class="rightTop">
-          <div class="mono">${esc(name)} · ${esc(klass)}</div>
-          <div class="mono">lang=${esc(lang)}</div>
-        </div>
-      </div>
+      // word line (ko big + mn inline)
+      const koParsed = parseFuncChip(it.ko || "");
+      const mnParsed = parseFuncChip(it.mn || "");
 
-      <div class="hdr">
-        <h1 class="title">${esc(title || "Flashcards")}</h1>
-        <p class="subtitle">${esc(sub || "다음 버튼을 눌러 단어를 넘기세요")}</p>
-      </div>
+      $("wordKo").textContent = koParsed.head || "—";
+      $("wordMn").textContent = mnParsed.head || "—";
 
-      <div class="content">
-        <div class="deckInfo">
-          <div class="deckLeft">
-            <div class="deckName" id="deckName">로드 중…</div>
-            <div class="deckMeta">
-              <span class="pill" id="posInfo">0 / 0</span>
-              <span class="funcTop" id="funcTop" style="display:none;">
-                <span class="pillFunc pillFuncKo" id="funcKo"></span>
-                <span class="pillFunc pillFuncMn" id="funcMn"></span>
-              </span>
-            </div>
-          </div>
-        </div>
+      // 기능칩: ko/mn 중 하나라도 기능이 있으면 우선 ko, 없으면 mn
+      setFuncChips(koParsed.func || mnParsed.func || "");
 
-        <div class="cardBox">
-          <div class="wordRow">
-            <div class="koWord" id="koWord">…</div>
-            <div class="mnWordInline" id="mnWordInline"></div>
-          </div>
+      // Syn/Ant: prefer syn_ko / ant_ko; fallback from ex_ko first line pattern
+      const fb = fallbackSynAntFromEx(it.ex_ko || "");
+      const synRaw = it.syn_ko ? cleanLabelPrefix(it.syn_ko) : (fb.syn || "");
+      const antRaw = it.ant_ko ? cleanLabelPrefix(it.ant_ko) : (fb.ant || "");
 
-          <div class="descBox" id="descBox" style="display:none;">
-            <div class="descItem">
-              <div class="descLabel">설명 (한국어)</div>
-              <div class="descText" id="descKo"></div>
-            </div>
-            <div class="descItem">
-              <div class="descLabel">Тайлбар (Монгол)</div>
-              <div class="descText" id="descMn"></div>
-            </div>
-          </div>
+      $("synText").textContent = synRaw ? synRaw : "—";
+      $("antText").textContent = antRaw ? antRaw : "—";
 
-          <div class="exBox">
-            <div class="exItem exKoBox">
-              <div class="exLabel">예문 (한국어)</div>
-              <div class="exText" id="exKo"></div>
-            </div>
-            <div class="exItem exMnBox">
-              <div class="exLabel">Жишээ (Монгол)</div>
-              <div class="exText" id="exMn"></div>
-            </div>
-          </div>
+      // Examples: use fallback-stripped ex_ko
+      const exKo = it.ex_ko ? fb.ex : "";
+      $("exKo").textContent = (exKo && exKo.trim()) ? exKo.trim() : "—";
+      $("exMn").textContent = (it.ex_mn && String(it.ex_mn).trim()) ? String(it.ex_mn).trim() : "—";
+    }
 
-          <div class="actions">
-            <button class="btn btnGhost" id="btnPrev">이전</button>
-            <button class="btn btnPrimary" id="btnNext">다음</button>
-          </div>
-
-          <div class="err" id="err"></div>
-        </div>
-      </div>
-    `;
-
-    document.getElementById("btnBack").addEventListener("click", async () => {
-      await logEvent("back", { idx: state.idx, file: state.file });
-      location.href = buildUrl(TOPIK2_HOME, {
-        name: qs("name") || "",
-        klass: qs("klass") || "",
-        token: qs("token") || "",
-        lang: getLang()
-      });
+    $("btnPrev").addEventListener("click", () => {
+      if(!items.length) return;
+      idx = (idx - 1 + items.length) % items.length;
+      render();
+    });
+    $("btnNext").addEventListener("click", () => {
+      if(!items.length) return;
+      idx = (idx + 1) % items.length;
+      render();
     });
 
-    document.getElementById("langKo").addEventListener("click", () => { setLang("ko"); render(true); });
-    document.getElementById("langMn").addEventListener("click", () => { setLang("mn"); render(true); });
-  }
-
-  function renderCard(){
-    const items = (state.data && Array.isArray(state.data.items)) ? state.data.items : [];
-    const total = items.length;
-
-    const $deckName = document.getElementById("deckName");
-    const $posInfo = document.getElementById("posInfo");
-
-    const $koWord = document.getElementById("koWord");
-    const $mnWordInline = document.getElementById("mnWordInline");
-
-    const $descBox = document.getElementById("descBox");
-    const $descKo = document.getElementById("descKo");
-    const $descMn = document.getElementById("descMn");
-
-    const $exKo = document.getElementById("exKo");
-    const $exMn = document.getElementById("exMn");
-
-    const $funcTop = document.getElementById("funcTop");
-    const $funcKo = document.getElementById("funcKo");
-    const $funcMn = document.getElementById("funcMn");
-
-    $posInfo.textContent = `${total ? (state.idx + 1) : 0} / ${total}`;
-
-    const deckTitle = (getLang() === "mn")
-      ? (state.data && state.data.title_mn) || (state.data && state.data.title_kr) || (state.data && state.data.title) || "Flashcards"
-      : (state.data && state.data.title_kr) || (state.data && state.data.title) || "Flashcards";
-    $deckName.textContent = deckTitle;
-
-    if (!total){
-      $koWord.textContent = "데이터가 없습니다";
-      $mnWordInline.textContent = "";
-      $descBox.style.display = "none";
-      $exKo.textContent = "";
-      $exMn.textContent = "";
-      $funcTop.style.display = "none";
-      showError("items 배열이 비어 있습니다.\nJSON에 items가 들어있는지 확인하세요.");
-      return;
-    }
-
-    const it = items[state.idx] || {};
-
-    const fixed = fixPair(safe(it.ko).trim(), safe(it.mn).trim());
-    const koSplit = splitFuncAndWord(fixed.ko);
-    const mnSplit = splitFuncAndWord(fixed.mn);
-
-    const exFixed = splitExample(it.ex_ko, it.ex_mn);
-    const koDescEx = splitDescAndExample(exFixed.ex_ko);
-    const mnDescEx = splitDescAndExample(exFixed.ex_mn);
-
-    // 상단 기능칩(분야)
-    const funcKoVal = koSplit.func;
-    const funcMnVal = mnSplit.func;
-
-    if (funcKoVal || funcMnVal){
-      $funcTop.style.display = "flex";
-      $funcKo.textContent = funcKoVal ? ("기능 · " + funcKoVal) : "기능";
-      $funcMn.textContent = funcMnVal ? ("Үүрэг · " + funcMnVal) : "Үүрэг";
-    } else {
-      $funcTop.style.display = "none";
-    }
-
-    // ✅ 1줄: 단어(ko) + 번역어(mn) 같은 줄
-    $koWord.textContent = koSplit.word || "(빈 단어)";
-    $mnWordInline.textContent = mnSplit.word || "";
-
-    // ✅ 설명칸: 있으면 표시(가장 작은 글씨)
-    const descKo = koDescEx.desc || "";
-    const descMn = mnDescEx.desc || "";
-    if (descKo || descMn){
-      $descBox.style.display = "grid";
-      $descKo.textContent = descKo;
-      $descMn.textContent = descMn;
-    } else {
-      $descBox.style.display = "none";
-      $descKo.textContent = "";
-      $descMn.textContent = "";
-    }
-
-    // ✅ 예문칸: “설명 제외” 예문만 표시(두 번째로 큰 글씨)
-    $exKo.textContent = koDescEx.ex || "";
-    $exMn.textContent = mnDescEx.ex || "";
-
-    document.getElementById("btnPrev").disabled = (state.idx <= 0);
-    document.getElementById("btnPrev").style.opacity = (state.idx <= 0) ? 0.55 : 1;
-  }
-
-  function bindNav(){
-    document.getElementById("btnNext").addEventListener("click", async () => {
-      const items = state.data.items || [];
-      if (!items.length) return;
-      state.idx = (state.idx + 1) % items.length;
-      renderCard();
-      await logEvent("next", { idx: state.idx, file: state.file });
-    });
-
-    document.getElementById("btnPrev").addEventListener("click", async () => {
-      const items = state.data.items || [];
-      if (!items.length) return;
-      state.idx = Math.max(0, state.idx - 1);
-      renderCard();
-      await logEvent("prev", { idx: state.idx, file: state.file });
-    });
-
+    // keyboard
     window.addEventListener("keydown", (e) => {
-      if (e.key === " " || e.key === "Enter") {
-        e.preventDefault();
-        const $n = document.getElementById("btnNext");
-        if ($n) $n.click();
-      }
+      if(e.key === "ArrowLeft") $("btnPrev").click();
+      if(e.key === "ArrowRight") $("btnNext").click();
     });
-  }
 
-  async function loadData(){
-    if (!state.file){
-      throw new Error("URL에 file 파라미터가 없습니다.\n예: ?file=/data/topik2/vocab/level01_attitude.json");
-    }
-    const res = await fetch(state.file, { cache: "no-store" });
-    if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText + "\n" + state.file);
-    const json = await res.json();
-    if (!json || !Array.isArray(json.items)) {
-      throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
-    }
-    state.data = json;
-  }
-
-  async function render(keepIndex){
-    document.documentElement.lang = getLang();
-    renderShell("TOPIK II", "단어 카드 · 다음 버튼으로 넘기기");
-
-    try{
-      if (!state.data) {
-        await loadData();
-        await logEvent("start", { file: state.file });
+    // fetch JSON
+    (async function init(){
+      const url = normalizeFileUrl(fileParam);
+      if(!url){
+        showError("file 파라미터가 없습니다.\n예: flashcards.html?file=https%3A%2F%2F...json&name=...&klass=...&token=...");
+        return;
       }
-      if (!keepIndex) state.idx = 0;
-      renderCard();
-      bindNav();
-    }catch(e){
-      showError(String(e && e.message ? e.message : e));
-    }
-  }
+      try{
+        const res = await fetch(url, { cache: "no-store" });
+        if(!res.ok) throw new Error("HTTP " + res.status);
+        const data = await res.json();
 
-  window.addEventListener("beforeunload", () => {
-    const elapsedSec = Math.max(0, Math.round((Date.now() - state.startedAt) / 1000));
-    try{
-      jsonp(SCRIPT_URL, {
-        action: "log",
-        event: "end",
-        book: "TOPIK2",
-        lesson: "flashcards",
-        name: qs("name") || "",
-        klass: qs("klass") || "",
-        token: qs("token") || "",
-        deviceId: getDeviceId(),
-        ua: navigator.userAgent || "",
-        lang: getLang(),
-        file: state.file,
-        idx: state.idx,
-        elapsedSec,
-        ts: nowISO()
-      }, 1500);
-    }catch(e){}
-  });
-
-  render(false);
-})();
-</script>
+        // expected: {title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn,...}]}
+        if(!data || typeof data !== "object" || !Array.isArray(data.items)){
+          throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
+        }
+        deck = data;
+        items = data.items.filter(x => x && (x.ko || x.mn || x.ex_ko || x.ex_mn));
+        idx = 0;
+        render();
+      }catch(err){
+        showError("로드 실패: " + (err?.message || String(err)));
+      }
+    })();
+  </script>
 </body>
 </html>
