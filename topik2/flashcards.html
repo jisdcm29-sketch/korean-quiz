@@ -213,7 +213,7 @@
       letter-spacing:.2px;
     }
 
-    /* 유의어/반의어: 기본은 숨김(중요어휘만 표시) */
+    /* 중요어휘1 전용(기본은 완전 숨김) */
     .synAntGrid{ display:none; }
     .synAntGrid.show{
       display:grid;
@@ -392,7 +392,7 @@
           <div class="wordMn" id="wordMn">…</div>
         </div>
 
-        <!-- 중요어휘(=syn/ant 있는 덱)에서만 표시 -->
+        <!-- 중요어휘1(level08_key_vocab1.json)에서만 보이도록 강제 -->
         <div class="synAntGrid" id="synAntGrid">
           <div class="infoBox">
             <div class="infoLabel"><div class="labelText">유의어</div></div>
@@ -437,7 +437,6 @@
     $("whoName").textContent = name || "-";
     $("whoClass").textContent = klass || "-";
 
-    // repo base (/korean-quiz) 자동 추정
     function getRepoBase(){
       const p = location.pathname || "/";
       const m = p.match(/^(.*?\/korean-quiz)(\/|$)/);
@@ -445,7 +444,6 @@
     }
     const REPO_BASE = getRepoBase();
 
-    // lang toggle (표시용)
     let lang = (qs.get("lang") || "ko").toLowerCase() === "mn" ? "mn" : "ko";
     function setLang(next){
       lang = next;
@@ -457,7 +455,7 @@
     $("chipMn").addEventListener("click", () => setLang("mn"));
     setLang(lang);
 
-    // referrer/lastLevel 기억 (뒤로가기 정확도 개선)
+    // referrer 저장
     (function rememberLevel(){
       try{
         const ref = document.referrer || "";
@@ -467,23 +465,13 @@
       }catch(e){}
     })();
 
-    // 뒤로가기: referrer(레벨페이지) > sessionStorage > history.back > fallback(level)
     $("btnBack").addEventListener("click", () => {
       try{
         const ref = document.referrer || "";
         const saved = sessionStorage.getItem("topik2_lastLevelUrl") || "";
-        if (ref && ref.includes("/topik2/level.html")) {
-          location.href = ref;
-          return;
-        }
-        if (saved && saved.includes("/topik2/level.html")) {
-          location.href = saved;
-          return;
-        }
-        if (history.length > 1) {
-          history.back();
-          return;
-        }
+        if (ref && ref.includes("/topik2/level.html")) { location.href = ref; return; }
+        if (saved && saved.includes("/topik2/level.html")) { location.href = saved; return; }
+        if (history.length > 1) { history.back(); return; }
         fallbackToLevel();
       }catch(e){
         fallbackToLevel();
@@ -499,7 +487,6 @@
       location.href = levelUrl.toString();
     }
 
-    // file URL normalize
     function normalizeFileUrl(input){
       if(!input) return "";
       let raw = input.trim();
@@ -508,12 +495,10 @@
       if(/^\/\//.test(raw)) return location.protocol + raw;
       if(raw.startsWith("/")) return location.origin + raw;
 
-      // repo-root 상대(data/...)라면 REPO_BASE를 붙여 안정화
       if (raw.startsWith("data/") && REPO_BASE){
         return location.origin + REPO_BASE + "/" + raw;
       }
 
-      // 그 외는 현재 폴더 기준
       const base = new URL(location.href);
       base.pathname = base.pathname.replace(/\/[^\/]*$/, "/");
       return new URL(raw, base.toString()).toString();
@@ -552,20 +537,18 @@
       box.style.display = "flex";
     }
 
-    // script detect
     const reHangul = /[가-힣]/;
     const reCyr = /[\u0400-\u04FF]/;
 
+    function countHangul(s){ return (String(s||"").match(/[가-힣]/g)||[]).length; }
+    function countCyr(s){ return (String(s||"").match(/[\u0400-\u04FF]/g)||[]).length; }
+
     function isMostlyHangul(s){
-      s = String(s||"");
-      const h = (s.match(/[가-힣]/g)||[]).length;
-      const c = (s.match(/[\u0400-\u04FF]/g)||[]).length;
+      const h = countHangul(s), c = countCyr(s);
       return h > c && h >= 1;
     }
     function isMostlyCyrillic(s){
-      s = String(s||"");
-      const h = (s.match(/[가-힣]/g)||[]).length;
-      const c = (s.match(/[\u0400-\u04FF]/g)||[]).length;
+      const h = countHangul(s), c = countCyr(s);
       return c > h && c >= 1;
     }
 
@@ -578,7 +561,6 @@
     }
 
     function fallbackSynAntFromEx(exKo){
-      // 중요어휘 데이터에서만 보조 추출 (다른 덱은 영향을 주지 않음)
       if(!exKo) return {syn:"", ant:"", ex:""};
       const lines = String(exKo).split("\n");
       if(lines.length >= 2 && (lines[0].includes("유의어") || lines[0].includes("반의어"))){
@@ -594,44 +576,73 @@
       return {syn:"", ant:"", ex: String(exKo).trim()};
     }
 
-    // 예문에 한/몽이 섞여 들어오는 데이터 자동 분리 (ex_mn이 비어 있을 때만)
-    function splitBilingualExample(exKoRaw, exMnRaw){
-      let ko = (exKoRaw || "").trim();
-      let mn = (exMnRaw || "").trim();
-      if (mn) return {ko, mn};
-      if (!ko) return {ko:"", mn:""};
+    // 핵심: "중요어휘1"은 파일명으로만 판정(다른 덱에 절대 영향 X)
+    function isKeyVocabDeckByFile(url){
+      return /level08_key_vocab1\.json(\?|$)/i.test(url || "");
+    }
 
-      const lines = ko.split("\n").map(s=>s.trim()).filter(Boolean);
-      const koLines = [];
-      const mnLines = [];
+    // 예문 정리: ex_ko/ex_mn이 섞이거나 한쪽에만 몰리면 자동 분리/이동
+    function normalizeExamples(exKoRaw, exMnRaw){
+      let ko = String(exKoRaw || "").trim();
+      let mn = String(exMnRaw || "").trim();
 
-      for (const line of lines){
-        const hasH = reHangul.test(line);
-        const hasC = reCyr.test(line);
-
-        if (hasH && !hasC) koLines.push(line);
-        else if (hasC && !hasH) mnLines.push(line);
-        else {
-          if (isMostlyHangul(line)) koLines.push(line);
-          else if (isMostlyCyrillic(line)) mnLines.push(line);
-          else koLines.push(line);
-        }
+      // 1) 둘 다 있는데 뒤집힌 경우(ko가 키릴, mn이 한글) -> swap
+      if (ko && mn && isMostlyCyrillic(ko) && isMostlyHangul(mn)) {
+        const tmp = ko; ko = mn; mn = tmp;
       }
 
-      return {
-        ko: koLines.join("\n").trim(),
-        mn: mnLines.join("\n").trim()
-      };
+      // 2) ko가 비어있고 mn에 한글+키릴이 같이 있으면 라인 기준으로 분리
+      if (!ko && mn && reHangul.test(mn) && reCyr.test(mn)) {
+        const lines = mn.split("\n").map(s=>s.trim()).filter(Boolean);
+        const koLines = [], mnLines = [];
+        for (const line of lines){
+          const hasH = reHangul.test(line);
+          const hasC = reCyr.test(line);
+          if (hasH && !hasC) koLines.push(line);
+          else if (hasC && !hasH) mnLines.push(line);
+          else {
+            if (isMostlyHangul(line)) koLines.push(line);
+            else if (isMostlyCyrillic(line)) mnLines.push(line);
+            else koLines.push(line);
+          }
+        }
+        ko = koLines.join("\n").trim();
+        mn = mnLines.join("\n").trim();
+      }
+
+      // 3) mn이 비어있고 ko에 한글+키릴이 같이 있으면 라인 기준으로 분리
+      if (!mn && ko && reHangul.test(ko) && reCyr.test(ko)) {
+        const lines = ko.split("\n").map(s=>s.trim()).filter(Boolean);
+        const koLines = [], mnLines = [];
+        for (const line of lines){
+          const hasH = reHangul.test(line);
+          const hasC = reCyr.test(line);
+          if (hasH && !hasC) koLines.push(line);
+          else if (hasC && !hasH) mnLines.push(line);
+          else {
+            if (isMostlyHangul(line)) koLines.push(line);
+            else if (isMostlyCyrillic(line)) mnLines.push(line);
+            else koLines.push(line);
+          }
+        }
+        ko = koLines.join("\n").trim();
+        mn = mnLines.join("\n").trim();
+      }
+
+      // 4) ko에 키릴만 잔뜩 들어가 있고 mn은 비어있거나 거의 없으면 -> 이동
+      if (ko && !mn && isMostlyCyrillic(ko) && !reHangul.test(ko)) {
+        mn = ko; ko = "";
+      }
+
+      // 5) mn에 한글만 잔뜩 들어가 있고 ko는 비어있거나 거의 없으면 -> 이동
+      if (mn && !ko && isMostlyHangul(mn) && !reCyr.test(mn)) {
+        ko = mn; mn = "";
+      }
+
+      return { ko, mn };
     }
 
-    function hasSynAntDeck(){
-      const t = (deck?.title_kr || deck?.title || "").toLowerCase();
-      if (t.includes("중요어휘") || t.includes("key vocab")) return true;
-      // 실제 데이터 필드로 판정(가장 정확)
-      return items.some(it => it && (it.syn_ko || it.ant_ko));
-    }
-
-    function render(){
+    function render(currentFileUrl){
       if(!items.length){
         $("lessonTitle").textContent = deck?.title_kr || deck?.title || "데이터 없음";
         $("countBadge").textContent = "0 / 0";
@@ -645,63 +656,61 @@
         return;
       }
 
-      // 덱 전체 기준으로 syn/ant UI를 켬(중요어휘만)
-      const showSynAnt = hasSynAntDeck();
-      $("synAntGrid").classList.toggle("show", !!showSynAnt);
-
       const it = items[idx];
 
       $("lessonTitle").textContent = deck?.title_kr || deck?.title || "TOPIK II";
       $("loadingMsg").textContent = "";
       $("countBadge").textContent = (idx + 1) + " / " + items.length;
 
-      // ko/mn 뒤집힘 자동 교정(표시만)
+      // 단어 ko/mn 뒤집힘 자동 교정(표시만)
       const rawKo = String(it.ko || "");
       const rawMn = String(it.mn || "");
-      const shouldSwap = isMostlyCyrillic(rawKo) && isMostlyHangul(rawMn);
+      const shouldSwapWord = isMostlyCyrillic(rawKo) && isMostlyHangul(rawMn);
 
-      const dispKo = shouldSwap ? rawMn : rawKo;
-      const dispMn = shouldSwap ? rawKo : rawMn;
+      const dispKo = shouldSwapWord ? rawMn : rawKo;
+      const dispMn = shouldSwapWord ? rawKo : rawMn;
 
       const koParsed = parseFuncChip(dispKo);
       const mnParsed = parseFuncChip(dispMn);
 
       $("wordKo").textContent = koParsed.head || "—";
       $("wordMn").textContent = mnParsed.head || "—";
-
       setFuncChips(koParsed.func || mnParsed.func || "");
 
-      // syn/ant는 "중요어휘 덱"일 때만 계산/표시 (다른 덱 영향 차단)
-      if (showSynAnt){
+      // 중요어휘1에서만 유의어/반의어 UI 노출 + 값 세팅
+      const isKey = isKeyVocabDeckByFile(currentFileUrl);
+      $("synAntGrid").classList.toggle("show", !!isKey);
+
+      if (isKey) {
         const fb = fallbackSynAntFromEx(it.ex_ko || "");
         const synRaw = it.syn_ko ? cleanLabelPrefix(it.syn_ko) : (fb.syn || "");
         const antRaw = it.ant_ko ? cleanLabelPrefix(it.ant_ko) : (fb.ant || "");
         $("synText").textContent = synRaw ? synRaw : "—";
         $("antText").textContent = antRaw ? antRaw : "—";
+      } else {
+        // 다른 덱은 절대 영향 주지 않도록 값도 초기화
+        $("synText").textContent = "—";
+        $("antText").textContent = "—";
       }
 
-      // 예문: ex_mn이 비어 있을 때만 한/몽 분리(기존 덱 보존)
+      // 예문 정리(덱 전체 공통): 섞임/역전만 교정
       const exKoRaw = String(it.ex_ko || "");
       const exMnRaw = String(it.ex_mn || "");
+      const ex = normalizeExamples(exKoRaw, exMnRaw);
 
-      // shouldSwap이면 예문도 swap해서 처리
-      const exPair = shouldSwap
-        ? splitBilingualExample(exMnRaw, exKoRaw)
-        : splitBilingualExample(exKoRaw, exMnRaw);
-
-      $("exKo").textContent = exPair.ko ? exPair.ko : "—";
-      $("exMn").textContent = exPair.mn ? exPair.mn : "—";
+      $("exKo").textContent = ex.ko ? ex.ko : "—";
+      $("exMn").textContent = ex.mn ? ex.mn : "—";
     }
 
     $("btnPrev").addEventListener("click", () => {
       if(!items.length) return;
       idx = (idx - 1 + items.length) % items.length;
-      render();
+      render(currentFileUrl);
     });
     $("btnNext").addEventListener("click", () => {
       if(!items.length) return;
       idx = (idx + 1) % items.length;
-      render();
+      render(currentFileUrl);
     });
 
     window.addEventListener("keydown", (e) => {
@@ -709,8 +718,11 @@
       if(e.key === "ArrowRight") $("btnNext").click();
     });
 
+    let currentFileUrl = "";
+
     (async function init(){
       const url = normalizeFileUrl(fileParam);
+      currentFileUrl = url;
       $("fileHint").textContent = "file: " + (url ? url : "-");
 
       if(!url){
@@ -728,7 +740,7 @@
         deck = data;
         items = data.items.filter(x => x && (x.ko || x.mn || x.ex_ko || x.ex_mn));
         idx = 0;
-        render();
+        render(currentFileUrl);
       }catch(err){
         showError("로드 실패: " + (err?.message || String(err)));
       }
