@@ -75,27 +75,6 @@
       -webkit-tap-highlight-color: transparent;
       white-space:nowrap;
     }
-    .langToggle{display:flex; gap:8px; align-items:center;}
-    .langBtn{
-      border:1px solid rgba(255,255,255,.14);
-      background: rgba(255,255,255,.06);
-      color: rgba(231,236,255,.92);
-      padding: 10px 12px;
-      border-radius: 999px;
-      font-weight:900;
-      font-size:14px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-      min-width:84px;
-      text-align:center;
-    }
-    .langBtn.active{
-      background: linear-gradient(180deg, rgba(79,140,255,.95), rgba(37,99,235,.95));
-      border-color: rgba(79,140,255,.9);
-      color:#fff;
-      box-shadow: 0 8px 18px rgba(37,99,235,.25);
-    }
     .rightTop{
       display:flex; flex-direction:column; align-items:flex-end; gap:2px;
       color: rgba(231,236,255,.65);
@@ -403,7 +382,7 @@
     return p.length ? ("/" + p[0]) : "";
   }
   const REPO_BASE = getRepoBase();
-  const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";   // (이전 단계 fallback)
+  const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";
   const APP_HOME = REPO_BASE + "/index.html";
 
   const $app = document.getElementById("app");
@@ -431,10 +410,6 @@
     if (urlLang === "ko" || urlLang === "mn") return urlLang;
     const v = localStorage.getItem(LANG_KEY);
     return (v === "mn" || v === "ko") ? v : "ko";
-  }
-  function setLang(v){
-    localStorage.setItem(LANG_KEY, (v === "mn") ? "mn" : "ko");
-    document.documentElement.lang = getLang();
   }
 
   function buildUrl(base, params){
@@ -497,13 +472,12 @@
     }catch(e){}
   }
 
-  // ✅ 전단계 이동(Back): history.back() 우선, 실패 시 level.html로 fallback
+  // ✅ 전단계 이동: history.back() 우선, 실패 시 level.html
   function goPreviousStep(){
     const cur = location.href;
     try{
       if (history.length > 1){
         history.back();
-        // iOS/Safari 등에서 back이 무시되는 경우 대비
         setTimeout(() => {
           if (location.href === cur){
             location.href = buildUrl(TOPIK2_LEVEL, {
@@ -619,7 +593,6 @@
   }
 
   function renderShell(title, sub){
-    const lang = getLang();
     const name = qs("name") || "";
     const klass = qs("klass") || "";
 
@@ -628,14 +601,10 @@
         <div class="leftTop">
           <button class="btnSmall" id="btnBack">← 뒤로</button>
           <button class="btnSmall" id="btnHome">🏠 홈</button>
-          <div class="langToggle">
-            <button class="langBtn ${lang==="ko"?"active":""}" id="langKo">한국어</button>
-            <button class="langBtn ${lang==="mn"?"active":""}" id="langMn">Монгол</button>
-          </div>
         </div>
         <div class="rightTop">
           <div class="mono">${esc(name)} · ${esc(klass)}</div>
-          <div class="mono">lang=${esc(lang)}</div>
+          <div class="mono">lang=${esc(getLang())}</div>
         </div>
       </div>
 
@@ -707,7 +676,6 @@
       </div>
     `;
 
-    // ✅ 요청: 이 버튼은 "전단계"로 (history.back 우선)
     document.getElementById("btnBack").addEventListener("click", async () => {
       await logEvent("back_prev_step", { idx: state.idx, file: state.file });
       goPreviousStep();
@@ -722,9 +690,6 @@
         lang: getLang()
       });
     });
-
-    document.getElementById("langKo").addEventListener("click", () => { setLang("ko"); render(true); });
-    document.getElementById("langMn").addEventListener("click", () => { setLang("mn"); render(true); });
   }
 
   function renderCard(){
