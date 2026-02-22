@@ -28,6 +28,9 @@
 
       --mnA: rgba(34,197,94,.14);
       --mnB: rgba(34,197,94,.34);
+
+      --descA: rgba(255,255,255,.06);
+      --descB: rgba(255,255,255,.12);
     }
     *{box-sizing:border-box}
     body{
@@ -155,7 +158,7 @@
       white-space:nowrap;
     }
 
-    /* ✅ 기능(한국어/몽골어) 한 줄에 같이 보이게: 줄바꿈 금지 + 가로 스크롤 허용 */
+    /* ✅ 기능(한국어/몽골어) 한 줄 고정 + 가로 스크롤 */
     .funcTop{
       display:flex;
       gap:8px;
@@ -200,21 +203,63 @@
       background: rgba(10,15,25,.38);
       padding: 14px 14px 16px;
     }
-    .koWord{
+
+    /* ✅ 1줄(가장 큼): 한국어 단어 + 몽골어 번역어를 같은 줄 */
+    .wordRow{
+      display:flex;
+      justify-content:center;
+      align-items:baseline;
+      gap: 12px;
+      flex-wrap:wrap; /* 모바일 줄바꿈 허용(너무 길면) */
       text-align:center;
+      margin: 6px 0 10px;
+    }
+    .koWord{
       font-size:34px;
       font-weight:1000;
-      line-height:1.15;
-      margin: 6px 0 6px;
+      line-height:1.12;
+      margin:0;
       word-break:keep-all;
     }
-    .mnWord{
-      text-align:center;
+    .mnWordInline{
       font-size:26px;
       font-weight:1000;
-      color: rgba(231,236,255,.92);
-      margin: 0 0 10px;
+      line-height:1.12;
+      opacity:.95;
+      margin:0;
       word-break:break-word;
+    }
+
+    /* ✅ 설명(가장 작음): 예문 위에 별도 칸으로 */
+    .descBox{
+      margin-top: 4px;
+      border-radius: 16px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, var(--descA), rgba(0,0,0,.10));
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
+    }
+    .descItem{
+      border-radius: 14px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+    }
+    .descLabel{
+      font-size:11px;
+      font-weight:1000;
+      color: rgba(231,236,255,.62);
+      margin-bottom:6px;
+    }
+    .descText{
+      font-size:14px; /* ✅ 설명이 가장 작게 */
+      font-weight:900;
+      line-height:1.35;
+      word-break:keep-all;
+      white-space:pre-wrap;
+      opacity:.95;
     }
 
     .exBox{
@@ -239,7 +284,6 @@
       background: linear-gradient(180deg, var(--greenA), rgba(0,0,0,.10));
       border-color: var(--greenB);
     }
-
     .exLabel{
       font-size:12px;
       font-weight:1000;
@@ -247,7 +291,7 @@
       margin-bottom:6px;
     }
     .exText{
-      font-size:18px;
+      font-size:18px; /* ✅ 예문이 두 번째로 크게 */
       font-weight:900;
       line-height:1.35;
       word-break:keep-all;
@@ -308,6 +352,7 @@
 
     @media (min-width: 720px){
       .exBox{grid-template-columns: 1fr 1fr;}
+      .descBox{grid-template-columns: 1fr 1fr;}
     }
   </style>
 </head>
@@ -475,18 +520,27 @@
     let v = raw;
     try { v = decodeURIComponent(raw); } catch(_) {}
 
-    // file이 이미 https://... 이면 그대로 사용
     if (/^https?:\/\//i.test(v)) return v;
-
-    // "/korean-quiz/..." 또는 "/data/..." 처럼 "/"로 시작하는 경우: origin 붙이기
     if (v.startsWith("/")) return new URL(v, location.origin).toString();
-
-    // "data/..." 같은 상대경로: "/" 붙여서 origin 기준으로 절대화
     return new URL("/" + v, location.origin).toString();
   }
 
+  // ✅ 설명/예문 분리: ex_ko/ex_mn에 줄바꿈이 있으면 (첫 줄=설명, 나머지=예문)
+  function splitDescAndExample(text){
+    const t = safe(text).trim();
+    if (!t) return { desc: "", ex: "" };
+    const lines = t.split("\n").map(s => s.trim()).filter(Boolean);
+    if (lines.length >= 2){
+      const desc = lines[0].replace(/^•\s*/, "").trim();
+      const ex = lines.slice(1).join("\n").trim();
+      return { desc, ex };
+    }
+    // 한 줄이면 전부 예문으로
+    return { desc: "", ex: t };
+  }
+
   const state = {
-    file: normalizeFileParam(),   // ✅ 여기서 이미 절대 URL이 됨
+    file: normalizeFileParam(),
     data: null,
     idx: 0,
     startedAt: Date.now()
@@ -538,8 +592,21 @@
         </div>
 
         <div class="cardBox">
-          <div class="koWord" id="koWord">…</div>
-          <div class="mnWord" id="mnWord"></div>
+          <div class="wordRow">
+            <div class="koWord" id="koWord">…</div>
+            <div class="mnWordInline" id="mnWordInline"></div>
+          </div>
+
+          <div class="descBox" id="descBox" style="display:none;">
+            <div class="descItem">
+              <div class="descLabel">설명 (한국어)</div>
+              <div class="descText" id="descKo"></div>
+            </div>
+            <div class="descItem">
+              <div class="descLabel">Тайлбар (Монгол)</div>
+              <div class="descText" id="descMn"></div>
+            </div>
+          </div>
 
           <div class="exBox">
             <div class="exItem exKoBox">
@@ -582,8 +649,14 @@
 
     const $deckName = document.getElementById("deckName");
     const $posInfo = document.getElementById("posInfo");
+
     const $koWord = document.getElementById("koWord");
-    const $mnWord = document.getElementById("mnWord");
+    const $mnWordInline = document.getElementById("mnWordInline");
+
+    const $descBox = document.getElementById("descBox");
+    const $descKo = document.getElementById("descKo");
+    const $descMn = document.getElementById("descMn");
+
     const $exKo = document.getElementById("exKo");
     const $exMn = document.getElementById("exMn");
 
@@ -600,7 +673,8 @@
 
     if (!total){
       $koWord.textContent = "데이터가 없습니다";
-      $mnWord.textContent = "";
+      $mnWordInline.textContent = "";
+      $descBox.style.display = "none";
       $exKo.textContent = "";
       $exMn.textContent = "";
       $funcTop.style.display = "none";
@@ -613,8 +687,12 @@
     const fixed = fixPair(safe(it.ko).trim(), safe(it.mn).trim());
     const koSplit = splitFuncAndWord(fixed.ko);
     const mnSplit = splitFuncAndWord(fixed.mn);
-    const exFixed = splitExample(it.ex_ko, it.ex_mn);
 
+    const exFixed = splitExample(it.ex_ko, it.ex_mn);
+    const koDescEx = splitDescAndExample(exFixed.ex_ko);
+    const mnDescEx = splitDescAndExample(exFixed.ex_mn);
+
+    // 상단 기능칩(분야)
     const funcKoVal = koSplit.func;
     const funcMnVal = mnSplit.func;
 
@@ -626,11 +704,26 @@
       $funcTop.style.display = "none";
     }
 
+    // ✅ 1줄: 단어(ko) + 번역어(mn) 같은 줄
     $koWord.textContent = koSplit.word || "(빈 단어)";
-    $mnWord.textContent = mnSplit.word || "";
+    $mnWordInline.textContent = mnSplit.word || "";
 
-    $exKo.textContent = exFixed.ex_ko || "";
-    $exMn.textContent = exFixed.ex_mn || "";
+    // ✅ 설명칸: 있으면 표시(가장 작은 글씨)
+    const descKo = koDescEx.desc || "";
+    const descMn = mnDescEx.desc || "";
+    if (descKo || descMn){
+      $descBox.style.display = "grid";
+      $descKo.textContent = descKo;
+      $descMn.textContent = descMn;
+    } else {
+      $descBox.style.display = "none";
+      $descKo.textContent = "";
+      $descMn.textContent = "";
+    }
+
+    // ✅ 예문칸: “설명 제외” 예문만 표시(두 번째로 큰 글씨)
+    $exKo.textContent = koDescEx.ex || "";
+    $exMn.textContent = mnDescEx.ex || "";
 
     document.getElementById("btnPrev").disabled = (state.idx <= 0);
     document.getElementById("btnPrev").style.opacity = (state.idx <= 0) ? 0.55 : 1;
