@@ -262,13 +262,14 @@
     "", "", "", "", "", "", "", ""
   ];
 
-  // ✅ 쓰기(53): Level 1~4 활성화 (쓰기 배열만 확장)
+  // ✅ 쓰기(53): Level 1~5 활성화 (쓰기 배열만 확장)
   const writingLevels = [
     "/data/topik2/writing53/level01_intro_list.json",
     "/data/topik2/writing53/level02_rise.json",
     "/data/topik2/writing53/level03_fall_hold.json",
     "/data/topik2/writing53/level04_compare_feature.json",
-    "", "", "", "", "", ""
+    "/data/topik2/writing53/level05_cause_solution.json",
+    "", "", "", "", ""
   ];
 
   const levelNum = levelParam ? parseInt(levelParam, 10) : NaN;
@@ -301,12 +302,13 @@
     $("statusText").textContent = "로드 완료";
   }
 
-  // ✅ 쓰기 레벨 이름(짧게): 1=도입·나열, 2=증가·상승, 3=감소·유지, 4=비교·특징
+  // ✅ 쓰기 레벨 이름(짧게): 1=도입·나열, 2=증가·상승, 3=감소·유지, 4=비교·특징, 5=원인·대책
   function getWritingLabel(level){
     if (level === 1) return "도입·나열";
     if (level === 2) return "증가·상승";
     if (level === 3) return "감소·유지";
     if (level === 4) return "비교·특징";
+    if (level === 5) return "원인·대책";
     return "Level " + level;
   }
 
