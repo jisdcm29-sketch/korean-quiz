@@ -1,1 +1,378 @@
-ㄴㅇㄻㄴㄹㅇ
+{
+  "meta": {
+    "book": "TOPIK2",
+    "area": "writing",
+    "question": 53,
+    "level": 1,
+    "id": "w53_level01",
+    "title_ko": "조사 결과 도입 및 나열 표현",
+    "title_mn": "(placeholder)",
+    "slideCount": 25,
+    "langPolicy": "no-top-toggle; use lang param or saved",
+    "uiHints": {
+      "progress": true,
+      "fixedNav": true,
+      "mnToggle": true,
+      "synAntAccordion": true
+    }
+  },
+  "slides": [
+    {
+      "no": 1,
+      "type": "intro",
+      "goal": "레슨 목표/흐름 안내(학습→퀴즈→문장조합)",
+      "ko": "조사 결과 도입 + 나열 표현",
+      "mn": "(placeholder)",
+      "activity": { "type": "tapStart", "choices": ["보통", "느림"] },
+      "feedback": { "ok": "좋아요! 25장만 끝내면 53번 첫 문장이 쉬워져요." }
+    },
+    {
+      "no": 2,
+      "type": "intro",
+      "goal": "도입/나열/확인 3구간 감잡기",
+      "ko": "조사 결과에 따르면, A가 가장 높고, 다음으로 B, 그다음은 C로 나타났다.",
+      "mn": "(placeholder)",
+      "activity": {
+        "type": "tapHighlight",
+        "targets": [
+          { "label": "도입", "span": "조사 결과에 따르면" },
+          { "label": "나열", "span": "가장 높고, 다음으로 B, 그다음은 C" },
+          { "label": "확인", "span": "로 나타났다" }
+        ]
+      },
+      "feedback": { "ok": "도입 → 나열 → 확인, 이 순서로 연결합니다." }
+    },
+    {
+      "no": 3,
+      "type": "learn",
+      "goal": "도입 고정구 익히기",
+      "ko": "조사 결과에 따르면",
+      "mn": "(placeholder)",
+      "syn_ko": ["설문 결과에 따르면", "분석 결과에 따르면"],
+      "ant_ko": [],
+      "pattern_ko": "조사 결과에 따르면, ( )",
+      "activity": { "type": "tapInsert", "choices": ["설문 결과에 따르면", "분석 결과에 따르면"] },
+      "feedback": { "ok": "자연스러워요. 보고서 첫 문장에 안전한 도입 표현이에요." }
+    },
+    {
+      "no": 4,
+      "type": "learn",
+      "goal": "공식 톤 결과 보고",
+      "ko": "분석 결과, ~로 나타났다",
+      "mn": "(placeholder)",
+      "syn_ko": ["~로 드러났다", "~로 확인되었다"],
+      "ant_ko": [],
+      "pattern_ko": "분석 결과, X는 Y로 나타났다.",
+      "activity": {
+        "type": "choice",
+        "prompt": "같은 의미로 더 객관적인 표현은?",
+        "choices": ["~로 나타났다", "~로 드러났다", "~로 확인되었다"],
+        "answer": 0
+      },
+      "feedback": {
+        "ok": "‘나타났다’가 가장 무난한 보고 톤이에요.",
+        "wrong": "의미는 비슷하지만, 톤이 달라요. ‘나타났다’가 기본값!"
+      }
+    },
+    {
+      "no": 5,
+      "type": "learn",
+      "goal": "결과 표현 동사(발견/경향)",
+      "ko": "드러나다",
+      "mn": "(placeholder)",
+      "syn_ko": ["밝혀지다", "나타나다"],
+      "ant_ko": ["숨겨지다"],
+      "pattern_ko": "조사에서 ~한 경향이 드러났다.",
+      "activity": {
+        "type": "tapPair",
+        "prompt": "반의어를 고르세요",
+        "choices": ["숨겨지다", "보이다", "달라지다", "늘어나다"],
+        "answer": 0
+      },
+      "feedback": { "ok": "맞아요! ‘드러나다’는 숨겨진 것이 보이게 되는 느낌이에요." }
+    },
+    {
+      "no": 6,
+      "type": "learn",
+      "goal": "결과 확인(객관)",
+      "ko": "확인되다",
+      "mn": "(placeholder)",
+      "syn_ko": ["밝혀지다", "검증되다"],
+      "ant_ko": ["확인되지 않다"],
+      "pattern_ko": "~라는 사실이 확인되었다.",
+      "activity": {
+        "type": "choice",
+        "prompt": "‘확인되다’와 가장 잘 어울리는 것은?",
+        "choices": ["사실", "감정", "명령", "농담"],
+        "answer": 0
+      },
+      "feedback": { "ok": "확인되다=객관적 사실에 잘 써요." }
+    },
+    {
+      "no": 7,
+      "type": "learn",
+      "goal": "근거→결론 연결",
+      "ko": "알 수 있다",
+      "mn": "(placeholder)",
+      "syn_ko": ["짐작할 수 있다", "추정할 수 있다"],
+      "ant_ko": ["알기 어렵다"],
+      "pattern_ko": "이를 통해 ~을/를 알 수 있다.",
+      "activity": {
+        "type": "toggleCompare",
+        "a": "만족도가 높다는 점을 알 수 있다.",
+        "b": "이를 통해 만족도가 높다는 점을 알 수 있다."
+      },
+      "feedback": { "ok": "근거가 있을 때 ‘이를 통해’를 붙이면 더 논리적이에요!" }
+    },
+    {
+      "no": 8,
+      "type": "learn",
+      "goal": "나열 시작",
+      "ko": "먼저",
+      "mn": "(placeholder)",
+      "syn_ko": ["우선"],
+      "ant_ko": ["마지막으로"],
+      "pattern_ko": "먼저, A가 가장 높았다.",
+      "activity": {
+        "type": "choice",
+        "prompt": "더 격식 있는 느낌은?",
+        "choices": ["먼저", "우선"],
+        "answer": 1
+      },
+      "feedback": { "ok": "우선=조금 더 글 느낌(격식)!" }
+    },
+    {
+      "no": 9,
+      "type": "learn",
+      "goal": "나열 진행",
+      "ko": "다음으로",
+      "mn": "(placeholder)",
+      "syn_ko": ["그다음으로"],
+      "ant_ko": [],
+      "pattern_ko": "다음으로 B가 뒤를 이었다.",
+      "activity": {
+        "type": "dragSort",
+        "items": ["먼저", "다음으로", "그다음으로"],
+        "answer": ["먼저", "다음으로", "그다음으로"]
+      },
+      "feedback": { "ok": "순서 부사는 문장 맨 앞에 두면 깔끔해요." }
+    },
+    {
+      "no": 10,
+      "type": "learn",
+      "goal": "추가 나열",
+      "ko": "또한",
+      "mn": "(placeholder)",
+      "syn_ko": ["게다가", "더불어"],
+      "ant_ko": [],
+      "pattern_ko": "또한, C도 높은 비율을 보였다.",
+      "activity": {
+        "type": "choice",
+        "prompt": "가장 안정적인 위치는?",
+        "choices": ["문장 앞", "문장 중간"],
+        "answer": 0
+      },
+      "feedback": { "ok": "또한은 보통 문장 앞이 가장 안정적!" }
+    },
+    {
+      "no": 11,
+      "type": "learn",
+      "goal": "강조 포인트",
+      "ko": "특히",
+      "mn": "(placeholder)",
+      "syn_ko": ["무엇보다"],
+      "ant_ko": ["대체로"],
+      "pattern_ko": "특히, 20대에서 비율이 높았다.",
+      "activity": { "type": "chipSelect", "chips": ["연령", "성별", "지역"], "min": 1, "max": 1 },
+      "feedback": { "ok": "특히=여기 ‘포인트’입니다." }
+    },
+    {
+      "no": 12,
+      "type": "learn",
+      "goal": "비율(많음)",
+      "ko": "대부분 / 거의",
+      "mn": "(placeholder)",
+      "syn_ko": ["대다수"],
+      "ant_ko": ["일부", "소수"],
+      "pattern_ko": "응답자의 대부분은 A를 선택했다.",
+      "activity": {
+        "type": "meterPick",
+        "levels": ["낮음", "중간", "높음"],
+        "answerLevel": "높음",
+        "map": { "높음": "대부분" }
+      },
+      "feedback": { "ok": "수치가 없어도 ‘대부분/거의’로 충분히 표현 가능!" }
+    },
+    {
+      "no": 13,
+      "type": "learn",
+      "goal": "전체 경향(일반화)",
+      "ko": "대체로 / 전반적으로",
+      "mn": "(placeholder)",
+      "syn_ko": ["전반적으로"],
+      "ant_ko": ["특히"],
+      "pattern_ko": "전반적으로 만족도가 높은 편이었다.",
+      "activity": {
+        "type": "choice",
+        "prompt": "더 보고서 느낌은?",
+        "choices": ["대체로", "전반적으로"],
+        "answer": 1
+      },
+      "feedback": { "ok": "전반적으로=조금 더 보고서 톤!" }
+    },
+    {
+      "no": 14,
+      "type": "learn",
+      "goal": "요약 나열(순위)",
+      "ko": "~순으로",
+      "mn": "(placeholder)",
+      "syn_ko": ["~의 순서로", "~부터"],
+      "ant_ko": [],
+      "pattern_ko": "A, B, C 순으로 나타났다.",
+      "activity": {
+        "type": "dragOrderToSentence",
+        "items": ["A", "B", "C"],
+        "template": "{0}, {1}, {2} 순으로 나타났다."
+      },
+      "feedback": { "ok": "‘순으로’는 결과를 한 문장으로 깔끔하게 정리해요!" }
+    },
+    {
+      "no": 15,
+      "type": "pattern",
+      "goal": "도입+핵심결과 1문장",
+      "ko": "조사 결과에 따르면, A가 가장 높게 나타났다.",
+      "mn": "(placeholder)",
+      "activity": { "type": "chipFill", "slot": "A", "chips": ["만족도", "선호도", "이용률"] },
+      "feedback": { "ok": "첫 문장은 ‘가장~’로 핵심을 잡아줘요." }
+    },
+    {
+      "no": 16,
+      "type": "pattern",
+      "goal": "도입+2개 나열",
+      "ko": "분석 결과, 먼저 A, 다음으로 B가 높게 나타났다.",
+      "mn": "(placeholder)",
+      "activity": { "type": "dragFill2", "slots": ["A", "B"], "items": ["가격", "품질", "서비스", "디자인"] },
+      "feedback": { "ok": "순서 부사 + 항목 2개만 넣어도 문장 완성!" }
+    },
+    {
+      "no": 17,
+      "type": "pattern",
+      "goal": "3개 나열 조합",
+      "ko": "A가 가장 높았고, 다음으로 B, 그다음은 C로 나타났다.",
+      "mn": "(placeholder)",
+      "activity": { "type": "dragSentencePieces", "pieces": ["A가 가장 높았고,", "다음으로 B,", "그다음은 C로 나타났다."], "answer": [0, 1, 2] },
+      "feedback": { "ok": "자연스러운 보고서 문장!", "wrong": "순서 부사 위치를 다시 확인!" }
+    },
+    {
+      "no": 18,
+      "type": "pattern",
+      "goal": "강조+확인(결론)",
+      "ko": "특히 X에서 A의 비율이 높게 나타났다는 점을 알 수 있다.",
+      "mn": "(placeholder)",
+      "activity": {
+        "type": "chipFill2",
+        "slots": ["X", "A"],
+        "chipsX": ["20대", "여성", "수도권"],
+        "chipsA": ["선호도", "만족도", "이용률"]
+      },
+      "feedback": { "ok": "마지막에 ‘알 수 있다’로 정리하면 논리적!" }
+    },
+    {
+      "no": 19,
+      "type": "pattern",
+      "goal": "대부분/일부로 정리",
+      "ko": "응답자의 대부분은 A를 선택했으며, 일부는 B를 선택했다.",
+      "mn": "(placeholder)",
+      "activity": { "type": "tapReveal2", "targets": ["대부분", "일부"] },
+      "feedback": { "ok": "대부분/일부는 수치 없이도 잘 통합니다." }
+    },
+    {
+      "no": 20,
+      "type": "quiz",
+      "goal": "도입 표현 고르기",
+      "ko": "가장 자연스러운 도입 표현은?",
+      "mn": "(placeholder)",
+      "activity": {
+        "type": "mcq",
+        "choices": ["조사 결과에 따르면", "조사 결과가 먹었다", "조사 결과를 달린다", "조사 결과는 춥다"],
+        "answer": 0
+      },
+      "feedback": { "ok": "보고서 첫 문장에 가장 안전한 표현!", "wrong": "도입 표현은 ‘~에 따르면’이 기본이에요." }
+    },
+    {
+      "no": 21,
+      "type": "quiz",
+      "goal": "순서 부사 정렬",
+      "ko": "올바른 순서로 정렬하세요.",
+      "mn": "(placeholder)",
+      "activity": {
+        "type": "dragSort",
+        "items": ["그다음으로", "마지막으로", "다음으로", "먼저"],
+        "answer": ["먼저", "다음으로", "그다음으로", "마지막으로"]
+      },
+      "feedback": { "ok": "순서만 맞아도 글이 구조적으로 보여요." }
+    },
+    {
+      "no": 22,
+      "type": "quiz",
+      "goal": "근거→결론 빈칸",
+      "ko": "이를 통해 만족도가 높다는 점을 (   ).",
+      "mn": "(placeholder)",
+      "activity": { "type": "mcq", "choices": ["알 수 있다", "달린다", "잠들다", "씻다"], "answer": 0 },
+      "feedback": { "ok": "근거→결론은 ‘알 수 있다’가 딱 좋아요." }
+    },
+    {
+      "no": 23,
+      "type": "quiz",
+      "goal": "~순으로 적용",
+      "ko": "A/B/C를 한 문장으로 정리하면?",
+      "mn": "(placeholder)",
+      "activity": {
+        "type": "mcq",
+        "choices": ["A, B, C 순으로 나타났다", "A는 B를 먹고 C를 잔다", "A를 춥게, B를 뜨겁게, C를 빠르게", "A가 아니면 B도 아니고 C도 아니다"],
+        "answer": 0
+      },
+      "feedback": { "ok": "‘순으로’는 나열을 한 번에 끝내요." }
+    },
+    {
+      "no": 24,
+      "type": "apply",
+      "goal": "도입+결과+확인 3칸 조합",
+      "ko": "슬롯을 채워 문장을 완성하세요.",
+      "mn": "(placeholder)",
+      "activity": {
+        "type": "dragSlots",
+        "slots": ["도입", "결과", "확인"],
+        "tokens": [
+          "조사 결과에 따르면",
+          "분석 결과",
+          "A가 가장 높게 나타났다",
+          "특히 X에서 비율이 높게 나타났다",
+          "이를 통해 알 수 있다",
+          "~로 확인되었다"
+        ]
+      },
+      "answerRules": {
+        "required": [
+          { "slot": "도입", "oneOf": ["조사 결과에 따르면", "분석 결과"] },
+          { "slot": "확인", "oneOf": ["이를 통해 알 수 있다"] }
+        ]
+      },
+      "feedback": { "ok": "완성! 53번 첫 문장 뼈대가 생겼어요." }
+    },
+    {
+      "no": 25,
+      "type": "apply",
+      "goal": "나열 템플릿으로 3개 결과 완성",
+      "ko": "항목 3개를 선택해 나열 문장을 완성하세요.",
+      "mn": "(placeholder)",
+      "activity": {
+        "type": "templatePick3",
+        "template": "먼저 {A}, 다음으로 {B}, 그다음은 {C}로 나타났다.",
+        "items": ["가격", "품질", "서비스", "디자인"],
+        "unique": true
+      },
+      "feedback": { "ok": "나열 문장 완성! 결과가 정리돼 보입니다.", "wrong": "중복 없이 3개를 선택하세요!" }
+    }
+  ]
+}
