@@ -8,26 +8,18 @@
     :root{
       --bg1:#071226;
       --bg2:#0b1b37;
-      --card:#0d1b2d;
-      --card2:#0f2239;
       --line:rgba(255,255,255,.10);
       --text:#eaf2ff;
       --muted:rgba(234,242,255,.72);
       --muted2:rgba(234,242,255,.58);
-      --accent:#2f6bff;
-      --accent2:#3aa0ff;
-      --good:#1bbf88;
       --shadow:0 20px 60px rgba(0,0,0,.45);
       --radius:22px;
-      --radius2:16px;
-      --mono: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", "Courier New", monospace;
-      --sans: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
     }
     *{box-sizing:border-box}
     html,body{height:100%}
     body{
       margin:0;
-      font-family:var(--sans);
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
       color:var(--text);
       background:
         radial-gradient(900px 520px at 70% 22%, rgba(47,107,255,.22), transparent 60%),
@@ -64,7 +56,7 @@
       color:var(--text);
       padding:10px 14px;
       border-radius:999px;
-      font-weight:800;
+      font-weight:900;
       letter-spacing:.2px;
       cursor:pointer;
       user-select:none;
@@ -76,7 +68,7 @@
       background:rgba(255,255,255,.06);
       padding:10px 14px;
       border-radius:999px;
-      font-weight:900;
+      font-weight:950;
       cursor:pointer;
       user-select:none;
       -webkit-tap-highlight-color: transparent;
@@ -94,7 +86,7 @@
       padding-right:4px;
       white-space:nowrap;
     }
-    .rightInfo .strong{color:var(--text); font-weight:900}
+    .rightInfo .strong{color:var(--text); font-weight:950}
 
     .header{
       padding:14px 16px 10px;
@@ -139,19 +131,32 @@
       flex-direction:column;
       gap:6px;
       align-items:flex-start;
+      min-width:0;
     }
     .lessonTitle{
-      font-weight:900;
+      font-weight:950;
       font-size:14px;
       color:var(--text);
       opacity:.95;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 76vw;
+    }
+    .mini{
+      font-size:11px;
+      color:var(--muted2);
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+      max-width: 76vw;
     }
     .counter{
       display:inline-flex;
       align-items:center;
       gap:8px;
       color:var(--muted);
-      font-weight:800;
+      font-weight:900;
       font-size:12px;
     }
     .badge{
@@ -163,7 +168,7 @@
       border:1px solid rgba(255,255,255,.12);
       background:rgba(255,255,255,.06);
       color:var(--text);
-      font-weight:900;
+      font-weight:950;
       font-size:12px;
       min-width:64px;
     }
@@ -178,13 +183,13 @@
       padding:6px 8px 14px;
     }
     .wordKo{
-      font-weight:950;
+      font-weight:1000;
       font-size:38px;
       letter-spacing:-.6px;
       text-shadow:0 10px 30px rgba(0,0,0,.35);
     }
     .wordMn{
-      font-weight:900;
+      font-weight:950;
       font-size:22px;
       color:rgba(234,242,255,.88);
       letter-spacing:-.2px;
@@ -203,12 +208,12 @@
       color:rgba(234,242,255,.92);
       padding:6px 10px;
       border-radius:999px;
-      font-weight:900;
+      font-weight:950;
       font-size:12px;
       letter-spacing:.2px;
     }
 
-    /* Syn/Ant row — 모바일 우선 */
+    /* 유의어/반의어 */
     .synAntGrid{
       display:grid;
       grid-template-columns: 1fr;
@@ -235,9 +240,8 @@
       justify-content:flex-start;
       gap:10px;
     }
-    /* 라벨: 더 선명 + 크기 1.3x */
     .labelText{
-      font-size:16.9px;            /* 13px * 1.3 */
+      font-size:16.9px;            /* 13 * 1.3 */
       font-weight:1000;
       color:rgba(234,242,255,.98);
       letter-spacing:.2px;
@@ -247,15 +251,16 @@
       background:rgba(255,255,255,.08);
       box-shadow:0 12px 30px rgba(0,0,0,.22);
     }
-    /* 본문: 더 큼(1.3x) */
     .infoText{
-      font-size:19.5px;            /* 15px * 1.3 */
+      font-size:19.5px;            /* 15 * 1.3 */
       line-height:1.35;
       font-weight:900;
       color:rgba(234,242,255,.95);
       word-break:keep-all;
+      white-space:pre-wrap;
     }
 
+    /* 예문 */
     .examplesGrid{
       display:grid;
       grid-template-columns: 1fr;
@@ -283,10 +288,6 @@
       font-weight:1000;
       letter-spacing:.2px;
       margin-bottom:6px;
-      display:flex;
-      align-items:center;
-      justify-content:space-between;
-      gap:10px;
     }
     .exText{
       font-size:18px;
@@ -345,7 +346,6 @@
       .wordMn{font-size:19px}
       .exText{font-size:17px}
       .navBtn{font-size:19px}
-      /* 모바일에서도 1.3x 유지(너무 커지면 여기만 살짝 줄이면 됨) */
       .infoText{font-size:18.5px}
       .labelText{font-size:16px}
     }
@@ -376,6 +376,7 @@
         <div class="metaRow">
           <div class="titleBox">
             <div class="lessonTitle" id="lessonTitle">로드 중…</div>
+            <div class="mini" id="fileHint">file: -</div>
             <div class="loading" id="loadingMsg">데이터를 불러오는 중입니다.</div>
           </div>
           <div class="counter">
@@ -390,30 +391,29 @@
           <div class="wordMn" id="wordMn">…</div>
         </div>
 
-        <!-- 유의어/반의어 2칸 (선명하게 표시 문구 제거) -->
         <div class="synAntGrid">
           <div class="infoBox">
             <div class="infoLabel">
-              <div class="labelText" id="synLabel">유의어</div>
+              <div class="labelText">유의어</div>
             </div>
-            <div class="infoText" id="synText">-</div>
+            <div class="infoText" id="synText">—</div>
           </div>
           <div class="infoBox">
             <div class="infoLabel">
-              <div class="labelText" id="antLabel">반의어</div>
+              <div class="labelText">반의어</div>
             </div>
-            <div class="infoText" id="antText">-</div>
+            <div class="infoText" id="antText">—</div>
           </div>
         </div>
 
         <div class="examplesGrid">
           <div class="exBox">
             <div class="exLabel">예문</div>
-            <div class="exText" id="exKo">-</div>
+            <div class="exText" id="exKo">—</div>
           </div>
           <div class="exBox mn">
             <div class="exLabel">Жишээ</div>
-            <div class="exText" id="exMn">-</div>
+            <div class="exText" id="exMn">—</div>
           </div>
         </div>
 
@@ -439,6 +439,15 @@
     $("whoName").textContent = name || "-";
     $("whoClass").textContent = klass || "-";
 
+    // repo base (/korean-quiz) 자동 추정: 요구사항(REPO_BASE) 반영
+    function getRepoBase(){
+      const p = location.pathname || "/";
+      const m = p.match(/^(.*?\/korean-quiz)(\/|$)/);
+      return m ? m[1] : "";
+    }
+    const REPO_BASE = getRepoBase();
+
+    // lang toggle (표시용)
     let lang = (qs.get("lang") || "ko").toLowerCase() === "mn" ? "mn" : "ko";
     function setLang(next){
       lang = next;
@@ -450,14 +459,34 @@
     $("chipMn").addEventListener("click", () => setLang("mn"));
     setLang(lang);
 
+    // 뒤로가기: history 우선, 안되면 level.html로(파라미터 유지)
     $("btnBack").addEventListener("click", () => {
-      const backUrl = new URL(location.origin + "/korean-quiz/topik2/level.html");
-      if (name) backUrl.searchParams.set("name", name);
-      if (klass) backUrl.searchParams.set("klass", klass);
-      if (token) backUrl.searchParams.set("token", token);
-      location.href = backUrl.toString();
+      try{
+        if (history.length > 1) {
+          history.back();
+          // iOS/Safari에서 back이 막히는 경우 대비: 350ms 후에도 페이지가 그대로면 fallback
+          const current = location.href;
+          setTimeout(() => {
+            if (location.href === current) fallbackToLevel();
+          }, 350);
+        } else {
+          fallbackToLevel();
+        }
+      }catch(e){
+        fallbackToLevel();
+      }
     });
 
+    function fallbackToLevel(){
+      const levelUrl = new URL(location.origin + (REPO_BASE || "") + "/topik2/level.html");
+      ["name","klass","token","cat","level","lang"].forEach(k=>{
+        const v = qs.get(k);
+        if (v) levelUrl.searchParams.set(k, v);
+      });
+      location.href = levelUrl.toString();
+    }
+
+    // Normalize file URL robustly (absolute / relative / // / repo-base)
     function normalizeFileUrl(input){
       if(!input) return "";
       let raw = input.trim();
@@ -465,9 +494,19 @@
       if(/^https?:\/\//i.test(raw)) return raw;
       if(/^\/\//.test(raw)) return location.protocol + raw;
       if(raw.startsWith("/")) return location.origin + raw;
+
+      // 상대경로인 경우: REPO_BASE 기준으로도 해석 가능하게
+      // 1) 현재 폴더 기준
       const base = new URL(location.href);
       base.pathname = base.pathname.replace(/\/[^\/]*$/, "/");
-      return new URL(raw, base.toString()).toString();
+      const u1 = new URL(raw, base.toString()).toString();
+
+      // 2) 혹시 data/... 같은 repo-root 상대라면 REPO_BASE 붙인 버전도 시도 가능
+      // (fetch는 한 번만 하므로, 여기서는 "가능성 높은" 쪽으로 정규화)
+      if (raw.startsWith("data/") && REPO_BASE){
+        return location.origin + REPO_BASE + "/" + raw;
+      }
+      return u1;
     }
 
     function showError(msg){
@@ -482,11 +521,42 @@
 
     function parseFuncChip(text){
       if(!text) return { func: "", head: text || "" };
-      const parts = text.split("·").map(s => s.trim()).filter(Boolean);
+      const parts = String(text).split("·").map(s => s.trim()).filter(Boolean);
       if(parts.length >= 2){
         return { func: parts[0], head: parts.slice(1).join(" · ") };
       }
-      return { func: "", head: text };
+      return { func: "", head: String(text) };
+    }
+
+    function setFuncChips(func){
+      const box = $("funcChips");
+      box.innerHTML = "";
+      if(!func){
+        box.style.display = "none";
+        return;
+      }
+      const chip = document.createElement("div");
+      chip.className = "funcChip";
+      chip.textContent = func;
+      box.appendChild(chip);
+      box.style.display = "flex";
+    }
+
+    // script detect
+    const reHangul = /[가-힣]/;
+    const reCyr = /[\u0400-\u04FF]/;
+
+    function isMostlyHangul(s){
+      s = String(s||"");
+      const h = (s.match(/[가-힣]/g)||[]).length;
+      const c = (s.match(/[\u0400-\u04FF]/g)||[]).length;
+      return h > c && h >= 1;
+    }
+    function isMostlyCyrillic(s){
+      s = String(s||"");
+      const h = (s.match(/[가-힣]/g)||[]).length;
+      const c = (s.match(/[\u0400-\u04FF]/g)||[]).length;
+      return c > h && c >= 1;
     }
 
     function cleanLabelPrefix(s){
@@ -513,18 +583,39 @@
       return {syn:"", ant:"", ex: String(exKo).trim()};
     }
 
-    function setFuncChips(func){
-      const box = $("funcChips");
-      box.innerHTML = "";
-      if(!func){
-        box.style.display = "none";
-        return;
+    // 예문에 한 칸에 한/몽이 섞여 들어오는 데이터(기존 레벨 데이터) 자동 분리
+    function splitBilingualExample(exKoRaw, exMnRaw){
+      let ko = (exKoRaw || "").trim();
+      let mn = (exMnRaw || "").trim();
+
+      // 이미 ex_mn이 있으면 그대로
+      if (mn) return {ko, mn};
+
+      if (!ko) return {ko:"", mn:""};
+
+      const lines = ko.split("\n").map(s=>s.trim()).filter(Boolean);
+      const koLines = [];
+      const mnLines = [];
+
+      for (const line of lines){
+        const hasH = reHangul.test(line);
+        const hasC = reCyr.test(line);
+
+        if (hasH && !hasC) koLines.push(line);
+        else if (hasC && !hasH) mnLines.push(line);
+        else {
+          // 섞임: 문장 내에 한/몽이 같이 있으면, 간단히 공백 기준으로 반으로 쪼개기보다
+          // "한글이 더 많으면 ko, 키릴이 더 많으면 mn"으로 배치
+          if (isMostlyHangul(line)) koLines.push(line);
+          else if (isMostlyCyrillic(line)) mnLines.push(line);
+          else koLines.push(line); // 애매하면 ko로
+        }
       }
-      const chip = document.createElement("div");
-      chip.className = "funcChip";
-      chip.textContent = func;
-      box.appendChild(chip);
-      box.style.display = "flex";
+
+      return {
+        ko: koLines.join("\n").trim(),
+        mn: mnLines.join("\n").trim()
+      };
     }
 
     function render(){
@@ -533,26 +624,38 @@
         $("countBadge").textContent = "0 / 0";
         $("wordKo").textContent = "…";
         $("wordMn").textContent = "…";
-        $("synText").textContent = "-";
-        $("antText").textContent = "-";
-        $("exKo").textContent = "-";
-        $("exMn").textContent = "-";
+        $("synText").textContent = "—";
+        $("antText").textContent = "—";
+        $("exKo").textContent = "—";
+        $("exMn").textContent = "—";
         return;
       }
+
       const it = items[idx];
 
       $("lessonTitle").textContent = deck?.title_kr || deck?.title || "TOPIK II";
       $("loadingMsg").textContent = "";
       $("countBadge").textContent = (idx + 1) + " / " + items.length;
 
-      const koParsed = parseFuncChip(it.ko || "");
-      const mnParsed = parseFuncChip(it.mn || "");
+      // (핵심) 데이터가 ko/mn이 뒤집혀 들어오는 경우 자동 교정:
+      // ko에 키릴(몽골어) + mn에 한글(한국어) => 표시만 swap
+      const rawKo = String(it.ko || "");
+      const rawMn = String(it.mn || "");
+      const shouldSwap = isMostlyCyrillic(rawKo) && isMostlyHangul(rawMn);
+
+      const dispKo = shouldSwap ? rawMn : rawKo;
+      const dispMn = shouldSwap ? rawKo : rawMn;
+
+      const koParsed = parseFuncChip(dispKo);
+      const mnParsed = parseFuncChip(dispMn);
 
       $("wordKo").textContent = koParsed.head || "—";
       $("wordMn").textContent = mnParsed.head || "—";
 
       setFuncChips(koParsed.func || mnParsed.func || "");
 
+      // 유의어/반의어: 중요어휘1(level08)은 syn_ko/ant_ko가 존재해야 함
+      // 다른 레벨(예: 인물 태도 어휘)은 원래 없을 수 있으므로 '—' 표시가 정상임
       const fb = fallbackSynAntFromEx(it.ex_ko || "");
       const synRaw = it.syn_ko ? cleanLabelPrefix(it.syn_ko) : (fb.syn || "");
       const antRaw = it.ant_ko ? cleanLabelPrefix(it.ant_ko) : (fb.ant || "");
@@ -560,9 +663,17 @@
       $("synText").textContent = synRaw ? synRaw : "—";
       $("antText").textContent = antRaw ? antRaw : "—";
 
-      const exKo = it.ex_ko ? fb.ex : "";
-      $("exKo").textContent = (exKo && exKo.trim()) ? exKo.trim() : "—";
-      $("exMn").textContent = (it.ex_mn && String(it.ex_mn).trim()) ? String(it.ex_mn).trim() : "—";
+      // 예문: ex_ko에 한/몽이 섞여 들어오면 자동 분리해서 오른쪽(몽골어)로 이동
+      const exKoBase = it.ex_ko ? fb.ex : "";
+      const exMnBase = it.ex_mn || "";
+
+      // swap 상태면 예문도 같이 swap (데이터가 뒤집힌 경우)
+      const exPair = shouldSwap
+        ? splitBilingualExample(exMnBase, exKoBase)
+        : splitBilingualExample(exKoBase, exMnBase);
+
+      $("exKo").textContent = exPair.ko ? exPair.ko : "—";
+      $("exMn").textContent = exPair.mn ? exPair.mn : "—";
     }
 
     $("btnPrev").addEventListener("click", () => {
@@ -583,6 +694,8 @@
 
     (async function init(){
       const url = normalizeFileUrl(fileParam);
+      $("fileHint").textContent = "file: " + (url ? url : "-");
+
       if(!url){
         showError("file 파라미터가 없습니다.\n예: flashcards.html?file=https%3A%2F%2F...json&name=...&klass=...&token=...");
         return;
