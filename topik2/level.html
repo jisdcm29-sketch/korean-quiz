@@ -115,6 +115,8 @@
     @media (min-width: 760px){
       .grid{grid-template-columns: 1fr 1fr 1fr 1fr;}
     }
+
+    /* ✅ 버튼을 "a 링크"로 바꿔도 기존 버튼처럼 보이게 */
     .btn{
       border:1px solid rgba(79,140,255,.20);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.12));
@@ -133,12 +135,15 @@
       text-align:center;
       line-height:1.15;
       box-shadow: 0 10px 22px rgba(0,0,0,.18);
+      text-decoration:none;
     }
     .btn:active{transform: translateY(1px)}
     .btn.secondary{
       border-color: rgba(255,255,255,.14);
       background: rgba(255,255,255,.06);
       box-shadow:none;
+      opacity:.65;
+      pointer-events:none;
     }
     .hint{
       margin-top:14px;
@@ -219,26 +224,8 @@
     $("statusText").textContent = "오류";
   }
 
-  function abs(path){
-    // path는 "/data/..." 같은 절대경로 형태로 들어온다고 가정
-    return location.origin + (REPO_BASE || "") + path;
-  }
-
   function goIndex(){
-    // 영역 선택(처음 화면)으로: /topik2/index.html
     const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/index.html");
-    if (name) u.searchParams.set("name", name);
-    if (klass) u.searchParams.set("klass", klass);
-    if (token) u.searchParams.set("token", token);
-    if (lang) u.searchParams.set("lang", lang);
-    location.href = u.toString();
-  }
-
-  // ✅ 핵심 수정: flashcards로 갈 때는 file + name/klass/token/lang만 전달
-  // (cat/level을 전달하면 기존 로직과 충돌해 level.html로 되돌아오는 현상이 생길 수 있음)
-  function goFlashcards(fileAbs){
-    const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/flashcards.html");
-    u.searchParams.set("file", fileAbs);
     if (name) u.searchParams.set("name", name);
     if (klass) u.searchParams.set("klass", klass);
     if (token) u.searchParams.set("token", token);
@@ -248,44 +235,55 @@
 
   $("btnReset").addEventListener("click", goIndex);
 
+  // ✅ file은 "절대URL"로 만들지 않고, /data/... 경로 그대로 전달
+  // flashcards가 내부에서 REPO_BASE를 적용하는 경우에도 안전함(중복 /korean-quiz 방지)
+  function buildFlashcardsHref(filePath){
+    const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/flashcards.html");
+    u.searchParams.set("file", filePath); // 예: /data/topik2/vocab/level01_attitude.json
+    if (name) u.searchParams.set("name", name);
+    if (klass) u.searchParams.set("klass", klass);
+    if (token) u.searchParams.set("token", token);
+    if (lang) u.searchParams.set("lang", lang);
+    return u.toString();
+  }
+
   // ---- 매핑 테이블 (기존 기능 유지 + 중요어휘2 + 쓰기53 레벨1 추가) ----
   const vocabButtons = [
-    { key:"level01_attitude",      label:"인물 태도 어휘",   file:"/data/topik2/vocab/level01_attitude.json" },
-    { key:"level02_connectors",    label:"접속사(기능별)",   file:"/data/topik2/vocab/level02_connectors.json" },
-    { key:"level03_causative_passive", label:"사동-피동 어휘", file:"/data/topik2/vocab/level03_causative_passive.json" },
-    { key:"level04_emotions",      label:"감정 어휘",       file:"/data/topik2/vocab/level04_emotions.json" },
-    { key:"level05_idioms1",       label:"관용표현1",       file:"/data/topik2/vocab/level05_idioms1.json" },
-    { key:"level06_idioms2",       label:"관용표현2",       file:"/data/topik2/vocab/level06_idioms2.json" },
-    { key:"level07_news_vocab1",   label:"신문기사 어휘1",   file:"/data/topik2/vocab/level07_news_vocab1.json" },
-    { key:"level08_key_vocab1",    label:"중요어휘1",       file:"/data/topik2/vocab/level08_key_vocab1.json" },
-    { key:"level09_key_vocab2",    label:"중요어휘2",       file:"/data/topik2/vocab/level09_key_vocab2.json" },
-    { key:"level09", label:"Level 9", file:"" , disabled:true },
-    { key:"level10", label:"Level 10", file:"", disabled:true }
+    { label:"인물 태도 어휘",   file:"/data/topik2/vocab/level01_attitude.json" },
+    { label:"접속사(기능별)",   file:"/data/topik2/vocab/level02_connectors.json" },
+    { label:"사동-피동 어휘",   file:"/data/topik2/vocab/level03_causative_passive.json" },
+    { label:"감정 어휘",       file:"/data/topik2/vocab/level04_emotions.json" },
+    { label:"관용표현1",       file:"/data/topik2/vocab/level05_idioms1.json" },
+    { label:"관용표현2",       file:"/data/topik2/vocab/level06_idioms2.json" },
+    { label:"신문기사 어휘1",   file:"/data/topik2/vocab/level07_news_vocab1.json" },
+    { label:"중요어휘1",       file:"/data/topik2/vocab/level08_key_vocab1.json" },
+    { label:"중요어휘2",       file:"/data/topik2/vocab/level09_key_vocab2.json" },
+    { label:"Level 9",         file:"", disabled:true },
+    { label:"Level 10",        file:"", disabled:true }
   ];
 
   const grammarButtons = [
-    { key:"g01", label:"연결어미1", file:"/data/topik2/grammar/level01_connective_endings1.json" },
-    { key:"g02", label:"종결어미1", file:"/data/topik2/grammar/level02_final_endings1.json" }
+    { label:"연결어미1", file:"/data/topik2/grammar/level01_connective_endings1.json" },
+    { label:"종결어미1", file:"/data/topik2/grammar/level02_final_endings1.json" }
   ];
 
   const writingButtons = [
-    { key:"w53_level01", label:"조사 결과 도입 및 나열 표현", file:"/data/topik2/writing53/level01_intro_list.json" },
-    { key:"w53_level02", label:"Level 2", file:"", disabled:true },
-    { key:"w53_level03", label:"Level 3", file:"", disabled:true },
-    { key:"w53_level04", label:"Level 4", file:"", disabled:true },
-    { key:"w53_level05", label:"Level 5", file:"", disabled:true },
-    { key:"w53_level06", label:"Level 6", file:"", disabled:true },
-    { key:"w53_level07", label:"Level 7", file:"", disabled:true },
-    { key:"w53_level08", label:"Level 8", file:"", disabled:true },
-    { key:"w53_level09", label:"Level 9", file:"", disabled:true },
-    { key:"w53_level10", label:"Level 10", file:"", disabled:true }
+    { label:"조사 결과 도입 및 나열 표현", file:"/data/topik2/writing53/level01_intro_list.json" },
+    { label:"Level 2", file:"", disabled:true },
+    { label:"Level 3", file:"", disabled:true },
+    { label:"Level 4", file:"", disabled:true },
+    { label:"Level 5", file:"", disabled:true },
+    { label:"Level 6", file:"", disabled:true },
+    { label:"Level 7", file:"", disabled:true },
+    { label:"Level 8", file:"", disabled:true },
+    { label:"Level 9", file:"", disabled:true },
+    { label:"Level 10", file:"", disabled:true }
   ];
 
   function setHeader(){
     const isV = cat === "vocab";
     const isG = cat === "grammar";
     const isW = cat === "writing";
-
     $("selectedText").textContent = isV ? "어휘" : (isG ? "문법" : (isW ? "쓰기" : "-"));
     $("rangeText").textContent = "레벨 1~10";
     $("statusText").textContent = "로드 완료";
@@ -294,35 +292,29 @@
   function renderButtons(list){
     const grid = $("grid");
     grid.innerHTML = "";
+
     for (const b of list){
-      const btn = document.createElement("button");
-      btn.className = "btn";
-      btn.textContent = b.label;
+      const a = document.createElement("a");
+      a.className = "btn";
+      a.textContent = b.label;
+
       if (b.disabled || !b.file){
-        btn.classList.add("secondary");
-        btn.disabled = true;
-        btn.style.opacity = "0.65";
+        a.classList.add("secondary");
+        a.href = "javascript:void(0)";
+        a.setAttribute("aria-disabled", "true");
       } else {
-        btn.addEventListener("click", () => goFlashcards(abs(b.file)));
+        a.href = buildFlashcardsHref(b.file);
       }
-      grid.appendChild(btn);
+
+      grid.appendChild(a);
     }
   }
 
   function init(){
     setHeader();
-    if (cat === "vocab"){
-      renderButtons(vocabButtons);
-      return;
-    }
-    if (cat === "grammar"){
-      renderButtons(grammarButtons);
-      return;
-    }
-    if (cat === "writing"){
-      renderButtons(writingButtons);
-      return;
-    }
+    if (cat === "vocab"){ renderButtons(vocabButtons); return; }
+    if (cat === "grammar"){ renderButtons(grammarButtons); return; }
+    if (cat === "writing"){ renderButtons(writingButtons); return; }
     showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
   }
 
