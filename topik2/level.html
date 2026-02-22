@@ -1,195 +1,318 @@
 <!doctype html>
 <html lang="ko">
 <head>
-  <meta charset="utf-8"/>
-  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover"/>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
   <meta name="theme-color" content="#0b1220" />
-  <title>TOPIK II Level</title>
+  <title>TOPIK II - Level</title>
   <style>
     :root{
-      --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
-      --accent:#60a5fa;
+      --bg:#0b1220;
+      --text:#e7ecff;
+      --muted:#aab6e6;
+      --line:rgba(255,255,255,.10);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
+      --radius:22px;
+      --btnA: rgba(255,255,255,.06);
+      --btnB: rgba(255,255,255,.14);
+      --blue: rgba(79,140,255,.95);
     }
     *{box-sizing:border-box}
     body{
       margin:0;
-      font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
-      background:linear-gradient(180deg,#050814,var(--bg));
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+      background:
+        radial-gradient(1000px 800px at 30% -10%, rgba(59,130,246,.35), transparent 55%),
+        radial-gradient(900px 700px at 90% 0%, rgba(34,197,94,.18), transparent 50%),
+        var(--bg);
       color:var(--text);
       min-height:100svh;
+      display:flex;
+      align-items:flex-start;
+      justify-content:center;
+      padding: 18px 14px 22px;
     }
-    a{color:inherit;text-decoration:none}
-    .topbar{
-      position:sticky;top:0;z-index:10;
-      display:flex;align-items:center;justify-content:space-between;gap:12px;
-      padding:12px 16px;background:rgba(5,8,20,.75);backdrop-filter:blur(10px);
-      border-bottom:1px solid var(--line);
-    }
-    .brand{display:flex;align-items:center;gap:10px;font-weight:800}
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--accent)}
-    .container{max-width:980px;margin:0 auto;padding:16px}
-    .card{
-      background:rgba(17,24,39,.9);
+    .wrap{width:min(980px, 100%);}
+    .panel{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
       border:1px solid var(--line);
-      border-radius:16px;
-      padding:16px;
-      box-shadow:0 10px 30px rgba(0,0,0,.25);
+      border-radius: 28px;
+      box-shadow: var(--shadow);
+      overflow:hidden;
     }
-    .muted{color:var(--muted);line-height:1.6}
+    .header{
+      padding: 18px 18px 14px;
+      border-bottom:1px solid var(--line);
+      display:flex;
+      align-items:flex-start;
+      justify-content:space-between;
+      gap:12px;
+      background: rgba(0,0,0,.12);
+    }
+    .hLeft{min-width:0}
+    .title{
+      margin:0;
+      font-size:22px;
+      font-weight:1000;
+      letter-spacing:.2px;
+    }
+    .sub{
+      margin:8px 0 0;
+      color: var(--muted);
+      font-size:13px;
+      font-weight:800;
+      line-height:1.35;
+    }
+    .hRight{
+      display:flex;
+      flex-direction:column;
+      align-items:flex-end;
+      gap:10px;
+      min-width: 190px;
+    }
+    .status{
+      color: rgba(231,236,255,.70);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .btnSmall{
+      border:1px solid var(--btnB);
+      background: var(--btnA);
+      color: rgba(231,236,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight:1000;
+      font-size:14px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      white-space:nowrap;
+    }
+    .content{padding: 16px 18px 18px;}
+    .sectionLabel{
+      color: rgba(231,236,255,.70);
+      font-size:12px;
+      font-weight:1000;
+      margin-bottom:4px;
+    }
+    .selected{
+      font-size:22px;
+      font-weight:1000;
+      margin:0 0 4px;
+    }
+    .range{
+      font-size:13px;
+      color: rgba(231,236,255,.70);
+      font-weight:900;
+      margin:0 0 14px;
+    }
+    .grid{
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:12px;
+    }
+    @media (min-width: 760px){
+      .grid{grid-template-columns: 1fr 1fr 1fr 1fr;}
+    }
     .btn{
-      padding:10px 12px;border-radius:12px;border:1px solid var(--line);
-      background:#0b1020;color:var(--text);cursor:pointer;display:inline-block
+      border:1px solid rgba(79,140,255,.20);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.12));
+      border-radius: 18px;
+      padding: 16px 14px;
+      font-size:16px;
+      font-weight:1000;
+      color: rgba(231,236,255,.96);
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      min-height:58px;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      text-align:center;
+      line-height:1.15;
+      box-shadow: 0 10px 22px rgba(0,0,0,.18);
     }
-    .btnRow{display:flex;gap:8px;flex-wrap:wrap}
-    .bar{height:1px;background:var(--line);margin:12px 0}
-    .mono{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,monospace;font-size:12px}
-    .box{border:1px solid var(--line);background:#0b1020;border-radius:14px;padding:12px}
+    .btn:active{transform: translateY(1px)}
+    .btn.secondary{
+      border-color: rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      box-shadow:none;
+    }
+    .hint{
+      margin-top:14px;
+      color: rgba(231,236,255,.55);
+      font-size:12px;
+      font-weight:900;
+      line-height:1.35;
+    }
+    .err{
+      margin-top:14px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(239,68,68,.14);
+      border:1px solid rgba(239,68,68,.35);
+      color: #ffd3d3;
+      font-size:14px;
+      font-weight:1000;
+      display:none;
+      white-space:pre-wrap;
+      line-height:1.4;
+    }
   </style>
 </head>
+
 <body>
-  <header class="topbar">
-    <div class="brand"><span class="dot"></span><a href="../index.html" id="homeLink">Korean Quiz</a></div>
-    <div class="btnRow">
-      <a class="btn" href="./index.html" id="btnTopik2">TOPIK II</a>
-      <a class="btn" href="../index.html" id="btnDashboard">대시보드</a>
-    </div>
-  </header>
-
-  <main class="container">
-    <section class="card">
-      <h1 style="margin:0 0 6px;" id="title">TOPIK II</h1>
-      <div class="muted" id="sub">준비 중...</div>
-      <div class="bar"></div>
-
-      <div class="box">
-        <div style="font-weight:900;margin-bottom:8px;">데이터 로드 주소</div>
-        <div class="mono" id="dataUrl"></div>
-        <div class="muted" style="margin-top:10px;">
-          이 페이지는 “자리(틀)”입니다.<br/>
-          나중에 <span class="mono">/data/topik2/{cat}/levelXX.json</span>을 채우면 자동으로 연결됩니다.
+  <div class="wrap">
+    <div class="panel">
+      <div class="header">
+        <div class="hLeft">
+          <h1 class="title">TOPIK II</h1>
+          <p class="sub" id="subtitle">먼저 영역(버튼)을 고르고, 그 다음 레벨(1~10)을 고릅니다.</p>
+        </div>
+        <div class="hRight">
+          <div class="status" id="statusText">로드 중…</div>
+          <button class="btnSmall" id="btnReset">영역 다시 선택</button>
         </div>
       </div>
 
-      <div id="msg" class="muted" style="margin-top:12px;"></div>
-    </section>
-  </main>
+      <div class="content">
+        <div class="sectionLabel" id="sectionLabel">선택됨</div>
+        <div class="selected" id="selectedText">-</div>
+        <div class="range" id="rangeText">레벨 1~10</div>
 
-  <script>
-    // ===== repo base 자동 인식 (/korean-quiz) =====
-    (function ensureRepoBase(){
-      try {
-        if (typeof window.REPO_BASE === "string" && window.REPO_BASE.length) return;
-        const p = window.location.pathname;
-        const i = p.indexOf("/topik2/");
-        window.REPO_BASE = (i >= 0) ? p.slice(0, i) : "";
-      } catch (e) {
-        window.REPO_BASE = "";
+        <div class="grid" id="grid"></div>
+
+        <div class="hint">
+          • 버튼을 누르면 flashcards로 이동합니다.<br/>
+          • name/klass/token/lang 파라미터는 그대로 전달됩니다.
+        </div>
+
+        <div class="err" id="err"></div>
+      </div>
+    </div>
+  </div>
+
+<script>
+(() => {
+  const qs = new URLSearchParams(location.search);
+  const cat = (qs.get("cat") || "vocab").toLowerCase(); // vocab | grammar
+  const name = qs.get("name") || "";
+  const klass = qs.get("klass") || "";
+  const token = qs.get("token") || "";
+  const lang = qs.get("lang") || "ko";
+
+  function getRepoBase(){
+    // /korean-quiz 베이스 자동 인식
+    const p = location.pathname || "/";
+    const m = p.match(/^(.*?\/korean-quiz)(\/|$)/);
+    return m ? m[1] : "";
+  }
+  const REPO_BASE = getRepoBase();
+
+  const $ = (id) => document.getElementById(id);
+
+  function showError(msg){
+    $("err").style.display = "block";
+    $("err").textContent = msg;
+    $("statusText").textContent = "오류";
+  }
+
+  function abs(path){
+    // path는 "/data/..." 같은 절대경로 형태로 들어온다고 가정
+    return location.origin + (REPO_BASE || "") + path;
+  }
+
+  function goIndex(){
+    // 영역 선택(처음 화면)으로: /topik2/index.html
+    const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/index.html");
+    if (name) u.searchParams.set("name", name);
+    if (klass) u.searchParams.set("klass", klass);
+    if (token) u.searchParams.set("token", token);
+    if (lang) u.searchParams.set("lang", lang);
+    location.href = u.toString();
+  }
+
+  function goFlashcards(fileAbs, levelLabel){
+    const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/flashcards.html");
+    u.searchParams.set("file", fileAbs);
+    if (name) u.searchParams.set("name", name);
+    if (klass) u.searchParams.set("klass", klass);
+    if (token) u.searchParams.set("token", token);
+    if (lang) u.searchParams.set("lang", lang);
+    // level.html로 돌아올 때 선택상태 유지용(수정/동작에 영향 없음)
+    u.searchParams.set("cat", cat);
+    if (levelLabel) u.searchParams.set("level", levelLabel);
+    location.href = u.toString();
+  }
+
+  $("btnReset").addEventListener("click", goIndex);
+
+  // ---- 매핑 테이블 (기존 기능 유지 + 중요어휘2만 추가) ----
+  const vocabButtons = [
+    { key:"level01_attitude",      label:"인물 태도 어휘",   file:"/data/topik2/vocab/level01_attitude.json" },
+    { key:"level02_connectors",    label:"접속사(기능별)",   file:"/data/topik2/vocab/level02_connectors.json" },
+    { key:"level03_causative_passive", label:"사동-피동 어휘", file:"/data/topik2/vocab/level03_causative_passive.json" },
+    { key:"level04_emotions",      label:"감정 어휘",       file:"/data/topik2/vocab/level04_emotions.json" },
+    { key:"level05_idioms1",       label:"관용표현1",       file:"/data/topik2/vocab/level05_idioms1.json" },
+    { key:"level06_idioms2",       label:"관용표현2",       file:"/data/topik2/vocab/level06_idioms2.json" },
+    { key:"level07_news_vocab1",   label:"신문기사 어휘1",   file:"/data/topik2/vocab/level07_news_vocab1.json" },
+    { key:"level08_key_vocab1",    label:"중요어휘1",       file:"/data/topik2/vocab/level08_key_vocab1.json" },
+
+    // ✅ 추가: 중요어휘2 (기존 버튼/동작에 영향 없음)
+    { key:"level09_key_vocab2",    label:"중요어휘2",       file:"/data/topik2/vocab/level09_key_vocab2.json" },
+
+    // placeholder
+    { key:"level09", label:"Level 9", file:"" , disabled:true },
+    { key:"level10", label:"Level 10", file:"", disabled:true }
+  ];
+
+  const grammarButtons = [
+    { key:"g01", label:"연결어미1", file:"/data/topik2/grammar/level01_connective_endings1.json" },
+    { key:"g02", label:"종결어미1", file:"/data/topik2/grammar/level02_final_endings1.json" }
+  ];
+
+  function setHeader(){
+    const isV = cat === "vocab";
+    $("selectedText").textContent = isV ? "어휘" : "문법";
+    $("rangeText").textContent = isV ? "레벨 1~10" : "레벨 1~10";
+    $("statusText").textContent = "로드 완료";
+  }
+
+  function renderButtons(list){
+    const grid = $("grid");
+    grid.innerHTML = "";
+    for (const b of list){
+      const btn = document.createElement("button");
+      btn.className = "btn";
+      btn.textContent = b.label;
+      if (b.disabled || !b.file){
+        btn.classList.add("secondary");
+        btn.disabled = true;
+        btn.style.opacity = "0.65";
+      } else {
+        btn.addEventListener("click", () => goFlashcards(abs(b.file), b.key));
       }
-    })();
-    const REPO_BASE = window.REPO_BASE || "";
-
-    function getParam(k){
-      const u = new URL(location.href);
-      return u.searchParams.get(k) || "";
+      grid.appendChild(btn);
     }
+  }
 
-    // ===== 파라미터 유지(name/klass/token/lang) =====
-    const passthrough = new URLSearchParams();
-    ["name","klass","token","lang"].forEach(k=>{
-      const v = getParam(k);
-      if(v) passthrough.set(k, v);
-    });
-    if(!passthrough.get("lang")){
-      const v = localStorage.getItem("kq_lang_v1");
-      if(v === "ko" || v === "mn") passthrough.set("lang", v);
+  function init(){
+    setHeader();
+    if (cat === "vocab"){
+      renderButtons(vocabButtons);
+      return;
     }
-
-    const qs = passthrough.toString();
-    const withQS = (url)=>{
-      if(!qs) return url;
-      return url + (url.includes("?") ? "&" : "?") + qs;
-    };
-
-    // 링크에 파라미터 유지
-    document.getElementById("btnDashboard").href = withQS(REPO_BASE + "/index.html");
-    document.getElementById("btnTopik2").href = withQS(REPO_BASE + "/topik2/index.html");
-    document.getElementById("homeLink").href = withQS(REPO_BASE + "/index.html");
-
-    // ===== 현재 선택 정보 =====
-    const cat = getParam("cat") || "vocab";
-    const levelNum = parseInt(getParam("level") || "1", 10);
-    const level = String(isNaN(levelNum) ? 1 : levelNum).padStart(2, "0");
-
-    const pretty = ({
-      vocab:"어휘",
-      grammar:"문법",
-      reading_type:"읽기 유형",
-      listening_type:"듣기 유형",
-      reading_mock:"읽기 모의평가",
-      listening_mock:"듣기 모의평가"
-    }[cat] || cat);
-
-    // ===== vocab 레벨별 커스텀 리다이렉트 (01~08) =====
-    if (cat === "vocab" && (
-      level === "01" || level === "02" || level === "03" || level === "04" ||
-      level === "05" || level === "06" || level === "07" || level === "08"
-    )) {
-      const filePath =
-        level === "01"
-          ? `${REPO_BASE}/data/topik2/vocab/level01_attitude.json`
-          : level === "02"
-            ? `${REPO_BASE}/data/topik2/vocab/level02_connectors.json`
-            : level === "03"
-              ? `${REPO_BASE}/data/topik2/vocab/level03_causative_passive.json`
-              : level === "04"
-                ? `${REPO_BASE}/data/topik2/vocab/level04_emotions.json`
-                : level === "05"
-                  ? `${REPO_BASE}/data/topik2/vocab/level05_idioms1.json`
-                  : level === "06"
-                    ? `${REPO_BASE}/data/topik2/vocab/level06_idioms2.json`
-                    : level === "07"
-                      ? `${REPO_BASE}/data/topik2/vocab/level07_news_vocab1.json`
-                      : `${REPO_BASE}/data/topik2/vocab/level08_key_vocab1.json`;
-
-      const fileAbs = new URL(filePath, location.origin).toString();
-      const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
-      url.searchParams.set("file", fileAbs);
-      passthrough.forEach((v, k) => url.searchParams.set(k, v));
-      location.replace(url.toString());
+    if (cat === "grammar"){
+      renderButtons(grammarButtons);
+      return;
     }
+    showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar)\n현재: " + cat);
+  }
 
-    // ===== grammar 레벨별 커스텀 리다이렉트 (01~02) =====
-    if (cat === "grammar" && (level === "01" || level === "02")) {
-      const filePath =
-        level === "01"
-          ? `${REPO_BASE}/data/topik2/grammar/level01_connective_endings1.json`
-          : `${REPO_BASE}/data/topik2/grammar/level02_final_endings1.json`;
-
-      const fileAbs = new URL(filePath, location.origin).toString();
-      const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
-      url.searchParams.set("file", fileAbs);
-      passthrough.forEach((v, k) => url.searchParams.set(k, v));
-      location.replace(url.toString());
-    }
-
-    // ===== 기본(자리) 화면 =====
-    document.getElementById("title").textContent = `TOPIK II · ${pretty} · Level ${parseInt(level,10)}`;
-    document.getElementById("sub").textContent = "이 레벨은 JSON 데이터가 준비되면 자동으로 활성화됩니다.";
-
-    const jsonPath = REPO_BASE + `/data/topik2/${encodeURIComponent(cat)}/level${level}.json`;
-    document.getElementById("dataUrl").textContent = jsonPath.replace(REPO_BASE, "..");
-
-    fetch(jsonPath, { cache:"no-store" })
-      .then(r=>{
-        if(!r.ok) throw new Error("HTTP " + r.status);
-        return r.json();
-      })
-      .then(_=>{
-        document.getElementById("msg").textContent = "✅ 데이터가 존재합니다. (다음 단계: 이 데이터를 퀴즈 화면으로 연결)";
-      })
-      .catch(_=>{
-        document.getElementById("msg").textContent = "⏳ 아직 데이터 파일이 없습니다. (정상) 나중에 JSON을 만들면 자동으로 연결됩니다.";
-      });
-  </script>
+  init();
+})();
+</script>
 </body>
 </html>
