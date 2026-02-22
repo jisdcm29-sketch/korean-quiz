@@ -234,16 +234,15 @@
     location.href = u.toString();
   }
 
-  function goFlashcards(fileAbs, levelLabel){
+  // ✅ 핵심 수정: flashcards로 갈 때는 file + name/klass/token/lang만 전달
+  // (cat/level을 전달하면 기존 로직과 충돌해 level.html로 되돌아오는 현상이 생길 수 있음)
+  function goFlashcards(fileAbs){
     const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/flashcards.html");
     u.searchParams.set("file", fileAbs);
     if (name) u.searchParams.set("name", name);
     if (klass) u.searchParams.set("klass", klass);
     if (token) u.searchParams.set("token", token);
     if (lang) u.searchParams.set("lang", lang);
-    // level.html로 돌아올 때 선택상태 유지용(수정/동작에 영향 없음)
-    u.searchParams.set("cat", cat);
-    if (levelLabel) u.searchParams.set("level", levelLabel);
     location.href = u.toString();
   }
 
@@ -259,9 +258,7 @@
     { key:"level06_idioms2",       label:"관용표현2",       file:"/data/topik2/vocab/level06_idioms2.json" },
     { key:"level07_news_vocab1",   label:"신문기사 어휘1",   file:"/data/topik2/vocab/level07_news_vocab1.json" },
     { key:"level08_key_vocab1",    label:"중요어휘1",       file:"/data/topik2/vocab/level08_key_vocab1.json" },
-    // ✅ 추가: 중요어휘2 (기존 버튼/동작에 영향 없음)
     { key:"level09_key_vocab2",    label:"중요어휘2",       file:"/data/topik2/vocab/level09_key_vocab2.json" },
-    // placeholder
     { key:"level09", label:"Level 9", file:"" , disabled:true },
     { key:"level10", label:"Level 10", file:"", disabled:true }
   ];
@@ -271,8 +268,6 @@
     { key:"g02", label:"종결어미1", file:"/data/topik2/grammar/level02_final_endings1.json" }
   ];
 
-  // ✅ 추가: 쓰기(53) 레벨 버튼들
-  // (현재는 레벨1만 활성화, 나머지는 placeholder로 비활성)
   const writingButtons = [
     { key:"w53_level01", label:"조사 결과 도입 및 나열 표현", file:"/data/topik2/writing53/level01_intro_list.json" },
     { key:"w53_level02", label:"Level 2", file:"", disabled:true },
@@ -308,7 +303,7 @@
         btn.disabled = true;
         btn.style.opacity = "0.65";
       } else {
-        btn.addEventListener("click", () => goFlashcards(abs(b.file), b.key));
+        btn.addEventListener("click", () => goFlashcards(abs(b.file)));
       }
       grid.appendChild(btn);
     }
