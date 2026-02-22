@@ -1,1 +1,341 @@
-ㅇㄴㅁㄹㄴㅇㄹ
+{
+  "title": "TOPIK II 쓰기(51) Level 1: 상황·기본",
+  "desc": "클릭/선택 중심(타이핑 0) · 25 슬라이드",
+  "items": [
+    {
+      "id": 1,
+      "type": "vocab_card",
+      "purpose": "51번 상황문 기본 연결(이유 표현) 인지",
+      "expr": "(상황) ~해서 / ~ 때문에",
+      "mn": "TO_BE_FILLED_MN",
+      "synonyms": ["~라서"],
+      "antonyms": ["~지만"],
+      "example": "감기에 걸려서 오늘 수업에 못 갑니다."
+    },
+    {
+      "id": 2,
+      "type": "info_pick",
+      "purpose": "상황문에 필요한 핵심 정보 3개 고르기",
+      "expr": "(언제/어디서/왜/무엇을) 중 3개",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "오늘(언제) 병원에 가야 해서(왜) …",
+      "activity": {
+        "prompt": "필수 정보 3개만 선택하세요.",
+        "mode": "multi",
+        "limit": 3,
+        "options": ["언제", "어디서", "왜", "무엇을"]
+      },
+      "answer": { "type": "count", "mustCount": 3 }
+    },
+    {
+      "id": 3,
+      "type": "mcq_blank",
+      "purpose": "가장 기본 인사 표현 철자",
+      "expr": "안___세요.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "안녕하세요. 민수입니다.",
+      "activity": {
+        "prompt": "빈칸에 맞는 것을 고르세요.",
+        "choices": ["녕하", "녕히", "넝하", "낭하"]
+      },
+      "answer": { "correctIndex": 0 }
+    },
+    {
+      "id": 4,
+      "type": "vocab_card",
+      "purpose": "공손한 전달 동사",
+      "expr": "연락드리다 / 말씀드리다",
+      "mn": "TO_BE_FILLED_MN",
+      "synonyms": ["알리다"],
+      "antonyms": ["숨기다"],
+      "example": "늦을 것 같아서 미리 연락드립니다."
+    },
+    {
+      "id": 5,
+      "type": "sentence_builder",
+      "purpose": "이유→결과 기본 순서 조립",
+      "expr": "비가 와서 조금 늦겠습니다.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "비가 와서 조금 늦겠습니다.",
+      "activity": {
+        "prompt": "블록을 눌러 문장을 만드세요.",
+        "blocks": ["비가 와서", "조금", "늦겠습니다"],
+        "target": ["비가 와서", "조금", "늦겠습니다"]
+      }
+    },
+    {
+      "id": 6,
+      "type": "mcq_blank",
+      "purpose": "‘-겠-’(예정/의도) 감각",
+      "expr": "10분 정도 ___.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "10분 정도 늦겠습니다.",
+      "activity": {
+        "prompt": "빈칸에 맞는 것을 고르세요.",
+        "choices": ["늦겠습니다", "늦었겠습니다", "늦겠습니까", "늦습니다"]
+      },
+      "answer": { "correctIndex": 0 }
+    },
+    {
+      "id": 7,
+      "type": "info_pick",
+      "purpose": "상대에 맞는 사과 표현 선택",
+      "expr": "죄송합니다 / 미안합니다",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "늦어서 죄송합니다.",
+      "activity": {
+        "prompt": "1) 상대를 고르고 2) 사과를 고르세요.",
+        "mode": "steps",
+        "steps": [
+          { "key": "who", "limit": 1, "options": ["친구", "선생님", "회사"] },
+          { "key": "apology", "limit": 1, "options": ["미안합니다", "죄송합니다", "송구합니다"] }
+        ]
+      }
+    },
+    {
+      "id": 8,
+      "type": "sentence_builder",
+      "purpose": "참석 불가 문장 조립",
+      "expr": "오늘 모임에 참석하지 못합니다.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "오늘 모임에 참석하지 못합니다.",
+      "activity": {
+        "prompt": "블록을 눌러 문장을 만드세요.",
+        "blocks": ["오늘", "모임에", "참석하지 못합니다"],
+        "target": ["오늘", "모임에", "참석하지 못합니다"]
+      }
+    },
+    {
+      "id": 9,
+      "type": "vocab_card",
+      "purpose": "변경 표현 익히기",
+      "expr": "~로 바꾸다 / 변경하다",
+      "mn": "TO_BE_FILLED_MN",
+      "synonyms": ["조정하다"],
+      "antonyms": ["그대로 두다"],
+      "example": "시간을 내일로 바꿀 수 있을까요?"
+    },
+    {
+      "id": 10,
+      "type": "mcq_blank",
+      "purpose": "가능/불가능 선택",
+      "expr": "오늘은 참석___.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "오늘은 참석할 수 없습니다.",
+      "activity": {
+        "prompt": "빈칸에 맞는 것을 고르세요.",
+        "choices": ["할 수 있습니다", "할 수 없습니다", "할 수 있었어요", "할 수 있나요"]
+      },
+      "answer": { "correctIndex": 1 }
+    },
+    {
+      "id": 11,
+      "type": "info_pick",
+      "purpose": "날짜/시간/장소 3요소 선택",
+      "expr": "(날짜) (시간)에 (장소)",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "내일 3시에 학교에서 …",
+      "activity": {
+        "prompt": "날짜/시간/장소를 각각 1개씩 고르세요.",
+        "mode": "steps",
+        "steps": [
+          { "key": "date", "limit": 1, "options": ["오늘", "내일", "모레", "다음 주"] },
+          { "key": "time", "limit": 1, "options": ["오전", "오후", "3시", "6시"] },
+          { "key": "place", "limit": 1, "options": ["학교", "병원", "회사", "집"] }
+        ]
+      }
+    },
+    {
+      "id": 12,
+      "type": "mcq_blank",
+      "purpose": "공손한 전달 표현 선택",
+      "expr": "변경된 시간을 ___.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "변경된 시간을 알려 드립니다.",
+      "activity": {
+        "prompt": "빈칸에 맞는 것을 고르세요.",
+        "choices": ["알려 드립니다", "알려 줍니다", "알려요", "알렸습니다"]
+      },
+      "answer": { "correctIndex": 0 }
+    },
+    {
+      "id": 13,
+      "type": "sentence_builder",
+      "purpose": "아주 쉬운 공손 요청형 만들기",
+      "expr": "시간을 조금 늦출 수 있을까요?",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "시간을 조금 늦출 수 있을까요?",
+      "activity": {
+        "prompt": "블록을 눌러 문장을 만드세요.",
+        "blocks": ["시간을", "조금", "늦출 수 있을까요?"],
+        "target": ["시간을", "조금", "늦출 수 있을까요?"]
+      }
+    },
+    {
+      "id": 14,
+      "type": "order_sort",
+      "purpose": "이유문→결과문 순서",
+      "expr": "~해서 … / 그래서 …",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "비가 많이 와서 길이 막혔습니다. 그래서 늦겠습니다.",
+      "activity": {
+        "prompt": "두 문장 순서를 맞추세요.",
+        "cards": ["그래서 늦겠습니다.", "비가 많이 와서 길이 막혔습니다."],
+        "targetOrder": [1, 0]
+      }
+    },
+    {
+      "id": 15,
+      "type": "mcq_blank",
+      "purpose": "‘-려고 합니다’ 철자",
+      "expr": "내일 병원에 가___ 합니다.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "내일 병원에 가려고 합니다.",
+      "activity": {
+        "prompt": "빈칸에 맞는 것을 고르세요.",
+        "choices": ["려고", "러고", "려구", "로고"]
+      },
+      "answer": { "correctIndex": 0 }
+    },
+    {
+      "id": 16,
+      "type": "vocab_card",
+      "purpose": "나중/다음에 표현",
+      "expr": "다음에 / 다음 주에 / 나중에",
+      "mn": "TO_BE_FILLED_MN",
+      "synonyms": ["추후에"],
+      "antonyms": ["지금"],
+      "example": "이번 주는 어려워서 다음 주에 하겠습니다."
+    },
+    {
+      "id": 17,
+      "type": "sentence_builder",
+      "purpose": "사과→이유→결과 3블록 조립",
+      "expr": "죄송하지만 일이 있어서 오늘 못 갑니다.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "죄송하지만 일이 있어서 오늘 못 갑니다.",
+      "activity": {
+        "prompt": "블록을 눌러 문장을 만드세요.",
+        "blocks": ["죄송하지만", "일이 있어서", "오늘 못 갑니다"],
+        "target": ["죄송하지만", "일이 있어서", "오늘 못 갑니다"]
+      }
+    },
+    {
+      "id": 18,
+      "type": "mcq_blank",
+      "purpose": "문자/안내문 톤 ‘부탁드립니다’",
+      "expr": "확인 ___.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "확인 부탁드립니다.",
+      "activity": {
+        "prompt": "빈칸에 맞는 것을 고르세요.",
+        "choices": ["부탁드립니다", "부탁드려요", "부탁해요", "부탁합니다"]
+      },
+      "answer": { "correctIndex": 0 }
+    },
+    {
+      "id": 19,
+      "type": "info_pick",
+      "purpose": "연락 수단 선택",
+      "expr": "전화로/문자로/카톡으로/이메일로",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "문자로 연락드립니다.",
+      "activity": {
+        "prompt": "연락 수단 1개를 고르세요.",
+        "mode": "single",
+        "limit": 1,
+        "options": ["전화로", "문자로", "카톡으로", "이메일로"]
+      }
+    },
+    {
+      "id": 20,
+      "type": "mcq_blank",
+      "purpose": "마무리 표현 ‘감사합니다’",
+      "expr": "감___니다.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "읽어 주셔서 감사합니다.",
+      "activity": {
+        "prompt": "빈칸에 맞는 것을 고르세요.",
+        "choices": ["사", "새", "서", "시"]
+      },
+      "answer": { "correctIndex": 0 }
+    },
+    {
+      "id": 21,
+      "type": "order_sort",
+      "purpose": "51번 답안 구성 순서",
+      "expr": "도입 / 상황 / 요청 / 마무리",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "안녕하세요→사정→부탁→감사",
+      "activity": {
+        "prompt": "4개를 올바른 순서로 정렬하세요.",
+        "cards": ["요청", "도입", "마무리", "상황"],
+        "targetOrder": [1, 3, 0, 2]
+      }
+    },
+    {
+      "id": 22,
+      "type": "mcq_blank",
+      "purpose": "이유→불가 연결",
+      "expr": "몸이 안 좋아서 ___.",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "몸이 안 좋아서 오늘 수업에 못 갑니다.",
+      "activity": {
+        "prompt": "문맥에 맞는 것을 고르세요.",
+        "choices": ["못 갑니다", "가겠습니다", "좋습니다", "있습니다"]
+      },
+      "answer": { "correctIndex": 0 }
+    },
+    {
+      "id": 23,
+      "type": "info_pick",
+      "purpose": "날짜+행동 선택 후 문장 미리보기",
+      "expr": "(날짜) (행동) 못 합니다",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "내일은 참석하지 못합니다.",
+      "activity": {
+        "prompt": "날짜 1개 + 행동 1개를 고르세요.",
+        "mode": "steps",
+        "steps": [
+          { "key": "date", "limit": 1, "options": ["오늘", "내일", "모레", "다음 주"] },
+          { "key": "act", "limit": 1, "options": ["참석하지", "수업에 가지", "모임에 가지", "약속에 가지"] }
+        ]
+      },
+      "build": { "template": "{date} {act} 못합니다." }
+    },
+    {
+      "id": 24,
+      "type": "final_builder",
+      "purpose": "미니 최종: 1문장 조립",
+      "expr": "사과 + 이유 + 결과",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "죄송하지만 일이 있어서 오늘 못 갑니다.",
+      "activity": {
+        "prompt": "각 칸에서 1개씩 선택하면 1문장이 완성됩니다.",
+        "parts": [
+          { "key": "A", "label": "사과", "limit": 1, "options": ["죄송하지만", "송구하지만", "죄송합니다."] },
+          { "key": "B", "label": "이유", "limit": 1, "options": ["일이 있어서", "몸이 안 좋아서", "약속이 있어서", "병원에 가야 해서"] },
+          { "key": "C", "label": "결과", "limit": 1, "options": ["오늘 못 갑니다", "내일 못 갑니다", "조금 늦겠습니다", "참석하지 못합니다"] }
+        ]
+      }
+    },
+    {
+      "id": 25,
+      "type": "final_builder",
+      "purpose": "최종: 4문장 답안 클릭 조립",
+      "expr": "도입 → 상황(이유) → 결과/연락 → 마무리",
+      "mn": "TO_BE_FILLED_MN",
+      "example": "안녕하세요. 민수입니다. 몸이 안 좋아서 오늘 수업에 못 갑니다. 다음 주에 다시 연락드리겠습니다. 감사합니다.",
+      "activity": {
+        "prompt": "각 칸에서 1개씩 선택하면 4문장 답안이 완성됩니다.",
+        "parts": [
+          { "key": "intro", "label": "도입", "limit": 1, "options": ["안녕하세요. (이름)입니다.", "안녕하세요. 저는 (이름)입니다.", "안녕하십니까. (이름)입니다."] },
+          { "key": "why", "label": "상황(이유)", "limit": 1, "options": ["몸이 안 좋아서", "일이 있어서", "병원에 가야 해서", "약속이 있어서"] },
+          { "key": "result", "label": "결과", "limit": 1, "options": ["오늘 수업에 못 갑니다.", "오늘 모임에 참석하지 못합니다.", "10분 정도 늦겠습니다.", "오늘은 참석할 수 없습니다."] },
+          { "key": "follow", "label": "추가(연락/다음)", "limit": 1, "options": ["다음 주에 다시 연락드리겠습니다.", "문자로 연락드리겠습니다.", "변경 가능할까요?", "확인 부탁드립니다."] },
+          { "key": "end", "label": "마무리", "limit": 1, "options": ["감사합니다.", "읽어 주셔서 감사합니다.", "죄송합니다. 감사합니다."] }
+        ]
+      }
+    }
+  ]
+}
