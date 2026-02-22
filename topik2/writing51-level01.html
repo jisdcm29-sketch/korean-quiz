@@ -1,0 +1,938 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+  <title>TOPIK II · 쓰기(51) · Level 1 · 상황·기본</title>
+  <style>
+    :root{
+      --bg:#0b1220;
+      --line:rgba(255,255,255,.08);
+      --txt:#e9eefc;
+      --muted:rgba(233,238,252,.72);
+      --accent:#6ea8ff;
+      --good:#4dd4a0;
+      --bad:#ff6b6b;
+      --warn:#ffd166;
+      --shadow:0 16px 40px rgba(0,0,0,.45);
+    }
+    html,body{height:100%; background:radial-gradient(1200px 700px at 30% -10%, #1a2f5f 0%, rgba(26,47,95,0) 60%), var(--bg); color:var(--txt);
+      font-family:system-ui,-apple-system,Segoe UI,Roboto,Apple SD Gothic Neo,Malgun Gothic,sans-serif;}
+    *{box-sizing:border-box;}
+    .wrap{max-width:1100px; margin:0 auto; padding:18px 14px 110px;}
+    .topbar{
+      display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:14px; border:1px solid var(--line); border-radius:20px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow:var(--shadow);
+    }
+    .brand{display:flex; flex-direction:column; gap:4px;}
+    .brand .t{font-weight:900; font-size:18px; letter-spacing:.2px;}
+    .brand .s{font-size:12px; color:var(--muted); font-weight:750; line-height:1.3;}
+    .actions{display:flex; gap:8px; flex-wrap:wrap; justify-content:flex-end;}
+    .btn{
+      border:1px solid var(--line);
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      color:var(--txt); padding:10px 12px; border-radius:14px;
+      font-weight:850; font-size:13px; cursor:pointer; user-select:none;
+    }
+    .btn:active{transform:translateY(1px);}
+    .btn.primary{background:linear-gradient(180deg, rgba(110,168,255,.22), rgba(110,168,255,.08)); border-color:rgba(110,168,255,.35);}
+    .btn.good{background:linear-gradient(180deg, rgba(77,212,160,.22), rgba(77,212,160,.08)); border-color:rgba(77,212,160,.35);}
+    .btn.ghost{background:transparent;}
+    .grid{display:grid; grid-template-columns:1.2fr .8fr; gap:14px; margin-top:14px;}
+    @media (max-width:920px){.grid{grid-template-columns:1fr;}}
+    .panel{
+      border:1px solid var(--line); border-radius:20px;
+      background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      box-shadow:var(--shadow); overflow:hidden;
+    }
+    .panel .hd{padding:14px; border-bottom:1px solid var(--line); display:flex; align-items:center; justify-content:space-between; gap:10px;}
+    .panel .hd .h1{font-size:16px; font-weight:900;}
+    .panel .hd .h2{font-size:12px; color:var(--muted); font-weight:800;}
+    .panel .bd{padding:14px;}
+    .pill{padding:6px 10px; border:1px solid var(--line); border-radius:999px; font-size:12px; color:var(--muted); font-weight:900;}
+    .k{font-size:20px; font-weight:900; line-height:1.25;}
+    .goal{margin-top:8px; color:var(--muted); font-size:13px; font-weight:800; line-height:1.45;}
+    .mini{margin-top:10px; display:flex; flex-wrap:wrap; gap:8px;}
+    .mini .tag{border:1px solid var(--line); background:rgba(0,0,0,.15); padding:7px 10px; border-radius:14px; font-size:12px; font-weight:850; color:var(--muted);}
+    .acc{margin-top:12px; border-top:1px dashed rgba(255,255,255,.12); padding-top:12px;}
+    .acc details{border:1px solid var(--line); border-radius:16px; background:rgba(0,0,0,.12); overflow:hidden; margin-bottom:10px;}
+    .acc summary{cursor:pointer; padding:12px; font-weight:900; font-size:13px; color:var(--txt); list-style:none;}
+    .acc summary::-webkit-details-marker{display:none;}
+    .acc .box{padding:0 12px 12px; color:var(--muted); font-size:13px; line-height:1.5;}
+    .hintOff .mnOnly{display:none;}
+    .activity{margin-top:14px; display:flex; flex-direction:column; gap:10px;}
+    .prompt{padding:12px; border:1px solid var(--line); border-radius:16px; background:rgba(0,0,0,.18); font-weight:900; line-height:1.45;}
+    .choices{display:grid; grid-template-columns:1fr 1fr; gap:10px;}
+    @media (max-width:520px){.choices{grid-template-columns:1fr;}}
+    .choice{
+      border:1px solid var(--line); background:linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.02));
+      border-radius:16px; padding:12px; cursor:pointer; font-weight:900; line-height:1.35;
+      min-height:46px; display:flex; align-items:center; justify-content:space-between; gap:10px;
+    }
+    .choice small{color:var(--muted); font-weight:850;}
+    .choice.sel{border-color:rgba(110,168,255,.55); box-shadow:0 0 0 2px rgba(110,168,255,.18) inset;}
+    .choice.good{border-color:rgba(77,212,160,.6); box-shadow:0 0 0 2px rgba(77,212,160,.18) inset;}
+    .choice.bad{border-color:rgba(255,107,107,.6); box-shadow:0 0 0 2px rgba(255,107,107,.18) inset;}
+    .builderRow{display:flex; flex-wrap:wrap; gap:10px;}
+    .block{
+      border:1px solid var(--line); background:rgba(0,0,0,.15);
+      padding:10px 12px; border-radius:999px; cursor:pointer; font-weight:900;
+    }
+    .block:active{transform:translateY(1px);}
+    .dropzone{
+      border:1px dashed rgba(255,255,255,.22); background:rgba(0,0,0,.12);
+      padding:12px; border-radius:16px; min-height:60px;
+      display:flex; flex-wrap:wrap; gap:10px; align-items:center;
+    }
+    .dropzone .ph{color:rgba(233,238,252,.45); font-weight:900;}
+    .preview{
+      padding:12px; border:1px solid var(--line); border-radius:16px; background:rgba(0,0,0,.18);
+      font-weight:900; line-height:1.5;
+    }
+    .fb{padding:12px; border:1px solid var(--line); border-radius:16px; background:rgba(0,0,0,.12); color:var(--muted); font-weight:900; line-height:1.45;}
+    .toast{
+      margin-top:10px; padding:12px; border-radius:16px; font-weight:900;
+      border:1px solid var(--line); background:rgba(0,0,0,.2);
+    }
+    .toast.good{border-color:rgba(77,212,160,.45); background:rgba(77,212,160,.10); color:rgba(219,255,242,.98);}
+    .toast.bad{border-color:rgba(255,107,107,.45); background:rgba(255,107,107,.10); color:rgba(255,234,234,.98);}
+    .toast.warn{border-color:rgba(255,209,102,.45); background:rgba(255,209,102,.10); color:rgba(255,248,232,.98);}
+    .fixedNav{
+      position:fixed; left:0; right:0; bottom:0;
+      padding:10px 12px calc(10px + env(safe-area-inset-bottom));
+      background:linear-gradient(180deg, rgba(11,18,32,0), rgba(11,18,32,.88) 28%, rgba(11,18,32,.96));
+      backdrop-filter: blur(10px);
+    }
+    .fixedNav .bar{
+      max-width:1100px; margin:0 auto; display:flex; gap:10px; align-items:center; justify-content:space-between;
+    }
+    .fixedNav .left, .fixedNav .right{display:flex; gap:10px; align-items:center;}
+    .prog{font-weight:900; color:var(--muted); font-size:13px; padding:10px 12px; border:1px solid var(--line); border-radius:14px; background:rgba(0,0,0,.12);}
+    .tiny{font-size:12px; color:var(--muted); font-weight:850;}
+  </style>
+</head>
+
+<body>
+  <div class="wrap hintOff" id="app">
+    <div class="topbar">
+      <div class="brand">
+        <div class="t" id="titleTop">TOPIK II · 쓰기(51) · Level 1</div>
+        <div class="s" id="subTop">상황·기본 — 클릭/선택으로 문장 조립(타이핑 0)</div>
+      </div>
+      <div class="actions">
+        <button class="btn ghost" id="btnBack">뒤로</button>
+        <button class="btn ghost" id="btnHome">홈</button>
+        <button class="btn" id="btnHint">MN 힌트</button>
+      </div>
+    </div>
+
+    <div class="grid">
+      <div class="panel">
+        <div class="hd">
+          <div>
+            <div class="h1" id="deckTitle">Level 1: 상황·기본</div>
+            <div class="h2" id="deckMeta">25 slides · 클릭 조립형</div>
+          </div>
+          <div class="pill" id="typePill">—</div>
+        </div>
+        <div class="bd">
+          <div class="k" id="expr">—</div>
+          <div class="goal" id="goal">—</div>
+
+          <div class="mini" id="mini"></div>
+          <div class="acc" id="acc"></div>
+
+          <div class="activity" id="activity"></div>
+          <div id="toast"></div>
+        </div>
+      </div>
+
+      <div class="panel">
+        <div class="hd">
+          <div>
+            <div class="h1">학습 조작</div>
+            <div class="h2">초기화/정답확인</div>
+          </div>
+          <div class="pill" id="modePill">L1</div>
+        </div>
+        <div class="bd">
+          <div class="fb" id="helpBox">
+            • 아래에서 <b>선택/조립</b>만 하세요.<br/>
+            • “초기화”로 언제든 다시 시작할 수 있어요.<br/>
+            <span class="tiny">※ 이 파일은 단독 실행용이라 기존 코드에 영향이 없습니다.</span>
+            <div class="mnOnly" style="margin-top:8px;">• (MN) TO_BE_FILLED_MN</div>
+          </div>
+
+          <div style="display:flex; gap:10px; margin-top:12px; flex-wrap:wrap;">
+            <button class="btn" id="btnReset">선택 취소/초기화</button>
+            <button class="btn primary" id="btnCheck">정답 확인</button>
+            <button class="btn good" id="btnNext">다음</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <div class="fixedNav">
+    <div class="bar">
+      <div class="left">
+        <button class="btn" id="navPrev">이전</button>
+        <div class="prog" id="prog">0/0</div>
+      </div>
+      <div class="right">
+        <button class="btn" id="navReset">초기화</button>
+        <button class="btn primary" id="navCheck">확인</button>
+        <button class="btn good" id="navNext">다음</button>
+      </div>
+    </div>
+  </div>
+
+<script>
+(function(){
+  "use strict";
+
+  // ===== URL params passthrough (no prompts)
+  const U = new URL(location.href);
+  const params = Object.fromEntries(U.searchParams.entries());
+  const userName = params.name || "";
+  const klass = params.klass || "";
+  const token = params.token || "";
+  const lang = (params.lang || localStorage.getItem("topik2_lang") || "mn").toLowerCase();
+  localStorage.setItem("topik2_lang", lang);
+
+  // ===== safe logger (no-op if not configured)
+  function findGasUrl(){
+    return (
+      window.TOPIK2_GAS_URL ||
+      localStorage.getItem("TOPIK2_GAS_URL") ||
+      localStorage.getItem("GAS_URL") ||
+      localStorage.getItem("kq_gas_url") ||
+      ""
+    );
+  }
+  function jsonp(url, timeoutMs){
+    return new Promise((resolve,reject)=>{
+      const s = document.createElement("script");
+      const cb = "cb_" + Math.random().toString(16).slice(2);
+      const t = setTimeout(()=>{cleanup(); reject(new Error("timeout"));}, timeoutMs||6500);
+      function cleanup(){
+        clearTimeout(t);
+        delete window[cb];
+        if(s && s.parentNode) s.parentNode.removeChild(s);
+      }
+      window[cb] = (data)=>{cleanup(); resolve(data);};
+      const uu = new URL(url);
+      uu.searchParams.set("callback", cb);
+      s.src = uu.toString();
+      s.onerror = ()=>{cleanup(); reject(new Error("load error"));};
+      document.head.appendChild(s);
+    });
+  }
+  function logEvent(evt, payload){
+    const gas = findGasUrl();
+    if(!gas) return;
+    try{
+      const uu = new URL(gas);
+      uu.searchParams.set("mode","log");
+      uu.searchParams.set("evt", evt);
+      uu.searchParams.set("book","TOPIK2");
+      uu.searchParams.set("lesson","writing51-level01");
+      uu.searchParams.set("score","0");
+      uu.searchParams.set("attempts","0");
+      uu.searchParams.set("ua", navigator.userAgent);
+      uu.searchParams.set("token", token);
+      uu.searchParams.set("deviceId", localStorage.getItem("deviceId") || "");
+      uu.searchParams.set("name", userName);
+      uu.searchParams.set("klass", klass);
+      if(payload){
+        Object.keys(payload).forEach(k=>{
+          if(payload[k]===undefined || payload[k]===null) return;
+          uu.searchParams.set(k, String(payload[k]));
+        });
+      }
+      jsonp(uu.toString(), 6500).catch(()=>{});
+    }catch(e){}
+  }
+
+  // ===== DOM
+  const $ = (id)=>document.getElementById(id);
+  const app = $("app");
+
+  function escapeHtml(s){
+    return String(s||"").replace(/[&<>"']/g, m => ({
+      "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+    }[m]));
+  }
+  function shuffle(arr){
+    const a = arr.slice();
+    for(let i=a.length-1;i>0;i--){
+      const j = Math.floor(Math.random()*(i+1));
+      [a[i],a[j]]=[a[j],a[i]];
+    }
+    return a;
+  }
+
+  // ===== Hint toggle
+  let hintOn = false;
+  $("btnHint").onclick = ()=>{
+    hintOn = !hintOn;
+    app.classList.toggle("hintOff", !hintOn);
+    $("btnHint").textContent = hintOn ? "MN 힌트 ON" : "MN 힌트";
+  };
+
+  // ===== Navigation (back first, fallback safe)
+  function repoBase(){
+    return location.pathname.replace(/\/topik2\/.*$/, "");
+  }
+  $("btnBack").onclick = ()=>{
+    const before = document.referrer || "";
+    history.back();
+    setTimeout(()=>{
+      if(document.referrer === before){
+        const b = repoBase();
+        location.href = location.origin + b + "/topik2/level.html";
+      }
+    }, 250);
+    logEvent("back",{});
+  };
+  $("btnHome").onclick = ()=>{
+    logEvent("home",{});
+    location.href = location.origin + repoBase() + "/index.html";
+  };
+
+  // ===== Slide data (Level 1: 25)
+  // NOTE: 몽골어(mn)는 자리표시. 나중에 교체만 하면 됨.
+  const deck = {
+    title: "TOPIK II 쓰기(51) Level 1: 상황·기본",
+    desc: "클릭/선택 중심(타이핑 0) · 25 슬라이드",
+    items: [
+      {id:1,type:"vocab_card",purpose:"51번 상황문 기본 연결(이유 표현) 인지",expr:"(상황) ~해서 / ~ 때문에",mn:"TO_BE_FILLED_MN",synonyms:["~라서"],antonyms:["~지만"],example:"감기에 걸려서 오늘 수업에 못 갑니다."},
+      {id:2,type:"info_pick",purpose:"상황문에 필요한 핵심 정보 3개 고르기",expr:"(언제/어디서/왜/무엇을) 중 3개",mn:"TO_BE_FILLED_MN",example:"오늘(언제) 병원에 가야 해서(왜) …",
+        activity:{prompt:"필수 정보 3개만 선택하세요.",mode:"multi",limit:3,options:["언제","어디서","왜","무엇을"]},
+        answer:{type:"count",mustCount:3,ok:"좋아요! 3개 정보가 있어야 상황문이 명확해요.",bad:"3개만 선택하세요."}
+      },
+      {id:3,type:"mcq_blank",purpose:"가장 기본 인사 표현 철자",expr:"안___세요.",mn:"TO_BE_FILLED_MN",example:"안녕하세요. 민수입니다.",
+        activity:{prompt:"빈칸에 맞는 것을 고르세요.",choices:["녕하","녕히","넝하","낭하"]},
+        answer:{correctIndex:0,ok:"정답!",bad:"인사 표현 철자를 확인해요."}
+      },
+      {id:4,type:"vocab_card",purpose:"공손한 전달 동사",expr:"연락드리다 / 말씀드리다",mn:"TO_BE_FILLED_MN",synonyms:["알리다"],antonyms:["숨기다"],example:"늦을 것 같아서 미리 연락드립니다."},
+      {id:5,type:"sentence_builder",purpose:"이유→결과 기본 순서 조립",expr:"비가 와서 조금 늦겠습니다.",mn:"TO_BE_FILLED_MN",example:"비가 와서 조금 늦겠습니다.",
+        activity:{prompt:"블록을 눌러 문장을 만드세요.",blocks:["비가 와서","조금","늦겠습니다"],target:["비가 와서","조금","늦겠습니다"]},
+        answer:{ok:"좋아요! 이유 → 정도 → 결과",bad:"순서를 다시 맞춰보세요."}
+      },
+      {id:6,type:"mcq_blank",purpose:"‘-겠-’(예정/의도) 감각",expr:"10분 정도 ___.",mn:"TO_BE_FILLED_MN",example:"10분 정도 늦겠습니다.",
+        activity:{prompt:"빈칸에 맞는 것을 고르세요.",choices:["늦겠습니다","늦었겠습니다","늦겠습니까","늦습니다"]},
+        answer:{correctIndex:0,ok:"정답!",bad:"예정/미래는 ‘-겠-’를 써요."}
+      },
+      {id:7,type:"info_pick",purpose:"상대에 맞는 사과 표현 선택",expr:"죄송합니다 / 미안합니다",mn:"TO_BE_FILLED_MN",example:"늦어서 죄송합니다.",
+        activity:{prompt:"1) 상대를 고르고 2) 사과를 고르세요.",mode:"steps",steps:[
+          {key:"who",limit:1,options:["친구","선생님","회사"]},
+          {key:"apology",limit:1,options:["미안합니다","죄송합니다","송구합니다"]}
+        ]},
+        answer:{type:"rule",
+          rules:[
+            {if:{who:"친구"},ok:["미안합니다","죄송합니다"]},
+            {if:{who:"선생님"},ok:["죄송합니다","송구합니다"]},
+            {if:{who:"회사"},ok:["죄송합니다","송구합니다"]}
+          ],
+          ok:"좋아요! 상대에 맞게 공손도를 조절해요.",
+          bad:"선생님/회사는 ‘죄송합니다/송구합니다’가 더 좋아요."
+        }
+      },
+      {id:8,type:"sentence_builder",purpose:"참석 불가 문장 조립",expr:"오늘 모임에 참석하지 못합니다.",mn:"TO_BE_FILLED_MN",example:"오늘 모임에 참석하지 못합니다.",
+        activity:{prompt:"블록을 눌러 문장을 만드세요.",blocks:["오늘","모임에","참석하지 못합니다"],target:["오늘","모임에","참석하지 못합니다"]},
+        answer:{ok:"정답!",bad:"시간 → 대상 → 불가 순서!"}
+      },
+      {id:9,type:"vocab_card",purpose:"변경 표현 익히기",expr:"~로 바꾸다 / 변경하다",mn:"TO_BE_FILLED_MN",synonyms:["조정하다"],antonyms:["그대로 두다"],example:"시간을 내일로 바꿀 수 있을까요?"},
+      {id:10,type:"mcq_blank",purpose:"가능/불가능 선택",expr:"오늘은 참석___.",mn:"TO_BE_FILLED_MN",example:"오늘은 참석할 수 없습니다.",
+        activity:{prompt:"빈칸에 맞는 것을 고르세요.",choices:["할 수 있습니다","할 수 없습니다","할 수 있었어요","할 수 있나요"]},
+        answer:{correctIndex:1,ok:"정답!",bad:"오늘 못 가는 상황이면 ‘없습니다’."}
+      },
+      {id:11,type:"info_pick",purpose:"날짜/시간/장소 3요소 선택",expr:"(날짜) (시간)에 (장소)",mn:"TO_BE_FILLED_MN",example:"내일 3시에 학교에서 …",
+        activity:{prompt:"날짜/시간/장소를 각각 1개씩 고르세요.",mode:"steps",steps:[
+          {key:"date",limit:1,options:["오늘","내일","모레","다음 주"]},
+          {key:"time",limit:1,options:["오전","오후","3시","6시"]},
+          {key:"place",limit:1,options:["학교","병원","회사","집"]}
+        ]},
+        answer:{type:"allSteps",ok:"좋아요! 3요소가 있으면 정보가 선명해요.",bad:"각 항목을 1개씩 선택하세요."}
+      },
+      {id:12,type:"mcq_blank",purpose:"공손한 전달 표현 선택",expr:"변경된 시간을 ___.",mn:"TO_BE_FILLED_MN",example:"변경된 시간을 알려 드립니다.",
+        activity:{prompt:"빈칸에 맞는 것을 고르세요.",choices:["알려 드립니다","알려 줍니다","알려요","알렸습니다"]},
+        answer:{correctIndex:0,ok:"정답!",bad:"공손체는 ‘-드리다’."}
+      },
+      {id:13,type:"sentence_builder",purpose:"아주 쉬운 공손 요청형 만들기",expr:"시간을 조금 늦출 수 있을까요?",mn:"TO_BE_FILLED_MN",example:"시간을 조금 늦출 수 있을까요?",
+        activity:{prompt:"블록을 눌러 문장을 만드세요.",blocks:["시간을","조금","늦출 수 있을까요?"],target:["시간을","조금","늦출 수 있을까요?"]},
+        answer:{ok:"좋아요!",bad:"대상 → 정도 → 요청형 순서!"}
+      },
+      {id:14,type:"order_sort",purpose:"이유문→결과문 순서",expr":"~해서 … / 그래서 …",mn:"TO_BE_FILLED_MN",example:"비가 많이 와서 길이 막혔습니다. 그래서 늦겠습니다.",
+        activity:{prompt:"두 문장 순서를 맞추세요.",cards:["그래서 늦겠습니다.","비가 많이 와서 길이 막혔습니다."],targetOrder:[1,0]},
+        answer:{ok:"정답! 이유 → 결과(그래서)",bad:"이유가 먼저, 결과가 다음!"}
+      },
+      {id:15,type:"mcq_blank",purpose:"‘-려고 합니다’ 철자",expr:"내일 병원에 가___ 합니다.",mn:"TO_BE_FILLED_MN",example:"내일 병원에 가려고 합니다.",
+        activity:{prompt:"빈칸에 맞는 것을 고르세요.",choices:["려고","러고","려구","로고"]},
+        answer:{correctIndex:0,ok:"정답!",bad:"표준은 ‘-려고’."}
+      },
+      {id:16,type:"vocab_card",purpose:"나중/다음에 표현",expr:"다음에 / 다음 주에 / 나중에",mn:"TO_BE_FILLED_MN",synonyms:["추후에"],antonyms:["지금"],example:"이번 주는 어려워서 다음 주에 하겠습니다."},
+      {id:17,type:"sentence_builder",purpose:"사과→이유→결과 3블록 조립",expr:"죄송하지만 일이 있어서 오늘 못 갑니다.",mn:"TO_BE_FILLED_MN",example:"죄송하지만 일이 있어서 오늘 못 갑니다.",
+        activity:{prompt:"블록을 눌러 문장을 만드세요.",blocks:["죄송하지만","일이 있어서","오늘 못 갑니다"],target:["죄송하지만","일이 있어서","오늘 못 갑니다"]},
+        answer:{ok:"정답!",bad:"사과/완충 → 이유 → 결과"}
+      },
+      {id:18,type:"mcq_blank",purpose:"문자/안내문 톤 ‘부탁드립니다’",expr:"확인 ___.",mn:"TO_BE_FILLED_MN",example:"확인 부탁드립니다.",
+        activity:{prompt:"빈칸에 맞는 것을 고르세요.",choices:["부탁드립니다","부탁드려요","부탁해요","부탁합니다"]},
+        answer:{correctIndex:0,ok:"정답!",bad:"가장 무난한 공손체는 ‘부탁드립니다’."}
+      },
+      {id:19,type:"info_pick",purpose:"연락 수단 선택",expr:"전화로/문자로/카톡으로/이메일로",mn:"TO_BE_FILLED_MN",example:"문자로 연락드립니다.",
+        activity:{prompt:"연락 수단 1개를 고르세요.",mode:"single",limit:1,options:["전화로","문자로","카톡으로","이메일로"]},
+        answer:{type:"count",mustCount:1,ok:"좋아요!",bad:"1개만 선택하세요."}
+      },
+      {id:20,type:"mcq_blank",purpose:"마무리 표현 ‘감사합니다’",expr:"감___니다.",mn:"TO_BE_FILLED_MN",example:"읽어 주셔서 감사합니다.",
+        activity:{prompt:"빈칸에 맞는 것을 고르세요.",choices:["사","새","서","시"]},
+        answer:{correctIndex:0,ok:"정답!",bad:"‘감사합니다’가 기본!"}
+      },
+      {id:21,type:"order_sort",purpose:"51번 답안 구성 순서",expr:"도입 / 상황 / 요청 / 마무리",mn:"TO_BE_FILLED_MN",example:"안녕하세요→사정→부탁→감사",
+        activity:{prompt:"4개를 올바른 순서로 정렬하세요.",cards:["요청","도입","마무리","상황"],targetOrder:[1,3,0,2]},
+        answer:{ok:"정답! 도입 → 상황 → 요청 → 마무리",bad:"구성 순서를 다시 생각해요."}
+      },
+      {id:22,type:"mcq_blank",purpose:"이유→불가 연결",expr:"몸이 안 좋아서 ___.",mn:"TO_BE_FILLED_MN",example:"몸이 안 좋아서 오늘 수업에 못 갑니다.",
+        activity:{prompt:"문맥에 맞는 것을 고르세요.",choices:["못 갑니다","가겠습니다","좋습니다","있습니다"]},
+        answer:{correctIndex:0,ok:"정답!",bad:"이유(몸이 안 좋다) → 불가(못 가다)"}
+      },
+      {id:23,type:"info_pick",purpose:"날짜+행동 선택 후 문장 미리보기",expr:"(날짜) (행동) 못 합니다",mn:"TO_BE_FILLED_MN",example:"내일은 참석하지 못합니다.",
+        activity:{prompt:"날짜 1개 + 행동 1개를 고르세요.",mode:"steps",steps:[
+          {key:"date",limit:1,options:["오늘","내일","모레","다음 주"]},
+          {key:"act",limit:1,options:["참석하지","수업에 가지","모임에 가지","약속에 가지"]}
+        ]},
+        answer:{type:"allSteps",ok:"좋아요! 문장이 자동으로 만들어져요.",bad:"날짜와 행동을 각각 1개씩 선택하세요."},
+        build:{template:"{date} {act} 못합니다."}
+      },
+      {id:24,type:"final_builder",purpose:"미니 최종: 1문장 조립",expr:"사과 + 이유 + 결과",mn:"TO_BE_FILLED_MN",example:"죄송하지만 일이 있어서 오늘 못 갑니다.",
+        activity:{prompt:"각 칸에서 1개씩 선택하면 1문장이 완성됩니다.",parts:[
+          {key:"A",label:"사과",limit:1,options:["죄송하지만","송구하지만","죄송합니다."]},
+          {key:"B",label:"이유",limit:1,options:["일이 있어서","몸이 안 좋아서","약속이 있어서","병원에 가야 해서"]},
+          {key:"C",label:"결과",limit:1,options:["오늘 못 갑니다","내일 못 갑니다","조금 늦겠습니다","참석하지 못합니다"]}
+        ]},
+        answer:{type:"allSteps",ok:"완성! 다양한 조합이 가능해요.",bad:"각 칸에서 1개씩 선택하세요."}
+      },
+      {id:25,type:"final_builder",purpose:"최종: 4문장 답안 클릭 조립",expr:"도입 → 상황(이유) → 결과/연락 → 마무리",mn:"TO_BE_FILLED_MN",
+        example:"안녕하세요. 민수입니다. 몸이 안 좋아서 오늘 수업에 못 갑니다. 다음 주에 다시 연락드리겠습니다. 감사합니다.",
+        activity:{prompt:"각 칸에서 1개씩 선택하면 4문장 답안이 완성됩니다.",parts:[
+          {key:"intro",label:"도입",limit:1,options:["안녕하세요. (이름)입니다.","안녕하세요. 저는 (이름)입니다.","안녕하십니까. (이름)입니다."]},
+          {key:"why",label:"상황(이유)",limit:1,options:["몸이 안 좋아서","일이 있어서","병원에 가야 해서","약속이 있어서"]},
+          {key:"result",label:"결과",limit:1,options:["오늘 수업에 못 갑니다.","오늘 모임에 참석하지 못합니다.","10분 정도 늦겠습니다.","오늘은 참석할 수 없습니다."]},
+          {key:"follow",label:"추가(연락/다음)",limit:1,options:["다음 주에 다시 연락드리겠습니다.","문자로 연락드리겠습니다.","변경 가능할까요?","확인 부탁드립니다."]},
+          {key:"end",label:"마무리",limit:1,options:["감사합니다.","읽어 주셔서 감사합니다.","죄송합니다. 감사합니다."]}
+        ]},
+        answer:{type:"allSteps",ok:"완성! 51번은 짧고 핵심만!",bad:"모든 칸을 선택해야 완성돼요."}
+      }
+    ]
+  };
+
+  // ===== State per slide
+  let idx = 0; // 0..24
+  const state = {}; // by slide id
+
+  function ensureState(id){
+    if(!state[id]) state[id] = {
+      picks: {},          // for info_pick / final_builder / steps
+      selectedIndex: null,// for mcq
+      built: [],          // for sentence_builder
+      order: null,        // for order_sort current order indices
+      checked: false,
+      correct: null
+    };
+    return state[id];
+  }
+
+  function setToast(kind, msg){
+    const t = $("toast");
+    if(!msg){ t.innerHTML=""; return; }
+    t.innerHTML = `<div class="toast ${kind||""}">${escapeHtml(msg)}</div>`;
+  }
+
+  function typeLabel(type){
+    const map = {
+      vocab_card:"학습카드",
+      mcq_blank:"빈칸선택",
+      sentence_builder:"문장조립",
+      order_sort:"순서배열",
+      info_pick:"정보선택",
+      final_builder:"최종조립"
+    };
+    return map[type] || type;
+  }
+
+  function renderAcc(item){
+    const mk = (label, html)=>`
+      <details>
+        <summary>${label}</summary>
+        <div class="box">${html || "<span style='opacity:.7'>—</span>"}</div>
+      </details>`;
+    const blocks = [];
+    blocks.push(mk("뜻 (MN)", `<div class="mnOnly">${escapeHtml(item.mn || "TO_BE_FILLED_MN")}</div>`));
+    blocks.push(mk("유의어", escapeHtml((item.synonyms||[]).join(" · "))));
+    blocks.push(mk("반대/반의", escapeHtml((item.antonyms||[]).join(" · "))));
+    blocks.push(mk("예문(51)", escapeHtml(item.example || "")));
+    $("acc").innerHTML = blocks.join("");
+  }
+
+  function renderMini(item){
+    const tags = [];
+    if(item.purpose) tags.push(`목적: ${item.purpose}`);
+    if(item.type) tags.push(`유형: ${typeLabel(item.type)}`);
+    $("mini").innerHTML = tags.map(t=>`<div class="tag">${escapeHtml(t)}</div>`).join("");
+  }
+
+  function render(){
+    const item = deck.items[idx];
+    const st = ensureState(item.id);
+
+    $("deckTitle").textContent = deck.title;
+    $("deckMeta").textContent = deck.desc;
+    $("typePill").textContent = typeLabel(item.type);
+    $("expr").textContent = item.expr || "";
+    $("goal").textContent = item.purpose || "";
+    $("prog").textContent = `${idx+1}/${deck.items.length}`;
+
+    renderMini(item);
+    renderAcc(item);
+
+    $("activity").innerHTML = "";
+    setToast("", "");
+
+    // If already checked, show previous toast lightly
+    if(st.checked){
+      if(st.correct === true) setToast("good", "이미 정답 확인 완료: 정답!");
+      if(st.correct === false) setToast("bad", "이미 정답 확인 완료: 다시 도전해도 좋아요.");
+    }
+
+    // Render activity by type
+    if(item.type === "vocab_card"){
+      const box = document.createElement("div");
+      box.className = "prompt";
+      box.innerHTML = `아래 탭을 열어서 뜻/예문을 확인하세요.<br/><span class="mnOnly">(MN) ${escapeHtml(item.mn||"TO_BE_FILLED_MN")}</span>`;
+      $("activity").appendChild(box);
+      const note = document.createElement("div");
+      note.className = "fb";
+      note.innerHTML = `• 이 슬라이드는 “학습카드”입니다.<br/>• 다음으로 넘어가도 됩니다.`;
+      $("activity").appendChild(note);
+      return;
+    }
+
+    if(item.type === "mcq_blank"){
+      const p = document.createElement("div");
+      p.className = "prompt";
+      p.textContent = item.activity?.prompt || "선택하세요.";
+      $("activity").appendChild(p);
+
+      const choices = (item.activity?.choices || []).map((c, i)=>({text:c, i}));
+      const wrap = document.createElement("div");
+      wrap.className = "choices";
+
+      choices.forEach(ch=>{
+        const d = document.createElement("div");
+        d.className = "choice" + (st.selectedIndex===ch.i ? " sel" : "");
+        d.innerHTML = `<div>${escapeHtml(ch.text)}</div><small>탭</small>`;
+        d.onclick = ()=>{
+          st.selectedIndex = ch.i;
+          st.checked = false;
+          render();
+          logEvent("pick",{slide:item.id,type:item.type,val:ch.text});
+        };
+        wrap.appendChild(d);
+      });
+      $("activity").appendChild(wrap);
+      return;
+    }
+
+    if(item.type === "sentence_builder"){
+      const p = document.createElement("div");
+      p.className = "prompt";
+      p.textContent = item.activity?.prompt || "블록을 눌러 조립하세요.";
+      $("activity").appendChild(p);
+
+      const dz = document.createElement("div");
+      dz.className = "dropzone";
+      dz.innerHTML = st.built.length ? "" : `<div class="ph">여기에 순서대로 쌓입니다</div>`;
+      st.built.forEach(txt=>{
+        const b = document.createElement("div");
+        b.className = "block";
+        b.textContent = txt;
+        b.onclick = ()=>{
+          // remove this block (first match)
+          const k = st.built.indexOf(txt);
+          if(k>=0) st.built.splice(k,1);
+          st.checked = false;
+          render();
+          logEvent("remove",{slide:item.id,type:item.type,val:txt});
+        };
+        dz.appendChild(b);
+      });
+      $("activity").appendChild(dz);
+
+      const row = document.createElement("div");
+      row.className = "builderRow";
+      const blocks = shuffle(item.activity?.blocks || []);
+      blocks.forEach(txt=>{
+        const b = document.createElement("div");
+        b.className = "block";
+        b.textContent = txt;
+        b.onclick = ()=>{
+          // prevent duplicates beyond available count
+          const target = item.activity?.blocks || [];
+          const already = st.built.filter(x=>x===txt).length;
+          const max = target.filter(x=>x===txt).length;
+          if(already >= max) return;
+
+          st.built.push(txt);
+          st.checked = false;
+          render();
+          logEvent("add",{slide:item.id,type:item.type,val:txt});
+        };
+        row.appendChild(b);
+      });
+      $("activity").appendChild(row);
+
+      const pv = document.createElement("div");
+      pv.className = "preview";
+      pv.textContent = st.built.length ? st.built.join(" ") : "—";
+      $("activity").appendChild(pv);
+
+      const help = document.createElement("div");
+      help.className = "fb";
+      help.innerHTML = `• 조립된 블록을 탭하면 제거됩니다.<br/>• 목표 문장: ${escapeHtml((item.activity?.target||[]).join(" "))}`;
+      $("activity").appendChild(help);
+      return;
+    }
+
+    if(item.type === "order_sort"){
+      const p = document.createElement("div");
+      p.className = "prompt";
+      p.textContent = item.activity?.prompt || "순서를 맞추세요.";
+      $("activity").appendChild(p);
+
+      const cards = item.activity?.cards || [];
+      if(!st.order){
+        st.order = cards.map((_,i)=>i); // initial indices
+      }
+
+      const wrap = document.createElement("div");
+      wrap.className = "choices";
+      st.order.forEach((cardIdx, pos)=>{
+        const d = document.createElement("div");
+        d.className = "choice";
+        d.innerHTML = `<div>${pos+1}. ${escapeHtml(cards[cardIdx])}</div><small>탭=아래로</small>`;
+        d.onclick = ()=>{
+          // move down one step
+          if(pos < st.order.length-1){
+            const tmp = st.order[pos];
+            st.order[pos] = st.order[pos+1];
+            st.order[pos+1] = tmp;
+            st.checked = false;
+            render();
+            logEvent("swap",{slide:item.id,type:item.type,pos:pos});
+          }
+        };
+        wrap.appendChild(d);
+      });
+      $("activity").appendChild(wrap);
+
+      const help = document.createElement("div");
+      help.className = "fb";
+      help.innerHTML = `• 카드를 탭하면 <b>아래로 1칸</b> 이동합니다.<br/>• 원하는 순서가 되면 “정답 확인”을 누르세요.`;
+      $("activity").appendChild(help);
+      return;
+    }
+
+    if(item.type === "info_pick"){
+      const act = item.activity || {};
+      const p = document.createElement("div");
+      p.className = "prompt";
+      p.textContent = act.prompt || "선택하세요.";
+      $("activity").appendChild(p);
+
+      if(act.mode === "steps"){
+        // steps mode
+        (act.steps||[]).forEach(step=>{
+          const key = step.key;
+          const box = document.createElement("div");
+          box.className = "fb";
+          box.innerHTML = `<div style="font-weight:900;color:var(--txt);margin-bottom:8px;">${escapeHtml(key)}</div>`;
+          const grid = document.createElement("div");
+          grid.className = "choices";
+
+          (step.options||[]).forEach(opt=>{
+            const d = document.createElement("div");
+            const picked = (st.picks[key] === opt);
+            d.className = "choice" + (picked ? " sel" : "");
+            d.innerHTML = `<div>${escapeHtml(opt)}</div><small>선택</small>`;
+            d.onclick = ()=>{
+              st.picks[key] = opt;
+              st.checked = false;
+              render();
+              logEvent("pick",{slide:item.id,type:item.type,key:key,val:opt});
+            };
+            grid.appendChild(d);
+          });
+
+          box.appendChild(grid);
+          $("activity").appendChild(box);
+        });
+
+        // preview builder if template exists
+        if(item.build?.template){
+          const tpl = item.build.template;
+          const pv = document.createElement("div");
+          pv.className = "preview";
+          const built = tpl.replace("{date}", st.picks.date || "—").replace("{act}", st.picks.act || "—");
+          pv.textContent = built;
+          $("activity").appendChild(pv);
+        }
+        return;
+      }
+
+      // single/multi mode
+      const options = act.options || [];
+      const pickedArr = Array.isArray(st.picks._multi) ? st.picks._multi : [];
+      const wrap = document.createElement("div");
+      wrap.className = "choices";
+
+      options.forEach(opt=>{
+        const isSel = pickedArr.includes(opt);
+        const d = document.createElement("div");
+        d.className = "choice" + (isSel ? " sel" : "");
+        d.innerHTML = `<div>${escapeHtml(opt)}</div><small>선택</small>`;
+        d.onclick = ()=>{
+          let arr = Array.isArray(st.picks._multi) ? st.picks._multi : [];
+          if(act.mode === "single"){
+            arr = [opt];
+          }else{
+            if(arr.includes(opt)) arr = arr.filter(x=>x!==opt);
+            else arr = arr.concat([opt]);
+            if(act.limit && arr.length > act.limit){
+              arr = arr.slice(0, act.limit);
+            }
+          }
+          st.picks._multi = arr;
+          st.checked = false;
+          render();
+          logEvent("pick",{slide:item.id,type:item.type,val:opt});
+        };
+        wrap.appendChild(d);
+      });
+      $("activity").appendChild(wrap);
+
+      // preview for contact slide
+      if(item.id === 19){
+        const pv = document.createElement("div");
+        pv.className = "preview";
+        const pick = (st.picks._multi && st.picks._multi[0]) ? st.picks._multi[0] : "—";
+        pv.textContent = `${pick} 연락드립니다.`;
+        $("activity").appendChild(pv);
+      }
+
+      return;
+    }
+
+    if(item.type === "final_builder"){
+      const act = item.activity || {};
+      const p = document.createElement("div");
+      p.className = "prompt";
+      p.textContent = act.prompt || "선택해서 완성하세요.";
+      $("activity").appendChild(p);
+
+      (act.parts||[]).forEach(part=>{
+        const key = part.key;
+        const label = part.label || key;
+        const box = document.createElement("div");
+        box.className = "fb";
+        box.innerHTML = `<div style="font-weight:900;color:var(--txt);margin-bottom:8px;">${escapeHtml(label)}</div>`;
+        const grid = document.createElement("div");
+        grid.className = "choices";
+
+        (part.options||[]).forEach(opt=>{
+          const picked = (st.picks[key] === opt);
+          const d = document.createElement("div");
+          d.className = "choice" + (picked ? " sel" : "");
+          d.innerHTML = `<div>${escapeHtml(opt)}</div><small>선택</small>`;
+          d.onclick = ()=>{
+            st.picks[key] = opt;
+            st.checked = false;
+            render();
+            logEvent("pick",{slide:item.id,type:item.type,key:key,val:opt});
+          };
+          grid.appendChild(d);
+        });
+
+        box.appendChild(grid);
+        $("activity").appendChild(box);
+      });
+
+      // Preview (special for slide 25)
+      const pv = document.createElement("div");
+      pv.className = "preview";
+      if(item.id === 25){
+        const intro = st.picks.intro || "—";
+        const why = st.picks.why || "—";
+        const result = st.picks.result || "—";
+        const follow = st.picks.follow || "—";
+        const end = st.picks.end || "—";
+        pv.textContent =
+          `1) ${intro}\n` +
+          `2) ${why} ${result}\n` +
+          `3) ${follow}\n` +
+          `4) ${end}`;
+      }else{
+        const A = st.picks.A || "—";
+        const B = st.picks.B || "—";
+        const C = st.picks.C || "—";
+        pv.textContent = `${A} ${B} ${C}`.replace(/\s+/g," ").trim();
+      }
+      $("activity").appendChild(pv);
+
+      const help = document.createElement("div");
+      help.className = "fb";
+      help.innerHTML = `• 모든 칸을 선택하면 “완성”입니다.<br/>• 타이핑 없이 클릭만 하세요.`;
+      $("activity").appendChild(help);
+      return;
+    }
+  }
+
+  function resetCurrent(){
+    const item = deck.items[idx];
+    const st = ensureState(item.id);
+    st.picks = {};
+    st.selectedIndex = null;
+    st.built = [];
+    st.order = null;
+    st.checked = false;
+    st.correct = null;
+    setToast("", "");
+    render();
+    logEvent("reset",{slide:item.id,type:item.type});
+  }
+
+  function checkCurrent(){
+    const item = deck.items[idx];
+    const st = ensureState(item.id);
+
+    let ok = true;
+    let msgOk = "정답!";
+    let msgBad = "다시 해보세요.";
+
+    if(item.type === "vocab_card"){
+      ok = true;
+      msgOk = "학습 완료! 다음으로 넘어가세요.";
+    }
+
+    if(item.type === "mcq_blank"){
+      ok = (st.selectedIndex !== null && st.selectedIndex === item.answer?.correctIndex);
+      msgOk = item.answer?.ok || "정답!";
+      msgBad = item.answer?.bad || "다시 해보세요.";
+      if(st.selectedIndex === null){
+        ok = false;
+        msgBad = "먼저 1개를 선택하세요.";
+      }
+    }
+
+    if(item.type === "sentence_builder"){
+      const target = item.activity?.target || [];
+      ok = (st.built.length === target.length && st.built.every((v,i)=>v===target[i]));
+      msgOk = item.answer?.ok || "좋아요!";
+      msgBad = item.answer?.bad || "순서를 다시 맞춰보세요.";
+      if(st.built.length === 0){
+        ok = false;
+        msgBad = "블록을 눌러서 문장을 만들어 보세요.";
+      }
+    }
+
+    if(item.type === "order_sort"){
+      const target = item.activity?.targetOrder || [];
+      const cur = st.order || [];
+      ok = (cur.length === target.length && cur.every((v,i)=>v===target[i]));
+      msgOk = item.answer?.ok || "정답!";
+      msgBad = item.answer?.bad || "다시 해보세요.";
+    }
+
+    if(item.type === "info_pick"){
+      const ans = item.answer || {};
+      const act = item.activity || {};
+      if(act.mode === "steps"){
+        ok = true;
+        (act.steps||[]).forEach(step=>{
+          if(!st.picks[step.key]) ok = false;
+        });
+        msgOk = ans.ok || "좋아요!";
+        msgBad = ans.bad || "각 항목을 선택하세요.";
+      }else{
+        const arr = (st.picks._multi||[]);
+        if(ans.type === "count"){
+          ok = (arr.length === ans.mustCount);
+          msgOk = ans.ok || "좋아요!";
+          msgBad = ans.bad || "개수를 확인하세요.";
+        }else{
+          ok = arr.length > 0;
+          msgOk = ans.ok || "좋아요!";
+          msgBad = ans.bad || "선택하세요.";
+        }
+      }
+
+      // slide 7 rule check
+      if(item.id === 7){
+        ok = false;
+        const who = st.picks.who;
+        const ap = st.picks.apology;
+        if(who && ap){
+          const rule = (item.answer?.rules||[]).find(r=>r.if?.who===who);
+          if(rule && rule.ok.includes(ap)) ok = true;
+        }
+      }
+    }
+
+    if(item.type === "final_builder"){
+      ok = true;
+      const parts = item.activity?.parts || [];
+      parts.forEach(p=>{
+        if(!st.picks[p.key]) ok = false;
+      });
+      msgOk = item.answer?.ok || "완성!";
+      msgBad = item.answer?.bad || "모든 칸을 선택하세요.";
+    }
+
+    st.checked = true;
+    st.correct = ok;
+
+    if(ok) setToast("good", msgOk);
+    else setToast("bad", msgBad);
+
+    logEvent("check",{slide:item.id,type:item.type,ok:ok?1:0});
+  }
+
+  function next(){
+    idx = Math.min(deck.items.length-1, idx+1);
+    render();
+    logEvent("next",{idx:idx+1});
+  }
+  function prev(){
+    idx = Math.max(0, idx-1);
+    render();
+    logEvent("prev",{idx:idx+1});
+  }
+
+  // ===== Buttons
+  $("btnReset").onclick = resetCurrent;
+  $("btnCheck").onclick = checkCurrent;
+  $("btnNext").onclick = next;
+  $("navReset").onclick = resetCurrent;
+  $("navCheck").onclick = checkCurrent;
+  $("navNext").onclick = next;
+  $("navPrev").onclick = prev;
+
+  // ===== Start
+  render();
+  logEvent("start",{});
+})();
+</script>
+</body>
+</html>
