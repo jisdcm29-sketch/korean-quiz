@@ -168,7 +168,6 @@
       min-width:64px;
     }
 
-    /* Word line */
     .wordLine{
       display:flex;
       align-items:baseline;
@@ -191,7 +190,6 @@
       letter-spacing:-.2px;
     }
 
-    /* 기능칩(자동) */
     .funcChips{
       display:flex;
       justify-content:center;
@@ -229,39 +227,35 @@
       min-height:74px;
       display:flex;
       flex-direction:column;
-      gap:8px;
+      gap:10px;
     }
     .infoLabel{
       display:flex;
       align-items:center;
-      justify-content:space-between;
+      justify-content:flex-start;
       gap:10px;
     }
+    /* 라벨: 더 선명 + 크기 1.3x */
     .labelText{
-      font-size:13px;
+      font-size:16.9px;            /* 13px * 1.3 */
       font-weight:1000;
-      color:rgba(234,242,255,.96);
+      color:rgba(234,242,255,.98);
       letter-spacing:.2px;
-      padding:6px 10px;
+      padding:7px 12px;
       border-radius:999px;
-      border:1px solid rgba(255,255,255,.14);
-      background:rgba(255,255,255,.06);
-      box-shadow:0 10px 26px rgba(0,0,0,.18);
+      border:1px solid rgba(255,255,255,.18);
+      background:rgba(255,255,255,.08);
+      box-shadow:0 12px 30px rgba(0,0,0,.22);
     }
-    .labelHint{
-      font-size:11px;
-      font-weight:800;
-      color:var(--muted2);
-    }
+    /* 본문: 더 큼(1.3x) */
     .infoText{
-      font-size:15px;
+      font-size:19.5px;            /* 15px * 1.3 */
       line-height:1.35;
-      font-weight:850;
-      color:rgba(234,242,255,.92);
+      font-weight:900;
+      color:rgba(234,242,255,.95);
       word-break:keep-all;
     }
 
-    /* 예문 2칸 */
     .examplesGrid{
       display:grid;
       grid-template-columns: 1fr;
@@ -346,13 +340,14 @@
       font-size:13px;
     }
 
-    /* 모바일 폰트 최적 */
     @media (max-width: 420px){
       .wordKo{font-size:34px}
       .wordMn{font-size:19px}
       .exText{font-size:17px}
       .navBtn{font-size:19px}
-      .infoText{font-size:14.5px}
+      /* 모바일에서도 1.3x 유지(너무 커지면 여기만 살짝 줄이면 됨) */
+      .infoText{font-size:18.5px}
+      .labelText{font-size:16px}
     }
   </style>
 </head>
@@ -395,25 +390,22 @@
           <div class="wordMn" id="wordMn">…</div>
         </div>
 
-        <!-- 여기(두번째 캡처 영역) : 유의어/반의어 2칸 -->
+        <!-- 유의어/반의어 2칸 (선명하게 표시 문구 제거) -->
         <div class="synAntGrid">
           <div class="infoBox">
             <div class="infoLabel">
               <div class="labelText" id="synLabel">유의어</div>
-              <div class="labelHint" id="synHint">선명하게 표시</div>
             </div>
             <div class="infoText" id="synText">-</div>
           </div>
           <div class="infoBox">
             <div class="infoLabel">
               <div class="labelText" id="antLabel">반의어</div>
-              <div class="labelHint" id="antHint">선명하게 표시</div>
             </div>
             <div class="infoText" id="antText">-</div>
           </div>
         </div>
 
-        <!-- 예문(2칸) -->
         <div class="examplesGrid">
           <div class="exBox">
             <div class="exLabel">예문</div>
@@ -436,7 +428,6 @@
   </div>
 
   <script>
-    // ---- URL utils ----
     const qs = new URLSearchParams(location.search);
     const name = qs.get("name") || "";
     const klass = qs.get("klass") || "";
@@ -448,51 +439,33 @@
     $("whoName").textContent = name || "-";
     $("whoClass").textContent = klass || "-";
 
-    // lang toggle (default ko)
     let lang = (qs.get("lang") || "ko").toLowerCase() === "mn" ? "mn" : "ko";
     function setLang(next){
       lang = next;
       $("langHint").textContent = "lang=" + lang;
       $("chipKo").classList.toggle("active", lang === "ko");
       $("chipMn").classList.toggle("active", lang === "mn");
-      // lang은 표시용/학습 편의용으로만 사용 (데이터는 항상 ko/mn 둘 다 보여줌)
     }
     $("chipKo").addEventListener("click", () => setLang("ko"));
     $("chipMn").addEventListener("click", () => setLang("mn"));
     setLang(lang);
 
-    // back
     $("btnBack").addEventListener("click", () => {
-      // level.html로 돌아가되 현재 파라미터 유지
       const backUrl = new URL(location.origin + "/korean-quiz/topik2/level.html");
-      // cat/level은 file 기반으로 복원 불가하니 유지 가능한 파라미터만 전달
       if (name) backUrl.searchParams.set("name", name);
       if (klass) backUrl.searchParams.set("klass", klass);
       if (token) backUrl.searchParams.set("token", token);
       location.href = backUrl.toString();
     });
 
-    // Normalize file URL robustly (absolute / relative / // / repo-base)
     function normalizeFileUrl(input){
       if(!input) return "";
       let raw = input.trim();
-
       try { raw = decodeURIComponent(raw); } catch(e) {}
-
-      // already absolute
       if(/^https?:\/\//i.test(raw)) return raw;
-
-      // protocol-relative
       if(/^\/\//.test(raw)) return location.protocol + raw;
-
-      // absolute path
-      if(raw.startsWith("/")){
-        return location.origin + raw;
-      }
-
-      // relative path -> resolve from current page
+      if(raw.startsWith("/")) return location.origin + raw;
       const base = new URL(location.href);
-      // remove filename
       base.pathname = base.pathname.replace(/\/[^\/]*$/, "/");
       return new URL(raw, base.toString()).toString();
     }
@@ -503,13 +476,11 @@
       $("loadingMsg").textContent = "로드 실패";
     }
 
-    // ---- Data + render ----
     let deck = null;
     let items = [];
     let idx = 0;
 
     function parseFuncChip(text){
-      // "기능 · 단어" 형태면 기능칩 분리
       if(!text) return { func: "", head: text || "" };
       const parts = text.split("·").map(s => s.trim()).filter(Boolean);
       if(parts.length >= 2){
@@ -527,7 +498,6 @@
     }
 
     function fallbackSynAntFromEx(exKo){
-      // ex_ko 첫 줄에 "유의어: ... | 반의어: ..." 가 들어있는 경우를 지원
       if(!exKo) return {syn:"", ant:"", ex:""};
       const lines = String(exKo).split("\n");
       if(lines.length >= 2 && (lines[0].includes("유의어") || lines[0].includes("반의어"))){
@@ -575,17 +545,14 @@
       $("loadingMsg").textContent = "";
       $("countBadge").textContent = (idx + 1) + " / " + items.length;
 
-      // word line (ko big + mn inline)
       const koParsed = parseFuncChip(it.ko || "");
       const mnParsed = parseFuncChip(it.mn || "");
 
       $("wordKo").textContent = koParsed.head || "—";
       $("wordMn").textContent = mnParsed.head || "—";
 
-      // 기능칩: ko/mn 중 하나라도 기능이 있으면 우선 ko, 없으면 mn
       setFuncChips(koParsed.func || mnParsed.func || "");
 
-      // Syn/Ant: prefer syn_ko / ant_ko; fallback from ex_ko first line pattern
       const fb = fallbackSynAntFromEx(it.ex_ko || "");
       const synRaw = it.syn_ko ? cleanLabelPrefix(it.syn_ko) : (fb.syn || "");
       const antRaw = it.ant_ko ? cleanLabelPrefix(it.ant_ko) : (fb.ant || "");
@@ -593,7 +560,6 @@
       $("synText").textContent = synRaw ? synRaw : "—";
       $("antText").textContent = antRaw ? antRaw : "—";
 
-      // Examples: use fallback-stripped ex_ko
       const exKo = it.ex_ko ? fb.ex : "";
       $("exKo").textContent = (exKo && exKo.trim()) ? exKo.trim() : "—";
       $("exMn").textContent = (it.ex_mn && String(it.ex_mn).trim()) ? String(it.ex_mn).trim() : "—";
@@ -610,13 +576,11 @@
       render();
     });
 
-    // keyboard
     window.addEventListener("keydown", (e) => {
       if(e.key === "ArrowLeft") $("btnPrev").click();
       if(e.key === "ArrowRight") $("btnNext").click();
     });
 
-    // fetch JSON
     (async function init(){
       const url = normalizeFileUrl(fileParam);
       if(!url){
@@ -628,7 +592,6 @@
         if(!res.ok) throw new Error("HTTP " + res.status);
         const data = await res.json();
 
-        // expected: {title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn,...}]}
         if(!data || typeof data !== "object" || !Array.isArray(data.items)){
           throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
         }
