@@ -12,10 +12,8 @@
       --muted:#aab6e6;
       --line:rgba(255,255,255,.10);
       --shadow:0 10px 30px rgba(0,0,0,.35);
-      --radius:22px;
       --btnA: rgba(255,255,255,.06);
       --btnB: rgba(255,255,255,.14);
-      --blue: rgba(79,140,255,.95);
     }
     *{box-sizing:border-box}
     body{
@@ -115,8 +113,6 @@
     @media (min-width: 760px){
       .grid{grid-template-columns: 1fr 1fr 1fr 1fr;}
     }
-
-    /* ✅ 버튼을 "a 링크"로 바꿔도 기존 버튼처럼 보이게 */
     .btn{
       border:1px solid rgba(79,140,255,.20);
       background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.12));
@@ -135,7 +131,6 @@
       text-align:center;
       line-height:1.15;
       box-shadow: 0 10px 22px rgba(0,0,0,.18);
-      text-decoration:none;
     }
     .btn:active{transform: translateY(1px)}
     .btn.secondary{
@@ -143,7 +138,6 @@
       background: rgba(255,255,255,.06);
       box-shadow:none;
       opacity:.65;
-      pointer-events:none;
     }
     .hint{
       margin-top:14px;
@@ -178,7 +172,7 @@
         </div>
         <div class="hRight">
           <div class="status" id="statusText">로드 중…</div>
-          <button class="btnSmall" id="btnReset">영역 다시 선택</button>
+          <button class="btnSmall" id="btnReset" type="button">영역 다시 선택</button>
         </div>
       </div>
 
@@ -203,13 +197,13 @@
 (() => {
   const qs = new URLSearchParams(location.search);
   const cat = (qs.get("cat") || "vocab").toLowerCase(); // vocab | grammar | writing
+  const levelParam = qs.get("level"); // 있을 수도 있고 없을 수도 있음(기존 정상 흐름: 있으면 redirect)
   const name = qs.get("name") || "";
   const klass = qs.get("klass") || "";
   const token = qs.get("token") || "";
   const lang = qs.get("lang") || "ko";
 
   function getRepoBase(){
-    // /korean-quiz 베이스 자동 인식
     const p = location.pathname || "/";
     const m = p.match(/^(.*?\/korean-quiz)(\/|$)/);
     return m ? m[1] : "";
@@ -224,6 +218,11 @@
     $("statusText").textContent = "오류";
   }
 
+  // /data/... → https://.../korean-quiz/data/...
+  function abs(path){
+    return location.origin + (REPO_BASE || "") + path;
+  }
+
   function goIndex(){
     const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/index.html");
     if (name) u.searchParams.set("name", name);
@@ -233,53 +232,65 @@
     location.href = u.toString();
   }
 
-  $("btnReset").addEventListener("click", goIndex);
-
-  // ✅ file은 "절대URL"로 만들지 않고, /data/... 경로 그대로 전달
-  // flashcards가 내부에서 REPO_BASE를 적용하는 경우에도 안전함(중복 /korean-quiz 방지)
-  function buildFlashcardsHref(filePath){
+  function goFlashcardsWithFilePath(filePath){
     const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/flashcards.html");
-    u.searchParams.set("file", filePath); // 예: /data/topik2/vocab/level01_attitude.json
+    // flashcards 기존 정책(이미 운영 중): file은 "절대URL"로 전달
+    u.searchParams.set("file", abs(filePath));
     if (name) u.searchParams.set("name", name);
     if (klass) u.searchParams.set("klass", klass);
     if (token) u.searchParams.set("token", token);
     if (lang) u.searchParams.set("lang", lang);
-    return u.toString();
+    location.replace(u.toString()); // 뒤로 눌렀을 때 레벨화면으로 자연스럽게
   }
 
-  // ---- 매핑 테이블 (기존 기능 유지 + 중요어휘2 + 쓰기53 레벨1 추가) ----
-  const vocabButtons = [
-    { label:"인물 태도 어휘",   file:"/data/topik2/vocab/level01_attitude.json" },
-    { label:"접속사(기능별)",   file:"/data/topik2/vocab/level02_connectors.json" },
-    { label:"사동-피동 어휘",   file:"/data/topik2/vocab/level03_causative_passive.json" },
-    { label:"감정 어휘",       file:"/data/topik2/vocab/level04_emotions.json" },
-    { label:"관용표현1",       file:"/data/topik2/vocab/level05_idioms1.json" },
-    { label:"관용표현2",       file:"/data/topik2/vocab/level06_idioms2.json" },
-    { label:"신문기사 어휘1",   file:"/data/topik2/vocab/level07_news_vocab1.json" },
-    { label:"중요어휘1",       file:"/data/topik2/vocab/level08_key_vocab1.json" },
-    { label:"중요어휘2",       file:"/data/topik2/vocab/level09_key_vocab2.json" },
-    { label:"Level 9",         file:"", disabled:true },
-    { label:"Level 10",        file:"", disabled:true }
+  $("btnReset").addEventListener("click", goIndex);
+
+  // ---- 레벨 매핑(1~10) ----
+  // vocab: 1~9까지 운영/추가, 10은 placeholder
+  const vocabLevels = [
+    "/data/topik2/vocab/level01_attitude.json",
+    "/data/topik2/vocab/level02_connectors.json",
+    "/data/topik2/vocab/level03_causative_passive.json",
+    "/data/topik2/vocab/level04_emotions.json",
+    "/data/topik2/vocab/level05_idioms1.json",
+    "/data/topik2/vocab/level06_idioms2.json",
+    "/data/topik2/vocab/level07_news_vocab1.json",
+    "/data/topik2/vocab/level08_key_vocab1.json",
+    "/data/topik2/vocab/level09_key_vocab2.json",
+    "" // level10 placeholder
   ];
 
-  const grammarButtons = [
-    { label:"연결어미1", file:"/data/topik2/grammar/level01_connective_endings1.json" },
-    { label:"종결어미1", file:"/data/topik2/grammar/level02_final_endings1.json" }
+  // grammar: 현재 1~2만 운영(나머지 placeholder)
+  const grammarLevels = [
+    "/data/topik2/grammar/level01_connective_endings1.json",
+    "/data/topik2/grammar/level02_final_endings1.json",
+    "", "", "", "", "", "", "", ""
   ];
 
-  const writingButtons = [
-    { label:"조사 결과 도입 및 나열 표현", file:"/data/topik2/writing53/level01_intro_list.json" },
-    { label:"Level 2", file:"", disabled:true },
-    { label:"Level 3", file:"", disabled:true },
-    { label:"Level 4", file:"", disabled:true },
-    { label:"Level 5", file:"", disabled:true },
-    { label:"Level 6", file:"", disabled:true },
-    { label:"Level 7", file:"", disabled:true },
-    { label:"Level 8", file:"", disabled:true },
-    { label:"Level 9", file:"", disabled:true },
-    { label:"Level 10", file:"", disabled:true }
+  // writing(53): 현재 레벨1만 운영
+  const writingLevels = [
+    "/data/topik2/writing53/level01_intro_list.json",
+    "", "", "", "", "", "", "", "", ""
   ];
 
+  // ✅ 핵심: level 파라미터가 있으면 “자동 redirect” (기존 정상 흐름 복구)
+  const levelNum = levelParam ? parseInt(levelParam, 10) : NaN;
+  if (!Number.isNaN(levelNum) && levelNum >= 1 && levelNum <= 10) {
+    const table = (cat === "vocab") ? vocabLevels : (cat === "grammar") ? grammarLevels : (cat === "writing") ? writingLevels : null;
+    if (!table) {
+      showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
+      return;
+    }
+    const filePath = table[levelNum - 1];
+    if (!filePath) {
+      showError("아직 준비되지 않은 레벨입니다.\ncat=" + cat + " level=" + levelNum);
+      return;
+    }
+    goFlashcardsWithFilePath(filePath);
+    return;
+  }
+
+  // ---- level 파라미터가 없으면: 버튼 화면 보여주기 ----
   function setHeader(){
     const isV = cat === "vocab";
     const isG = cat === "grammar";
@@ -289,36 +300,56 @@
     $("statusText").textContent = "로드 완료";
   }
 
-  function renderButtons(list){
+  function renderButtons(levels, firstLabelOverride){
     const grid = $("grid");
     grid.innerHTML = "";
+    for (let i = 0; i < 10; i++){
+      const filePath = levels[i];
+      const btn = document.createElement("button");
+      btn.type = "button";
+      btn.className = "btn";
 
-    for (const b of list){
-      const a = document.createElement("a");
-      a.className = "btn";
-      a.textContent = b.label;
+      // 표시 텍스트
+      if (i === 0 && firstLabelOverride) btn.textContent = firstLabelOverride;
+      else btn.textContent = "Level " + (i + 1);
 
-      if (b.disabled || !b.file){
-        a.classList.add("secondary");
-        a.href = "javascript:void(0)";
-        a.setAttribute("aria-disabled", "true");
+      if (!filePath){
+        btn.classList.add("secondary");
+        btn.disabled = true;
       } else {
-        a.href = buildFlashcardsHref(b.file);
+        btn.addEventListener("click", () => {
+          // 버튼 클릭 시에도 “자동 흐름과 동일하게” level 파라미터를 붙여 이동 (일관성)
+          const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/level.html");
+          u.searchParams.set("cat", cat);
+          u.searchParams.set("level", String(i + 1));
+          if (name) u.searchParams.set("name", name);
+          if (klass) u.searchParams.set("klass", klass);
+          if (token) u.searchParams.set("token", token);
+          if (lang) u.searchParams.set("lang", lang);
+          location.href = u.toString();
+        });
       }
 
-      grid.appendChild(a);
+      grid.appendChild(btn);
     }
   }
 
-  function init(){
-    setHeader();
-    if (cat === "vocab"){ renderButtons(vocabButtons); return; }
-    if (cat === "grammar"){ renderButtons(grammarButtons); return; }
-    if (cat === "writing"){ renderButtons(writingButtons); return; }
-    showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
+  setHeader();
+
+  if (cat === "vocab"){
+    renderButtons(vocabLevels);
+    return;
+  }
+  if (cat === "grammar"){
+    renderButtons(grammarLevels);
+    return;
+  }
+  if (cat === "writing"){
+    renderButtons(writingLevels, "조사 결과 도입 및 나열 표현");
+    return;
   }
 
-  init();
+  showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
 })();
 </script>
 </body>
