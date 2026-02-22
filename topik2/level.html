@@ -197,7 +197,7 @@
 <script>
 (() => {
   const qs = new URLSearchParams(location.search);
-  const cat = (qs.get("cat") || "vocab").toLowerCase(); // vocab | grammar
+  const cat = (qs.get("cat") || "vocab").toLowerCase(); // vocab | grammar | writing
   const name = qs.get("name") || "";
   const klass = qs.get("klass") || "";
   const token = qs.get("token") || "";
@@ -249,7 +249,7 @@
 
   $("btnReset").addEventListener("click", goIndex);
 
-  // ---- 매핑 테이블 (기존 기능 유지 + 중요어휘2만 추가) ----
+  // ---- 매핑 테이블 (기존 기능 유지 + 중요어휘2 + 쓰기53 레벨1 추가) ----
   const vocabButtons = [
     { key:"level01_attitude",      label:"인물 태도 어휘",   file:"/data/topik2/vocab/level01_attitude.json" },
     { key:"level02_connectors",    label:"접속사(기능별)",   file:"/data/topik2/vocab/level02_connectors.json" },
@@ -259,10 +259,8 @@
     { key:"level06_idioms2",       label:"관용표현2",       file:"/data/topik2/vocab/level06_idioms2.json" },
     { key:"level07_news_vocab1",   label:"신문기사 어휘1",   file:"/data/topik2/vocab/level07_news_vocab1.json" },
     { key:"level08_key_vocab1",    label:"중요어휘1",       file:"/data/topik2/vocab/level08_key_vocab1.json" },
-
     // ✅ 추가: 중요어휘2 (기존 버튼/동작에 영향 없음)
     { key:"level09_key_vocab2",    label:"중요어휘2",       file:"/data/topik2/vocab/level09_key_vocab2.json" },
-
     // placeholder
     { key:"level09", label:"Level 9", file:"" , disabled:true },
     { key:"level10", label:"Level 10", file:"", disabled:true }
@@ -273,10 +271,28 @@
     { key:"g02", label:"종결어미1", file:"/data/topik2/grammar/level02_final_endings1.json" }
   ];
 
+  // ✅ 추가: 쓰기(53) 레벨 버튼들
+  // (현재는 레벨1만 활성화, 나머지는 placeholder로 비활성)
+  const writingButtons = [
+    { key:"w53_level01", label:"조사 결과 도입 및 나열 표현", file:"/data/topik2/writing53/level01_intro_list.json" },
+    { key:"w53_level02", label:"Level 2", file:"", disabled:true },
+    { key:"w53_level03", label:"Level 3", file:"", disabled:true },
+    { key:"w53_level04", label:"Level 4", file:"", disabled:true },
+    { key:"w53_level05", label:"Level 5", file:"", disabled:true },
+    { key:"w53_level06", label:"Level 6", file:"", disabled:true },
+    { key:"w53_level07", label:"Level 7", file:"", disabled:true },
+    { key:"w53_level08", label:"Level 8", file:"", disabled:true },
+    { key:"w53_level09", label:"Level 9", file:"", disabled:true },
+    { key:"w53_level10", label:"Level 10", file:"", disabled:true }
+  ];
+
   function setHeader(){
     const isV = cat === "vocab";
-    $("selectedText").textContent = isV ? "어휘" : "문법";
-    $("rangeText").textContent = isV ? "레벨 1~10" : "레벨 1~10";
+    const isG = cat === "grammar";
+    const isW = cat === "writing";
+
+    $("selectedText").textContent = isV ? "어휘" : (isG ? "문법" : (isW ? "쓰기" : "-"));
+    $("rangeText").textContent = "레벨 1~10";
     $("statusText").textContent = "로드 완료";
   }
 
@@ -308,7 +324,11 @@
       renderButtons(grammarButtons);
       return;
     }
-    showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar)\n현재: " + cat);
+    if (cat === "writing"){
+      renderButtons(writingButtons);
+      return;
+    }
+    showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
   }
 
   init();
