@@ -20,9 +20,6 @@
       --greenA: rgba(34,197,94,.14);
       --greenB: rgba(34,197,94,.32);
 
-      --amberA: rgba(245,158,11,.14);
-      --amberB: rgba(245,158,11,.34);
-
       --koA: rgba(59,130,246,.14);
       --koB: rgba(59,130,246,.34);
 
@@ -259,7 +256,6 @@
       opacity:.95;
     }
 
-    /* 중요어휘1 전용: 유의어/반의어 */
     .synAntBox{
       margin-top: 4px;
       border-radius: 16px;
@@ -413,7 +409,7 @@
   }
   const REPO_BASE = getRepoBase();
   const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";
-  const APP_HOME = REPO_BASE + "/index.html";   // ✅ 전체 홈(서울대/토픽1/토픽2 선택)
+  const APP_HOME = REPO_BASE + "/index.html";
 
   const $app = document.getElementById("app");
   const DEV_KEY = "kq_deviceId_v1";
@@ -620,7 +616,7 @@
 
       <div class="hdr">
         <h1 class="title">${esc(title || "Flashcards")}</h1>
-        <p class="subtitle">${esc(sub || "다음 버튼을 눌러 단어를 넘기세요")}</p>
+        <p class="subtitle">${esc(sub || "단어 카드 · 다음 버튼으로 넘기기")}</p>
       </div>
 
       <div class="content">
@@ -686,14 +682,11 @@
       </div>
     `;
 
-    // ✅ 상단 화살표: 첫번째 캡처 화면(= TOPIK2 level)로 이동
+    // ✅ 요구사항: 상단 화살표는 "반드시" TOPIK2 어휘 선택(level) 화면으로
+    // (cat/level 전달이 꼬여 인물태도로 가는 문제를 차단하기 위해, cat/level은 전달하지 않음)
     document.getElementById("btnBack").addEventListener("click", async () => {
       await logEvent("back_to_level", { idx: state.idx, file: state.file });
-      const cat = qs("cat") || "";
-      const level = qs("level") || "";
       location.href = buildUrl(TOPIK2_LEVEL, {
-        ...(cat ? { cat } : {}),
-        ...(level ? { level } : {}),
         name: qs("name") || "",
         klass: qs("klass") || "",
         token: qs("token") || "",
@@ -701,7 +694,7 @@
       });
     });
 
-    // ✅ 홈: 완전히 빠져나가서(서울대/토픽1/토픽2 선택) 메인 홈으로
+    // ✅ 홈: 완전히 빠져나가서 메인 홈으로
     document.getElementById("btnHome").addEventListener("click", async () => {
       await logEvent("go_home", { idx: state.idx, file: state.file });
       location.href = buildUrl(APP_HOME, {
@@ -897,6 +890,19 @@
       }, 1500);
     }catch(e){}
   });
+
+  // ✅ 브라우저 물리 back(스와이프/뒤로가기)도 level로 통일
+  try{
+    history.replaceState({kq:"flashcards"}, document.title, location.href);
+    window.addEventListener("popstate", () => {
+      location.href = buildUrl(TOPIK2_LEVEL, {
+        name: qs("name") || "",
+        klass: qs("klass") || "",
+        token: qs("token") || "",
+        lang: getLang()
+      });
+    });
+  }catch(e){}
 
   render(false);
 })();
