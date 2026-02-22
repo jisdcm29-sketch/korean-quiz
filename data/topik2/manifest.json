@@ -6,43 +6,129 @@
       "id": "vocab",
       "title": "어휘",
       "subtitle": "레벨 1~10",
-      "levels": ["인물 태도 어휘", "접속사(기능별)", "사동-피동 어휘", "감정 어휘", "관용표현1", "관용표현2", "신문기사 어휘1", "중요어휘1", "중요어휘2", "Level 10"]
+      "levels": [
+        "인물 태도 어휘",
+        "접속사(기능별)",
+        "사동-피동 어휘",
+        "감정 어휘",
+        "관용표현1",
+        "관용표현2",
+        "신문기사 어휘1",
+        "중요어휘1",
+        "중요어휘2",
+        "Level 10"
+      ]
     },
     {
       "id": "grammar",
       "title": "문법",
       "subtitle": "레벨 1~10",
-      "levels": ["연결어미1", "종결어미1", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+      "levels": [
+        "연결어미1",
+        "종결어미1",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ]
     },
     {
       "id": "reading_type",
       "title": "읽기 유형",
       "subtitle": "레벨 1~10",
-      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+      "levels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ]
     },
     {
       "id": "listening_type",
       "title": "듣기 유형",
       "subtitle": "레벨 1~10",
-      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+      "levels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ]
     },
     {
       "id": "reading_mock",
       "title": "읽기 모의평가",
       "subtitle": "레벨 1~10",
-      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+      "levels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ]
     },
     {
       "id": "listening_mock",
       "title": "듣기 모의평가",
       "subtitle": "레벨 1~10",
-      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+      "levels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ]
     },
     {
       "id": "writing",
       "title": "쓰기",
       "subtitle": "레벨 1~10",
-      "levels": ["Level 1", "Level 2", "Level 3", "Level 4", "Level 5", "Level 6", "Level 7", "Level 8", "Level 9", "Level 10"]
+      "levels": [
+        "조사 결과 도입 및 나열 표현",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ],
+      "writing53": [
+        {
+          "id": "w53_level01",
+          "title_ko": "조사 결과 도입 및 나열 표현",
+          "title_mn": "（placeholder）",
+          "file": "/data/topik2/writing53/level01_intro_list.json",
+          "slides": 25
+        }
+      ]
     }
   ]
 }
