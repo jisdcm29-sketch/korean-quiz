@@ -129,8 +129,8 @@
       listening_mock:"듣기 모의평가"
     }[cat] || cat);
 
-    // ===== vocab 레벨별 커스텀 리다이렉트 (01~05) =====
-    if (cat === "vocab" && (level === "01" || level === "02" || level === "03" || level === "04" || level === "05")) {
+    // ===== vocab 레벨별 커스텀 리다이렉트 (01~06) =====
+    if (cat === "vocab" && (level === "01" || level === "02" || level === "03" || level === "04" || level === "05" || level === "06")) {
       const filePath =
         level === "01"
           ? `${REPO_BASE}/data/topik2/vocab/level01_attitude.json`
@@ -140,7 +140,9 @@
               ? `${REPO_BASE}/data/topik2/vocab/level03_causative_passive.json`
               : level === "04"
                 ? `${REPO_BASE}/data/topik2/vocab/level04_emotions.json`
-                : `${REPO_BASE}/data/topik2/vocab/level05_idioms1.json`;
+                : level === "05"
+                  ? `${REPO_BASE}/data/topik2/vocab/level05_idioms1.json`
+                  : `${REPO_BASE}/data/topik2/vocab/level06_idioms2.json`;
 
       const fileAbs = new URL(filePath, location.origin).toString();
       const url = new URL(REPO_BASE + "/topik2/flashcards.html", location.origin);
