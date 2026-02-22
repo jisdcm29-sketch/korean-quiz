@@ -183,14 +183,8 @@
       white-space:nowrap;
       flex: 0 0 auto;
     }
-    .pillFuncKo{
-      background: var(--koA);
-      border: 1px solid var(--koB);
-    }
-    .pillFuncMn{
-      background: var(--mnA);
-      border: 1px solid var(--mnB);
-    }
+    .pillFuncKo{ background: var(--koA); border: 1px solid var(--koB); }
+    .pillFuncMn{ background: var(--mnA); border: 1px solid var(--mnB); }
 
     .cardBox{
       margin-top: 12px;
@@ -256,6 +250,7 @@
       opacity:.95;
     }
 
+    /* 중요어휘1 전용: 유의어/반의어 */
     .synAntBox{
       margin-top: 4px;
       border-radius: 16px;
@@ -408,13 +403,12 @@
     return p.length ? ("/" + p[0]) : "";
   }
   const REPO_BASE = getRepoBase();
-  const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";
+  const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";   // ✅ "단원 선택 화면"
   const APP_HOME = REPO_BASE + "/index.html";
 
   const $app = document.getElementById("app");
   const DEV_KEY = "kq_deviceId_v1";
   const LANG_KEY = "kq_lang_v1";
-  const LAST_LEVEL_KEY = "topik2_lastLevelUrl_v2";
 
   const qs = (k) => new URLSearchParams(location.search).get(k);
   const safe = (s) => (s || "").toString();
@@ -503,48 +497,30 @@
     }catch(e){}
   }
 
-  // ✅ level.html에서 넘어온 실제 URL(선택 상태 포함)을 저장 (인물태도 고정 이동 버그 방지)
-  (function rememberLevelUrl(){
+  // ✅ 뒤로가기: "단원 선택 화면(level.html)"로 확실히 이동
+  // (인물태도 어휘로 고정 이동되는 원인: level.html의 이전 선택 상태가 남아 자동 리다이렉트되는 경우)
+  function clearTopik2SelectionCache(){
     try{
-      const ref = document.referrer || "";
-      if (ref.includes("/topik2/level.html")) {
-        sessionStorage.setItem(LAST_LEVEL_KEY, ref);
+      const keys = [];
+      for (let i=0;i<localStorage.length;i++){
+        const k = localStorage.key(i);
+        if (k && (k.startsWith("topik2_") || k.startsWith("kq_topik2_"))) keys.push(k);
       }
+      keys.forEach(k => localStorage.removeItem(k));
     }catch(e){}
-  })();
-
-  function getLevelReturnUrl(){
-    // 1) referrer가 level이면 그대로 사용 (가장 정확)
     try{
-      const ref = document.referrer || "";
-      if (ref && ref.includes("/topik2/level.html")) {
-        const u = new URL(ref);
-        // 필수 파라미터 보강
-        if (qs("name")) u.searchParams.set("name", qs("name"));
-        if (qs("klass")) u.searchParams.set("klass", qs("klass"));
-        if (qs("token")) u.searchParams.set("token", qs("token"));
-        u.searchParams.set("lang", getLang());
-        u.searchParams.set("back", "1");
-        return u.toString();
+      const keys = [];
+      for (let i=0;i<sessionStorage.length;i++){
+        const k = sessionStorage.key(i);
+        if (k && (k.startsWith("topik2_") || k.startsWith("kq_topik2_"))) keys.push(k);
       }
+      keys.forEach(k => sessionStorage.removeItem(k));
     }catch(e){}
+  }
 
-    // 2) sessionStorage에 저장된 level URL
-    try{
-      const saved = sessionStorage.getItem(LAST_LEVEL_KEY) || "";
-      if (saved && saved.includes("/topik2/level.html")) {
-        const u = new URL(saved);
-        if (qs("name")) u.searchParams.set("name", qs("name"));
-        if (qs("klass")) u.searchParams.set("klass", qs("klass"));
-        if (qs("token")) u.searchParams.set("token", qs("token"));
-        u.searchParams.set("lang", getLang());
-        u.searchParams.set("back", "1");
-        return u.toString();
-      }
-    }catch(e){}
-
-    // 3) 최후: level.html 기본(선택 상태는 모르지만 최소 오류 없이)
-    return buildUrl(TOPIK2_LEVEL, {
+  function goToTopik2Level(){
+    clearTopik2SelectionCache();
+    location.href = buildUrl(TOPIK2_LEVEL, {
       name: qs("name") || "",
       klass: qs("klass") || "",
       token: qs("token") || "",
@@ -733,13 +709,12 @@
       </div>
     `;
 
-    // ✅ 요구사항: 상단 ← 뒤로는 "반드시" level(두번째 캡처)로, 그리고 인물태도 고정 이동 버그 방지
+    // ✅ 이 버튼(← 뒤로): 이전 어휘 단원 선택 화면(level.html)로
     document.getElementById("btnBack").addEventListener("click", async () => {
       await logEvent("back_to_level", { idx: state.idx, file: state.file });
-      location.href = getLevelReturnUrl();
+      goToTopik2Level();
     });
 
-    // ✅ 홈: 완전히 빠져나가서 메인 홈으로
     document.getElementById("btnHome").addEventListener("click", async () => {
       await logEvent("go_home", { idx: state.idx, file: state.file });
       location.href = buildUrl(APP_HOME, {
@@ -885,11 +860,12 @@
   }
 
   async function loadData(){
-    if (!state.file){
+    const file = state.file;
+    if (!file){
       throw new Error("URL에 file 파라미터가 없습니다.\n예: ?file=/data/topik2/vocab/level01_attitude.json");
     }
-    const res = await fetch(state.file, { cache: "no-store" });
-    if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText + "\n" + state.file);
+    const res = await fetch(file, { cache: "no-store" });
+    if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText + "\n" + file);
     const json = await res.json();
     if (!json || !Array.isArray(json.items)) {
       throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
@@ -936,12 +912,10 @@
     }catch(e){}
   });
 
-  // ✅ 브라우저 물리 back(스와이프/뒤로가기)도 "저장된 level URL"로 통일
+  // ✅ 모바일 스와이프/브라우저 뒤로가기(popstate)도 동일하게 level로
   try{
     history.replaceState({kq:"flashcards"}, document.title, location.href);
-    window.addEventListener("popstate", () => {
-      location.href = getLevelReturnUrl();
-    });
+    window.addEventListener("popstate", () => goToTopik2Level());
   }catch(e){}
 
   render(false);
