@@ -1,0 +1,40 @@
+{
+  "title": "TOPIK II 쓰기(51) Level 1: 상황·기본",
+  "title_kr": "TOPIK II 쓰기(51) Level 1: 상황·기본",
+  "title_mn": "TO_BE_FILLED_MN",
+  "items": [
+    { "ko": "상황 이해 · 기본", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 목표\n클릭/선택만으로 51번 상황문을 연습합니다.\n예: 감기에 걸려서 오늘 수업에 못 갑니다.", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "~해서 / ~ 때문에", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 이유 말하기\n감기에 걸려서 오늘 수업에 못 갑니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "연락드립니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 공손한 연락\n늦을 것 같아서 미리 연락드립니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "죄송합니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 사과\n늦어서 죄송합니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "못 갑니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 불가 표현\n몸이 안 좋아서 오늘 수업에 못 갑니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "늦겠습니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 예정/미래\n10분 정도 늦겠습니다.", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "오늘/내일/모레", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 날짜 선택\n내일 3시에 학교에서 …", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "오전/오후/3시/6시", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 시간 선택\n오후 3시에 …", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "학교/병원/회사/집", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 장소 선택\n병원에 가야 해서 …", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "참석하지 못합니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 참석 불가\n오늘 모임에 참석하지 못합니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "바꾸다 / 변경하다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 변경\n시간을 내일로 바꿀 수 있을까요?", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "알려 드립니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 공손 전달\n변경된 시간을 알려 드립니다.", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "다음에 / 나중에", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 미룸\n이번 주는 어려워서 다음 주에 하겠습니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "부탁드립니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 요청(기본)\n확인 부탁드립니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "감사합니다", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 마무리\n읽어 주셔서 감사합니다.", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "조립 ① 도입", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 선택\n안녕하세요. (이름)입니다.", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "조립 ② 이유", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 선택\n몸이 안 좋아서 / 일이 있어서 / 병원에 가야 해서", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "조립 ③ 결과", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 선택\n오늘 못 갑니다 / 10분 늦겠습니다 / 참석하지 못합니다", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "조립 ④ 추가", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 선택\n문자로 연락드리겠습니다 / 다음 주에 연락드리겠습니다", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "조립 ⑤ 마무리", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 선택\n감사합니다.", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "실전 예시(짧게)", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 4문장\n안녕하세요. 민수입니다.\n몸이 안 좋아서 오늘 수업에 못 갑니다.\n다음 주에 다시 연락드리겠습니다.\n감사합니다.", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "체크: 사과", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 가능하면 넣기\n죄송합니다 / 죄송하지만", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "체크: 정보 3개", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 최소 3요소\n언제 + 왜 + (무엇/어디)", "ex_mn": "TO_BE_FILLED_MN" },
+    { "ko": "체크: 너무 길게 X", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 51번은 짧고 핵심\n도입→상황→요청/추가→마무리", "ex_mn": "TO_BE_FILLED_MN" },
+
+    { "ko": "완료", "mn": "TO_BE_FILLED_MN", "ex_ko": "• 다음 레벨로\nLevel 7(정보·구성)에서 더 강화합니다.", "ex_mn": "TO_BE_FILLED_MN" }
+  ]
+}
