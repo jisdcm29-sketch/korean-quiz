@@ -229,7 +229,7 @@
       opacity:.95;
     }
 
-    /* 중요어휘1 전용: 유의어/반의어 */
+    /* 중요어휘(1/2) 전용: 유의어/반의어 */
     .synAntBox{
       margin-top: 4px;
       border-radius: 16px;
@@ -472,7 +472,6 @@
     }catch(e){}
   }
 
-  // ✅ 전단계 이동: history.back() 우선, 실패 시 level.html
   function goPreviousStep(){
     const cur = location.href;
     try{
@@ -571,9 +570,12 @@
     return { desc: "", ex: t };
   }
 
+  // ✅ FIX: 중요어휘2도 중요어휘1과 동일하게 syn/ant UI를 켠다 (기존 다른 어휘엔 영향 없음)
   function isKeyVocabDeck(fileUrl){
-    return /level08_key_vocab1\.json(\?|$)/i.test(fileUrl || "");
+    return /level08_key_vocab1\.json(\?|$)/i.test(fileUrl || "") ||
+           /level09_key_vocab2\.json(\?|$)/i.test(fileUrl || "");
   }
+
   function stripLabelPrefix(s){
     return safe(s).replace(/^유의어\s*:\s*/,"").replace(/^반의어\s*:\s*/,"").trim();
   }
