@@ -403,7 +403,7 @@
     return p.length ? ("/" + p[0]) : "";
   }
   const REPO_BASE = getRepoBase();
-  const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";   // ✅ "단원 선택 화면"
+  const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";   // (이전 단계 fallback)
   const APP_HOME = REPO_BASE + "/index.html";
 
   const $app = document.getElementById("app");
@@ -497,29 +497,27 @@
     }catch(e){}
   }
 
-  // ✅ 뒤로가기: "단원 선택 화면(level.html)"로 확실히 이동
-  // (인물태도 어휘로 고정 이동되는 원인: level.html의 이전 선택 상태가 남아 자동 리다이렉트되는 경우)
-  function clearTopik2SelectionCache(){
+  // ✅ 전단계 이동(Back): history.back() 우선, 실패 시 level.html로 fallback
+  function goPreviousStep(){
+    const cur = location.href;
     try{
-      const keys = [];
-      for (let i=0;i<localStorage.length;i++){
-        const k = localStorage.key(i);
-        if (k && (k.startsWith("topik2_") || k.startsWith("kq_topik2_"))) keys.push(k);
+      if (history.length > 1){
+        history.back();
+        // iOS/Safari 등에서 back이 무시되는 경우 대비
+        setTimeout(() => {
+          if (location.href === cur){
+            location.href = buildUrl(TOPIK2_LEVEL, {
+              name: qs("name") || "",
+              klass: qs("klass") || "",
+              token: qs("token") || "",
+              lang: getLang(),
+              back: 1
+            });
+          }
+        }, 350);
+        return;
       }
-      keys.forEach(k => localStorage.removeItem(k));
     }catch(e){}
-    try{
-      const keys = [];
-      for (let i=0;i<sessionStorage.length;i++){
-        const k = sessionStorage.key(i);
-        if (k && (k.startsWith("topik2_") || k.startsWith("kq_topik2_"))) keys.push(k);
-      }
-      keys.forEach(k => sessionStorage.removeItem(k));
-    }catch(e){}
-  }
-
-  function goToTopik2Level(){
-    clearTopik2SelectionCache();
     location.href = buildUrl(TOPIK2_LEVEL, {
       name: qs("name") || "",
       klass: qs("klass") || "",
@@ -709,10 +707,10 @@
       </div>
     `;
 
-    // ✅ 이 버튼(← 뒤로): 이전 어휘 단원 선택 화면(level.html)로
+    // ✅ 요청: 이 버튼은 "전단계"로 (history.back 우선)
     document.getElementById("btnBack").addEventListener("click", async () => {
-      await logEvent("back_to_level", { idx: state.idx, file: state.file });
-      goToTopik2Level();
+      await logEvent("back_prev_step", { idx: state.idx, file: state.file });
+      goPreviousStep();
     });
 
     document.getElementById("btnHome").addEventListener("click", async () => {
@@ -911,12 +909,6 @@
       }, 1500);
     }catch(e){}
   });
-
-  // ✅ 모바일 스와이프/브라우저 뒤로가기(popstate)도 동일하게 level로
-  try{
-    history.replaceState({kq:"flashcards"}, document.title, location.href);
-    window.addEventListener("popstate", () => goToTopik2Level());
-  }catch(e){}
 
   render(false);
 })();
