@@ -197,7 +197,7 @@
 (() => {
   const qs = new URLSearchParams(location.search);
   const cat = (qs.get("cat") || "vocab").toLowerCase(); // vocab | grammar | writing
-  const levelParam = qs.get("level"); // 있을 수도 있고 없을 수도 있음(기존 정상 흐름: 있으면 redirect)
+  const levelParam = qs.get("level");
   const name = qs.get("name") || "";
   const klass = qs.get("klass") || "";
   const token = qs.get("token") || "";
@@ -218,7 +218,6 @@
     $("statusText").textContent = "오류";
   }
 
-  // /data/... → https://.../korean-quiz/data/...
   function abs(path){
     return location.origin + (REPO_BASE || "") + path;
   }
@@ -234,19 +233,16 @@
 
   function goFlashcardsWithFilePath(filePath){
     const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/flashcards.html");
-    // flashcards 기존 정책(이미 운영 중): file은 "절대URL"로 전달
-    u.searchParams.set("file", abs(filePath));
+    u.searchParams.set("file", abs(filePath)); // 기존 운영 방식 유지(절대URL)
     if (name) u.searchParams.set("name", name);
     if (klass) u.searchParams.set("klass", klass);
     if (token) u.searchParams.set("token", token);
     if (lang) u.searchParams.set("lang", lang);
-    location.replace(u.toString()); // 뒤로 눌렀을 때 레벨화면으로 자연스럽게
+    location.replace(u.toString());
   }
 
   $("btnReset").addEventListener("click", goIndex);
 
-  // ---- 레벨 매핑(1~10) ----
-  // vocab: 1~9까지 운영/추가, 10은 placeholder
   const vocabLevels = [
     "/data/topik2/vocab/level01_attitude.json",
     "/data/topik2/vocab/level02_connectors.json",
@@ -257,26 +253,30 @@
     "/data/topik2/vocab/level07_news_vocab1.json",
     "/data/topik2/vocab/level08_key_vocab1.json",
     "/data/topik2/vocab/level09_key_vocab2.json",
-    "" // level10 placeholder
+    ""
   ];
 
-  // grammar: 현재 1~2만 운영(나머지 placeholder)
   const grammarLevels = [
     "/data/topik2/grammar/level01_connective_endings1.json",
     "/data/topik2/grammar/level02_final_endings1.json",
     "", "", "", "", "", "", "", ""
   ];
 
-  // writing(53): 현재 레벨1만 운영
+  // ✅ 쓰기(53): Level 1~2 활성화
   const writingLevels = [
     "/data/topik2/writing53/level01_intro_list.json",
-    "", "", "", "", "", "", "", "", ""
+    "/data/topik2/writing53/level02_rise.json",
+    "", "", "", "", "", "", "", ""
   ];
 
-  // ✅ 핵심: level 파라미터가 있으면 “자동 redirect” (기존 정상 흐름 복구)
   const levelNum = levelParam ? parseInt(levelParam, 10) : NaN;
   if (!Number.isNaN(levelNum) && levelNum >= 1 && levelNum <= 10) {
-    const table = (cat === "vocab") ? vocabLevels : (cat === "grammar") ? grammarLevels : (cat === "writing") ? writingLevels : null;
+    const table =
+      (cat === "vocab") ? vocabLevels :
+      (cat === "grammar") ? grammarLevels :
+      (cat === "writing") ? writingLevels :
+      null;
+
     if (!table) {
       showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
       return;
@@ -290,7 +290,6 @@
     return;
   }
 
-  // ---- level 파라미터가 없으면: 버튼 화면 보여주기 ----
   function setHeader(){
     const isV = cat === "vocab";
     const isG = cat === "grammar";
@@ -300,7 +299,14 @@
     $("statusText").textContent = "로드 완료";
   }
 
-  function renderButtons(levels, firstLabelOverride){
+  // ✅ 쓰기 레벨 이름(짧게): 1=도입·나열, 2=증가·상승
+  function getWritingLabel(level){
+    if (level === 1) return "도입·나열";
+    if (level === 2) return "증가·상승";
+    return "Level " + level;
+  }
+
+  function renderButtons(levels){
     const grid = $("grid");
     grid.innerHTML = "";
     for (let i = 0; i < 10; i++){
@@ -309,19 +315,18 @@
       btn.type = "button";
       btn.className = "btn";
 
-      // 표시 텍스트
-      if (i === 0 && firstLabelOverride) btn.textContent = firstLabelOverride;
-      else btn.textContent = "Level " + (i + 1);
+      const level = i + 1;
+      if (cat === "writing") btn.textContent = getWritingLabel(level);
+      else btn.textContent = "Level " + level;
 
       if (!filePath){
         btn.classList.add("secondary");
         btn.disabled = true;
       } else {
         btn.addEventListener("click", () => {
-          // 버튼 클릭 시에도 “자동 흐름과 동일하게” level 파라미터를 붙여 이동 (일관성)
           const u = new URL(location.origin + (REPO_BASE || "") + "/topik2/level.html");
           u.searchParams.set("cat", cat);
-          u.searchParams.set("level", String(i + 1));
+          u.searchParams.set("level", String(level));
           if (name) u.searchParams.set("name", name);
           if (klass) u.searchParams.set("klass", klass);
           if (token) u.searchParams.set("token", token);
@@ -329,25 +334,15 @@
           location.href = u.toString();
         });
       }
-
       grid.appendChild(btn);
     }
   }
 
   setHeader();
 
-  if (cat === "vocab"){
-    renderButtons(vocabLevels);
-    return;
-  }
-  if (cat === "grammar"){
-    renderButtons(grammarLevels);
-    return;
-  }
-  if (cat === "writing"){
-    renderButtons(writingLevels, "도입·나열");
-    return;
-  }
+  if (cat === "vocab"){ renderButtons(vocabLevels); return; }
+  if (cat === "grammar"){ renderButtons(grammarLevels); return; }
+  if (cat === "writing"){ renderButtons(writingLevels); return; }
 
   showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
 })();
