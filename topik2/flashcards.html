@@ -213,8 +213,9 @@
       letter-spacing:.2px;
     }
 
-    /* 유의어/반의어 */
-    .synAntGrid{
+    /* 유의어/반의어: 기본은 숨김(중요어휘만 표시) */
+    .synAntGrid{ display:none; }
+    .synAntGrid.show{
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
@@ -222,7 +223,7 @@
       padding:2px 2px 10px;
     }
     @media (min-width: 740px){
-      .synAntGrid{grid-template-columns:1fr 1fr;}
+      .synAntGrid.show{grid-template-columns:1fr 1fr;}
     }
     .infoBox{
       border:1px solid rgba(255,255,255,.10);
@@ -391,17 +392,14 @@
           <div class="wordMn" id="wordMn">…</div>
         </div>
 
-        <div class="synAntGrid">
+        <!-- 중요어휘(=syn/ant 있는 덱)에서만 표시 -->
+        <div class="synAntGrid" id="synAntGrid">
           <div class="infoBox">
-            <div class="infoLabel">
-              <div class="labelText">유의어</div>
-            </div>
+            <div class="infoLabel"><div class="labelText">유의어</div></div>
             <div class="infoText" id="synText">—</div>
           </div>
           <div class="infoBox">
-            <div class="infoLabel">
-              <div class="labelText">반의어</div>
-            </div>
+            <div class="infoLabel"><div class="labelText">반의어</div></div>
             <div class="infoText" id="antText">—</div>
           </div>
         </div>
@@ -439,7 +437,7 @@
     $("whoName").textContent = name || "-";
     $("whoClass").textContent = klass || "-";
 
-    // repo base (/korean-quiz) 자동 추정: 요구사항(REPO_BASE) 반영
+    // repo base (/korean-quiz) 자동 추정
     function getRepoBase(){
       const p = location.pathname || "/";
       const m = p.match(/^(.*?\/korean-quiz)(\/|$)/);
@@ -459,19 +457,34 @@
     $("chipMn").addEventListener("click", () => setLang("mn"));
     setLang(lang);
 
-    // 뒤로가기: history 우선, 안되면 level.html로(파라미터 유지)
+    // referrer/lastLevel 기억 (뒤로가기 정확도 개선)
+    (function rememberLevel(){
+      try{
+        const ref = document.referrer || "";
+        if (ref.includes("/topik2/level.html")) {
+          sessionStorage.setItem("topik2_lastLevelUrl", ref);
+        }
+      }catch(e){}
+    })();
+
+    // 뒤로가기: referrer(레벨페이지) > sessionStorage > history.back > fallback(level)
     $("btnBack").addEventListener("click", () => {
       try{
+        const ref = document.referrer || "";
+        const saved = sessionStorage.getItem("topik2_lastLevelUrl") || "";
+        if (ref && ref.includes("/topik2/level.html")) {
+          location.href = ref;
+          return;
+        }
+        if (saved && saved.includes("/topik2/level.html")) {
+          location.href = saved;
+          return;
+        }
         if (history.length > 1) {
           history.back();
-          // iOS/Safari에서 back이 막히는 경우 대비: 350ms 후에도 페이지가 그대로면 fallback
-          const current = location.href;
-          setTimeout(() => {
-            if (location.href === current) fallbackToLevel();
-          }, 350);
-        } else {
-          fallbackToLevel();
+          return;
         }
+        fallbackToLevel();
       }catch(e){
         fallbackToLevel();
       }
@@ -486,7 +499,7 @@
       location.href = levelUrl.toString();
     }
 
-    // Normalize file URL robustly (absolute / relative / // / repo-base)
+    // file URL normalize
     function normalizeFileUrl(input){
       if(!input) return "";
       let raw = input.trim();
@@ -495,18 +508,15 @@
       if(/^\/\//.test(raw)) return location.protocol + raw;
       if(raw.startsWith("/")) return location.origin + raw;
 
-      // 상대경로인 경우: REPO_BASE 기준으로도 해석 가능하게
-      // 1) 현재 폴더 기준
-      const base = new URL(location.href);
-      base.pathname = base.pathname.replace(/\/[^\/]*$/, "/");
-      const u1 = new URL(raw, base.toString()).toString();
-
-      // 2) 혹시 data/... 같은 repo-root 상대라면 REPO_BASE 붙인 버전도 시도 가능
-      // (fetch는 한 번만 하므로, 여기서는 "가능성 높은" 쪽으로 정규화)
+      // repo-root 상대(data/...)라면 REPO_BASE를 붙여 안정화
       if (raw.startsWith("data/") && REPO_BASE){
         return location.origin + REPO_BASE + "/" + raw;
       }
-      return u1;
+
+      // 그 외는 현재 폴더 기준
+      const base = new URL(location.href);
+      base.pathname = base.pathname.replace(/\/[^\/]*$/, "/");
+      return new URL(raw, base.toString()).toString();
     }
 
     function showError(msg){
@@ -568,6 +578,7 @@
     }
 
     function fallbackSynAntFromEx(exKo){
+      // 중요어휘 데이터에서만 보조 추출 (다른 덱은 영향을 주지 않음)
       if(!exKo) return {syn:"", ant:"", ex:""};
       const lines = String(exKo).split("\n");
       if(lines.length >= 2 && (lines[0].includes("유의어") || lines[0].includes("반의어"))){
@@ -583,14 +594,11 @@
       return {syn:"", ant:"", ex: String(exKo).trim()};
     }
 
-    // 예문에 한 칸에 한/몽이 섞여 들어오는 데이터(기존 레벨 데이터) 자동 분리
+    // 예문에 한/몽이 섞여 들어오는 데이터 자동 분리 (ex_mn이 비어 있을 때만)
     function splitBilingualExample(exKoRaw, exMnRaw){
       let ko = (exKoRaw || "").trim();
       let mn = (exMnRaw || "").trim();
-
-      // 이미 ex_mn이 있으면 그대로
       if (mn) return {ko, mn};
-
       if (!ko) return {ko:"", mn:""};
 
       const lines = ko.split("\n").map(s=>s.trim()).filter(Boolean);
@@ -604,11 +612,9 @@
         if (hasH && !hasC) koLines.push(line);
         else if (hasC && !hasH) mnLines.push(line);
         else {
-          // 섞임: 문장 내에 한/몽이 같이 있으면, 간단히 공백 기준으로 반으로 쪼개기보다
-          // "한글이 더 많으면 ko, 키릴이 더 많으면 mn"으로 배치
           if (isMostlyHangul(line)) koLines.push(line);
           else if (isMostlyCyrillic(line)) mnLines.push(line);
-          else koLines.push(line); // 애매하면 ko로
+          else koLines.push(line);
         }
       }
 
@@ -616,6 +622,13 @@
         ko: koLines.join("\n").trim(),
         mn: mnLines.join("\n").trim()
       };
+    }
+
+    function hasSynAntDeck(){
+      const t = (deck?.title_kr || deck?.title || "").toLowerCase();
+      if (t.includes("중요어휘") || t.includes("key vocab")) return true;
+      // 실제 데이터 필드로 판정(가장 정확)
+      return items.some(it => it && (it.syn_ko || it.ant_ko));
     }
 
     function render(){
@@ -628,8 +641,13 @@
         $("antText").textContent = "—";
         $("exKo").textContent = "—";
         $("exMn").textContent = "—";
+        $("synAntGrid").classList.remove("show");
         return;
       }
+
+      // 덱 전체 기준으로 syn/ant UI를 켬(중요어휘만)
+      const showSynAnt = hasSynAntDeck();
+      $("synAntGrid").classList.toggle("show", !!showSynAnt);
 
       const it = items[idx];
 
@@ -637,8 +655,7 @@
       $("loadingMsg").textContent = "";
       $("countBadge").textContent = (idx + 1) + " / " + items.length;
 
-      // (핵심) 데이터가 ko/mn이 뒤집혀 들어오는 경우 자동 교정:
-      // ko에 키릴(몽골어) + mn에 한글(한국어) => 표시만 swap
+      // ko/mn 뒤집힘 자동 교정(표시만)
       const rawKo = String(it.ko || "");
       const rawMn = String(it.mn || "");
       const shouldSwap = isMostlyCyrillic(rawKo) && isMostlyHangul(rawMn);
@@ -654,23 +671,23 @@
 
       setFuncChips(koParsed.func || mnParsed.func || "");
 
-      // 유의어/반의어: 중요어휘1(level08)은 syn_ko/ant_ko가 존재해야 함
-      // 다른 레벨(예: 인물 태도 어휘)은 원래 없을 수 있으므로 '—' 표시가 정상임
-      const fb = fallbackSynAntFromEx(it.ex_ko || "");
-      const synRaw = it.syn_ko ? cleanLabelPrefix(it.syn_ko) : (fb.syn || "");
-      const antRaw = it.ant_ko ? cleanLabelPrefix(it.ant_ko) : (fb.ant || "");
+      // syn/ant는 "중요어휘 덱"일 때만 계산/표시 (다른 덱 영향 차단)
+      if (showSynAnt){
+        const fb = fallbackSynAntFromEx(it.ex_ko || "");
+        const synRaw = it.syn_ko ? cleanLabelPrefix(it.syn_ko) : (fb.syn || "");
+        const antRaw = it.ant_ko ? cleanLabelPrefix(it.ant_ko) : (fb.ant || "");
+        $("synText").textContent = synRaw ? synRaw : "—";
+        $("antText").textContent = antRaw ? antRaw : "—";
+      }
 
-      $("synText").textContent = synRaw ? synRaw : "—";
-      $("antText").textContent = antRaw ? antRaw : "—";
+      // 예문: ex_mn이 비어 있을 때만 한/몽 분리(기존 덱 보존)
+      const exKoRaw = String(it.ex_ko || "");
+      const exMnRaw = String(it.ex_mn || "");
 
-      // 예문: ex_ko에 한/몽이 섞여 들어오면 자동 분리해서 오른쪽(몽골어)로 이동
-      const exKoBase = it.ex_ko ? fb.ex : "";
-      const exMnBase = it.ex_mn || "";
-
-      // swap 상태면 예문도 같이 swap (데이터가 뒤집힌 경우)
+      // shouldSwap이면 예문도 swap해서 처리
       const exPair = shouldSwap
-        ? splitBilingualExample(exMnBase, exKoBase)
-        : splitBilingualExample(exKoBase, exMnBase);
+        ? splitBilingualExample(exMnRaw, exKoRaw)
+        : splitBilingualExample(exKoRaw, exMnRaw);
 
       $("exKo").textContent = exPair.ko ? exPair.ko : "—";
       $("exMn").textContent = exPair.mn ? exPair.mn : "—";
