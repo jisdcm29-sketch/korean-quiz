@@ -158,7 +158,6 @@
       white-space:nowrap;
     }
 
-    /* ✅ 기능(한국어/몽골어) 한 줄 고정 + 가로 스크롤 */
     .funcTop{
       display:flex;
       gap:8px;
@@ -204,13 +203,12 @@
       padding: 14px 14px 16px;
     }
 
-    /* ✅ 1줄(가장 큼): 한국어 단어 + 몽골어 번역어를 같은 줄 */
     .wordRow{
       display:flex;
       justify-content:center;
       align-items:baseline;
       gap: 12px;
-      flex-wrap:wrap; /* 모바일 줄바꿈 허용 */
+      flex-wrap:wrap;
       text-align:center;
       margin: 6px 0 10px;
     }
@@ -230,7 +228,6 @@
       word-break:break-word;
     }
 
-    /* ✅ (기존) 설명: 예문 위 */
     .descBox{
       margin-top: 4px;
       border-radius: 16px;
@@ -262,7 +259,7 @@
       opacity:.95;
     }
 
-    /* ✅ (중요어휘1 전용) 유의어/반의어: 다른 덱에는 절대 영향 없음 */
+    /* 중요어휘1 전용: 유의어/반의어 */
     .synAntBox{
       margin-top: 4px;
       border-radius: 16px;
@@ -284,7 +281,7 @@
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      font-size:16px;            /* 라벨 선명/큰 글씨 */
+      font-size:16px;
       font-weight:1000;
       color: rgba(231,236,255,.96);
       padding: 7px 12px;
@@ -297,7 +294,7 @@
       white-space:nowrap;
     }
     .synText{
-      font-size:19px;            /* 본문도 크게 */
+      font-size:19px;
       font-weight:900;
       line-height:1.35;
       word-break:keep-all;
@@ -415,8 +412,8 @@
     return p.length ? ("/" + p[0]) : "";
   }
   const REPO_BASE = getRepoBase();
-  const TOPIK2_HOME = REPO_BASE + "/topik2/index.html";
   const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";
+  const APP_HOME = REPO_BASE + "/index.html";   // ✅ 전체 홈(서울대/토픽1/토픽2 선택)
 
   const $app = document.getElementById("app");
   const DEV_KEY = "kq_deviceId_v1";
@@ -557,20 +554,16 @@
     return { func: "", word: t };
   }
 
-  // ✅ file 파라미터를 "항상 절대 URL"로 정규화 (404 방지)
   function normalizeFileParam(){
     const raw = qs("file") || "";
     if (!raw) return "";
-
     let v = raw;
     try { v = decodeURIComponent(raw); } catch(_) {}
-
     if (/^https?:\/\//i.test(v)) return v;
     if (v.startsWith("/")) return new URL(v, location.origin).toString();
     return new URL("/" + v, location.origin).toString();
   }
 
-  // ✅ 설명/예문 분리: ex_ko/ex_mn에 줄바꿈이 있으면 (첫 줄=설명, 나머지=예문)
   function splitDescAndExample(text){
     const t = safe(text).trim();
     if (!t) return { desc: "", ex: "" };
@@ -583,7 +576,6 @@
     return { desc: "", ex: t };
   }
 
-  // ✅ 중요어휘1만 "별도 구조"로 렌더링 (다른 덱에는 영향 X)
   function isKeyVocabDeck(fileUrl){
     return /level08_key_vocab1\.json(\?|$)/i.test(fileUrl || "");
   }
@@ -614,7 +606,7 @@
       <div class="topBar">
         <div class="leftTop">
           <button class="btnSmall" id="btnBack">← 뒤로</button>
-          <button class="btnSmall" id="btnPick">📚 다른 어휘</button>
+          <button class="btnSmall" id="btnHome">🏠 홈</button>
           <div class="langToggle">
             <button class="langBtn ${lang==="ko"?"active":""}" id="langKo">한국어</button>
             <button class="langBtn ${lang==="mn"?"active":""}" id="langMn">Монгол</button>
@@ -651,7 +643,6 @@
             <div class="mnWordInline" id="mnWordInline"></div>
           </div>
 
-          <!-- (기존) 설명 박스: 기본 구조 유지 -->
           <div class="descBox" id="descBox" style="display:none;">
             <div class="descItem">
               <div class="descLabel">설명 (한국어)</div>
@@ -663,7 +654,6 @@
             </div>
           </div>
 
-          <!-- (중요어휘1 전용) 유의어/반의어 -->
           <div class="synAntBox" id="synAntBox" style="display:none;">
             <div class="synAntItem">
               <div class="synLabel">유의어</div>
@@ -696,10 +686,14 @@
       </div>
     `;
 
-    // ✅ 뒤로: TOPIK2 홈(완전 빠져나가기)
+    // ✅ 상단 화살표: 첫번째 캡처 화면(= TOPIK2 level)로 이동
     document.getElementById("btnBack").addEventListener("click", async () => {
-      await logEvent("back", { idx: state.idx, file: state.file });
-      location.href = buildUrl(TOPIK2_HOME, {
+      await logEvent("back_to_level", { idx: state.idx, file: state.file });
+      const cat = qs("cat") || "";
+      const level = qs("level") || "";
+      location.href = buildUrl(TOPIK2_LEVEL, {
+        ...(cat ? { cat } : {}),
+        ...(level ? { level } : {}),
         name: qs("name") || "",
         klass: qs("klass") || "",
         token: qs("token") || "",
@@ -707,15 +701,15 @@
       });
     });
 
-    // ✅ 다른 어휘 선택: level.html로 이동(가능하면 cat/level 유지)
-    document.getElementById("btnPick").addEventListener("click", async () => {
-      await logEvent("pick_list", { idx: state.idx, file: state.file });
-      const cat = qs("cat") || "";
-      const level = qs("level") || "";
-      const target = (cat && level)
-        ? buildUrl(TOPIK2_LEVEL, { cat, level, name: qs("name")||"", klass: qs("klass")||"", token: qs("token")||"", lang: getLang() })
-        : buildUrl(TOPIK2_HOME, { name: qs("name")||"", klass: qs("klass")||"", token: qs("token")||"", lang: getLang() });
-      location.href = target;
+    // ✅ 홈: 완전히 빠져나가서(서울대/토픽1/토픽2 선택) 메인 홈으로
+    document.getElementById("btnHome").addEventListener("click", async () => {
+      await logEvent("go_home", { idx: state.idx, file: state.file });
+      location.href = buildUrl(APP_HOME, {
+        name: qs("name") || "",
+        klass: qs("klass") || "",
+        token: qs("token") || "",
+        lang: getLang()
+      });
     });
 
     document.getElementById("langKo").addEventListener("click", () => { setLang("ko"); render(true); });
@@ -775,7 +769,6 @@
     const koDescEx = splitDescAndExample(exFixed.ex_ko);
     const mnDescEx = splitDescAndExample(exFixed.ex_mn);
 
-    // 상단 기능칩(분야)
     const funcKoVal = koSplit.func;
     const funcMnVal = mnSplit.func;
 
@@ -787,15 +780,12 @@
       $funcTop.style.display = "none";
     }
 
-    // 1줄: 단어(ko) + 번역어(mn)
     $koWord.textContent = koSplit.word || "(빈 단어)";
     $mnWordInline.textContent = mnSplit.word || "";
 
-    // ✅ 중요어휘1만 syn/ant 구조를 사용 (다른 덱은 기존 desc 구조 유지)
     const keyDeck = isKeyVocabDeck(state.file);
 
     if (keyDeck) {
-      // 다른 덱에 영향 금지: descBox 숨기고 synAntBox만 보여줌
       $descBox.style.display = "none";
       $descKo.textContent = "";
       $descMn.textContent = "";
@@ -806,7 +796,6 @@
       $synKo.textContent = syn || "—";
       $antKo.textContent = ant || "—";
     } else {
-      // 기존 구조 그대로
       $synAntBox.style.display = "none";
       $synKo.textContent = "";
       $antKo.textContent = "";
@@ -824,7 +813,6 @@
       }
     }
 
-    // 예문 표시(설명 제외 예문만)
     $exKo.textContent = koDescEx.ex || "";
     $exMn.textContent = mnDescEx.ex || "";
 
