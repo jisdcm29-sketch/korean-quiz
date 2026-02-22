@@ -3,748 +3,915 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
-  <title>TOPIK II Flashcards</title>
+  <meta name="theme-color" content="#0b1220" />
+  <title>Flashcards</title>
   <style>
     :root{
-      --bg1:#071226;
-      --bg2:#0b1b37;
+      --bg:#0b1220;
+      --text:#e7ecff;
+      --muted:#aab6e6;
       --line:rgba(255,255,255,.10);
-      --text:#eaf2ff;
-      --muted:rgba(234,242,255,.72);
-      --muted2:rgba(234,242,255,.58);
-      --shadow:0 20px 60px rgba(0,0,0,.45);
+      --shadow:0 10px 30px rgba(0,0,0,.35);
       --radius:22px;
+
+      --blueA: rgba(59,130,246,.16);
+      --blueB: rgba(59,130,246,.36);
+
+      --greenA: rgba(34,197,94,.14);
+      --greenB: rgba(34,197,94,.32);
+
+      --amberA: rgba(245,158,11,.14);
+      --amberB: rgba(245,158,11,.34);
+
+      --koA: rgba(59,130,246,.14);
+      --koB: rgba(59,130,246,.34);
+
+      --mnA: rgba(34,197,94,.14);
+      --mnB: rgba(34,197,94,.34);
+
+      --descA: rgba(255,255,255,.06);
+      --descB: rgba(255,255,255,.12);
     }
     *{box-sizing:border-box}
-    html,body{height:100%}
     body{
       margin:0;
-      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Noto Sans", Arial, "Apple Color Emoji", "Segoe UI Emoji";
+      font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, "Apple SD Gothic Neo", "Noto Sans KR", Arial, sans-serif;
+      background: radial-gradient(1000px 800px at 30% -10%, rgba(59,130,246,.35), transparent 55%),
+                  radial-gradient(900px 700px at 90% 0%, rgba(34,197,94,.18), transparent 50%),
+                  var(--bg);
       color:var(--text);
-      background:
-        radial-gradient(900px 520px at 70% 22%, rgba(47,107,255,.22), transparent 60%),
-        radial-gradient(700px 460px at 35% 60%, rgba(58,160,255,.12), transparent 65%),
-        linear-gradient(180deg, var(--bg2), var(--bg1));
+      min-height:100svh;
       display:flex;
       align-items:center;
       justify-content:center;
-      padding:18px 12px 26px;
+      padding: 18px 14px 22px;
     }
-
-    .app{
-      width:min(980px, 100%);
-      background:rgba(9,18,33,.45);
-      border:1px solid rgba(255,255,255,.08);
-      border-radius:28px;
-      box-shadow:var(--shadow);
+    .wrap{width:min(720px, 100%);}
+    .card{
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(255,255,255,.03));
+      border:1px solid var(--line);
+      border-radius: var(--radius);
+      box-shadow: var(--shadow);
       overflow:hidden;
-      backdrop-filter: blur(10px);
     }
 
-    .topbar{
+    .topBar{
+      padding: 10px 12px;
+      border-bottom:1px solid var(--line);
+      background: rgba(0,0,0,.16);
       display:flex;
       align-items:center;
       justify-content:space-between;
-      gap:12px;
-      padding:14px 14px 12px;
-      border-bottom:1px solid var(--line);
-    }
-    .leftControls{display:flex; align-items:center; gap:10px; flex-wrap:wrap}
-    .btn{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      padding:10px 14px;
-      border-radius:999px;
-      font-weight:900;
-      letter-spacing:.2px;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .btn:active{transform:translateY(1px)}
-    .chip{
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      padding:10px 14px;
-      border-radius:999px;
-      font-weight:950;
-      cursor:pointer;
-      user-select:none;
-      -webkit-tap-highlight-color: transparent;
-    }
-    .chip.active{
-      background:linear-gradient(180deg, rgba(47,107,255,.95), rgba(47,107,255,.72));
-      border-color:rgba(47,107,255,.85);
-      box-shadow:0 12px 30px rgba(47,107,255,.25);
-    }
-    .rightInfo{
-      text-align:right;
-      font-size:12px;
-      line-height:1.2;
-      color:var(--muted);
-      padding-right:4px;
-      white-space:nowrap;
-    }
-    .rightInfo .strong{color:var(--text); font-weight:950}
-
-    .header{
-      padding:14px 16px 10px;
-      text-align:center;
-    }
-    .header h1{
-      margin:2px 0 2px;
-      font-size:20px;
-      letter-spacing:.4px;
-    }
-    .header .sub{
-      margin:0;
-      font-size:12px;
-      color:var(--muted);
-    }
-
-    .container{
-      padding:10px 14px 16px;
-      display:grid;
-      grid-template-columns: 1fr;
-      gap:12px;
-    }
-
-    .panel{
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
-      border-radius:var(--radius);
-      padding:12px;
-    }
-
-    .metaRow{
-      display:flex;
-      align-items:flex-start;
-      justify-content:space-between;
       gap:10px;
-      padding:2px 4px 10px;
-      border-bottom:1px solid var(--line);
-      margin-bottom:12px;
     }
-    .titleBox{
-      display:flex;
-      flex-direction:column;
-      gap:6px;
-      align-items:flex-start;
-      min-width:0;
-    }
-    .lessonTitle{
-      font-weight:950;
+    .leftTop{display:flex; gap:10px; align-items:center; min-width:0; flex-wrap:wrap;}
+    .btnSmall{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(231,236,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
+      font-weight:900;
       font-size:14px;
-      color:var(--text);
-      opacity:.95;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
       white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 76vw;
     }
-    .mini{
-      font-size:11px;
-      color:var(--muted2);
-      white-space:nowrap;
-      overflow:hidden;
-      text-overflow:ellipsis;
-      max-width: 76vw;
-    }
-    .counter{
-      display:inline-flex;
-      align-items:center;
-      gap:8px;
-      color:var(--muted);
+    .langToggle{display:flex; gap:8px; align-items:center;}
+    .langBtn{
+      border:1px solid rgba(255,255,255,.14);
+      background: rgba(255,255,255,.06);
+      color: rgba(231,236,255,.92);
+      padding: 10px 12px;
+      border-radius: 999px;
       font-weight:900;
-      font-size:12px;
+      font-size:14px;
+      cursor:pointer;
+      user-select:none;
+      -webkit-tap-highlight-color: transparent;
+      min-width:84px;
+      text-align:center;
     }
-    .badge{
+    .langBtn.active{
+      background: linear-gradient(180deg, rgba(79,140,255,.95), rgba(37,99,235,.95));
+      border-color: rgba(79,140,255,.9);
+      color:#fff;
+      box-shadow: 0 8px 18px rgba(37,99,235,.25);
+    }
+    .rightTop{
+      display:flex; flex-direction:column; align-items:flex-end; gap:2px;
+      color: rgba(231,236,255,.65);
+      font-size:12px;
+      font-weight:900;
+      white-space:nowrap;
+    }
+    .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
+
+    .hdr{padding: 14px 16px 6px; text-align:center;}
+    .title{margin:0; font-size:20px; font-weight:1000; letter-spacing:.2px;}
+    .subtitle{margin:6px 0 0; color: var(--muted); font-size:13px; font-weight:800; line-height:1.35;}
+
+    .content{padding: 12px 14px 16px;}
+    .deckInfo{
+      display:flex;
+      align-items:center;
+      justify-content:space-between;
+      gap:10px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+      border-radius: 16px;
+    }
+    .deckLeft{min-width:0; width:100%;}
+    .deckName{
+      font-size:14px;
+      font-weight:1000;
+      white-space:nowrap;
+      overflow:hidden;
+      text-overflow:ellipsis;
+    }
+    .deckMeta{
+      margin-top:6px;
+      font-size:12px;
+      color: rgba(231,236,255,.65);
+      font-weight:900;
+      display:flex;
+      gap:8px;
+      flex-wrap:wrap;
+      align-items:center;
+    }
+    .pill{
       display:inline-flex;
       align-items:center;
       justify-content:center;
-      padding:6px 10px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.12);
-      background:rgba(255,255,255,.06);
-      color:var(--text);
-      font-weight:950;
       font-size:12px;
-      min-width:64px;
-    }
-
-    .wordLine{
-      display:flex;
-      align-items:baseline;
-      justify-content:center;
-      gap:12px;
-      flex-wrap:wrap;
-      text-align:center;
-      padding:6px 8px 14px;
-    }
-    .wordKo{
       font-weight:1000;
-      font-size:38px;
-      letter-spacing:-.6px;
-      text-shadow:0 10px 30px rgba(0,0,0,.35);
-    }
-    .wordMn{
-      font-weight:950;
-      font-size:22px;
-      color:rgba(234,242,255,.88);
-      letter-spacing:-.2px;
+      color: rgba(231,236,255,.85);
+      background: rgba(255,255,255,.08);
+      border: 1px solid rgba(255,255,255,.12);
+      padding: 6px 10px;
+      border-radius: 999px;
+      min-height:32px;
+      text-align:center;
+      line-height:1.2;
+      white-space:nowrap;
     }
 
-    .funcChips{
+    /* ✅ 기능(한국어/몽골어) 한 줄 고정 + 가로 스크롤 */
+    .funcTop{
+      display:flex;
+      gap:8px;
+      flex-wrap:nowrap;
+      align-items:center;
+      overflow-x:auto;
+      -webkit-overflow-scrolling: touch;
+      max-width: 100%;
+      padding-bottom: 2px;
+    }
+    .funcTop::-webkit-scrollbar{height:6px}
+    .funcTop::-webkit-scrollbar-thumb{background:rgba(255,255,255,.14);border-radius:999px}
+
+    .pillFunc{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:12px;
+      font-weight:1000;
+      color: rgba(231,236,255,.95);
+      padding: 6px 10px;
+      border-radius: 999px;
+      min-height:32px;
+      text-align:center;
+      line-height:1.2;
+      white-space:nowrap;
+      flex: 0 0 auto;
+    }
+    .pillFuncKo{
+      background: var(--koA);
+      border: 1px solid var(--koB);
+    }
+    .pillFuncMn{
+      background: var(--mnA);
+      border: 1px solid var(--mnB);
+    }
+
+    .cardBox{
+      margin-top: 12px;
+      border-radius: 20px;
+      border: 1px solid rgba(255,255,255,.12);
+      background: rgba(10,15,25,.38);
+      padding: 14px 14px 16px;
+    }
+
+    /* ✅ 1줄(가장 큼): 한국어 단어 + 몽골어 번역어를 같은 줄 */
+    .wordRow{
       display:flex;
       justify-content:center;
-      gap:8px;
-      flex-wrap:wrap;
-      padding:0 6px 10px;
+      align-items:baseline;
+      gap: 12px;
+      flex-wrap:wrap; /* 모바일 줄바꿈 허용 */
+      text-align:center;
+      margin: 6px 0 10px;
     }
-    .funcChip{
-      border:1px solid rgba(58,160,255,.35);
-      background:rgba(58,160,255,.12);
-      color:rgba(234,242,255,.92);
-      padding:6px 10px;
-      border-radius:999px;
-      font-weight:950;
-      font-size:12px;
-      letter-spacing:.2px;
+    .koWord{
+      font-size:34px;
+      font-weight:1000;
+      line-height:1.12;
+      margin:0;
+      word-break:keep-all;
+    }
+    .mnWordInline{
+      font-size:26px;
+      font-weight:1000;
+      line-height:1.12;
+      opacity:.95;
+      margin:0;
+      word-break:break-word;
     }
 
-    /* 중요어휘1 전용(기본은 완전 숨김) */
-    .synAntGrid{ display:none; }
-    .synAntGrid.show{
+    /* ✅ (기존) 설명: 예문 위 */
+    .descBox{
+      margin-top: 4px;
+      border-radius: 16px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, var(--descA), rgba(0,0,0,.10));
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
-      margin-top:8px;
-      padding:2px 2px 10px;
     }
-    @media (min-width: 740px){
-      .synAntGrid.show{grid-template-columns:1fr 1fr;}
+    .descItem{
+      border-radius: 14px;
+      padding: 8px 10px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
     }
-    .infoBox{
-      border:1px solid rgba(255,255,255,.10);
-      background:linear-gradient(180deg, rgba(13,27,45,.92), rgba(15,34,57,.70));
-      border-radius:18px;
-      padding:12px 12px;
-      min-height:74px;
-      display:flex;
-      flex-direction:column;
-      gap:10px;
-    }
-    .infoLabel{
-      display:flex;
-      align-items:center;
-      justify-content:flex-start;
-      gap:10px;
-    }
-    .labelText{
-      font-size:16.9px;            /* 13 * 1.3 */
+    .descLabel{
+      font-size:11px;
       font-weight:1000;
-      color:rgba(234,242,255,.98);
-      letter-spacing:.2px;
-      padding:7px 12px;
-      border-radius:999px;
-      border:1px solid rgba(255,255,255,.18);
-      background:rgba(255,255,255,.08);
-      box-shadow:0 12px 30px rgba(0,0,0,.22);
+      color: rgba(231,236,255,.62);
+      margin-bottom:6px;
     }
-    .infoText{
-      font-size:19.5px;            /* 15 * 1.3 */
-      line-height:1.35;
+    .descText{
+      font-size:14px;
       font-weight:900;
-      color:rgba(234,242,255,.95);
+      line-height:1.35;
       word-break:keep-all;
       white-space:pre-wrap;
+      opacity:.95;
     }
 
-    /* 예문 */
-    .examplesGrid{
+    /* ✅ (중요어휘1 전용) 유의어/반의어: 다른 덱에는 절대 영향 없음 */
+    .synAntBox{
+      margin-top: 4px;
+      border-radius: 16px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: linear-gradient(180deg, rgba(255,255,255,.06), rgba(0,0,0,.10));
       display:grid;
       grid-template-columns: 1fr;
       gap:10px;
-      padding-top:8px;
-      border-top:1px dashed rgba(255,255,255,.10);
-      margin-top:10px;
     }
-    @media (min-width: 740px){
-      .examplesGrid{grid-template-columns:1fr 1fr;}
+    .synAntItem{
+      border-radius: 14px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.10);
+      min-height:64px;
     }
+    .synLabel{
+      display:inline-flex;
+      align-items:center;
+      justify-content:center;
+      font-size:16px;            /* 라벨 선명/큰 글씨 */
+      font-weight:1000;
+      color: rgba(231,236,255,.96);
+      padding: 7px 12px;
+      border-radius: 999px;
+      border: 1px solid rgba(255,255,255,.18);
+      background: rgba(255,255,255,.08);
+      box-shadow: 0 10px 22px rgba(0,0,0,.20);
+      margin-bottom:8px;
+      line-height:1.1;
+      white-space:nowrap;
+    }
+    .synText{
+      font-size:19px;            /* 본문도 크게 */
+      font-weight:900;
+      line-height:1.35;
+      word-break:keep-all;
+      white-space:pre-wrap;
+      opacity:.98;
+    }
+
     .exBox{
-      border:1px solid rgba(255,255,255,.10);
-      border-radius:18px;
-      padding:12px;
-      background:linear-gradient(180deg, rgba(255,255,255,.05), rgba(255,255,255,.03));
+      margin-top: 10px;
+      border-top: 1px dashed rgba(255,255,255,.14);
+      padding-top: 10px;
+      display:grid;
+      grid-template-columns: 1fr;
+      gap:10px;
     }
-    .exBox.mn{
-      border-color:rgba(27,191,136,.22);
-      background:linear-gradient(180deg, rgba(27,191,136,.14), rgba(255,255,255,.02));
+    .exItem{
+      border-radius: 16px;
+      padding: 10px 12px;
+      border: 1px solid rgba(255,255,255,.10);
+      background: rgba(0,0,0,.12);
+    }
+    .exKoBox{
+      background: linear-gradient(180deg, var(--blueA), rgba(0,0,0,.10));
+      border-color: var(--blueB);
+    }
+    .exMnBox{
+      background: linear-gradient(180deg, var(--greenA), rgba(0,0,0,.10));
+      border-color: var(--greenB);
     }
     .exLabel{
       font-size:12px;
-      color:rgba(234,242,255,.92);
       font-weight:1000;
-      letter-spacing:.2px;
+      color: rgba(231,236,255,.70);
       margin-bottom:6px;
     }
     .exText{
       font-size:18px;
       font-weight:900;
-      line-height:1.4;
-      color:rgba(234,242,255,.95);
-      white-space:pre-wrap;
+      line-height:1.35;
       word-break:keep-all;
+      white-space:pre-wrap;
     }
 
-    .navRow{
+    .actions{
+      margin-top: 12px;
       display:grid;
       grid-template-columns: 1fr 1fr;
-      gap:10px;
-      padding-top:8px;
+      gap: 10px;
     }
-    .navBtn{
-      border:none;
-      border-radius:18px;
-      padding:16px 14px;
+    .btn{
+      width:100%;
+      border:0;
+      border-radius: 18px;
+      padding: 15px 14px;
       font-size:20px;
       font-weight:1000;
+      color:white;
       cursor:pointer;
-      color:rgba(234,242,255,.96);
-      background:rgba(255,255,255,.06);
-      border:1px solid rgba(255,255,255,.10);
+      box-shadow: 0 10px 22px rgba(0,0,0,.30);
+      transition: transform .06s ease, filter .15s ease;
+      display:flex;
+      align-items:center;
+      justify-content:center;
+      gap:10px;
+      user-select:none;
       -webkit-tap-highlight-color: transparent;
     }
-    .navBtn.primary{
-      background:linear-gradient(180deg, rgba(47,107,255,.95), rgba(47,107,255,.70));
-      border-color:rgba(47,107,255,.72);
+    .btn:active{transform: translateY(1px) scale(.99)}
+    .btnPrimary{background: linear-gradient(180deg, #4f8cff, #2563eb);}
+    .btnGhost{
+      background: rgba(255,255,255,.06);
+      border: 1px solid rgba(255,255,255,.14);
+      box-shadow:none;
+      color: var(--text);
+      font-size:18px;
+      padding: 14px 12px;
+      border-radius: 18px;
+      font-weight:1000;
     }
-    .navBtn:active{transform:translateY(1px)}
 
-    .error{
-      margin-top:10px;
-      padding:12px 12px;
-      border-radius:16px;
-      border:1px solid rgba(255,80,80,.28);
-      background:rgba(255,80,80,.12);
-      color:rgba(255,235,235,.95);
-      font-weight:900;
-      font-size:13px;
+    .err{
+      margin-top: 12px;
+      padding: 10px 12px;
+      border-radius: 14px;
+      background: rgba(239,68,68,.14);
+      border:1px solid rgba(239,68,68,.35);
+      color: #ffd3d3;
+      font-size:14px;
+      font-weight:1000;
+      text-align:center;
+      display:none;
       white-space:pre-wrap;
+      line-height:1.4;
     }
 
-    .loading{
-      padding:10px 0 2px;
-      color:var(--muted);
-      font-weight:900;
-      font-size:13px;
-    }
-
-    @media (max-width: 420px){
-      .wordKo{font-size:34px}
-      .wordMn{font-size:19px}
-      .exText{font-size:17px}
-      .navBtn{font-size:19px}
-      .infoText{font-size:18.5px}
-      .labelText{font-size:16px}
+    @media (min-width: 720px){
+      .exBox{grid-template-columns: 1fr 1fr;}
+      .descBox{grid-template-columns: 1fr 1fr;}
+      .synAntBox{grid-template-columns: 1fr 1fr;}
     }
   </style>
 </head>
 
 <body>
-  <div class="app">
-    <div class="topbar">
-      <div class="leftControls">
-        <button class="btn" id="btnBack">← 뒤로</button>
-        <div class="chip active" id="chipKo">한국어</div>
-        <div class="chip" id="chipMn">Монгол</div>
-      </div>
-      <div class="rightInfo">
-        <div><span class="strong" id="whoName">-</span> · <span class="strong" id="whoClass">-</span></div>
-        <div id="langHint">lang=ko</div>
-      </div>
-    </div>
-
-    <div class="header">
-      <h1>TOPIK II</h1>
-      <p class="sub">단어 카드 · 다음 버튼으로 넘기기</p>
-    </div>
-
-    <div class="container">
-      <div class="panel">
-        <div class="metaRow">
-          <div class="titleBox">
-            <div class="lessonTitle" id="lessonTitle">로드 중…</div>
-            <div class="mini" id="fileHint">file: -</div>
-            <div class="loading" id="loadingMsg">데이터를 불러오는 중입니다.</div>
-          </div>
-          <div class="counter">
-            <span class="badge" id="countBadge">0 / 0</span>
-          </div>
-        </div>
-
-        <div class="funcChips" id="funcChips" style="display:none;"></div>
-
-        <div class="wordLine">
-          <div class="wordKo" id="wordKo">…</div>
-          <div class="wordMn" id="wordMn">…</div>
-        </div>
-
-        <!-- 중요어휘1(level08_key_vocab1.json)에서만 보이도록 강제 -->
-        <div class="synAntGrid" id="synAntGrid">
-          <div class="infoBox">
-            <div class="infoLabel"><div class="labelText">유의어</div></div>
-            <div class="infoText" id="synText">—</div>
-          </div>
-          <div class="infoBox">
-            <div class="infoLabel"><div class="labelText">반의어</div></div>
-            <div class="infoText" id="antText">—</div>
-          </div>
-        </div>
-
-        <div class="examplesGrid">
-          <div class="exBox">
-            <div class="exLabel">예문</div>
-            <div class="exText" id="exKo">—</div>
-          </div>
-          <div class="exBox mn">
-            <div class="exLabel">Жишээ</div>
-            <div class="exText" id="exMn">—</div>
-          </div>
-        </div>
-
-        <div class="navRow">
-          <button class="navBtn" id="btnPrev">이전</button>
-          <button class="navBtn primary" id="btnNext">다음</button>
-        </div>
-
-        <div class="error" id="errorBox" style="display:none;"></div>
-      </div>
-    </div>
+  <div class="wrap">
+    <div class="card" id="app"></div>
   </div>
 
-  <script>
-    const qs = new URLSearchParams(location.search);
-    const name = qs.get("name") || "";
-    const klass = qs.get("klass") || "";
-    const token = qs.get("token") || "";
-    const fileParam = qs.get("file") || "";
+<script>
+(() => {
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
 
-    const $ = (id) => document.getElementById(id);
+  function getRepoBase(){
+    const p = location.pathname.split("/").filter(Boolean);
+    return p.length ? ("/" + p[0]) : "";
+  }
+  const REPO_BASE = getRepoBase();
+  const TOPIK2_HOME = REPO_BASE + "/topik2/index.html";
+  const TOPIK2_LEVEL = REPO_BASE + "/topik2/level.html";
 
-    $("whoName").textContent = name || "-";
-    $("whoClass").textContent = klass || "-";
+  const $app = document.getElementById("app");
+  const DEV_KEY = "kq_deviceId_v1";
+  const LANG_KEY = "kq_lang_v1";
 
-    function getRepoBase(){
-      const p = location.pathname || "/";
-      const m = p.match(/^(.*?\/korean-quiz)(\/|$)/);
-      return m ? m[1] : "";
+  const qs = (k) => new URLSearchParams(location.search).get(k);
+  const safe = (s) => (s || "").toString();
+  const esc = (str) => safe(str).replace(/[&<>"']/g, (m) => ({
+    "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
+  }[m]));
+  const nowISO = () => new Date().toISOString();
+
+  function getDeviceId(){
+    let id = localStorage.getItem(DEV_KEY);
+    if (!id){
+      id = "dev_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+      localStorage.setItem(DEV_KEY, id);
     }
-    const REPO_BASE = getRepoBase();
+    return id;
+  }
 
-    let lang = (qs.get("lang") || "ko").toLowerCase() === "mn" ? "mn" : "ko";
-    function setLang(next){
-      lang = next;
-      $("langHint").textContent = "lang=" + lang;
-      $("chipKo").classList.toggle("active", lang === "ko");
-      $("chipMn").classList.toggle("active", lang === "mn");
-    }
-    $("chipKo").addEventListener("click", () => setLang("ko"));
-    $("chipMn").addEventListener("click", () => setLang("mn"));
-    setLang(lang);
+  function getLang(){
+    const urlLang = qs("lang");
+    if (urlLang === "ko" || urlLang === "mn") return urlLang;
+    const v = localStorage.getItem(LANG_KEY);
+    return (v === "mn" || v === "ko") ? v : "ko";
+  }
+  function setLang(v){
+    localStorage.setItem(LANG_KEY, (v === "mn") ? "mn" : "ko");
+    document.documentElement.lang = getLang();
+  }
 
-    // referrer 저장
-    (function rememberLevel(){
-      try{
-        const ref = document.referrer || "";
-        if (ref.includes("/topik2/level.html")) {
-          sessionStorage.setItem("topik2_lastLevelUrl", ref);
-        }
-      }catch(e){}
-    })();
-
-    $("btnBack").addEventListener("click", () => {
-      try{
-        const ref = document.referrer || "";
-        const saved = sessionStorage.getItem("topik2_lastLevelUrl") || "";
-        if (ref && ref.includes("/topik2/level.html")) { location.href = ref; return; }
-        if (saved && saved.includes("/topik2/level.html")) { location.href = saved; return; }
-        if (history.length > 1) { history.back(); return; }
-        fallbackToLevel();
-      }catch(e){
-        fallbackToLevel();
-      }
+  function buildUrl(base, params){
+    const u = new URL(base, location.origin);
+    Object.keys(params).forEach(k => {
+      if (params[k] === undefined || params[k] === null) return;
+      u.searchParams.set(k, String(params[k]));
     });
+    return u.toString();
+  }
 
-    function fallbackToLevel(){
-      const levelUrl = new URL(location.origin + (REPO_BASE || "") + "/topik2/level.html");
-      ["name","klass","token","cat","level","lang"].forEach(k=>{
-        const v = qs.get(k);
-        if (v) levelUrl.searchParams.set(k, v);
+  function jsonp(url, params, timeoutMs = 8000){
+    return new Promise((resolve, reject) => {
+      const cb = "cb_" + Math.random().toString(16).slice(2);
+      const timer = setTimeout(() => { cleanup(); reject(new Error("JSONP timeout")); }, timeoutMs);
+
+      function cleanup(){
+        clearTimeout(timer);
+        try{ delete window[cb]; }catch(e){}
+        if (script && script.parentNode) script.parentNode.removeChild(script);
+      }
+
+      window[cb] = (data) => { cleanup(); resolve(data); };
+
+      const p = new URLSearchParams();
+      Object.keys(params).forEach(k => {
+        if (params[k] === undefined || params[k] === null) return;
+        p.set(k, String(params[k]));
       });
-      location.href = levelUrl.toString();
-    }
+      p.set("callback", cb);
 
-    function normalizeFileUrl(input){
-      if(!input) return "";
-      let raw = input.trim();
-      try { raw = decodeURIComponent(raw); } catch(e) {}
-      if(/^https?:\/\//i.test(raw)) return raw;
-      if(/^\/\//.test(raw)) return location.protocol + raw;
-      if(raw.startsWith("/")) return location.origin + raw;
-
-      if (raw.startsWith("data/") && REPO_BASE){
-        return location.origin + REPO_BASE + "/" + raw;
-      }
-
-      const base = new URL(location.href);
-      base.pathname = base.pathname.replace(/\/[^\/]*$/, "/");
-      return new URL(raw, base.toString()).toString();
-    }
-
-    function showError(msg){
-      $("errorBox").style.display = "block";
-      $("errorBox").textContent = msg;
-      $("loadingMsg").textContent = "로드 실패";
-    }
-
-    let deck = null;
-    let items = [];
-    let idx = 0;
-
-    function parseFuncChip(text){
-      if(!text) return { func: "", head: text || "" };
-      const parts = String(text).split("·").map(s => s.trim()).filter(Boolean);
-      if(parts.length >= 2){
-        return { func: parts[0], head: parts.slice(1).join(" · ") };
-      }
-      return { func: "", head: String(text) };
-    }
-
-    function setFuncChips(func){
-      const box = $("funcChips");
-      box.innerHTML = "";
-      if(!func){
-        box.style.display = "none";
-        return;
-      }
-      const chip = document.createElement("div");
-      chip.className = "funcChip";
-      chip.textContent = func;
-      box.appendChild(chip);
-      box.style.display = "flex";
-    }
-
-    const reHangul = /[가-힣]/;
-    const reCyr = /[\u0400-\u04FF]/;
-
-    function countHangul(s){ return (String(s||"").match(/[가-힣]/g)||[]).length; }
-    function countCyr(s){ return (String(s||"").match(/[\u0400-\u04FF]/g)||[]).length; }
-
-    function isMostlyHangul(s){
-      const h = countHangul(s), c = countCyr(s);
-      return h > c && h >= 1;
-    }
-    function isMostlyCyrillic(s){
-      const h = countHangul(s), c = countCyr(s);
-      return c > h && c >= 1;
-    }
-
-    function cleanLabelPrefix(s){
-      if(!s) return "";
-      return String(s)
-        .replace(/^유의어\s*:\s*/,"")
-        .replace(/^반의어\s*:\s*/,"")
-        .trim();
-    }
-
-    function fallbackSynAntFromEx(exKo){
-      if(!exKo) return {syn:"", ant:"", ex:""};
-      const lines = String(exKo).split("\n");
-      if(lines.length >= 2 && (lines[0].includes("유의어") || lines[0].includes("반의어"))){
-        const first = lines[0];
-        let syn = "";
-        let ant = "";
-        const synMatch = first.match(/유의어\s*:\s*([^|]+)(\||$)/);
-        const antMatch = first.match(/반의어\s*:\s*(.+)$/);
-        if(synMatch) syn = synMatch[1].trim();
-        if(antMatch) ant = antMatch[1].trim();
-        return { syn, ant, ex: lines.slice(1).join("\n").trim() };
-      }
-      return {syn:"", ant:"", ex: String(exKo).trim()};
-    }
-
-    // 핵심: "중요어휘1"은 파일명으로만 판정(다른 덱에 절대 영향 X)
-    function isKeyVocabDeckByFile(url){
-      return /level08_key_vocab1\.json(\?|$)/i.test(url || "");
-    }
-
-    // 예문 정리: ex_ko/ex_mn이 섞이거나 한쪽에만 몰리면 자동 분리/이동
-    function normalizeExamples(exKoRaw, exMnRaw){
-      let ko = String(exKoRaw || "").trim();
-      let mn = String(exMnRaw || "").trim();
-
-      // 1) 둘 다 있는데 뒤집힌 경우(ko가 키릴, mn이 한글) -> swap
-      if (ko && mn && isMostlyCyrillic(ko) && isMostlyHangul(mn)) {
-        const tmp = ko; ko = mn; mn = tmp;
-      }
-
-      // 2) ko가 비어있고 mn에 한글+키릴이 같이 있으면 라인 기준으로 분리
-      if (!ko && mn && reHangul.test(mn) && reCyr.test(mn)) {
-        const lines = mn.split("\n").map(s=>s.trim()).filter(Boolean);
-        const koLines = [], mnLines = [];
-        for (const line of lines){
-          const hasH = reHangul.test(line);
-          const hasC = reCyr.test(line);
-          if (hasH && !hasC) koLines.push(line);
-          else if (hasC && !hasH) mnLines.push(line);
-          else {
-            if (isMostlyHangul(line)) koLines.push(line);
-            else if (isMostlyCyrillic(line)) mnLines.push(line);
-            else koLines.push(line);
-          }
-        }
-        ko = koLines.join("\n").trim();
-        mn = mnLines.join("\n").trim();
-      }
-
-      // 3) mn이 비어있고 ko에 한글+키릴이 같이 있으면 라인 기준으로 분리
-      if (!mn && ko && reHangul.test(ko) && reCyr.test(ko)) {
-        const lines = ko.split("\n").map(s=>s.trim()).filter(Boolean);
-        const koLines = [], mnLines = [];
-        for (const line of lines){
-          const hasH = reHangul.test(line);
-          const hasC = reCyr.test(line);
-          if (hasH && !hasC) koLines.push(line);
-          else if (hasC && !hasH) mnLines.push(line);
-          else {
-            if (isMostlyHangul(line)) koLines.push(line);
-            else if (isMostlyCyrillic(line)) mnLines.push(line);
-            else koLines.push(line);
-          }
-        }
-        ko = koLines.join("\n").trim();
-        mn = mnLines.join("\n").trim();
-      }
-
-      // 4) ko에 키릴만 잔뜩 들어가 있고 mn은 비어있거나 거의 없으면 -> 이동
-      if (ko && !mn && isMostlyCyrillic(ko) && !reHangul.test(ko)) {
-        mn = ko; ko = "";
-      }
-
-      // 5) mn에 한글만 잔뜩 들어가 있고 ko는 비어있거나 거의 없으면 -> 이동
-      if (mn && !ko && isMostlyHangul(mn) && !reCyr.test(mn)) {
-        ko = mn; mn = "";
-      }
-
-      return { ko, mn };
-    }
-
-    function render(currentFileUrl){
-      if(!items.length){
-        $("lessonTitle").textContent = deck?.title_kr || deck?.title || "데이터 없음";
-        $("countBadge").textContent = "0 / 0";
-        $("wordKo").textContent = "…";
-        $("wordMn").textContent = "…";
-        $("synText").textContent = "—";
-        $("antText").textContent = "—";
-        $("exKo").textContent = "—";
-        $("exMn").textContent = "—";
-        $("synAntGrid").classList.remove("show");
-        return;
-      }
-
-      const it = items[idx];
-
-      $("lessonTitle").textContent = deck?.title_kr || deck?.title || "TOPIK II";
-      $("loadingMsg").textContent = "";
-      $("countBadge").textContent = (idx + 1) + " / " + items.length;
-
-      // 단어 ko/mn 뒤집힘 자동 교정(표시만)
-      const rawKo = String(it.ko || "");
-      const rawMn = String(it.mn || "");
-      const shouldSwapWord = isMostlyCyrillic(rawKo) && isMostlyHangul(rawMn);
-
-      const dispKo = shouldSwapWord ? rawMn : rawKo;
-      const dispMn = shouldSwapWord ? rawKo : rawMn;
-
-      const koParsed = parseFuncChip(dispKo);
-      const mnParsed = parseFuncChip(dispMn);
-
-      $("wordKo").textContent = koParsed.head || "—";
-      $("wordMn").textContent = mnParsed.head || "—";
-      setFuncChips(koParsed.func || mnParsed.func || "");
-
-      // 중요어휘1에서만 유의어/반의어 UI 노출 + 값 세팅
-      const isKey = isKeyVocabDeckByFile(currentFileUrl);
-      $("synAntGrid").classList.toggle("show", !!isKey);
-
-      if (isKey) {
-        const fb = fallbackSynAntFromEx(it.ex_ko || "");
-        const synRaw = it.syn_ko ? cleanLabelPrefix(it.syn_ko) : (fb.syn || "");
-        const antRaw = it.ant_ko ? cleanLabelPrefix(it.ant_ko) : (fb.ant || "");
-        $("synText").textContent = synRaw ? synRaw : "—";
-        $("antText").textContent = antRaw ? antRaw : "—";
-      } else {
-        // 다른 덱은 절대 영향 주지 않도록 값도 초기화
-        $("synText").textContent = "—";
-        $("antText").textContent = "—";
-      }
-
-      // 예문 정리(덱 전체 공통): 섞임/역전만 교정
-      const exKoRaw = String(it.ex_ko || "");
-      const exMnRaw = String(it.ex_mn || "");
-      const ex = normalizeExamples(exKoRaw, exMnRaw);
-
-      $("exKo").textContent = ex.ko ? ex.ko : "—";
-      $("exMn").textContent = ex.mn ? ex.mn : "—";
-    }
-
-    $("btnPrev").addEventListener("click", () => {
-      if(!items.length) return;
-      idx = (idx - 1 + items.length) % items.length;
-      render(currentFileUrl);
+      const full = url + (url.includes("?") ? "&" : "?") + p.toString();
+      const script = document.createElement("script");
+      script.src = full;
+      script.async = true;
+      script.onerror = () => { cleanup(); reject(new Error("JSONP network error")); };
+      document.head.appendChild(script);
     });
-    $("btnNext").addEventListener("click", () => {
-      if(!items.length) return;
-      idx = (idx + 1) % items.length;
-      render(currentFileUrl);
+  }
+
+  async function logEvent(action, extra){
+    try{
+      const payload = {
+        action: "log",
+        book: "TOPIK2",
+        lesson: "flashcards",
+        score: 0,
+        attempts: 0,
+        name: qs("name") || "",
+        klass: qs("klass") || "",
+        token: qs("token") || "",
+        deviceId: getDeviceId(),
+        ua: navigator.userAgent || "",
+        lang: getLang(),
+        ...extra,
+        event: action,
+        ts: nowISO()
+      };
+      await jsonp(SCRIPT_URL, payload, 8000);
+    }catch(e){}
+  }
+
+  const reHangul = /[ㄱ-ㅎㅏ-ㅣ가-힣]/;
+  const reCyril  = /[\u0400-\u04FF]/;
+  function hasHangul(s){ return reHangul.test(s || ""); }
+  function hasCyril(s){ return reCyril.test(s || ""); }
+
+  function fixPair(ko, mn){
+    const koIsMn = hasCyril(ko) && !hasHangul(ko);
+    const mnIsKo = hasHangul(mn) && !hasCyril(mn);
+    if (koIsMn && mnIsKo) return { ko: mn, mn: ko };
+    return { ko, mn };
+  }
+
+  function splitExample(exKo, exMn){
+    const a = safe(exKo).trim();
+    const b = safe(exMn).trim();
+
+    if (a && !b && hasHangul(a) && hasCyril(a)){
+      const idx = a.search(reCyril);
+      if (idx > 0){
+        const left = a.slice(0, idx).trim();
+        const right = a.slice(idx).trim();
+        return { ex_ko: left, ex_mn: right };
+      }
+    }
+
+    if (a && b){
+      const aIsMn = hasCyril(a) && !hasHangul(a);
+      const bIsKo = hasHangul(b) && !hasCyril(b);
+      if (aIsMn && bIsKo) return { ex_ko: b, ex_mn: a };
+    }
+
+    return { ex_ko: a, ex_mn: b };
+  }
+
+  function splitFuncAndWord(text){
+    const t = safe(text).trim();
+    const seps = [" · ", "|", " - ", " — ", " —", "—", "•"];
+    for (const sep of seps){
+      const idx = t.indexOf(sep);
+      if (idx > 0){
+        const func = t.slice(0, idx).trim();
+        const word = t.slice(idx + sep.length).trim();
+        if (func && word) return { func, word };
+      }
+    }
+    return { func: "", word: t };
+  }
+
+  // ✅ file 파라미터를 "항상 절대 URL"로 정규화 (404 방지)
+  function normalizeFileParam(){
+    const raw = qs("file") || "";
+    if (!raw) return "";
+
+    let v = raw;
+    try { v = decodeURIComponent(raw); } catch(_) {}
+
+    if (/^https?:\/\//i.test(v)) return v;
+    if (v.startsWith("/")) return new URL(v, location.origin).toString();
+    return new URL("/" + v, location.origin).toString();
+  }
+
+  // ✅ 설명/예문 분리: ex_ko/ex_mn에 줄바꿈이 있으면 (첫 줄=설명, 나머지=예문)
+  function splitDescAndExample(text){
+    const t = safe(text).trim();
+    if (!t) return { desc: "", ex: "" };
+    const lines = t.split("\n").map(s => s.trim()).filter(Boolean);
+    if (lines.length >= 2){
+      const desc = lines[0].replace(/^•\s*/, "").trim();
+      const ex = lines.slice(1).join("\n").trim();
+      return { desc, ex };
+    }
+    return { desc: "", ex: t };
+  }
+
+  // ✅ 중요어휘1만 "별도 구조"로 렌더링 (다른 덱에는 영향 X)
+  function isKeyVocabDeck(fileUrl){
+    return /level08_key_vocab1\.json(\?|$)/i.test(fileUrl || "");
+  }
+  function stripLabelPrefix(s){
+    return safe(s).replace(/^유의어\s*:\s*/,"").replace(/^반의어\s*:\s*/,"").trim();
+  }
+
+  const state = {
+    file: normalizeFileParam(),
+    data: null,
+    idx: 0,
+    startedAt: Date.now()
+  };
+
+  function showError(msg){
+    const $err = document.getElementById("err");
+    if (!$err) return;
+    $err.textContent = msg;
+    $err.style.display = "block";
+  }
+
+  function renderShell(title, sub){
+    const lang = getLang();
+    const name = qs("name") || "";
+    const klass = qs("klass") || "";
+
+    $app.innerHTML = `
+      <div class="topBar">
+        <div class="leftTop">
+          <button class="btnSmall" id="btnBack">← 뒤로</button>
+          <button class="btnSmall" id="btnPick">📚 다른 어휘</button>
+          <div class="langToggle">
+            <button class="langBtn ${lang==="ko"?"active":""}" id="langKo">한국어</button>
+            <button class="langBtn ${lang==="mn"?"active":""}" id="langMn">Монгол</button>
+          </div>
+        </div>
+        <div class="rightTop">
+          <div class="mono">${esc(name)} · ${esc(klass)}</div>
+          <div class="mono">lang=${esc(lang)}</div>
+        </div>
+      </div>
+
+      <div class="hdr">
+        <h1 class="title">${esc(title || "Flashcards")}</h1>
+        <p class="subtitle">${esc(sub || "다음 버튼을 눌러 단어를 넘기세요")}</p>
+      </div>
+
+      <div class="content">
+        <div class="deckInfo">
+          <div class="deckLeft">
+            <div class="deckName" id="deckName">로드 중…</div>
+            <div class="deckMeta">
+              <span class="pill" id="posInfo">0 / 0</span>
+              <span class="funcTop" id="funcTop" style="display:none;">
+                <span class="pillFunc pillFuncKo" id="funcKo"></span>
+                <span class="pillFunc pillFuncMn" id="funcMn"></span>
+              </span>
+            </div>
+          </div>
+        </div>
+
+        <div class="cardBox">
+          <div class="wordRow">
+            <div class="koWord" id="koWord">…</div>
+            <div class="mnWordInline" id="mnWordInline"></div>
+          </div>
+
+          <!-- (기존) 설명 박스: 기본 구조 유지 -->
+          <div class="descBox" id="descBox" style="display:none;">
+            <div class="descItem">
+              <div class="descLabel">설명 (한국어)</div>
+              <div class="descText" id="descKo"></div>
+            </div>
+            <div class="descItem">
+              <div class="descLabel">Тайлбар (Монгол)</div>
+              <div class="descText" id="descMn"></div>
+            </div>
+          </div>
+
+          <!-- (중요어휘1 전용) 유의어/반의어 -->
+          <div class="synAntBox" id="synAntBox" style="display:none;">
+            <div class="synAntItem">
+              <div class="synLabel">유의어</div>
+              <div class="synText" id="synKo"></div>
+            </div>
+            <div class="synAntItem">
+              <div class="synLabel">반의어</div>
+              <div class="synText" id="antKo"></div>
+            </div>
+          </div>
+
+          <div class="exBox">
+            <div class="exItem exKoBox">
+              <div class="exLabel">예문 (한국어)</div>
+              <div class="exText" id="exKo"></div>
+            </div>
+            <div class="exItem exMnBox">
+              <div class="exLabel">Жишээ (Монгол)</div>
+              <div class="exText" id="exMn"></div>
+            </div>
+          </div>
+
+          <div class="actions">
+            <button class="btn btnGhost" id="btnPrev">이전</button>
+            <button class="btn btnPrimary" id="btnNext">다음</button>
+          </div>
+
+          <div class="err" id="err"></div>
+        </div>
+      </div>
+    `;
+
+    // ✅ 뒤로: TOPIK2 홈(완전 빠져나가기)
+    document.getElementById("btnBack").addEventListener("click", async () => {
+      await logEvent("back", { idx: state.idx, file: state.file });
+      location.href = buildUrl(TOPIK2_HOME, {
+        name: qs("name") || "",
+        klass: qs("klass") || "",
+        token: qs("token") || "",
+        lang: getLang()
+      });
+    });
+
+    // ✅ 다른 어휘 선택: level.html로 이동(가능하면 cat/level 유지)
+    document.getElementById("btnPick").addEventListener("click", async () => {
+      await logEvent("pick_list", { idx: state.idx, file: state.file });
+      const cat = qs("cat") || "";
+      const level = qs("level") || "";
+      const target = (cat && level)
+        ? buildUrl(TOPIK2_LEVEL, { cat, level, name: qs("name")||"", klass: qs("klass")||"", token: qs("token")||"", lang: getLang() })
+        : buildUrl(TOPIK2_HOME, { name: qs("name")||"", klass: qs("klass")||"", token: qs("token")||"", lang: getLang() });
+      location.href = target;
+    });
+
+    document.getElementById("langKo").addEventListener("click", () => { setLang("ko"); render(true); });
+    document.getElementById("langMn").addEventListener("click", () => { setLang("mn"); render(true); });
+  }
+
+  function renderCard(){
+    const items = (state.data && Array.isArray(state.data.items)) ? state.data.items : [];
+    const total = items.length;
+
+    const $deckName = document.getElementById("deckName");
+    const $posInfo = document.getElementById("posInfo");
+
+    const $koWord = document.getElementById("koWord");
+    const $mnWordInline = document.getElementById("mnWordInline");
+
+    const $descBox = document.getElementById("descBox");
+    const $descKo = document.getElementById("descKo");
+    const $descMn = document.getElementById("descMn");
+
+    const $synAntBox = document.getElementById("synAntBox");
+    const $synKo = document.getElementById("synKo");
+    const $antKo = document.getElementById("antKo");
+
+    const $exKo = document.getElementById("exKo");
+    const $exMn = document.getElementById("exMn");
+
+    const $funcTop = document.getElementById("funcTop");
+    const $funcKo = document.getElementById("funcKo");
+    const $funcMn = document.getElementById("funcMn");
+
+    $posInfo.textContent = `${total ? (state.idx + 1) : 0} / ${total}`;
+
+    const deckTitle = (getLang() === "mn")
+      ? (state.data && state.data.title_mn) || (state.data && state.data.title_kr) || (state.data && state.data.title) || "Flashcards"
+      : (state.data && state.data.title_kr) || (state.data && state.data.title) || "Flashcards";
+    $deckName.textContent = deckTitle;
+
+    if (!total){
+      $koWord.textContent = "데이터가 없습니다";
+      $mnWordInline.textContent = "";
+      $descBox.style.display = "none";
+      $synAntBox.style.display = "none";
+      $exKo.textContent = "";
+      $exMn.textContent = "";
+      $funcTop.style.display = "none";
+      showError("items 배열이 비어 있습니다.\nJSON에 items가 들어있는지 확인하세요.");
+      return;
+    }
+
+    const it = items[state.idx] || {};
+    const fixed = fixPair(safe(it.ko).trim(), safe(it.mn).trim());
+    const koSplit = splitFuncAndWord(fixed.ko);
+    const mnSplit = splitFuncAndWord(fixed.mn);
+
+    const exFixed = splitExample(it.ex_ko, it.ex_mn);
+    const koDescEx = splitDescAndExample(exFixed.ex_ko);
+    const mnDescEx = splitDescAndExample(exFixed.ex_mn);
+
+    // 상단 기능칩(분야)
+    const funcKoVal = koSplit.func;
+    const funcMnVal = mnSplit.func;
+
+    if (funcKoVal || funcMnVal){
+      $funcTop.style.display = "flex";
+      $funcKo.textContent = funcKoVal ? ("기능 · " + funcKoVal) : "기능";
+      $funcMn.textContent = funcMnVal ? ("Үүрэг · " + funcMnVal) : "Үүрэг";
+    } else {
+      $funcTop.style.display = "none";
+    }
+
+    // 1줄: 단어(ko) + 번역어(mn)
+    $koWord.textContent = koSplit.word || "(빈 단어)";
+    $mnWordInline.textContent = mnSplit.word || "";
+
+    // ✅ 중요어휘1만 syn/ant 구조를 사용 (다른 덱은 기존 desc 구조 유지)
+    const keyDeck = isKeyVocabDeck(state.file);
+
+    if (keyDeck) {
+      // 다른 덱에 영향 금지: descBox 숨기고 synAntBox만 보여줌
+      $descBox.style.display = "none";
+      $descKo.textContent = "";
+      $descMn.textContent = "";
+
+      $synAntBox.style.display = "grid";
+      const syn = stripLabelPrefix(it.syn_ko || "");
+      const ant = stripLabelPrefix(it.ant_ko || "");
+      $synKo.textContent = syn || "—";
+      $antKo.textContent = ant || "—";
+    } else {
+      // 기존 구조 그대로
+      $synAntBox.style.display = "none";
+      $synKo.textContent = "";
+      $antKo.textContent = "";
+
+      const descKo = koDescEx.desc || "";
+      const descMn = mnDescEx.desc || "";
+      if (descKo || descMn){
+        $descBox.style.display = "grid";
+        $descKo.textContent = descKo;
+        $descMn.textContent = descMn;
+      } else {
+        $descBox.style.display = "none";
+        $descKo.textContent = "";
+        $descMn.textContent = "";
+      }
+    }
+
+    // 예문 표시(설명 제외 예문만)
+    $exKo.textContent = koDescEx.ex || "";
+    $exMn.textContent = mnDescEx.ex || "";
+
+    document.getElementById("btnPrev").disabled = (state.idx <= 0);
+    document.getElementById("btnPrev").style.opacity = (state.idx <= 0) ? 0.55 : 1;
+  }
+
+  function bindNav(){
+    document.getElementById("btnNext").addEventListener("click", async () => {
+      const items = state.data.items || [];
+      if (!items.length) return;
+      state.idx = (state.idx + 1) % items.length;
+      renderCard();
+      await logEvent("next", { idx: state.idx, file: state.file });
+    });
+
+    document.getElementById("btnPrev").addEventListener("click", async () => {
+      const items = state.data.items || [];
+      if (!items.length) return;
+      state.idx = Math.max(0, state.idx - 1);
+      renderCard();
+      await logEvent("prev", { idx: state.idx, file: state.file });
     });
 
     window.addEventListener("keydown", (e) => {
-      if(e.key === "ArrowLeft") $("btnPrev").click();
-      if(e.key === "ArrowRight") $("btnNext").click();
+      if (e.key === " " || e.key === "Enter") {
+        e.preventDefault();
+        const $n = document.getElementById("btnNext");
+        if ($n) $n.click();
+      }
     });
+  }
 
-    let currentFileUrl = "";
+  async function loadData(){
+    if (!state.file){
+      throw new Error("URL에 file 파라미터가 없습니다.\n예: ?file=/data/topik2/vocab/level01_attitude.json");
+    }
+    const res = await fetch(state.file, { cache: "no-store" });
+    if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText + "\n" + state.file);
+    const json = await res.json();
+    if (!json || !Array.isArray(json.items)) {
+      throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
+    }
+    state.data = json;
+  }
 
-    (async function init(){
-      const url = normalizeFileUrl(fileParam);
-      currentFileUrl = url;
-      $("fileHint").textContent = "file: " + (url ? url : "-");
+  async function render(keepIndex){
+    document.documentElement.lang = getLang();
+    renderShell("TOPIK II", "단어 카드 · 다음 버튼으로 넘기기");
 
-      if(!url){
-        showError("file 파라미터가 없습니다.\n예: flashcards.html?file=https%3A%2F%2F...json&name=...&klass=...&token=...");
-        return;
+    try{
+      if (!state.data) {
+        await loadData();
+        await logEvent("start", { file: state.file });
       }
-      try{
-        const res = await fetch(url, { cache: "no-store" });
-        if(!res.ok) throw new Error("HTTP " + res.status);
-        const data = await res.json();
+      if (!keepIndex) state.idx = 0;
+      renderCard();
+      bindNav();
+    }catch(e){
+      showError(String(e && e.message ? e.message : e));
+    }
+  }
 
-        if(!data || typeof data !== "object" || !Array.isArray(data.items)){
-          throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
-        }
-        deck = data;
-        items = data.items.filter(x => x && (x.ko || x.mn || x.ex_ko || x.ex_mn));
-        idx = 0;
-        render(currentFileUrl);
-      }catch(err){
-        showError("로드 실패: " + (err?.message || String(err)));
-      }
-    })();
-  </script>
+  window.addEventListener("beforeunload", () => {
+    const elapsedSec = Math.max(0, Math.round((Date.now() - state.startedAt) / 1000));
+    try{
+      jsonp(SCRIPT_URL, {
+        action: "log",
+        event: "end",
+        book: "TOPIK2",
+        lesson: "flashcards",
+        name: qs("name") || "",
+        klass: qs("klass") || "",
+        token: qs("token") || "",
+        deviceId: getDeviceId(),
+        ua: navigator.userAgent || "",
+        lang: getLang(),
+        file: state.file,
+        idx: state.idx,
+        elapsedSec,
+        ts: nowISO()
+      }, 1500);
+    }catch(e){}
+  });
+
+  render(false);
+})();
+</script>
 </body>
 </html>
