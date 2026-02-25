@@ -171,10 +171,6 @@
       background:linear-gradient(135deg,rgba(167,139,250,.20), rgba(11,16,32,.96));
       border-color:rgba(167,139,250,.52);
     }
-    .btnLegacy{
-      background:linear-gradient(135deg,rgba(251,191,36,.16), rgba(11,16,32,.96));
-      border-color:rgba(251,191,36,.46);
-    }
 
     @media(max-width:520px){
       .container{padding:10px}
@@ -211,15 +207,6 @@
         padding:10px 10px;
         min-height:44px;
         border-radius:14px;
-      }
-      #legacyBtnQuiz{
-        grid-column:1 / -1;
-        width:100%;
-        font-size:13px;
-        padding:10px 10px;
-        min-height:44px;
-        border-radius:14px;
-        text-align:center;
       }
 
       #panel-mixed .btnRow{display:flex;justify-content:flex-start}
@@ -265,9 +252,7 @@
       <div class="bar"></div>
 
       <div class="panel active" id="panel-vocab">
-        <div class="btnRow" id="legacyRowVocab" style="margin-bottom:10px;display:none;">
-          <a class="btn btnLegacy" id="legacyBtnVocab" href="#">기존 어휘(HTML) 보기</a>
-        </div>
+        <!-- ✅ 기존 어휘(HTML) 보기 버튼/행 삭제 (공간도 같이 사라짐) -->
         <div id="vocab"></div>
       </div>
 
@@ -275,7 +260,7 @@
         <div class="btnRow" style="margin-bottom:10px;">
           <button class="btn btnMode" id="btnMode" type="button">방향: 한국어 → 몽골어</button>
           <button class="btn btnNew" id="btnNew" type="button">새 문제</button>
-          <a class="btn btnLegacy" id="legacyBtnQuiz" href="#" style="display:none;">기존 자료(HTML) 보기</a>
+          <!-- ✅ 기존 자료(HTML) 보기 버튼 삭제 -->
         </div>
         <div class="muted small" id="quizHint"></div>
         <div class="bar"></div>
@@ -306,12 +291,9 @@
         vocabQuiz: "어휘 테스트",
         grammar: "문법",
         mixed: "종합 테스트",
-        legacyVocab: "기존 어휘(HTML) 보기",
-        legacyHtml: "기존 자료(HTML) 보기",
         thKo: "한국어",
         thMn: "몽골어",
         noVocab: "어휘 데이터가 없습니다.",
-        useLegacy: "아래 버튼으로 기존 자료를 사용할 수 있습니다.",
         noGrammar: "문법이 없습니다.",
         modeK2M: "방향: 한국어 → 몽골어",
         modeM2K: "방향: 몽골어 → 한국어",
@@ -331,12 +313,9 @@
         vocabQuiz: "Үг шалгалт",
         grammar: "Дүрэм",
         mixed: "Нэгдсэн тест",
-        legacyVocab: "Хуучин үгс (HTML) харах",
-        legacyHtml: "Хуучин материал (HTML) харах",
         thKo: "Солонгос",
         thMn: "Монгол",
         noVocab: "Үгийн өгөгдөл алга.",
-        useLegacy: "Доорх товчоор хуучин материалыг ашиглаж болно.",
         noGrammar: "Дүрэм байхгүй.",
         modeK2M: "Чиглэл: Солонгос → Монгол",
         modeM2K: "Чиглэл: Монгол → Солонгос",
@@ -409,9 +388,6 @@
       document.getElementById("tab-grammar").textContent = tr("grammar");
       document.getElementById("tab-mixed").textContent = tr("mixed");
 
-      document.getElementById("legacyBtnVocab").textContent = tr("legacyVocab");
-      document.getElementById("legacyBtnQuiz").textContent = tr("legacyHtml");
-
       document.getElementById("btnNew").textContent = tr("newQ");
       document.getElementById("btnNewMixed").textContent = tr("newQ");
       document.getElementById("btnMode").textContent = (QUIZ_MODE==="KO2MN") ? tr("modeK2M") : tr("modeM2K");
@@ -419,15 +395,6 @@
 
     function renderVocab(d){
       const vocabDiv = document.getElementById("vocab");
-      const legacyRow = document.getElementById("legacyRowVocab");
-      const legacyBtn = document.getElementById("legacyBtnVocab");
-
-      if(d.legacy_vocab_url){
-        legacyBtn.href = d.legacy_vocab_url;
-        legacyRow.style.display = "";
-      } else {
-        legacyRow.style.display = "none";
-      }
 
       const vocab = d.vocab || [];
       if(vocab.length){
@@ -445,9 +412,7 @@
         html += "</tbody></table>";
         vocabDiv.innerHTML = html;
       } else {
-        vocabDiv.innerHTML =
-          `<div class='muted'>${tr("noVocab")}</div>` +
-          (d.legacy_vocab_url ? `<div class='muted small' style='margin-top:6px;'>${tr("useLegacy")}</div>` : "");
+        vocabDiv.innerHTML = `<div class='muted'>${tr("noVocab")}</div>`;
       }
     }
 
@@ -550,14 +515,6 @@
     function renderQuiz(d){
       const quizDiv = document.getElementById("quiz");
       const hint = document.getElementById("quizHint");
-      const legacyBtnQuiz = document.getElementById("legacyBtnQuiz");
-
-      if(d.legacy_vocab_url){
-        legacyBtnQuiz.href = d.legacy_vocab_url;
-        legacyBtnQuiz.style.display = "";
-      } else {
-        legacyBtnQuiz.style.display = "none";
-      }
 
       const vocab = d.vocab || [];
       hint.textContent = tr("quizHint", vocab.length);
@@ -691,53 +648,5 @@
 
     main();
   </script>
-  <style>
-  /* "기존 어휘(HTML) 보기" 버튼이 남기는 공간까지 확실히 제거 */
-  .legacyVocabHide { display: none !important; }
-</style>
-
-<script>
-(function(){
-  "use strict";
-
-  function norm(s){
-    return String(s||"").replace(/\s+/g," ").trim();
-  }
-  const TARGET = "기존 어휘(HTML) 보기";
-
-  function removeLegacyBtn(){
-    const nodes = Array.from(document.querySelectorAll("button,a,[role='button'],div,span"));
-    const hits = nodes.filter(el => norm(el.textContent) === TARGET);
-
-    hits.forEach(el=>{
-      // 1) 버튼 자체 숨김(레이아웃 공간 제거)
-      el.classList.add("legacyVocabHide");
-
-      // 2) 혹시 버튼이 들어있는 '박스'가 따로 있으면(여백 원인) -> 빈 박스만 제거
-      let p = el.parentElement;
-      for(let i=0;i<6 && p && p !== document.body;i++){
-        const hasOtherControls = p.querySelector("button,a,[role='button']");
-        const text = norm(p.textContent);
-        // "이 버튼 텍스트만" 가진 컨테이너이고, 다른 버튼/링크가 없으면 컨테이너도 숨김
-        if(!hasOtherControls && (text === "" || text === TARGET)){
-          p.classList.add("legacyVocabHide");
-        }
-        p = p.parentElement;
-      }
-    });
-  }
-
-  // 로드 후 1회
-  if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", removeLegacyBtn, { once:true });
-  }else{
-    removeLegacyBtn();
-  }
-
-  // JS로 늦게 버튼이 생기는 경우까지 대응
-  const mo = new MutationObserver(()=>removeLegacyBtn());
-  mo.observe(document.documentElement, { childList:true, subtree:true });
-})();
-</script>
 </body>
 </html>
