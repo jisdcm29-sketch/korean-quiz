@@ -304,7 +304,8 @@
         correct: "정답!",
         wrong: "오답!",
         answer: "정답",
-        cant: "퀴즈를 만들 수 없습니다. (데이터 확인 필요)"
+        cant: "퀴즈를 만들 수 없습니다. (데이터 확인 필요)",
+        grammarMissingFile: "문법 파일을 찾을 수 없습니다. (레벨/과 정보 확인 필요)"
       },
       MN: {
         loading: "Ачаалж байна...",
@@ -326,7 +327,8 @@
         correct: "Зөв!",
         wrong: "Буруу!",
         answer: "Зөв хариулт",
-        cant: "Шалгалт үүсгэж чадсангүй. (өгөгдөл шалгана уу)"
+        cant: "Шалгалт үүсгэж чадсангүй. (өгөгдөл шалгана уу)",
+        grammarMissingFile: "Дүрмийн файл олдсонгүй. (Түвшин/хичээл шалгана уу)"
       }
     };
 
@@ -563,6 +565,51 @@
       return lessonRaw ? String(lessonRaw) : "";
     }
 
+    function pad2(lessonRaw){
+      const n = parseInt(String(lessonRaw || "").replace(/[^\d]/g,""), 10);
+      if(!Number.isFinite(n)) return "";
+      return String(n).padStart(2, "0");
+    }
+
+    function passthroughQS(){
+      const u = new URL(location.href);
+      const p = new URLSearchParams();
+      ["name","klass","token","lang"].forEach(k=>{
+        const v = u.searchParams.get(k);
+        if(v) p.set(k, v);
+      });
+      if(!p.get("lang")) p.set("lang", getLang());
+      return p.toString();
+    }
+
+    function buildGrammarFileFromLesson(d){
+      const level = (d && d.meta && d.meta.level) ? d.meta.level : (d && d.level) ? d.level : "";
+      const lesson = (d && d.meta && d.meta.lesson) ? d.meta.lesson : (d && d.lesson) ? d.lesson : "";
+      const nn = pad2(lesson);
+      if(!level || !nn) return "";
+      return `GRAM-SNU-${level}-lesson${nn}.html`;
+    }
+
+    function openGrammarQuiz(){
+      // 아직 레슨 JSON 로드 전이면, 기존처럼 패널만 열어둠
+      if(!LESSON){
+        setActiveTab("grammar");
+        return;
+      }
+
+      const file = buildGrammarFileFromLesson(LESSON);
+      if(!file){
+        setActiveTab("grammar");
+        const gramDiv = document.getElementById("grammar");
+        if(gramDiv) gramDiv.innerHTML = `<div class='muted'>${tr("grammarMissingFile")}</div>`;
+        return;
+      }
+
+      const qs = passthroughQS();
+      // snu/lesson.html -> ../grammar/...
+      location.href = `../grammar/${file}` + (qs ? `?${qs}` : "");
+    }
+
     async function main(){
       applyTexts();
 
@@ -570,7 +617,7 @@
 
       document.getElementById("tab-vocab").addEventListener("click", ()=>setActiveTab("vocab"));
       document.getElementById("tab-quiz").addEventListener("click", ()=>setActiveTab("quiz"));
-      document.getElementById("tab-grammar").addEventListener("click", ()=>setActiveTab("grammar"));
+      document.getElementById("tab-grammar").addEventListener("click", openGrammarQuiz);
       document.getElementById("tab-mixed").addEventListener("click", ()=>setActiveTab("mixed"));
 
       document.getElementById("btnLang").addEventListener("click", ()=>{
