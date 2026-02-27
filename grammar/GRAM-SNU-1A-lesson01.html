@@ -6,7 +6,7 @@
   <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate" />
   <meta http-equiv="Pragma" content="no-cache" />
   <meta http-equiv="Expires" content="0" />
-  <title>GRAM · SNU · 1A · lesson01 · Grammar Test</title>
+  <title>GRAM · SNU · 1A · lesson01 · Grammar</title>
 
   <style>
     :root{
@@ -30,11 +30,13 @@
     .btnRow{display:flex; gap:10px; margin-top:14px;}
     .qno{margin-top:14px; color:var(--primary); font-weight:900; font-size:15px;}
     .inst{margin-top:10px; background:#eef2f7; border:1px solid #d7dee7; padding:10px; border-radius:10px; color:#223047; font-size:14px;}
-    .question{margin:18px 0 10px; font-size:22px; font-weight:900; color:#1f2f45; line-height:1.35; word-break:keep-all;}
+    .question{margin:18px 0 10px; font-size:22px; font-weight:900; color:#1f2f45; line-height:1.35; word-break:keep-all; white-space:pre-line;}
     .choice{
-      width:100%; margin:10px 0; padding:14px 12px; border-radius:12px;
+      width:100%; margin:10px 0;
+      padding:14px 12px; border-radius:12px;
       border:2px solid var(--primary); background:#fff; color:#223047;
       font-size:16px; font-weight:900; cursor:pointer; transition:.15s; text-align:left;
+      -webkit-tap-highlight-color:transparent;
     }
     .choice:hover{background:var(--primary); color:#fff;}
     .hidden{display:none;}
@@ -42,17 +44,21 @@
     .panel{margin-top:16px; padding:14px; border:1px solid var(--line); border-radius:14px; background:#fff; text-align:left;}
     .score{font-size:26px; font-weight:900; color:var(--bad); margin:10px 0;}
     .wrongList{max-height:300px; overflow:auto; padding:12px; border-radius:12px; border:1px solid var(--warnline); background:var(--warnbg);}
-    .wrongItem{padding:8px 0; border-bottom:1px dashed var(--warnline); font-size:15px;}
+    .wrongItem{padding:8px 0; border-bottom:1px dashed var(--warnline); font-size:15px; white-space:pre-line;}
     .wrongItem:last-child{border-bottom:none;}
     .note{margin-top:10px; color:var(--muted); font-size:13px; line-height:1.45;}
     .resultCard{border:2px solid #cfe0ff; background:#f6f9ff; border-radius:14px; padding:14px; margin-top:14px; text-align:left;}
     .resultCard p{margin:8px 0; font-size:15px; line-height:1.55;}
     .bigMsg{font-size:18px; font-weight:900;}
     .center{text-align:center;}
-    .overlay{position:fixed; inset:0; background:rgba(0,0,0,0.45); display:none; align-items:center; justify-content:center; padding:18px;}
-    .modal{max-width:560px; width:100%; background:#fff; border-radius:16px; padding:16px; border:1px solid #d7dee7; box-shadow:0 10px 25px rgba(0,0,0,0.18); text-align:left;}
-    .modal h2{margin:0; font-size:18px; color:#1f2f45;}
-    .modal p{margin:10px 0; color:#223047; line-height:1.55; font-size:14px;}
+    @media(max-width:520px){
+      body{padding:14px}
+      .container{padding:14px}
+      .btn{padding:12px 10px; font-size:15px}
+      .question{font-size:20px}
+      .choice{font-size:15px}
+      .btnRow{flex-wrap:wrap}
+    }
   </style>
 </head>
 
@@ -74,12 +80,12 @@
     <div class="inst" id="inst"></div>
     <div class="question" id="qtext"></div>
     <div id="choices"></div>
-    <div class="note">Санамж: Алдаа гаргасан асуултуудыг төгсгөлд нь зөв хариутай нь харуулна.</div>
+    <div class="note">Санамж: Дуусмагц эхлээд Review (алдаа) дэлгэц гарна, дараа нь Results дэлгэц гарна.</div>
   </div>
 
   <div id="reviewSection" class="hidden">
-    <h1 style="color:var(--orange);">Алдаагаа шалгана уу</h1>
-    <p class="note">Эхлээд зөв хариуг хараад, дараа нь дахин оролдоно уу.</p>
+    <h1 style="color:var(--orange);">Review · Алдаагаа шалгана уу</h1>
+    <p class="note">Эхлээд зөв хариуг хараад, дараа нь Results руу орно.</p>
 
     <div class="panel">
       <div class="score" id="reviewScore"></div>
@@ -87,6 +93,7 @@
       <div class="note" id="attemptInfo"></div>
 
       <div class="btnRow">
+        <button class="btn" style="background:var(--ok);" onclick="goResult()">Results (Дүн)</button>
         <button class="btn" style="background:var(--orange);" onclick="retry()">Дахин оролдох</button>
         <button class="btn btnGray" onclick="goBack()">Буцах</button>
       </div>
@@ -94,38 +101,20 @@
   </div>
 
   <div id="resultSection" class="hidden">
-    <h1 style="color:var(--ok);">Тэнцлээ!</h1>
+    <h1 id="resultTitle" style="color:var(--ok);">Тэнцлээ!</h1>
 
     <div class="resultCard">
       <p class="bigMsg" id="resultLine1"></p>
       <p class="center"><span class="score" id="finalScore"></span></p>
       <p id="resultLine2"></p>
       <p id="resultDate"></p>
-
-      <p style="margin-top:12px; font-weight:900; color:#1f2f45;">
-        Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.
-      </p>
+      <p style="margin-top:12px; font-weight:900; color:#1f2f45;">Есүс танд хайртай!</p>
       <p class="note" id="logStatus"></p>
     </div>
 
     <div class="btnRow">
-      <button class="btn" style="background:var(--ok);" onclick="openScreenshotHelp()">Капчер</button>
       <button class="btn btnGray" onclick="goBack()">Буцах</button>
     </div>
-  </div>
-</div>
-
-<div class="overlay" id="overlay" onclick="closeModal(event)">
-  <div class="modal">
-    <h2>Скриншот / Хуваалцах</h2>
-    <p>
-      <b>iPhone:</b> Талын товч + Дуу нэмэх товчийг зэрэг дарна уу.<br>
-      <b>Android:</b> Асаах товч + Дуу хасах товчийг зэрэг дарна уу.
-    </p>
-    <p class="note">
-      Хэрэв “share” (хуваалцах) ажиллавал шууд багш руугаа илгээж болно.
-    </p>
-    <button class="btn btnGray" onclick="closeModal()">Хаах</button>
   </div>
 </div>
 
@@ -136,14 +125,36 @@ const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFn
 /* Lesson ID */
 const lessonId = "GRAM-SNU-1A-lesson01";
 
-/* Sample grammar questions (editable later) */
+/* 25 slides (Grammar: N은/는 N이에요/예요, N입니까?/N입니다, N이/가 아닙니다) */
 const rawQ = [
-  { q:"‘-이에요/예요’는 무엇인가요?", a:"서술격 조사(…이다)", c:["과거 표현", "부정 표현", "의문 표현"] },
-  { q:"‘이/가’는 보통 무엇을 나타내나요?", a:"주어", c:["목적어", "장소", "시간"] },
-  { q:"‘을/를’은 보통 무엇을 나타내나요?", a:"목적어", c:["주어", "원인", "조건"] },
-  { q:"‘에’는 보통 무엇을 나타내나요?", a:"장소/시간", c:["대조", "부정", "선택"] },
-  { q:"‘그리고’는 어떤 기능인가요?", a:"나열/연결", c:["대조", "인과", "조건"] },
-  { q:"‘하지만’은 어떤 기능인가요?", a:"대조/반대", c:["첨가", "목적", "선택"] }
+  { q:"[1/25] N은/는 N이에요/예요\n(Танилцуулга: өдөр тутмын, энгийн)\n어떤 상황에서 써요?", a:"일상적·비격식", c:["발표/공식", "명령", "과거"] },
+  { q:"[2/25] ‘은/는’은 무엇을 표시해요?\n(Сэдэв/сэдвийг ялгана)", a:"주제(Topic)", c:["목적어", "장소", "시간"] },
+  { q:"[3/25] 받침 O → ‘은/는’는?\n(Дагавар авиатай бол)", a:"N+은", c:["N+는", "N+이", "N+가"] },
+  { q:"[4/25] 받침 X → ‘은/는’는?\n(Дагавар авиа байхгүй бол)", a:"N+는", c:["N+은", "N+이에요", "N+입니다"] },
+  { q:"[5/25] ‘이에요/예요’는 무엇이에요?\n(…이다)", a:"서술격 조사", c:["과거", "부정", "의문"] },
+  { q:"[6/25] 받침 O → ‘이에요/예요’는?", a:"N+이에요", c:["N+예요", "N+입니다", "N+입니까"] },
+  { q:"[7/25] 받침 X → ‘이에요/예요’는?", a:"N+예요", c:["N+이에요", "N+이 아닙니다", "N+가 아닙니다"] },
+  { q:"[8/25] 예문에서 틀린 것은?\n저는 유진이에요.", a:"맞아요", c:["틀려요", "부정이에요", "의문이에요"] },
+  { q:"[9/25] 예문: 저는 중국 사람이에요. 학생이에요.\n(Ярианы хэл)", a:"비격식", c:["격식", "명령", "과거"] },
+
+  { q:"[10/25] N입니까?/N입니다는 언제 써요?\n(Албан ёсны)", a:"격식/공식", c:["친구끼리", "메모", "감탄"] },
+  { q:"[11/25] 평서문(대답): ‘저는 마이클___’", a:"입니다", c:["입니까", "예요", "이에요"] },
+  { q:"[12/25] 의문문(질문): ‘마이클 씨는 미국 사람___?’", a:"입니까", c:["입니다", "예요", "이에요"] },
+  { q:"[13/25] ‘입니다’는 ‘이에요/예요’보다?", a:"더 격식적", c:["더 비격식", "과거형", "부정형"] },
+  { q:"[14/25] ‘입니까?’는 어떤 문장?", a:"의문문", c:["평서문", "명령문", "청유문"] },
+  { q:"[15/25] ‘영국 사람입니다.’ 문장 종류는?", a:"대답/서술", c:["질문", "요청", "감탄"] },
+
+  { q:"[16/25] ‘N이/가 아닙니다’는 무엇?\n(…아니다)", a:"격식체 부정", c:["과거", "요청", "비격식 소개"] },
+  { q:"[17/25] 받침 O → 부정: ‘사람___ 아닙니다’", a:"이", c:["가", "은", "는"] },
+  { q:"[18/25] 받침 X → 부정: ‘가수___ 아닙니다’", a:"가", c:["이", "은", "는"] },
+  { q:"[19/25] 대화: A 미국 사람입니까? B 아니요, 저는 미국 사람이 아닙니다.\nB의 문법은?", a:"N이/가 아닙니다", c:["N이에요/예요", "N입니까?", "N입니다"] },
+  { q:"[20/25] ‘아닙니다’는 어느 스타일?", a:"격식", c:["비격식", "반말", "과거"] },
+
+  { q:"[21/25] (Mini) ‘저___ 학생이에요.’ 빈칸", a:"는", c:["은", "이", "가"] },
+  { q:"[22/25] (Mini) ‘학생___.’ 받침 O + 비격식", a:"이에요", c:["예요", "입니다", "입니까"] },
+  { q:"[23/25] (Mini) ‘마이클 씨는 미국 사람___?’ 격식 질문", a:"입니까", c:["입니다", "예요", "아닙니다"] },
+  { q:"[24/25] (Mini) ‘저는 미국 사람___.’ 격식 부정", a:"이 아닙니다", c:["가 아닙니다", "예요", "입니까"] },
+  { q:"[25/25] (Mini) ‘나나는 가수___ 아닙니다.’ 받침 X", a:"가", c:["이", "은", "는"] }
 ];
 
 /* Utils */
@@ -185,6 +196,7 @@ function getDeviceId(){
 let name="", klass="", token="", deviceId="";
 let attempts=0;
 let questions=[], idx=0, score=0, wrong=[];
+let lastFinalScore=0;
 
 /* DOM */
 const studentNameEl = document.getElementById("studentName");
@@ -200,12 +212,12 @@ const choicesEl = document.getElementById("choices");
 const reviewScoreEl = document.getElementById("reviewScore");
 const wrongListEl = document.getElementById("wrongList");
 const attemptInfoEl = document.getElementById("attemptInfo");
+const resultTitleEl = document.getElementById("resultTitle");
 const resultLine1El = document.getElementById("resultLine1");
 const finalScoreEl = document.getElementById("finalScore");
 const resultLine2El = document.getElementById("resultLine2");
 const resultDateEl = document.getElementById("resultDate");
 const logStatusEl = document.getElementById("logStatus");
-const overlay = document.getElementById("overlay");
 
 /* UI helpers */
 function showError(msg){
@@ -284,35 +296,46 @@ function answer(choice){
   idx++;
   showQuestion();
 }
-function finish(){
+
+async function finish(){
   attempts++;
   saveAttempts();
   const finalScore=Math.round(score);
+  lastFinalScore = finalScore;
 
-  if(finalScore>=80 || attempts>=5){
-    showResult(finalScore);
-  }else{
-    showReview(finalScore);
-  }
+  // Always log every attempt
+  logStatusEl.textContent = "Бүртгэл илгээж байна...";
+  await sendLog(finalScore);
+
+  // Always show Review first (policy)
+  showReview(finalScore);
 }
+
 function showReview(finalScore){
   quizSection.classList.add("hidden");
   resultSection.classList.add("hidden");
   reviewSection.classList.remove("hidden");
 
-  reviewScoreEl.innerHTML = `Таны дүн: <b style="color:var(--bad);">${finalScore} оноо</b>`;
-  attemptInfoEl.textContent = `Оролдлого: ${attempts} (5 удаа хүрвэл автоматаар тэнцэнэ)`;
+  const color = finalScore>=80 ? "var(--ok)" : "var(--bad)";
+  reviewScoreEl.innerHTML = `Таны дүн: <b style="color:${color};">${finalScore} оноо</b>`;
+  attemptInfoEl.textContent = `Оролдлого: ${attempts}`;
 
   wrongListEl.innerHTML="";
-  wrong.forEach(w=>{
+  if(!wrong.length){
     const div=document.createElement("div");
     div.className="wrongItem";
-    div.innerHTML = `❓ <b>${escapeHtml(w.q)}</b><br>✅ <b>${escapeHtml(w.a)}</b>`;
+    div.textContent = "🎉 Бүх асуулт зөв байна!";
     wrongListEl.appendChild(div);
-  });
+  }else{
+    wrong.forEach(w=>{
+      const div=document.createElement("div");
+      div.className="wrongItem";
+      div.innerHTML = `❓ <b>${escapeHtml(w.q)}</b>\n✅ <b>${escapeHtml(w.a)}</b>`;
+      wrongListEl.appendChild(div);
+    });
+  }
 }
 
-/* Log to sheet (same mechanism) */
 async function sendLog(finalScore){
   try{
     const ua = navigator.userAgent || "";
@@ -341,61 +364,35 @@ async function showResult(finalScore){
   quizSection.classList.add("hidden");
   reviewSection.classList.add("hidden");
   resultSection.classList.remove("hidden");
-  clearAttempts();
 
-  resultLine1El.textContent = `${name}, баяр хүргэе!`;
+  const pass = finalScore>=80;
+  resultTitleEl.textContent = pass ? "Тэнцлээ!" : "Дахин оролдоорой";
+  resultTitleEl.style.color = pass ? "var(--ok)" : "var(--bad)";
+
+  // Required: name / class / score / attempts / date
+  resultLine1El.textContent = pass ? `${name} · Тэнцлээ!` : `${name} · Хичээгээрэй!`;
   finalScoreEl.textContent = `Дүн: ${finalScore} оноо`;
-  resultLine2El.textContent = `Оролдлого: ${attempts}`;
+  resultLine2El.textContent = `Анги: ${klass} · Оролдлого: ${attempts}`;
 
   const now = new Date();
   const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
   resultDateEl.textContent = `Огноо: ${fmt.format(now)}`;
 
-  logStatusEl.textContent = "Бүртгэл илгээж байна...";
-  await sendLog(finalScore);
+  // pass/fail regardless: attempts reset only after showing result
+  clearAttempts();
 }
 
 /* Buttons */
 function retry(){ prepareQuestions(); showQuiz(); }
+function goResult(){ showResult(lastFinalScore); }
 
-/* Back: try SNU hub first, fallback to grammar main */
+/* Back to SNU 1A hub */
 function goBack(){
   const qs =
     `?name=${encodeURIComponent(name)}` +
     `&klass=${encodeURIComponent(klass)}` +
     `&token=${encodeURIComponent(token)}`;
-
-  // If you have a 1A hub later, change this to "GRAM-SNU-1A-hub.html"
-  location.href = "GRAM-SNU-hub.html" + qs;
-}
-
-/* Screenshot / Share attempt */
-async function tryShareScreenshotText(){
-  const text =
-    `Нэр: ${name}\n` +
-    `Анги: ${klass}\n` +
-    `${finalScoreEl.textContent}\n` +
-    `${resultDateEl.textContent}\n` +
-    `Энэ дэлгэцийг скриншот хийж багш руугаа илгээнэ үү.`;
-  try{
-    if(navigator.share){
-      await navigator.share({ text });
-      return true;
-    }
-  }catch(e){}
-  return false;
-}
-async function openScreenshotHelp(){
-  // Try share first (some devices allow it)
-  const ok = await tryShareScreenshotText();
-  overlay.style.display="flex";
-  if(ok){
-    // still show help, but user already shared text
-  }
-}
-function closeModal(e){
-  if(e && e.target && e.target !== overlay) return;
-  overlay.style.display="none";
+  location.href = "GRAM-SNU-1A-hub.html" + qs;
 }
 
 /* Init */
@@ -417,6 +414,7 @@ function closeModal(e){
     try{
       const obj = JSON.parse(cached);
       attempts = obj.attempts || 0;
+      // If already saved, show result (review data may be unavailable)
       await showResult(obj.finalScore || 0);
       return;
     }catch(e){}
