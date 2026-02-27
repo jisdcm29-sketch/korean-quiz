@@ -27,17 +27,12 @@
     .btn:hover{background:var(--primary2);}
     .btnGray{background:#eef2f7; color:#223047; border:1px solid #d7dee7;}
     .btnGray:hover{background:#e2e8f0;}
-    .btnRow{display:flex; gap:10px; margin-top:14px;}
+    .btnRow{display:flex; gap:10px; margin-top:14px; flex-wrap:wrap;}
+    .btnRow .btn{flex:1}
     .qno{margin-top:14px; color:var(--primary); font-weight:900; font-size:15px;}
-    .inst{margin-top:10px; background:#eef2f7; border:1px solid #d7dee7; padding:10px; border-radius:10px; color:#223047; font-size:14px;}
+    .inst{margin-top:10px; background:#eef2f7; border:1px solid #d7dee7; padding:10px; border-radius:10px; color:#223047; font-size:14px; line-height:1.35;}
     .question{margin:18px 0 10px; font-size:22px; font-weight:900; color:#1f2f45; line-height:1.35; word-break:keep-all; white-space:pre-line;}
-    .choice{
-      width:100%; margin:10px 0;
-      padding:14px 12px; border-radius:12px;
-      border:2px solid var(--primary); background:#fff; color:#223047;
-      font-size:16px; font-weight:900; cursor:pointer; transition:.15s; text-align:left;
-      -webkit-tap-highlight-color:transparent;
-    }
+    .choice{width:100%; margin:10px 0; padding:14px 12px; border-radius:12px; border:2px solid var(--primary); background:#fff; color:#223047; font-size:16px; font-weight:900; cursor:pointer; transition:.15s; text-align:left; -webkit-tap-highlight-color:transparent;}
     .choice:hover{background:var(--primary); color:#fff;}
     .hidden{display:none;}
     .warn{margin-top:14px; background:var(--warnbg); border:1px solid var(--warnline); border-radius:12px; padding:12px; color:var(--warntext); font-size:14px; line-height:1.45; text-align:left;}
@@ -57,7 +52,6 @@
       .btn{padding:12px 10px; font-size:15px}
       .question{font-size:20px}
       .choice{font-size:15px}
-      .btnRow{flex-wrap:wrap}
     }
   </style>
 </head>
@@ -119,13 +113,9 @@
 </div>
 
 <script>
-/* Google Apps Script (same as word program) */
 const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
-
-/* Lesson ID */
 const lessonId = "GRAM-SNU-1A-lesson01";
 
-/* 25 slides (Grammar: N은/는 N이에요/예요, N입니까?/N입니다, N이/가 아닙니다) */
 const rawQ = [
   { q:"[1/25] N은/는 N이에요/예요\n(Танилцуулга: өдөр тутмын, энгийн)\n어떤 상황에서 써요?", a:"일상적·비격식", c:["발표/공식", "명령", "과거"] },
   { q:"[2/25] ‘은/는’은 무엇을 표시해요?\n(Сэдэв/сэдвийг ялгана)", a:"주제(Topic)", c:["목적어", "장소", "시간"] },
@@ -134,30 +124,26 @@ const rawQ = [
   { q:"[5/25] ‘이에요/예요’는 무엇이에요?\n(…이다)", a:"서술격 조사", c:["과거", "부정", "의문"] },
   { q:"[6/25] 받침 O → ‘이에요/예요’는?", a:"N+이에요", c:["N+예요", "N+입니다", "N+입니까"] },
   { q:"[7/25] 받침 X → ‘이에요/예요’는?", a:"N+예요", c:["N+이에요", "N+이 아닙니다", "N+가 아닙니다"] },
-  { q:"[8/25] 예문에서 틀린 것은?\n저는 유진이에요.", a:"맞아요", c:["틀려요", "부정이에요", "의문이에요"] },
-  { q:"[9/25] 예문: 저는 중국 사람이에요. 학생이에요.\n(Ярианы хэл)", a:"비격식", c:["격식", "명령", "과거"] },
-
+  { q:"[8/25] 예문: 저는 유진이에요. (맞아요/틀려요)", a:"맞아요", c:["틀려요", "부정이에요", "의문이에요"] },
+  { q:"[9/25] 저는 중국 사람이에요. 학생이에요.\n(Ярианы хэл)", a:"비격식", c:["격식", "명령", "과거"] },
   { q:"[10/25] N입니까?/N입니다는 언제 써요?\n(Албан ёсны)", a:"격식/공식", c:["친구끼리", "메모", "감탄"] },
   { q:"[11/25] 평서문(대답): ‘저는 마이클___’", a:"입니다", c:["입니까", "예요", "이에요"] },
   { q:"[12/25] 의문문(질문): ‘마이클 씨는 미국 사람___?’", a:"입니까", c:["입니다", "예요", "이에요"] },
   { q:"[13/25] ‘입니다’는 ‘이에요/예요’보다?", a:"더 격식적", c:["더 비격식", "과거형", "부정형"] },
   { q:"[14/25] ‘입니까?’는 어떤 문장?", a:"의문문", c:["평서문", "명령문", "청유문"] },
   { q:"[15/25] ‘영국 사람입니다.’ 문장 종류는?", a:"대답/서술", c:["질문", "요청", "감탄"] },
-
-  { q:"[16/25] ‘N이/가 아닙니다’는 무엇?\n(…아니다)", a:"격식체 부정", c:["과거", "요청", "비격식 소개"] },
-  { q:"[17/25] 받침 O → 부정: ‘사람___ 아닙니다’", a:"이", c:["가", "은", "는"] },
-  { q:"[18/25] 받침 X → 부정: ‘가수___ 아닙니다’", a:"가", c:["이", "은", "는"] },
-  { q:"[19/25] 대화: A 미국 사람입니까? B 아니요, 저는 미국 사람이 아닙니다.\nB의 문법은?", a:"N이/가 아닙니다", c:["N이에요/예요", "N입니까?", "N입니다"] },
+  { q:"[16/25] ‘N이/가 아닙니다’는? (…아니다)", a:"격식체 부정", c:["과거", "요청", "비격식 소개"] },
+  { q:"[17/25] 받침 O → ‘사람___ 아닙니다’", a:"이", c:["가", "은", "는"] },
+  { q:"[18/25] 받침 X → ‘가수___ 아닙니다’", a:"가", c:["이", "은", "는"] },
+  { q:"[19/25] A: 미국 사람입니까? B: 미국 사람이 아닙니다.\nB 문법은?", a:"N이/가 아닙니다", c:["N이에요/예요", "N입니까?", "N입니다"] },
   { q:"[20/25] ‘아닙니다’는 어느 스타일?", a:"격식", c:["비격식", "반말", "과거"] },
-
-  { q:"[21/25] (Mini) ‘저___ 학생이에요.’ 빈칸", a:"는", c:["은", "이", "가"] },
+  { q:"[21/25] (Mini) ‘저___ 학생이에요.’", a:"는", c:["은", "이", "가"] },
   { q:"[22/25] (Mini) ‘학생___.’ 받침 O + 비격식", a:"이에요", c:["예요", "입니다", "입니까"] },
   { q:"[23/25] (Mini) ‘마이클 씨는 미국 사람___?’ 격식 질문", a:"입니까", c:["입니다", "예요", "아닙니다"] },
   { q:"[24/25] (Mini) ‘저는 미국 사람___.’ 격식 부정", a:"이 아닙니다", c:["가 아닙니다", "예요", "입니까"] },
   { q:"[25/25] (Mini) ‘나나는 가수___ 아닙니다.’ 받침 X", a:"가", c:["이", "은", "는"] }
 ];
 
-/* Utils */
 function shuffle(arr){
   const a=[...arr];
   for(let i=a.length-1;i>0;i--){
@@ -169,7 +155,8 @@ function shuffle(arr){
 function escapeHtml(s){
   return String(s)
     .replaceAll("&","&amp;").replaceAll("<","&lt;")
-    .replaceAll(">","&gt;").replaceAll('"',"&quot;")
+    .replaceAll(">","&gt;")
+    .replaceAll('"',"&quot;")
     .replaceAll("'","&#39;");
 }
 function jsonp(url){
@@ -192,13 +179,11 @@ function getDeviceId(){
   return id;
 }
 
-/* State */
 let name="", klass="", token="", deviceId="";
 let attempts=0;
 let questions=[], idx=0, score=0, wrong=[];
 let lastFinalScore=0;
 
-/* DOM */
 const studentNameEl = document.getElementById("studentName");
 const klassNameEl = document.getElementById("klassName");
 const errorSection = document.getElementById("errorSection");
@@ -219,9 +204,10 @@ const resultLine2El = document.getElementById("resultLine2");
 const resultDateEl = document.getElementById("resultDate");
 const logStatusEl = document.getElementById("logStatus");
 
-/* UI helpers */
-function showError(msg){
-  errorSection.textContent = msg;
+function showError(msg, withRetry){
+  errorSection.innerHTML = withRetry
+    ? `${escapeHtml(msg)}<div class="btnRow" style="margin-top:10px;"><button class="btn" onclick="retryLink()">Дахин холбох</button><button class="btn btnGray" onclick="goBack()">Буцах</button></div>`
+    : escapeHtml(msg);
   errorSection.classList.remove("hidden");
   quizSection.classList.add("hidden");
   reviewSection.classList.add("hidden");
@@ -235,15 +221,21 @@ function showQuiz(){
   showQuestion();
 }
 
-/* Params / Token */
 function getParams(){
   const p = new URLSearchParams(location.search);
   return {
     name:(p.get("name")||"").trim(),
     klass:(p.get("klass")||"").trim(),
-    token:(p.get("token")||"").trim()
+    token:(p.get("token")||"").trim(),
+    lang:(p.get("lang")||"").trim()
   };
 }
+function replaceUrlToken(newToken){
+  const u = new URL(location.href);
+  u.searchParams.set("token", newToken);
+  location.replace(u.toString());
+}
+
 async function validateToken(){
   const cached = sessionStorage.getItem("result_"+token);
   if(cached) return true;
@@ -252,7 +244,18 @@ async function validateToken(){
   return !!(res && res.ok);
 }
 
-/* Attempts (per student, per lesson) */
+async function issueToken(){
+  // 다양한 응답 형태에 최대한 대응
+  const url = `${SCRIPT_URL}?action=issue&deviceId=${encodeURIComponent(deviceId)}&klass=${encodeURIComponent(klass)}&name=${encodeURIComponent(name)}`;
+  const res = await jsonp(url);
+  if(!res) return "";
+  if(res.ok && typeof res.token === "string" && res.token) return res.token;
+  if(typeof res.token === "string" && res.token) return res.token;
+  if(res.data && typeof res.data.token === "string" && res.data.token) return res.data.token;
+  if(typeof res.issuedToken === "string" && res.issuedToken) return res.issuedToken;
+  return "";
+}
+
 function loadAttempts(){
   const k = `attempts_${lessonId}_${name}`;
   attempts = parseInt(localStorage.getItem(k)||"0",10) || 0;
@@ -266,7 +269,6 @@ function clearAttempts(){
   localStorage.removeItem(k);
 }
 
-/* Quiz logic */
 function prepareQuestions(){
   questions = shuffle(rawQ).map(item=>{
     const choices = shuffle([item.a, ...item.c]).slice(0,4);
@@ -303,11 +305,9 @@ async function finish(){
   const finalScore=Math.round(score);
   lastFinalScore = finalScore;
 
-  // Always log every attempt
   logStatusEl.textContent = "Бүртгэл илгээж байна...";
   await sendLog(finalScore);
 
-  // Always show Review first (policy)
   showReview(finalScore);
 }
 
@@ -369,7 +369,6 @@ async function showResult(finalScore){
   resultTitleEl.textContent = pass ? "Тэнцлээ!" : "Дахин оролдоорой";
   resultTitleEl.style.color = pass ? "var(--ok)" : "var(--bad)";
 
-  // Required: name / class / score / attempts / date
   resultLine1El.textContent = pass ? `${name} · Тэнцлээ!` : `${name} · Хичээгээрэй!`;
   finalScoreEl.textContent = `Дүн: ${finalScore} оноо`;
   resultLine2El.textContent = `Анги: ${klass} · Оролдлого: ${attempts}`;
@@ -378,24 +377,37 @@ async function showResult(finalScore){
   const fmt = new Intl.DateTimeFormat("mn-MN", { year:"numeric", month:"2-digit", day:"2-digit", hour:"2-digit", minute:"2-digit" });
   resultDateEl.textContent = `Огноо: ${fmt.format(now)}`;
 
-  // pass/fail regardless: attempts reset only after showing result
   clearAttempts();
 }
 
-/* Buttons */
 function retry(){ prepareQuestions(); showQuiz(); }
 function goResult(){ showResult(lastFinalScore); }
 
-/* Back to SNU 1A hub */
 function goBack(){
+  const u = new URL(location.href);
+  const nameQ = u.searchParams.get("name") || "";
+  const klassQ = u.searchParams.get("klass") || "";
+  const tokenQ = u.searchParams.get("token") || "";
+  const langQ = u.searchParams.get("lang") || "";
   const qs =
-    `?name=${encodeURIComponent(name)}` +
-    `&klass=${encodeURIComponent(klass)}` +
-    `&token=${encodeURIComponent(token)}`;
+    `?name=${encodeURIComponent(nameQ)}` +
+    `&klass=${encodeURIComponent(klassQ)}` +
+    `&token=${encodeURIComponent(tokenQ)}` +
+    (langQ ? `&lang=${encodeURIComponent(langQ)}` : "");
   location.href = "GRAM-SNU-1A-hub.html" + qs;
 }
 
-/* Init */
+async function retryLink(){
+  try{
+    const newToken = await issueToken();
+    if(newToken){
+      replaceUrlToken(newToken);
+      return;
+    }
+  }catch(e){}
+  showError("Шинэ холбоос үүсгэж чадсангүй. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.", false);
+}
+
 (async function init(){
   const p=getParams();
   name=p.name; klass=p.klass; token=p.token;
@@ -404,30 +416,29 @@ function goBack(){
   studentNameEl.textContent = name || "—";
   klassNameEl.textContent = klass || "—";
 
-  if(!name || !klass || !token){
+  if(!name || !klass){
     showError("Нэвтрэх мэдээлэл дутуу байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
     return;
   }
 
-  const cached = sessionStorage.getItem("result_"+token);
-  if(cached){
-    try{
-      const obj = JSON.parse(cached);
-      attempts = obj.attempts || 0;
-      // If already saved, show result (review data may be unavailable)
-      await showResult(obj.finalScore || 0);
-      return;
-    }catch(e){}
-  }
-
+  // token이 없거나, validate 실패 시 -> issue로 새 토큰 발급 후 재시도
   try{
+    if(!token){
+      const t = await issueToken();
+      if(t){ replaceUrlToken(t); return; }
+      showError("Энэ холбоос хүчинтэй биш байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.", true);
+      return;
+    }
+
     const ok = await validateToken();
     if(!ok){
-      showError("Энэ холбоос хүчинтэй биш байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.");
+      const t = await issueToken();
+      if(t){ replaceUrlToken(t); return; }
+      showError("Энэ холбоос хүчинтэй биш байна. Эхлэл хуудас руу буцаад дахин нэвтэрнэ үү.", true);
       return;
     }
   }catch(e){
-    showError("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.");
+    showError("Сервертэй холбогдож чадсангүй. Дахин оролдоно уу.", true);
     return;
   }
 
