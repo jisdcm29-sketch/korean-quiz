@@ -19,15 +19,21 @@
     body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);text-align:center;}
     button{font-family:inherit}
     .container{max-width:980px;margin:0 auto;padding:16px}
+
     .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px;background:rgba(5,8,20,.78);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
     .brand{display:flex;align-items:center;gap:10px;font-weight:950}
     .dot{width:10px;height:10px;border-radius:999px;background:var(--amber)}
     .btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+
     .btn{padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:48px;font-size:16px;font-weight:900;letter-spacing:.2px;-webkit-tap-highlight-color:transparent;box-shadow:0 8px 18px rgba(0,0,0,.22);white-space:nowrap;}
     .btn:active{transform:translateY(1px)}
     .btn:hover{filter:brightness(1.06)}
-    .btnBack{background:linear-gradient(135deg,rgba(167,139,250,.25), rgba(11,16,32,.96));border-color:rgba(167,139,250,.55);min-width:56px;font-size:18px;}
     .btnInfo{background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.50);}
+
+    .navBtn{min-width:120px}
+    .btnPrev{background:linear-gradient(135deg,rgba(167,139,250,.20), rgba(11,16,32,.96));border-color:rgba(167,139,250,.55);}
+    .btnNext{background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96));border-color:rgba(34,211,238,.52);}
+    .btnDisabled{opacity:.45;pointer-events:none}
 
     .card{background:rgba(17,24,39,.9);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);text-align:left;}
     .headerRow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end}
@@ -37,6 +43,7 @@
     .bar{height:1px;background:var(--line);margin:12px 0}
 
     .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(11,16,32,.65);font-size:12px;font-weight:900;color:var(--text)}
+
     .qbox{border:1px solid var(--line);background:#0b1020;border-radius:18px;padding:14px;}
     .qHead{margin-bottom:10px;text-align:center;padding:12px 12px;border-radius:16px;border:1px solid rgba(251,191,36,.22);background:linear-gradient(135deg,rgba(251,191,36,.14), rgba(11,16,32,.96));box-shadow:0 10px 22px rgba(0,0,0,.14);}
     .qLabel{color:var(--muted);font-size:13px;font-weight:800}
@@ -44,7 +51,13 @@
 
     .exBox{margin-top:10px;border:1px solid rgba(96,165,250,.25);background:linear-gradient(135deg,rgba(96,165,250,.10), rgba(11,16,32,.96));border-radius:16px;padding:12px;color:var(--text);}
     .exTitle{font-weight:950;color:#dbeafe}
-    .exLine{margin-top:6px;line-height:1.55}
+    .exLine{margin-top:6px;line-height:1.65;white-space:pre-line;}
+
+    /* Table (for slide 11/12) */
+    table.rule{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}
+    table.rule th, table.rule td{border:1px solid rgba(255,255,255,.10);padding:10px 10px;text-align:center}
+    table.rule th{color:#dbeafe;background:rgba(96,165,250,.08);font-weight:950}
+    table.rule td{color:var(--text)}
 
     .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;}
     @media(max-width:800px){.choices{grid-template-columns:1fr}}
@@ -70,10 +83,10 @@
       .card{padding:14px;border-radius:18px}
       .btnRow{flex-wrap:nowrap;gap:8px}
       .btn{min-height:50px;font-size:15px;padding:10px 12px;border-radius:14px}
-      .btnBack{font-size:18px;min-width:52px}
       .qText{font-size:26px}
       .choices{gap:6px}
       .choice{font-size:22px;min-height:48px;padding:12px 10px}
+      .navBtn{min-width:110px}
     }
   </style>
 </head>
@@ -82,7 +95,6 @@
 <header class="topbar">
   <div class="brand"><span class="dot"></span><span>Grammar · SNU 1A · Lesson 01</span></div>
   <div class="btnRow">
-    <button class="btn btnBack" id="btnBack" type="button" aria-label="back">←</button>
     <button class="btn btnInfo" id="btnHelp" type="button">Тусламж</button>
   </div>
 </header>
@@ -115,8 +127,9 @@
       </div>
 
       <div id="exBox" class="exBox hidden">
-        <div class="exTitle">Тайлбар / Жишээ</div>
+        <div class="exTitle" id="exTitle">Тайлбар / Жишээ</div>
         <div class="exLine" id="exLines"></div>
+        <div id="ruleTableWrap" class="hidden"></div>
       </div>
 
       <div class="choices" id="choices"></div>
@@ -126,7 +139,8 @@
       <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
         <div class="muted small" id="progress">1 / 25</div>
         <div style="display:flex;gap:10px;flex-wrap:wrap;">
-          <button class="btn" id="btnNext" type="button" style="background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96));border-color:rgba(34,211,238,.52);">Дараах</button>
+          <button class="btn navBtn btnPrev" id="btnPrev" type="button">◀</button>
+          <button class="btn navBtn btnNext" id="btnNext" type="button">▶</button>
         </div>
       </div>
       <div class="muted small" style="margin-top:10px;">※ Дүрэм нь санамсаргүй биш. Дарааллаар явна.</div>
@@ -143,7 +157,6 @@
         <div class="btnRow" style="margin-top:12px;justify-content:flex-start;">
           <button class="btn" id="btnGoResult" type="button" style="background:linear-gradient(135deg,rgba(52,211,153,.18), rgba(11,16,32,.96));border-color:rgba(52,211,153,.52);">Results</button>
           <button class="btn" id="btnRetry" type="button" style="background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.50);">Дахин</button>
-          <button class="btn btnBack" id="btnBack2" type="button">←</button>
         </div>
       </div>
     </div>
@@ -162,7 +175,7 @@
           <div class="muted small" id="logStatus" style="margin-top:8px;"></div>
         </div>
         <div class="btnRow" style="margin-top:12px;justify-content:flex-start;">
-          <button class="btn btnBack" id="btnBack3" type="button">←</button>
+          <button class="btn" id="btnBackHub" type="button" style="background:linear-gradient(135deg,rgba(167,139,250,.20), rgba(11,16,32,.96));border-color:rgba(167,139,250,.55);">←</button>
         </div>
       </div>
     </div>
@@ -172,51 +185,83 @@
 
 <script>
 (function(){
-  // ====== GAS ======
   var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
   var lessonId = "GRAM-SNU-1A-lesson01";
 
-  // ====== Slides (25, user-provided) ======
+  // NOTE: user-provided slides (25), order fixed
   var slides = [
-    {type:"info", title:"[1] ⭐ 은/는 = сэдэв (topic)", body:"‘Харин … бол/… нь’ гэж онцолно\n예) 저는 … / 이 사람은 …", ex:["N(명사=нэр үг)+은/는"]},
-    {type:"info", title:"[2] 🔗 은/는 holbох", body:"명사(N=нэр үг) дээр\n\nгийгүүлэгчээр төгсвөл → 은\nэгшигээр төгсвөл → 는", ex:["N + 은/는"]},
-    {type:"info", title:"[3] ✍️ Жишээ", body:"학생 → 학생은 (гийгүүлэгч)\n친구 → 친구는 (эгшиг)\n저 → 저는 (эгшиг)\n사람 → 사람은 (гийгүүлэгч)", ex:[]},
+    {type:"info", title:"[1] ⭐ 은/는 = сэдэв (topic)", body:"‘Харин … бол/… нь’ гэж онцолно
+예) 저는 … / 이 사람은 …", ex:["N(명사=нэр үг)+은/는"]},
+    {type:"info", title:"[2] 🔗 은/는 holbох", body:"명사(N=нэр үг) дээр
 
-    {type:"info", title:"[4] 🧠 이다 = “~ байна/юм”", body:"✅ 명사(N=нэр үг)-тэй л холбогдоно\nЯriand(알бан бус) → 이에요/예요", ex:["N дээр"]},
-    {type:"info", title:"[5] ✅ 이에요/예요 сонгох", body:"гийгүүлэгчээр төгссөн 명사 → -이에요\nэгшигээр төгссөн 명사 → -예요", ex:["책이에요 / 의사예요"]},
-    {type:"info", title:"[6] 🔎 Шалгах арга", body:"“책” → ㄱ = гийгүүлэгч → 책이에요\n“의사” → ㅏ = эгшиг → 의사예요", ex:[]},
-    {type:"info", title:"[7] 💬 Хэрэглэх (이에요/예요)", body:"A: 뭐예요?\nB: 책이에요. / 의자예요.", ex:["Албан бус"]},
+гийгүүлэгчээр төгсвөл → 은
+эгшигээр төгсвөл → 는", ex:["N + 은/는"]},
+    {type:"info", title:"[3] ✍️ Жишээ", body:"학생 → 학생은 (гийгүүлэгч)
+친구 → 친구는 (эгшиг)
+저 → 저는 (эгшиг)
+사람 → 사람은 (гийгүүлэгч)", ex:[]},
 
-    {type:"info", title:"[8] 🙇 입니다/입니까? (албан ёсны)", body:"명사(N=нэр үг)+입니다\n명사+입니까?", ex:["офис/학교"]},
-    {type:"info", title:"[9] 🎤 Хэрэглэх", body:"A: 학생입니까?\nB: 네, 학생입니다.", ex:["입니까?=асуулт", "입니다=хариулт"]},
+    {type:"info", title:"[4] 🧠 이다 = “~ байна/юм”", body:"✅ 명사(N=нэр үг)-тэй л холбогдоно
+Яriand(албан бус) → 이에요/예요", ex:["N дээр"]},
+    {type:"info", title:"[5] ✅ 이에요/예요 сонгох", body:"гийгүүлэгчээр төгссөн 명사 → -이에요
+эгшигээр төгссөн 명사 → -예요", ex:["책이에요 / 의사예요"]},
+    {type:"info", title:"[6] 🔎 Шалгах арга", body:"“책” → ㄱ = гийгүүлэгч → 책이에요
+“의사” → ㅏ = эгшиг → 의사예요", ex:[]},
+    {type:"info", title:"[7] 💬 Хэрэглэх (이에요/예요)", body:"A: 뭐예요?
+B: 책이에요. / 의자예요.", ex:["Албан бус"]},
 
-    {type:"info", title:"[10] 🧩 결합 1", body:"명사(N)+은/는+이에요/예요\n예) 저는 학생이에요.", ex:[]},
-    {type:"info", title:"[11] 📌 은/는 хүснэгт", body:"| төгсгөл | 붙임 |\n| гийгүүлэгч | 은 |\n| эгшиг | 는 |", ex:[]},
-    {type:"info", title:"[12] 📌 이에요/예요 хүснэгт", body:"| төгсгөл | 붙им |\n| гийгүүлэгч | -이에요 |\n| эгшиг | -예요 |", ex:[]},
+    {type:"info", title:"[8] 🙇 입니다/입니까? (албан ёсны)", body:"명사(N=нэр үг)+입니다
+명사+입니까?", ex:["офис/학교"]},
+    {type:"info", title:"[9] 🎤 Хэрэглэх", body:"A: 학생입니까?
+B: 네, 학생입니다.", ex:["입니까?=асуулт", "입니다=хариулт"]},
 
-    {type:"mc", title:"[13] ✍️ 퀴즈", prompt:"결합 완성! (3문장)", question:"저는 선생님__ ___.\n저는 의사__ ___.\n저는 학생__ ___.", choices:[
+    {type:"info", title:"[10] 🧩 결합 1", body:"명사(N)+은/는+이에요/예요
+예) 저는 학생이에요.", ex:[]},
+
+    // 11 table
+    {type:"table", title:"[11] 📌 은/는 хүснэгт", table:{ headers:["төгсгөл","붙им"], rows:[["гийгүүлэгч","은"],["эгшиг","는"]] }, body:"", ex:[]},
+
+    // 12 table (fix: 예 on next line by rendering real table)
+    {type:"table", title:"[12] 📌 이에요/예요 хүснэгт", table:{ headers:["төгсгөл","붙им"], rows:[["гийгүүлэгч","-이에요"],["эгшиг","-예요"]] }, body:"", ex:[]},
+
+    {type:"mc", title:"[13] ✍️ 퀴즈", prompt:"결합 완성! (3문장)", question:"저는 선생님__ ___.
+저는 의사__ ___.
+저는 학생__ ___.", choices:[
       "선생님은 예요 / 의사는 이에요 / 학생은 예요",
       "선생님은 이에요 / 의사는 예요 / 학생은 이에요",
       "선생님는 이에요 / 의사는 예요 / 학생는 이에요",
       "선생님은 입니다 / 의사는 입니다 / 학생은 입니다"
     ], answer:"선생님은 이에요 / 의사는 예요 / 학생은 이에요", ex:["선생님(ㅁ)=이에요","의사(ㅏ)=예요","학생(ㅇ)=이에요"]},
 
-    {type:"info", title:"[14] ✅ 정답", body:"저는 선생님이에요.\n저는 의사예요.\n저는 학생이에요.", ex:[]},
+    {type:"info", title:"[14] ✅ 정답", body:"저는 선생님이에요.
+저는 의사예요.
+저는 학생이에요.", ex:[]},
 
-    {type:"info", title:"[15] 💡 이/가 = шинэ мэдээлэл", body:"‘Яг хэн/яг юу?’\n예) 이름이 뭐예요?", ex:[]},
-    {type:"info", title:"[16] 🔗 이/가 holbох", body:"명사(N) дээр\n\nгийгүүлэгч → 이\nэгшиг → 가", ex:["이름이 / 학교가"]},
-    {type:"info", title:"[17] 💬 Жишээ", body:"이름이 지수예요.\n전공이 한국어예요.", ex:[]},
+    {type:"info", title:"[15] 💡 이/가 = шинэ мэдээлэл", body:"‘Яг хэн/яг юу?’
+예) 이름이 뭐예요?", ex:[]},
+    {type:"info", title:"[16] 🔗 이/가 holbох", body:"명사(N) дээр
 
-    {type:"info", title:"[18] ❌ 부정 (үгүй)", body:"아닙니다 = албан ёсны 🙇\n아니에요 = өдөр тутмын 🙂", ex:[]},
-    {type:"info", title:"[19] ⚖️ Ялгаа", body:"✅ Утга адил (“үгүй”)\n🔥 Зөвхөн хэв маяг өөр", ex:[]},
+гийгүүлэгч → 이
+эгшиг → 가", ex:["이름이 / 학교가"]},
+    {type:"info", title:"[17] 💬 Жишээ", body:"이름이 지수예요.
+전공이 한국어예요.", ex:[]},
 
-    {type:"info", title:"[20] 🧩 결합 2", body:"명사(N)+이/가+아니에요/아닙니다\n예) 저는 학생이 아니에요.", ex:[]},
+    {type:"info", title:"[18] ❌ 부정 (үгүй)", body:"아닙니다 = албан ёсны 🙇
+아니에요 = өдөр тутмын 🙂", ex:[]},
+    {type:"info", title:"[19] ⚖️ Ялгаа", body:"✅ Утга адил (“үгүй”)
+🔥 Зөвхөн хэв маяг өөр", ex:[]},
 
-    {type:"mc", title:"[21] 📝 빈칸", prompt:"빈칸 채우기", question:"A: 민수__ 학생이에요?\nB: 아니에요. 민수__ 학생__ 아니에요.", choices:["는 / 는 / 이","은 / 은 / 가","가 / 는 / 이","는 / 가 / 이"], answer:"는 / 는 / 이", ex:["민수(ㅜ)=는","학생(ㅇ)=이"]},
+    {type:"info", title:"[20] 🧩 결합 2", body:"명사(N)+이/가+아니에요/아닙니다
+예) 저는 학생이 아니에요.", ex:[]},
 
-    {type:"info", title:"[22] ✅ 정답", body:"A: 민수는 학생이에요?\nB: 아니에요. 민수는 학생이 아니에요.", ex:[]},
+    {type:"mc", title:"[21] 📝 빈칸", prompt:"빈칸 채우기", question:"A: 민수__ 학생이에요?
+B: 아니에요. 민수__ 학생__ 아니에요.", choices:["는 / 는 / 이","은 / 은 / 가","가 / 는 / 이","는 / 가 / 이"], answer:"는 / 는 / 이", ex:["민수(ㅜ)=는","학생(ㅇ)=이"]},
 
-    {type:"info", title:"[23] 🎭 Роль", body:"🙇 A: 학생입니까? / B: 아닙니다.\n🙂 A: 학생이에요? / B: 아니에요.", ex:[]},
+    {type:"info", title:"[22] ✅ 정답", body:"A: 민수는 학생이에요?
+B: 아니에요. 민수는 학생이 아니에요.", ex:[]},
+
+    {type:"info", title:"[23] 🎭 Роль", body:"🙇 A: 학생입니까? / B: 아닙니다.
+🙂 A: 학생이에요? / B: 아니에요.", ex:[]},
 
     {type:"mc", title:"[24] 🎮 Сонго!", prompt:"аль нь зөв?", question:"상황에 따라", choices:[
       "안내데스크→입니다/입니까, 아닙니다 · 친구→이에요/예요, 아니에요 · 답(хариулт)→이/가",
@@ -225,10 +270,11 @@
       "안내데스크→입니까?만 · 친구→예요만 · 답→없음"
     ], answer:"안내데스크→입니다/입니까, 아닙니다 · 친구→이에요/예요, 아니에요 · 답(хариулт)→이/가", ex:[]},
 
-    {type:"info", title:"[25] 🏁 Дүгнэлт", body:"✅ 명사(N)+은/는+이에요/예요\n✅ 명사+이/가+아니에요/아닙니다\n🌟 Сайн ажиллалаа!", ex:[]}
+    {type:"info", title:"[25] 🏁 Дүгнэлт", body:"✅ 명사(N)+은/는+이에요/예요
+✅ 명사+이/가+아니에요/아닙니다
+🌟 Сайн ажиллалаа!", ex:[]}
   ];
 
-  // ====== Safe utils ======
   function esc(s){
     return String(s)
       .replace(/&/g,"&amp;")
@@ -303,7 +349,6 @@
     });
   }
 
-  // ====== App init (DOM ready) ======
   function init(){
     var whoEl=document.getElementById("who");
     var klassEl=document.getElementById("klass");
@@ -314,13 +359,18 @@
     var statusEl=document.getElementById("status");
     var helpBox=document.getElementById("helpBox");
     var exBox=document.getElementById("exBox");
+    var exTitle=document.getElementById("exTitle");
     var exLines=document.getElementById("exLines");
+    var ruleTableWrap=document.getElementById("ruleTableWrap");
+
     var quizBox=document.getElementById("quizBox");
     var reviewBox=document.getElementById("reviewBox");
     var resultBox=document.getElementById("resultBox");
+
     var reviewScoreEl=document.getElementById("reviewScore");
     var reviewListEl=document.getElementById("reviewList");
     var attemptInfoEl=document.getElementById("attemptInfo");
+
     var resultTitleEl=document.getElementById("resultTitle");
     var resultMainEl=document.getElementById("resultMain");
     var finalScoreEl=document.getElementById("finalScore");
@@ -328,10 +378,8 @@
     var resultDateEl=document.getElementById("resultDate");
     var logStatusEl=document.getElementById("logStatus");
 
-    // hard fail safe
-    if(!qTextEl || !choicesEl || !progressEl){
-      return;
-    }
+    var btnPrev=document.getElementById("btnPrev");
+    var btnNext=document.getElementById("btnNext");
 
     var p=getParams();
     var name = p.name || "—";
@@ -343,11 +391,17 @@
     klassEl.textContent = "Анги: " + klass;
 
     var idx=0;
-    var answered=false;
-    var correctCount=0;
-    var wrong=[];
     var attempts=0;
     var lastScore=0;
+
+    // answers per slide index: {picked, correct}
+    var answers = {};
+
+    function totalMc(){
+      var n=0;
+      for(var i=0;i<slides.length;i++) if(slides[i].type==="mc") n++;
+      return n;
+    }
 
     function loadAttempts(){
       var k="attempts_"+lessonId+"_"+name;
@@ -363,76 +417,206 @@
       localStorage.removeItem(k);
     }
 
-    function goBack(){
-      try{ if(history.length>1){ history.back(); return; } }catch(e){}
+    function goHub(){
       var u=new URL(location.href);
       var qs=new URLSearchParams();
       ["name","klass","token","lang"].forEach(function(k){ var v=u.searchParams.get(k); if(v) qs.set(k,v); });
       location.href = "GRAM-SNU-1A-hub.html" + (qs.toString()?"?"+qs.toString():"");
     }
 
-    function setExample(ex){
-      if(!ex || !ex.length){ exBox.classList.add("hidden"); return; }
+    function setExampleBox(s){
+      // Always put “예/설명” on the next line (not inside qText)
+      ruleTableWrap.classList.add("hidden");
+      ruleTableWrap.innerHTML = "";
+
+      var lines=[];
+      if(s.body) lines.push(s.body);
+      if(s.ex && s.ex.length){
+        lines.push("
+" + s.ex.map(function(x){return "• "+x;}).join("
+"));
+      }
+
+      if(s.type==="table" && s.table){
+        exBox.classList.remove("hidden");
+        exTitle.textContent = "Хүснэгт";
+        exLines.textContent = "";
+
+        var t=document.createElement("table");
+        t.className="rule";
+        var thead=document.createElement("thead");
+        var trh=document.createElement("tr");
+        (s.table.headers||[]).forEach(function(h){
+          var th=document.createElement("th");
+          th.textContent = h;
+          trh.appendChild(th);
+        });
+        thead.appendChild(trh);
+        t.appendChild(thead);
+
+        var tbody=document.createElement("tbody");
+        (s.table.rows||[]).forEach(function(r){
+          var tr=document.createElement("tr");
+          var td1=document.createElement("td");
+          var td2=document.createElement("td");
+          td1.textContent = r[0];
+          td2.textContent = r[1];
+          tr.appendChild(td1);
+          tr.appendChild(td2);
+          tbody.appendChild(tr);
+        });
+        t.appendChild(tbody);
+
+        ruleTableWrap.classList.remove("hidden");
+        ruleTableWrap.appendChild(t);
+        return;
+      }
+
+      if(!lines.join("
+").trim()){
+        exBox.classList.add("hidden");
+        return;
+      }
+
       exBox.classList.remove("hidden");
-      exLines.innerHTML = ex.map(function(x){ return "• "+esc(x); }).join("<br/>");
+      exTitle.textContent = "Тайлбар / Жишээ";
+      exLines.textContent = lines.join("
+");
+    }
+
+    function setNavState(){
+      btnPrev.classList.toggle("btnDisabled", idx<=0);
+      btnNext.classList.toggle("btnDisabled", idx>=slides.length-1);
     }
 
     function lockChoices(){
       Array.prototype.slice.call(choicesEl.querySelectorAll("button")).forEach(function(b){ b.disabled=true; });
     }
 
+    function showResultBox(ok, answerText){
+      resultEl.classList.remove("hidden");
+      resultEl.classList.remove("ok");
+      resultEl.classList.remove("bad");
+      resultEl.classList.add(ok?"ok":"bad");
+      resultEl.innerHTML = ok
+        ? "<b style='color:var(--green)'>Зөв!</b> <span class='muted small'>(Зөв: "+esc(answerText)+")</span>"
+        : "<b style='color:var(--red)'>Буруу!</b> <span class='muted small'>Зөв: "+esc(answerText)+"</span>";
+    }
+
     function renderSlide(){
       var s=slides[idx];
       progressEl.textContent = String(idx+1)+" / "+String(slides.length);
+
+      // Reset areas
       resultEl.classList.add("hidden");
       resultEl.classList.remove("ok");
       resultEl.classList.remove("bad");
-      answered=false;
+      choicesEl.innerHTML = "";
 
-      if(s.type==="info"){
-        qTextEl.textContent = s.title + "\n\n" + s.body;
-        setExample(s.ex||[]);
-        choicesEl.innerHTML="";
-        var btn=document.createElement("button");
-        btn.type="button";
-        btn.className="choice";
-        btn.textContent="Ойлголоо (Дараах)";
-        btn.addEventListener("click", function(){ nextSlide(); });
-        choicesEl.appendChild(btn);
-        return;
+      // Title on top
+      qTextEl.textContent = s.title;
+
+      // Explanation / example below (always next line)
+      setExampleBox(s);
+
+      if(s.type==="mc"){
+        var qq = (s.prompt||"") + (s.question?"
+
+"+s.question:"");
+        if(qq.trim()){
+          // put the question into exBox (under the title) for better layout
+          if(exBox.classList.contains("hidden")){
+            exBox.classList.remove("hidden");
+            exTitle.textContent = "Асуулт";
+            exLines.textContent = qq;
+          }else{
+            exTitle.textContent = exTitle.textContent || "Асуулт";
+            exLines.textContent = (exLines.textContent? (exLines.textContent+"
+
+") : "") + qq;
+          }
+        }
+
+        (s.choices||[]).forEach(function(ch){
+          var b=document.createElement("button");
+          b.type="button";
+          b.className="choice";
+          b.textContent = ch;
+          b.addEventListener("click", function(){
+            if(answers[idx]) return; // already answered
+            var ok = (ch===s.answer);
+            answers[idx] = { picked: ch, correct: ok };
+            lockChoices();
+            showResultBox(ok, s.answer);
+          });
+          choicesEl.appendChild(b);
+        });
+
+        // if revisiting answered slide, show previous
+        if(answers[idx]){
+          lockChoices();
+          showResultBox(!!answers[idx].correct, s.answer);
+        }
+
+      } else {
+        // info/table slide: no choices
       }
 
-      var q = s.title + "\n" + (s.prompt||"");
-      if(s.question) q += "\n\n" + s.question;
-      qTextEl.textContent = q;
-      setExample(s.ex||[]);
+      setNavState();
+    }
 
-      choicesEl.innerHTML="";
-      (s.choices||[]).forEach(function(ch){
-        var b=document.createElement("button");
-        b.type="button";
-        b.className="choice";
-        b.textContent=ch;
-        b.addEventListener("click", function(){
-          if(answered) return;
-          answered=true;
-          var ok = (ch===s.answer);
-          if(ok) correctCount++;
-          else wrong.push({i:(idx+1), title:s.title, prompt:(s.prompt||""), answer:s.answer, picked:ch});
-          lockChoices();
-          resultEl.classList.remove("hidden");
-          resultEl.classList.add(ok?"ok":"bad");
-          resultEl.innerHTML = ok
-            ? "<b style='color:var(--green)'>Зөв!</b> <span class='muted small'>(Зөв: "+esc(s.answer)+")</span>"
-            : "<b style='color:var(--red)'>Буруу!</b> <span class='muted small'>Зөв: "+esc(s.answer)+"</span>";
-        });
-        choicesEl.appendChild(b);
-      });
+    function prevSlide(){
+      if(idx<=0) return;
+      idx--;
+      renderSlide();
     }
 
     function nextSlide(){
-      if(idx < slides.length-1){ idx++; renderSlide(); return; }
-      finish();
+      if(idx>=slides.length-1) return;
+      // MC slide requires answer before moving forward
+      var s=slides[idx];
+      if(s.type==="mc" && !answers[idx]){
+        resultEl.classList.remove("hidden");
+        resultEl.classList.add("bad");
+        resultEl.innerHTML = "<b style='color:var(--red)'>Сонгоод дараа нь ▶ дарна уу.</b>";
+        return;
+      }
+      idx++;
+      renderSlide();
+    }
+
+    function computeScore(){
+      var mc=0, correct=0;
+      for(var i=0;i<slides.length;i++){
+        if(slides[i].type==="mc"){
+          mc++;
+          if(answers[i] && answers[i].correct) correct++;
+        }
+      }
+      return mc ? Math.round((correct/mc)*100) : 0;
+    }
+
+    function buildWrongList(){
+      var list=[];
+      for(var i=0;i<slides.length;i++){
+        if(slides[i].type!=="mc") continue;
+        var a=answers[i];
+        if(!a || a.correct) continue;
+        list.push({
+          i:i+1,
+          title:slides[i].title,
+          prompt:(slides[i].prompt||""),
+          picked:a.picked,
+          answer:slides[i].answer
+        });
+      }
+      return list;
+    }
+
+    function finish(){
+      attempts++;
+      saveAttempts();
+      showReview();
     }
 
     function showReview(){
@@ -440,25 +624,27 @@
       resultBox.classList.add("hidden");
       reviewBox.classList.remove("hidden");
 
-      var totalMc=0;
-      for(var i=0;i<slides.length;i++){ if(slides[i].type==="mc") totalMc++; }
-      var score = totalMc ? Math.round((correctCount/totalMc)*100) : 0;
+      var score=computeScore();
       lastScore = score;
+      var wrongItems = buildWrongList();
 
       reviewScoreEl.textContent = "Дүн: "+String(score)+" / 100";
-      attemptInfoEl.textContent = "Оролдлого: "+String(attempts)+" · Зөв: "+String(correctCount)+"/"+String(totalMc);
+      attemptInfoEl.textContent = "Оролдлого: "+String(attempts)+" · MC: "+String(totalMc());
 
       reviewListEl.innerHTML="";
-      if(!wrong.length){
+      if(!wrongItems.length){
         var div=document.createElement("div");
         div.className="reviewItem";
         div.textContent="🎉 Бүгд зөв байна!";
         reviewListEl.appendChild(div);
       }else{
-        wrong.forEach(function(w){
+        wrongItems.forEach(function(w){
           var div=document.createElement("div");
           div.className="reviewItem";
-          div.textContent="#"+w.i+" "+w.title+"\n"+(w.prompt||"")+"\nТаны сонголт: "+w.picked+"\nЗөв: "+w.answer;
+          div.textContent = "#"+w.i+" "+w.title+"
+"+(w.prompt||"")+"
+Таны сонголт: "+w.picked+"
+Зөв: "+w.answer;
           reviewListEl.appendChild(div);
         });
       }
@@ -495,35 +681,27 @@
       resultMetaEl.textContent = "Анги: "+klass+" · Оролдлого: "+String(attempts);
       resultDateEl.textContent = "Огноо: "+nowStr();
 
-      sendLog(lastScore).finally(function(){ clearAttempts(); });
-    }
-
-    function finish(){
-      attempts++;
-      saveAttempts();
-      showReview();
+      sendLog(lastScore).finally(function(){
+        clearAttempts();
+      });
     }
 
     function retry(){
-      idx=0; answered=false; correctCount=0; wrong=[];
+      idx=0;
+      answers = {};
       reviewBox.classList.add("hidden");
       resultBox.classList.add("hidden");
       quizBox.classList.remove("hidden");
       renderSlide();
     }
 
-    // bind buttons
-    document.getElementById("btnBack").addEventListener("click", goBack);
-    document.getElementById("btnBack2").addEventListener("click", goBack);
-    document.getElementById("btnBack3").addEventListener("click", goBack);
+    // Bind UI
     document.getElementById("btnHelp").addEventListener("click", function(){ helpBox.classList.toggle("hidden"); });
-
-    document.getElementById("btnNext").addEventListener("click", function(){
-      var s=slides[idx];
-      if(s.type==="mc" && !answered){
-        resultEl.classList.remove("hidden");
-        resultEl.classList.add("bad");
-        resultEl.innerHTML = "<b style='color:var(--red)'>Сонгоод дараа нь үргэлжлүүлээрэй.</b>";
+    btnPrev.addEventListener("click", prevSlide);
+    btnNext.addEventListener("click", function(){
+      // if last slide -> finish
+      if(idx>=slides.length-1){
+        finish();
         return;
       }
       nextSlide();
@@ -531,13 +709,20 @@
 
     document.getElementById("btnRetry").addEventListener("click", retry);
     document.getElementById("btnGoResult").addEventListener("click", showResult);
+    document.getElementById("btnBackHub").addEventListener("click", goHub);
 
-    // start
+    // Keyboard (optional)
+    document.addEventListener("keydown", function(e){
+      if(e.key==="ArrowLeft") prevSlide();
+      if(e.key==="ArrowRight") btnNext.click();
+    });
+
+    // Start
     loadAttempts();
     statusEl.textContent = "로드 완료";
     renderSlide();
 
-    // best-effort validate (never blocks)
+    // Best-effort validate (never blocks)
     setTimeout(function(){
       if(!token){ statusEl.textContent = "(token 없음 · үргэлжилнэ)"; return; }
       var vurl = SCRIPT_URL + "?action=validate" +
@@ -553,11 +738,8 @@
     }, 300);
   }
 
-  if(document.readyState === "loading"){
-    document.addEventListener("DOMContentLoaded", init);
-  }else{
-    init();
-  }
+  if(document.readyState === "loading") document.addEventListener("DOMContentLoaded", init);
+  else init();
 })();
 </script>
 </body>
