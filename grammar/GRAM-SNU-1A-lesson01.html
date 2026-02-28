@@ -71,22 +71,7 @@
     .result.bad{border-color:rgba(248,113,113,.6)}
     .hidden{display:none}
 
-    .reviewList{max-height:320px;overflow:auto;border:1px solid rgba(248,113,113,.45);background:rgba(248,113,113,.06);border-radius:16px;padding:12px;}
-    .reviewItem{padding:8px 0;border-bottom:1px dashed rgba(248,113,113,.35);white-space:pre-line}
-    .reviewItem:last-child{border-bottom:none}
-
-    .resultCard{border:1px solid rgba(96,165,250,.28);background:rgba(96,165,250,.06);border-radius:18px;padding:14px}
-    .scoreBig{font-size:32px;font-weight:950}
-
-    @media(max-width:520px){
-      .container{padding:10px}
-      .card{padding:14px;border-radius:18px}
-      .btnRow{flex-wrap:nowrap;gap:8px}
-      .btn{min-height:50px;font-size:15px;padding:10px 12px;border-radius:14px}
-      .qText{font-size:26px}
-      .choices{gap:6px}
-      .choice{font-size:22px;min-height:48px;padding:12px 10px}
-    }
+    .danger{border-color:rgba(248,113,113,.55) !important;background:rgba(248,113,113,.08) !important;}
   </style>
 </head>
 
@@ -106,7 +91,7 @@
         <h1>1A 1과 · 문법</h1>
         <div class="muted">Дарааллаар явна · N(명사=нэр үг) дээр холбогдоно · Эгшиг/Гийгүүлэгч төгсгөлөөр сонгоно.</div>
       </div>
-      <div class="muted small" id="status">로드 완료</div>
+      <div class="muted small" id="status">로딩...</div>
     </div>
 
     <div class="stepRow">
@@ -128,7 +113,7 @@
     <div id="quizBox" class="qbox">
       <div class="qHead">
         <div class="qLabel"><span class="pill" id="who">Нэр: —</span> <span class="pill" id="klass">Анги: —</span></div>
-        <div class="qText" id="qText">Loading...</div>
+        <div class="qText" id="qText">Эхэлж байна...</div>
       </div>
 
       <div id="exBox" class="exBox hidden">
@@ -149,50 +134,25 @@
         </div>
       </div>
     </div>
-
-    <div id="reviewBox" class="hidden" style="margin-top:12px;">
-      <div class="qbox">
-        <div class="qHead">
-          <div class="qLabel">Review · Алдаа</div>
-          <div class="qText" id="reviewScore">Дүн: 0</div>
-        </div>
-        <div class="reviewList" id="reviewList"></div>
-        <div class="muted small" id="attemptInfo" style="margin-top:10px;"></div>
-        <div class="btnRow" style="margin-top:12px;justify-content:flex-start;">
-          <button class="btn" id="btnGoResult" type="button" style="background:linear-gradient(135deg,rgba(52,211,153,.18), rgba(11,16,32,.96));border-color:rgba(52,211,153,.52);">Results</button>
-          <button class="btn" id="btnRetry" type="button" style="background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.50);">Дахин</button>
-          <button class="btn btnTopBack" id="btnBackHubFromReview" type="button">←</button>
-        </div>
-      </div>
-    </div>
-
-    <div id="resultBox" class="hidden" style="margin-top:12px;">
-      <div class="qbox">
-        <div class="qHead">
-          <div class="qLabel" id="resultTitle">Results</div>
-          <div class="qText" id="resultMain">—</div>
-        </div>
-        <div class="resultCard">
-          <div class="scoreBig" id="finalScore">0</div>
-          <div class="muted" id="resultMeta"></div>
-          <div class="muted" id="resultDate"></div>
-          <div style="margin-top:12px;font-weight:950;color:#fff;">Есүс танд хайртай!</div>
-          <div class="muted small" id="logStatus" style="margin-top:8px;"></div>
-        </div>
-        <div class="btnRow" style="margin-top:12px;justify-content:flex-start;">
-          <button class="btn btnTopBack" id="btnBackHub" type="button">←</button>
-        </div>
-      </div>
-    </div>
-
   </section>
 </main>
 
 <script>
-(function(){
-  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
-  var lessonId = "GRAM-SNU-1A-lesson01";
+// ====== Hard crash visibility ======
+window.addEventListener('error', function(e){
+  try{
+    var q=document.getElementById('qText');
+    var st=document.getElementById('status');
+    if(st) st.textContent='JS Error';
+    if(q){
+      q.textContent = 'Алдаа гарлаа. Console-г шалгана уу.';
+      var qb=document.getElementById('quizBox');
+      if(qb) qb.classList.add('danger');
+    }
+  }catch(_){}
+});
 
+(function(){
   var slides = [
     {type:"info", title:"[1] ⭐ 은/는 = сэдэв (topic)", body:"‘Харин … бол/… нь’ гэж онцолно
 예) 저는 … / 이 사람은 …", ex:["N(명사=нэр үг)+은/는"]},
@@ -200,7 +160,7 @@
 
 гийгүүлэгчээр төгсвөл → 은
 эгшигээр төгсвөл → 는", ex:["N + 은/는"]},
-    {type:"info", title:"[3] ✍️ Jишээ", body:"학생 → 학생은 (гийгүүлэгч)
+    {type:"info", title:"[3] ✍️ Жишээ", body:"학생 → 학생은 (гийгүүлэгч)
 친구 → 친구는 (эгшиг)
 저 → 저는 (эгшиг)
 사람 → 사람은 (гийгүүлэгч)", ex:[]},
@@ -243,7 +203,7 @@ B: 네, 학생입니다.", ex:["입니까?=асуулт", "입니다=хариу�
 아니에요 = өдөр тутмын 🙂", ex:[]},
     {type:"info", title:"[19] ⚖️ Ялгаа", body:"✅ Утга адил (“үгүй”)
 🔥 Зөвхөн хэв маяг өөр", ex:[]},
-    {type:"info", title:"[20] 🧩 결합 2", body:"명사(N)+이/가+아니에요/아닙니다
+    {type:"info", title:"[20] 🧩 결합 2", body:"명사(N)+이/га+아니에요/아닙니다
 예) 저는 학생이 아니에요.", ex:[]},
     {type:"mc", title:"[21] 📝 빈칸", prompt:"빈칸 채우기", question:"A: 민수__ 학생이에요?
 B: 아니에요. 민수__ 학생__ 아니에요.", choices:["는 / 는 / 이","은 / 은 / 가","가 / 는 / 이","는 / 가 / 이"], answer:"는 / 는 / 이", ex:["민수(ㅜ)=는","학생(ㅇ)=이"]},
@@ -262,449 +222,206 @@ B: 아니에요. 민수는 학생이 아니에요.", ex:[]},
 🌟 Сайн ажиллалаа!", ex:[]}
   ];
 
-  function esc(s){
-    return String(s)
-      .replace(/&/g,"&amp;")
-      .replace(/</g,"&lt;")
-      .replace(/>/g,"&gt;")
-      .replace(/\"/g,"&quot;")
-      .replace(/'/g,"&#39;");
-  }
-
-  function getParams(){
+  function qp(){
     var p=new URLSearchParams(location.search);
     return {
-      name:(p.get("name")||"").trim(),
-      klass:(p.get("klass")||"").trim(),
-      token:(p.get("token")||"").trim(),
-      lang:(p.get("lang")||"").trim()
+      name:(p.get('name')||'').trim(),
+      klass:(p.get('klass')||'').trim(),
+      token:(p.get('token')||'').trim()
     };
   }
 
-  function getDeviceId(){
-    var k="kquiz_deviceId";
-    var id=localStorage.getItem(k);
-    if(!id){
-      id=(window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (String(Date.now())+"_"+String(Math.random())).replace(/\./g,"");
-      localStorage.setItem(k,id);
-    }
-    return id;
-  }
-
-  function nowStr(){
-    try{
-      var now=new Date();
-      return new Intl.DateTimeFormat("mn-MN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).format(now);
-    }catch(e){
-      return new Date().toISOString();
-    }
-  }
-
-  function jsonp(url, timeoutMs){
-    timeoutMs = timeoutMs || 9000;
-    return new Promise(function(resolve,reject){
-      var cb="cb_"+Date.now()+"_"+Math.floor(Math.random()*10000);
-      var done=false;
-      var script=document.createElement("script");
-      var timer=setTimeout(function(){
-        if(done) return;
-        done=true;
-        try{ script.remove(); }catch(e){}
-        try{ delete window[cb]; }catch(e){}
-        reject(new Error("jsonp_timeout"));
-      }, timeoutMs);
-
-      window[cb]=function(data){
-        if(done) return;
-        done=true;
-        clearTimeout(timer);
-        try{ script.remove(); }catch(e){}
-        try{ delete window[cb]; }catch(e){}
-        resolve(data);
-      };
-
-      script.src = url + (url.indexOf("?")>=0?"&":"?") + "callback=" + cb;
-      script.onerror=function(){
-        if(done) return;
-        done=true;
-        clearTimeout(timer);
-        try{ script.remove(); }catch(e){}
-        try{ delete window[cb]; }catch(e){}
-        reject(new Error("jsonp_error"));
-      };
-      document.body.appendChild(script);
+  function tableEl(table){
+    var t=document.createElement('table');
+    t.className='rule';
+    var thead=document.createElement('thead');
+    var trh=document.createElement('tr');
+    (table.headers||[]).forEach(function(h){
+      var th=document.createElement('th');
+      th.textContent=h;
+      trh.appendChild(th);
     });
+    thead.appendChild(trh);
+    t.appendChild(thead);
+    var tbody=document.createElement('tbody');
+    (table.rows||[]).forEach(function(r){
+      var tr=document.createElement('tr');
+      var td1=document.createElement('td');
+      var td2=document.createElement('td');
+      td1.textContent=r[0];
+      td2.textContent=r[1];
+      tr.appendChild(td1);tr.appendChild(td2);
+      tbody.appendChild(tr);
+    });
+    t.appendChild(tbody);
+    return t;
   }
 
   function init(){
-    try{
-      // DOM
-      var btnTopBack=document.getElementById("btnTopBack");
-      var btnHelp=document.getElementById("btnHelp");
-      var helpBox=document.getElementById("helpBox");
+    var btnTopBack=document.getElementById('btnTopBack');
+    var btnHelp=document.getElementById('btnHelp');
+    var helpBox=document.getElementById('helpBox');
 
-      var whoEl=document.getElementById("who");
-      var klassEl=document.getElementById("klass");
-      var statusEl=document.getElementById("status");
-      var stepTitle=document.getElementById("stepTitle");
-      var progressEl=document.getElementById("progress");
-      var qTextEl=document.getElementById("qText");
-      var exBox=document.getElementById("exBox");
-      var exTitle=document.getElementById("exTitle");
-      var exLines=document.getElementById("exLines");
-      var ruleTableWrap=document.getElementById("ruleTableWrap");
-      var choicesEl=document.getElementById("choices");
-      var resultEl=document.getElementById("result");
+    var whoEl=document.getElementById('who');
+    var klassEl=document.getElementById('klass');
+    var statusEl=document.getElementById('status');
+    var stepTitle=document.getElementById('stepTitle');
+    var progressEl=document.getElementById('progress');
 
-      var btnPrev=document.getElementById("btnPrev");
-      var btnNext=document.getElementById("btnNext");
+    var qTextEl=document.getElementById('qText');
+    var exBox=document.getElementById('exBox');
+    var exTitle=document.getElementById('exTitle');
+    var exLines=document.getElementById('exLines');
+    var ruleTableWrap=document.getElementById('ruleTableWrap');
+    var choicesEl=document.getElementById('choices');
+    var resultEl=document.getElementById('result');
 
-      var quizBox=document.getElementById("quizBox");
-      var reviewBox=document.getElementById("reviewBox");
-      var resultBox=document.getElementById("resultBox");
+    var btnPrev=document.getElementById('btnPrev');
+    var btnNext=document.getElementById('btnNext');
 
-      var reviewScoreEl=document.getElementById("reviewScore");
-      var reviewListEl=document.getElementById("reviewList");
-      var attemptInfoEl=document.getElementById("attemptInfo");
-
-      var resultTitleEl=document.getElementById("resultTitle");
-      var resultMainEl=document.getElementById("resultMain");
-      var finalScoreEl=document.getElementById("finalScore");
-      var resultMetaEl=document.getElementById("resultMeta");
-      var resultDateEl=document.getElementById("resultDate");
-      var logStatusEl=document.getElementById("logStatus");
-
-      var btnBackHub=document.getElementById("btnBackHub");
-      var btnBackHubFromReview=document.getElementById("btnBackHubFromReview");
-
-      // params
-      var p=getParams();
-      var name = p.name || "—";
-      var klass = p.klass || "—";
-      var token = p.token || "";
-      var deviceId = getDeviceId();
-
-      whoEl.textContent = "Нэр: " + name;
-      klassEl.textContent = "Анги: " + klass;
-
-      // state
-      var idx=0;
-      var attempts=0;
-      var lastScore=0;
-      var answers = {}; // {slideIdx:{picked,correct}}
-
-      function attemptsKey(){ return "attempts_"+lessonId+"_"+name; }
-      function loadAttempts(){
-        var v=parseInt(localStorage.getItem(attemptsKey())||"0",10);
-        attempts = isFinite(v)?v:0;
-      }
-      function saveAttempts(){ localStorage.setItem(attemptsKey(), String(attempts)); }
-      function clearAttempts(){ localStorage.removeItem(attemptsKey()); }
-
-      function goHub(){
-        var u=new URL(location.href);
-        var qs=new URLSearchParams();
-        ["name","klass","token","lang"].forEach(function(k){ var v=u.searchParams.get(k); if(v) qs.set(k,v); });
-        location.href = "GRAM-SNU-1A-hub.html" + (qs.toString()?"?"+qs.toString():"");
-      }
-
-      function goTopBack(){
-        // prefer history, fallback to hub
-        try{ if(history.length>1){ history.back(); return; } }catch(e){}
-        goHub();
-      }
-
-      function setNavState(){
-        btnPrev.classList.toggle("btnDisabled", idx<=0);
-        btnNext.classList.toggle("btnDisabled", idx>=slides.length-1);
-      }
-
-      function resetBelow(){
-        exBox.classList.add("hidden");
-        exTitle.textContent = "Тайлбар / Жишээ";
-        exLines.textContent = "";
-        ruleTableWrap.classList.add("hidden");
-        ruleTableWrap.innerHTML = "";
-        choicesEl.innerHTML = "";
-        resultEl.classList.add("hidden");
-        resultEl.classList.remove("ok");
-        resultEl.classList.remove("bad");
-      }
-
-      function renderTable(table){
-        var t=document.createElement("table");
-        t.className="rule";
-        var thead=document.createElement("thead");
-        var trh=document.createElement("tr");
-        (table.headers||[]).forEach(function(h){
-          var th=document.createElement("th");
-          th.textContent=h;
-          trh.appendChild(th);
-        });
-        thead.appendChild(trh);
-        t.appendChild(thead);
-
-        var tbody=document.createElement("tbody");
-        (table.rows||[]).forEach(function(r){
-          var tr=document.createElement("tr");
-          var td1=document.createElement("td");
-          var td2=document.createElement("td");
-          td1.textContent=r[0];
-          td2.textContent=r[1];
-          tr.appendChild(td1);tr.appendChild(td2);
-          tbody.appendChild(tr);
-        });
-        t.appendChild(tbody);
-        return t;
-      }
-
-      function showCheck(ok, answerText){
-        resultEl.classList.remove("hidden");
-        resultEl.classList.remove("ok");
-        resultEl.classList.remove("bad");
-        resultEl.classList.add(ok?"ok":"bad");
-        resultEl.innerHTML = ok
-          ? "<b style='color:var(--green)'>Зөв!</b> <span class='muted small'>(Зөв: "+esc(answerText)+")</span>"
-          : "<b style='color:var(--red)'>Буруу!</b> <span class='muted small'>Зөв: "+esc(answerText)+"</span>";
-      }
-
-      function renderSlide(){
-        var s=slides[idx];
-        stepTitle.textContent = "Step " + String(idx+1) + " / " + String(slides.length);
-        progressEl.textContent = String(idx+1) + " / " + String(slides.length);
-        qTextEl.textContent = s.title;
-        resetBelow();
-
-        // description always below (next line)
-        if(s.type==="table"){
-          exBox.classList.remove("hidden");
-          exTitle.textContent = "Хүснэгт";
-          ruleTableWrap.classList.remove("hidden");
-          ruleTableWrap.appendChild(renderTable(s.table));
-        } else {
-          var descParts=[];
-          if(s.body) descParts.push(s.body);
-          if(s.ex && s.ex.length) descParts.push("
-" + s.ex.map(function(x){return "• "+x;}).join("
-"));
-          if(descParts.join("
-").trim()){
-            exBox.classList.remove("hidden");
-            exTitle.textContent = "Тайлбар / Жишээ";
-            exLines.textContent = descParts.join("
-");
-          }
-        }
-
-        if(s.type==="mc"){
-          // show question block as extra paragraph under ex box
-          var qq=(s.prompt||"") + (s.question?"
-
-"+s.question:"");
-          if(!exBox.classList.contains("hidden")){
-            exLines.textContent = (exLines.textContent? (exLines.textContent+"
-
-") : "") + qq;
-          } else {
-            exBox.classList.remove("hidden");
-            exTitle.textContent = "Асуулт";
-            exLines.textContent = qq;
-          }
-
-          (s.choices||[]).forEach(function(ch){
-            var b=document.createElement("button");
-            b.type="button";
-            b.className="choice";
-            b.textContent=ch;
-            b.addEventListener("click", function(){
-              if(answers[idx]) return;
-              var ok = (ch===s.answer);
-              answers[idx] = {picked: ch, correct: ok};
-              // lock
-              Array.prototype.slice.call(choicesEl.querySelectorAll("button")).forEach(function(x){ x.disabled=true; });
-              showCheck(ok, s.answer);
-            });
-            choicesEl.appendChild(b);
-          });
-
-          if(answers[idx]){
-            Array.prototype.slice.call(choicesEl.querySelectorAll("button")).forEach(function(x){ x.disabled=true; });
-            showCheck(!!answers[idx].correct, s.answer);
-          }
-        }
-
-        setNavState();
-      }
-
-      function prevSlide(){ if(idx<=0) return; idx--; renderSlide(); }
-
-      function nextSlide(){
-        if(idx>=slides.length-1) return;
-        var s=slides[idx];
-        if(s.type==="mc" && !answers[idx]){
-          resultEl.classList.remove("hidden");
-          resultEl.classList.add("bad");
-          resultEl.innerHTML = "<b style='color:var(--red)'>Сонгоод дараа нь ▶ дарна уу.</b>";
-          return;
-        }
-        idx++;
-        renderSlide();
-      }
-
-      function totalMc(){
-        var n=0; for(var i=0;i<slides.length;i++) if(slides[i].type==="mc") n++;
-        return n;
-      }
-
-      function computeScore(){
-        var mc=0, correct=0;
-        for(var i=0;i<slides.length;i++){
-          if(slides[i].type!=="mc") continue;
-          mc++;
-          if(answers[i] && answers[i].correct) correct++;
-        }
-        return mc ? Math.round((correct/mc)*100) : 0;
-      }
-
-      function wrongItems(){
-        var out=[];
-        for(var i=0;i<slides.length;i++){
-          if(slides[i].type!=="mc") continue;
-          if(!answers[i] || answers[i].correct) continue;
-          out.push({i:i+1, title:slides[i].title, picked:answers[i].picked, answer:slides[i].answer});
-        }
-        return out;
-      }
-
-      function finish(){
-        attempts++;
-        saveAttempts();
-        showReview();
-      }
-
-      function showReview(){
-        quizBox.classList.add("hidden");
-        resultBox.classList.add("hidden");
-        reviewBox.classList.remove("hidden");
-
-        var score=computeScore();
-        lastScore=score;
-        reviewScoreEl.textContent = "Дүн: " + String(score) + " / 100";
-        attemptInfoEl.textContent = "Оролдлого: " + String(attempts) + " · MC: " + String(totalMc());
-
-        reviewListEl.innerHTML="";
-        var w=wrongItems();
-        if(!w.length){
-          var div=document.createElement("div");
-          div.className="reviewItem";
-          div.textContent="🎉 Бүгд зөв байна!";
-          reviewListEl.appendChild(div);
-        }else{
-          w.forEach(function(x){
-            var div=document.createElement("div");
-            div.className="reviewItem";
-            div.textContent = "#"+x.i+" "+x.title+"
-Таны сонголт: "+x.picked+"
-Зөв: "+x.answer;
-            reviewListEl.appendChild(div);
-          });
-        }
-      }
-
-      function sendLog(finalScore){
-        var ua=navigator.userAgent||"";
-        var safeToken = token || ("no_token_"+deviceId);
-        var url = SCRIPT_URL + "?action=log" +
-          "&token="+encodeURIComponent(safeToken) +
-          "&deviceId="+encodeURIComponent(deviceId) +
-          "&book="+encodeURIComponent("GRAMMAR") +
-          "&lesson="+encodeURIComponent(lessonId) +
-          "&score="+encodeURIComponent(String(finalScore)) +
-          "&attempts="+encodeURIComponent(String(attempts)) +
-          "&ua="+encodeURIComponent(ua);
-        return jsonp(url, 9000).then(function(res){
-          if(res && res.ok) logStatusEl.textContent = "Бүртгэл амжилттай илгээгдлээ.";
-          else logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. (Сургалт үргэлжилнэ)";
-        }).catch(function(){
-          logStatusEl.textContent = "Бүртгэл илгээхэд алдаа гарлаа. (Сургалт үргэлжилнэ)";
-        });
-      }
-
-      function showResult(){
-        reviewBox.classList.add("hidden");
-        quizBox.classList.add("hidden");
-        resultBox.classList.remove("hidden");
-
-        var pass = lastScore>=80;
-        resultTitleEl.textContent = pass ? "Тэнцлээ!" : "Дахин оролдоорой";
-        resultMainEl.textContent = pass ? (name+" · Тэнцлээ!") : (name+" · Хичээгээрэй!");
-        finalScoreEl.textContent = String(lastScore);
-        resultMetaEl.textContent = "Анги: "+klass+" · Оролдлого: "+String(attempts);
-        resultDateEl.textContent = "Огноо: " + nowStr();
-
-        sendLog(lastScore).finally(function(){ clearAttempts(); });
-      }
-
-      function retry(){
-        idx=0;
-        answers={};
-        reviewBox.classList.add("hidden");
-        resultBox.classList.add("hidden");
-        quizBox.classList.remove("hidden");
-        renderSlide();
-      }
-
-      // bind UI
-      btnTopBack.addEventListener("click", goTopBack);
-      btnHelp.addEventListener("click", function(){ helpBox.classList.toggle("hidden"); });
-      btnPrev.addEventListener("click", prevSlide);
-      btnNext.addEventListener("click", function(){
-        if(idx>=slides.length-1){ finish(); return; }
-        nextSlide();
-      });
-
-      document.getElementById("btnRetry").addEventListener("click", retry);
-      document.getElementById("btnGoResult").addEventListener("click", showResult);
-      btnBackHub.addEventListener("click", goHub);
-      btnBackHubFromReview.addEventListener("click", goHub);
-
-      // keyboard
-      document.addEventListener("keydown", function(e){
-        if(e.key==="ArrowLeft") prevSlide();
-        if(e.key==="ArrowRight") btnNext.click();
-      });
-
-      // start
-      loadAttempts();
-      statusEl.textContent = "로드 완료";
-      renderSlide();
-
-      // best-effort validate
-      setTimeout(function(){
-        if(!token){ statusEl.textContent = "(token 없음 · үргэлжилнэ)"; return; }
-        var vurl = SCRIPT_URL + "?action=validate" +
-          "&token="+encodeURIComponent(token) +
-          "&deviceId="+encodeURIComponent(deviceId) +
-          "&klass="+encodeURIComponent(klass) +
-          "&name="+encodeURIComponent(name);
-        jsonp(vurl, 7000).then(function(res){
-          statusEl.textContent = (res && res.ok) ? "로드 완료" : "(token баталгаажаагүй ч үргэлжилнэ)";
-        }).catch(function(){
-          statusEl.textContent = "(token шалгалт алдаа · үргэлжилнэ)";
-        });
-      }, 300);
-
-    }catch(err){
-      var q=document.getElementById("qText");
-      if(q) q.textContent = "Алдаа гарлаа. (Console)";
-      var st=document.getElementById("status");
-      if(st) st.textContent = "Error";
-      console.error(err);
+    // If any critical element is missing -> show
+    if(!qTextEl || !btnPrev || !btnNext){
+      if(statusEl) statusEl.textContent='DOM missing';
+      return;
     }
+
+    var p=qp();
+    whoEl.textContent = 'Нэр: ' + (p.name||'—');
+    klassEl.textContent = 'Анги: ' + (p.klass||'—');
+
+    var idx=0;
+    var answers={};
+
+    function setNav(){
+      btnPrev.classList.toggle('btnDisabled', idx<=0);
+      btnNext.classList.toggle('btnDisabled', idx>=slides.length-1);
+    }
+
+    function clearBelow(){
+      exBox.classList.add('hidden');
+      exTitle.textContent='Тайлбар / Жишээ';
+      exLines.textContent='';
+      ruleTableWrap.classList.add('hidden');
+      ruleTableWrap.innerHTML='';
+      choicesEl.innerHTML='';
+      resultEl.classList.add('hidden');
+      resultEl.classList.remove('ok');
+      resultEl.classList.remove('bad');
+    }
+
+    function showNeedPick(){
+      resultEl.classList.remove('hidden');
+      resultEl.classList.add('bad');
+      resultEl.innerHTML = "<b style='color:var(--red)'>Сонгоод дараа нь ▶ дарна уу.</b>";
+    }
+
+    function showCheck(ok, ans){
+      resultEl.classList.remove('hidden');
+      resultEl.classList.remove('ok');
+      resultEl.classList.remove('bad');
+      resultEl.classList.add(ok?'ok':'bad');
+      resultEl.innerHTML = ok
+        ? "<b style='color:var(--green)'>Зөв!</b> <span class='muted small'>(Зөв: "+ans+")</span>"
+        : "<b style='color:var(--red)'>Буруу!</b> <span class='muted small'>Зөв: "+ans+"</span>";
+    }
+
+    function render(){
+      var s=slides[idx];
+      stepTitle.textContent = 'Step ' + (idx+1) + ' / ' + slides.length;
+      progressEl.textContent = (idx+1) + ' / ' + slides.length;
+      qTextEl.textContent = s.title;
+      clearBelow();
+
+      if(s.type==='table'){
+        exBox.classList.remove('hidden');
+        exTitle.textContent='Хүснэгт';
+        ruleTableWrap.classList.remove('hidden');
+        ruleTableWrap.appendChild(tableEl(s.table));
+      } else {
+        var desc='';
+        if(s.body) desc += s.body;
+        if(s.ex && s.ex.length) desc += '
+
+' + s.ex.map(function(x){return '• '+x;}).join('
+');
+        if(desc.trim()){
+          exBox.classList.remove('hidden');
+          exTitle.textContent='Тайлбар / Жишээ';
+          exLines.textContent=desc;
+        }
+      }
+
+      if(s.type==='mc'){
+        var qq=(s.prompt||'') + (s.question?"
+
+"+s.question:'');
+        if(!exBox.classList.contains('hidden')) exLines.textContent = (exLines.textContent? exLines.textContent+'
+
+' : '') + qq;
+        else { exBox.classList.remove('hidden'); exTitle.textContent='Асуулт'; exLines.textContent=qq; }
+
+        (s.choices||[]).forEach(function(ch){
+          var b=document.createElement('button');
+          b.type='button';
+          b.className='choice';
+          b.textContent=ch;
+          b.addEventListener('click', function(){
+            if(answers[idx]) return;
+            var ok = (ch===s.answer);
+            answers[idx] = {picked:ch, correct:ok};
+            Array.prototype.slice.call(choicesEl.querySelectorAll('button')).forEach(function(x){x.disabled=true;});
+            showCheck(ok, s.answer);
+          });
+          choicesEl.appendChild(b);
+        });
+
+        if(answers[idx]){
+          Array.prototype.slice.call(choicesEl.querySelectorAll('button')).forEach(function(x){x.disabled=true;});
+          showCheck(!!answers[idx].correct, s.answer);
+        }
+      }
+
+      setNav();
+      statusEl.textContent='로드 완료';
+    }
+
+    function prev(){
+      if(idx<=0) return;
+      idx--;
+      render();
+    }
+
+    function next(){
+      if(idx>=slides.length-1) return;
+      var s=slides[idx];
+      if(s.type==='mc' && !answers[idx]){ showNeedPick(); return; }
+      idx++;
+      render();
+    }
+
+    btnPrev.addEventListener('click', prev);
+    btnNext.addEventListener('click', next);
+
+    btnHelp.addEventListener('click', function(){ helpBox.classList.toggle('hidden'); });
+
+    btnTopBack.addEventListener('click', function(){
+      try{ if(history.length>1){ history.back(); return; } }catch(e){}
+      // fallback to grammar hub
+      var u=new URL(location.href);
+      var qs=new URLSearchParams();
+      ['name','klass','token','lang'].forEach(function(k){ var v=u.searchParams.get(k); if(v) qs.set(k,v); });
+      location.href = 'GRAM-SNU-1A-hub.html' + (qs.toString()?'?'+qs.toString():'');
+    });
+
+    // start immediately
+    render();
   }
 
-  // Script is at the end of body: init immediately
-  init();
+  if(document.readyState==='loading'){
+    document.addEventListener('DOMContentLoaded', init);
+  }else{
+    init();
+  }
 })();
 </script>
 </body>
