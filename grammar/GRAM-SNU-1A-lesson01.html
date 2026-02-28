@@ -626,41 +626,61 @@ ${w.prompt}
     renderSlide();
   }
 
-  (async function init(){
-    const p=getParams();
-    name=p.name||"—";
-    klass=p.klass||"—";
-    token=p.token||"";
-    deviceId=getDeviceId();
+  (function init(){
+    try{
+      const p=getParams();
+      name=p.name||"—";
+      klass=p.klass||"—";
+      token=p.token||"";
+      deviceId=getDeviceId();
 
-    whoEl.textContent = `Нэр: ${name}`;
-    klassEl.textContent = `Анги: ${klass}`;
+      whoEl.textContent = `Нэр: ${name}`;
+      klassEl.textContent = `Анги: ${klass}`;
 
-    statusEl.textContent = "Loading...";
-    const ok = await validateTokenBestEffort();
-    statusEl.textContent = ok ? "로드 완료" : "(token баталгаажаагүй ч үргэлжилнэ)";
+      // ✅ UI 먼저 시작 (로딩 멈춤 방지)
+      statusEl.textContent = "로드 완료";
+      loadAttempts();
+      renderSlide();
 
-    loadAttempts();
-    renderSlide();
+      // ✅ validate는 백그라운드(best-effort)로만
+      validateTokenBestEffort().then(ok=>{
+        statusEl.textContent = ok ? "로드 완료" : "(token баталгаажаагүй ч үргэлжилнэ)";
+      }).catch(()=>{
+        statusEl.textContent = "(token шалгалт алдаа · үргэлжилнэ)";
+      });
 
-    document.getElementById("btnBack").addEventListener("click", goBack);
-    document.getElementById("btnBack2").addEventListener("click", goBack);
-    document.getElementById("btnBack3").addEventListener("click", goBack);
+      // ✅ 안전장치: 2초 후에도 Loading이면 강제 렌더
+      setTimeout(()=>{
+        if(qTextEl && String(qTextEl.textContent||"").includes("Loading")){
+          try{ renderSlide(); }catch(e){}
+        }
+      }, 2000);
 
-    document.getElementById("btnHelp").addEventListener("click", ()=>helpBox.classList.toggle("hidden"));
-    document.getElementById("btnNext").addEventListener("click", ()=>{
-      const s=slides[idx];
-      if(s.type==="mc" && !answered){
-        resultEl.classList.remove("hidden");
-        resultEl.classList.add("bad");
-        resultEl.innerHTML = `<b style="color:var(--red)">Сонгоод дараа нь үргэлжлүүлээрэй.</b>`;
-        return;
-      }
-      nextSlide();
-    });
+      document.getElementById("btnBack").addEventListener("click", goBack);
+      document.getElementById("btnBack2").addEventListener("click", goBack);
+      document.getElementById("btnBack3").addEventListener("click", goBack);
 
-    document.getElementById("btnRetry").addEventListener("click", retry);
-    document.getElementById("btnGoResult").addEventListener("click", showResult);
+      document.getElementById("btnHelp").addEventListener("click", ()=>helpBox.classList.toggle("hidden"));
+      document.getElementById("btnNext").addEventListener("click", ()=>{
+        const s=slides[idx];
+        if(s.type==="mc" && !answered){
+          resultEl.classList.remove("hidden");
+          resultEl.classList.add("bad");
+          resultEl.innerHTML = `<b style=\"color:var(--red)\">Сонгоод дараа нь үргэлжлүүлээрэй.</b>`;
+          return;
+        }
+        nextSlide();
+      });
+
+      document.getElementById("btnRetry").addEventListener("click", retry);
+      document.getElementById("btnGoResult").addEventListener("click", showResult);
+
+    }catch(err){
+      // 치명적 오류라도 화면에 표시
+      statusEl.textContent = "Error";
+      qTextEl.textContent = "Алдаа гарлаа. (Console-г шалгана уу)";
+      console.error(err);
+    }
   })();
 </script>
 </body>
