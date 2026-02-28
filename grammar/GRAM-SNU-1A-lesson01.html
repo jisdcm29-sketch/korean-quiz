@@ -109,7 +109,6 @@
     }
     .exTitle{font-weight:950;color:#dbeafe}
     .exLine{margin-top:6px;line-height:1.55}
-    .exLine b{color:#fff}
 
     .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;}
     @media(max-width:800px){.choices{grid-template-columns:1fr}}
@@ -163,7 +162,7 @@
   <div class="brand"><span class="dot"></span><span>Grammar · SNU 1A · Lesson 01</span></div>
   <div class="btnRow">
     <button class="btn btnBack" id="btnBack" type="button" aria-label="back">←</button>
-    <button class="btn btnInfo" id="btnHelp" type="button">Дүрэм тусламж</button>
+    <button class="btn btnInfo" id="btnHelp" type="button">Тусламж</button>
   </div>
 </header>
 
@@ -172,7 +171,7 @@
     <div class="headerRow">
       <div>
         <h1 id="title">1A 1과 · 문법</h1>
-        <div class="muted" id="subtitle">Эхлээд хэлбэр (형태) → дараа нь хэрэглээ. Дарааллаар (순서대로) явна.</div>
+        <div class="muted" id="subtitle">Алхам 1) Хэлбэр (형태) · Эгшиг/Гийгүүлэгч төгсгөл → Алхам 2) Хэрэглээ (албан бус/албан ёсны). Дарааллаар явна.</div>
       </div>
       <div class="muted small" id="status"></div>
     </div>
@@ -182,9 +181,10 @@
     <div id="helpBox" class="qbox hidden">
       <div class="muted" style="text-align:left;">
         <div style="font-weight:950; color:#fff;">Яаж сурах вэ?</div>
-        <div style="margin-top:6px;">1) Эхлээд <b>хэлбэр</b>-ийг харна. (받침 O/X)</div>
-        <div>2) Дараа нь зөв хэсгийг сонгоно. (4 сонголт)</div>
-        <div>3) Бүгд дуусмагц эхлээд <b>Review</b>, дараа нь <b>Results</b>.</div>
+        <div style="margin-top:6px;">1) Энэ дүрэм нь <b>Нэр үг (N)</b>-тэй холбогдоно.</div>
+        <div>2) Үг нь <b>эгшиг</b> (vowel) эсвэл <b>гийгүүлэгч</b> (consonant) -ээр төгссөн эсэхийг харна.</div>
+        <div>3) 4 сонголтоос зөвийг сонгоно. (Дарааллаар явна. Санамсаргүй биш)</div>
+        <div>4) Дуусмагц эхлээд <b>Review</b>, дараа нь <b>Results</b>.</div>
       </div>
     </div>
 
@@ -195,7 +195,7 @@
       </div>
 
       <div id="exBox" class="exBox hidden">
-        <div class="exTitle" id="exTitle">Жишээ</div>
+        <div class="exTitle">Тайлбар / Жишээ</div>
         <div class="exLine" id="exLines"></div>
       </div>
 
@@ -251,51 +251,91 @@
 </main>
 
 <script>
-  // ====== GAS (same flow: validate/log) ======
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
   const lessonId = "GRAM-SNU-1A-lesson01";
 
-  // ====== Slides (order matters) ======
-  // NOTE: 몽골어 중심 + 형태(받침 O/X) 강조 + 순서대로 진행
+  // 25 slides, 순서 고정
+  // 핵심 정책 반영:
+  // - 몽골어 중심 설명
+  // - '받침' 대신: "эгшиг(모음)으로 끝남 / гийгүүлэгч(자음)으로 끝남" 설명
+  // - 문법별로 분리: 은/는, 이에요/예요, 입니다, 입니까?, 이/가(아닙니다)
+  // - N(명사)와 연결한다는 표현 포함
   const slides = [
-    {type:"info", title:"오늘의 문법", body:"① N은/는 N이에요/예요 (ярианы хэл)\n② N입니까?/N입니다 (албан ёсны)\n③ N이/가 아닙니다 (албан ёсны үгүйсгэл)", ex:["Хэлбэр (형태) → Дүрэм ойлгоно.","받침 O/X = үсгийн төгсгөлийн гийгүүлэгч байгаа/байхгүй"]},
+    // 1~3: 개요
+    {type:"info", title:"오늘의 문법 (Нэр үг N-тай)", body:"Энэ хичээлд N(명사) + 조사/어미-г сурна.
 
-    {type:"info", title:"① N은/는 = сэдэв (Topic)", body:"받침 O → N+은\n받침 X → N+는", ex:["마이클+은 (받침 O)","저+는 (받침 X)"]},
-    {type:"mc", title:"받침 O: 마이클 __", prompt:"Зөвийг сонгоно уу.", choices:["은","는","이","가"], answer:"은", ex:["마이클은 (O)"]},
-    {type:"mc", title:"받침 X: 저 __", prompt:"Зөвийг сонгоно уу.", choices:["은","는","이","가"], answer:"는", ex:["저는 (X)"]},
+① 은/는 (сэдэв)
+② 이에요/예요 (албан бус: …이다)
+③ 입니다 (албан ёсны: …이다)
+④ 입니까? (албан ёсны асуулт)
+⑤ 이/가 아닙니다 (албан ёсны үгүйсгэл)", ex:["N = Нэр үг (명사)","Ж: 학생, 사람, 가수, 마이클"]},
+    {type:"info", title:"Хэлбэр: Эгшиг/Гийгүүлэгч төгсгөл", body:"Монгол хэлээр: 
+- Үг нь <b>эгшиг</b>-ээр төгсөх үү? (모음)
+- Үг нь <b>гийгүүлэгч</b>-ээр төгсөх үү? (자음)
 
-    {type:"info", title:"① N이에요/예요 = …이다 (ярианы хэл)", body:"받침 O → N+이에요\n받침 X → N+예요", ex:["학생+이에요 (받침 O)","나나+예요 (받침 X)"]},
-    {type:"mc", title:"받침 O: 학생 __", prompt:"Зөвийг сонгоно уу.", choices:["이에요","예요","입니다","입니까"], answer:"이에요", ex:["학생이에요"]},
-    {type:"mc", title:"받침 X: 나나 __", prompt:"Зөвийг сонгоно уу.", choices:["이에요","예요","입니다","입니까"], answer:"예요", ex:["나나예요"]},
-    {type:"mc", title:"문장 완성", prompt:"저는 유진 __", choices:["이에요","예요","입니다","입니까"], answer:"이에요", ex:["저는 유진이에요.","(유진: 받침 O)"]},
-    {type:"mc", title:"문장 완성", prompt:"저는 중국 사람 __", choices:["이에요","예요","입니다","입니까"], answer:"이에요", ex:["사람: 받침 O → 이에요"]},
+Энэ ялгаа нь 한국어-ийн 조사 хэлбэрийг өөрчилнө.", ex:["Эгшиг төгсгөл: 나나, 저", "Гийгүүлэгч төгсгөл: 학생, 사람, 유진"]},
+    {type:"info", title:"Албан бус vs Албан ёсны", body:"Албан бус (ярианы хэл): 이에요/예요
+Албан ёсны (хурал, ажил, илтгэл): 입니다 / 입니까? / 아닙니다", ex:["친구끼리 → 예요", "발표/비즈니스 → 입니다"]},
 
-    {type:"info", title:"② 격식: N입니다 / N입니까?", body:"대답(평서) → N입니다\n질문(의문) → N입니까?", ex:["저는 마이클입니다.","미국 사람입니까?"]},
-    {type:"mc", title:"대답(평서)", prompt:"저는 마이클 __", choices:["입니다","입니까","예요","이에요"], answer:"입니다", ex:["격식: 입니다"]},
-    {type:"mc", title:"질문(의문)", prompt:"마이클 씨는 미국 사람 __", choices:["입니까?","입니다.","예요?","이에요?"], answer:"입니까?", ex:["격식 질문: 입니까?"]},
-    {type:"mc", title:"격식 문장 고르기", prompt:"‘영국 사람입니다.’는?", choices:["대답/서술","질문","명령","감탄"], answer:"대답/서술", ex:["입니다 = 평서"]},
+    // 4~8: 은/는 (주제)
+    {type:"info", title:"① 은/는 (сэдэв · Topic)", body:"N(명사)-ийн араас орж <b>сэдэв</b> болгоно.
 
-    {type:"info", title:"③ 격식 부정: N이/가 아닙니다", body:"받침 O → N+이 아닙니다\n받침 X → N+가 아닙니다", ex:["사람+이 아닙니다 (받침 O)","가수+가 아닙니다 (받침 X)"]},
-    {type:"mc", title:"받침 O", prompt:"사람 __ 아닙니다", choices:["이","가","은","는"], answer:"이", ex:["사람이 아닙니다"]},
-    {type:"mc", title:"받침 X", prompt:"가수 __ 아닙니다", choices:["이","가","은","는"], answer:"가", ex:["가수가 아닙니다"]},
-    {type:"mc", title:"대화 이해", prompt:"A: 미국 사람입니까?\nB: 아니요, 저는 미국 사람이 아닙니다.", choices:["부정(아닙니다)","소개(예요)","과거", "명령"], answer:"부정(아닙니다)", ex:["아닙니다 = 격식 부정"]},
+- Гийгүүлэгч төгсгөл → N+은
+- Эгшиг төгсгөл → N+는", ex:["사람+은 → 사람은", "저+는 → 저는"]},
+    {type:"mc", title:"은/는 · Гийгүүлэгч төгсгөл", prompt:"마이클 __", choices:["은","는","이","가"], answer:"은", ex:["마이클은"]},
+    {type:"mc", title:"은/는 · Эгшиг төгсгөл", prompt:"저 __", choices:["은","는","이","가"], answer:"는", ex:["저는"]},
+    {type:"mc", title:"은/는 · Зөвийг сонго", prompt:"사람 __", choices:["은","는","이","가"], answer:"은", ex:["사람은 (사람: гийгүүлэгч төгсгөл)"]},
+    {type:"mc", title:"은/는 · Зөвийг сонго", prompt:"나나 __", choices:["은","는","이","가"], answer:"는", ex:["나나는 (나나: эгшиг төгсгөл)"]},
 
-    // ====== Drill (순서대로, 형태 중심) ======
-    {type:"mc", title:"연습 1", prompt:"저 __ 학생이에요", choices:["는","은","이","가"], answer:"는", ex:["저는 (받침 X)"]},
-    {type:"mc", title:"연습 2", prompt:"학생 __ (ярианы хэл)", choices:["이에요","예요","입니다","입니까"], answer:"이에요", ex:["학생: 받침 O"]},
-    {type:"mc", title:"연습 3", prompt:"나나 __ (ярианы хэл)", choices:["이에요","예요","입니다","입니까"], answer:"예요", ex:["나나: 받침 X"]},
-    {type:"mc", title:"연습 4", prompt:"마이클 씨는 미국 사람 __", choices:["입니까?","입니다.","예요?","이에요?"], answer:"입니까?", ex:["격식 질문"]},
-    {type:"mc", title:"연습 5", prompt:"저는 미국 사람 __", choices:["이 아닙니다","가 아닙니다","예요","입니까"], answer:"이 아닙니다", ex:["사람: 받침 O"]},
-    {type:"mc", title:"연습 6", prompt:"나나는 가수 __ 아닙니다", choices:["가","이","은","는"], answer:"가", ex:["가수: 받침 X"]},
+    // 9~13: 이에요/예요 (informal)
+    {type:"info", title:"② 이에요/예요 (албан бус: …이다)", body:"N(명사) + 이에요/예요 = "… байна" (танилцуулга)
 
-    {type:"info", title:"정리", body:"받침 O/X만 보면 쉬워요!\n은/는, 이에요/예요, 이/가\n격식: 입니다/입니까/아닙니다", ex:["O: 은, 이에요, 이", "X: 는, 예요, 가"]}
+- Гийгүүлэгч төгсгөл → N+이에요
+- Эгшиг төгсгөл → N+예요", ex:["학생이에요", "나나예요"]},
+    {type:"mc", title:"이에요/예요 · Гийгүүлэгч төгсгөл", prompt:"학생 __", choices:["이에요","예요","이에요?","예요?"], answer:"이에요", ex:["학생이에요"]},
+    {type:"mc", title:"이에요/예요 · Эгшиг төгсгөл", prompt:"나나 __", choices:["이에요","예요","이에요?","예요?"], answer:"예요", ex:["나나예요 (※ 나나에요 ❌)"]},
+    {type:"mc", title:"이에요/예요 · 문장 완성", prompt:"저는 유진 __", choices:["이에요","예요","이에요?","예요?"], answer:"이에요", ex:["유진: гийгүүлэгч төгсгөл → 이에요"]},
+    {type:"mc", title:"이에요/예요 · 문장 완성", prompt:"저는 중국 사람 __", choices:["이에요","예요","이에요?","예요?"], answer:"이에요", ex:["사람: гийгүүлэгч төгсгөл → 이에요"]},
+
+    // 14~17: 입니다 (formal statement) - separate
+    {type:"info", title:"③ 입니다 (албан ёсны: …이다)", body:"Албан ёсны үед N(명사)+입니다 ашиглана.
+Танилцуулга, ажил, илтгэл дээр.", ex:["저는 마이클입니다.","영국 사람입니다."]},
+    {type:"mc", title:"입니다 · 문장 완성", prompt:"저는 마이클 __", choices:["입니다","예요","이에요","아닙니다"], answer:"입니다", ex:["Албан ёсны: 입니다"]},
+    {type:"mc", title:"입니다 · 문장 완성", prompt:"영국 사람 __", choices:["입니다","예요","이에요","아닙니다"], answer:"입니다", ex:["사람입니다"]},
+    {type:"mc", title:"입니다 · 언제 사용?", prompt:"‘입니다’는 언제 써요?", choices:["알бан ёсны","친구끼리","게임","감탄"], answer:"알бан ёсны", ex:["хурал/ажил/илтгэл"]},
+
+    // 18~20: 입니까? (formal question) - separate
+    {type:"info", title:"④ 입니까? (албан ёсны асуулт)", body:"Албан ёсны асуулт: N(명사)+입니까?
+(질문할 때)", ex:["미국 사람입니까?", "학생입니까?"]},
+    {type:"mc", title:"입니까? · асуулт 완성", prompt:"마이클 씨는 미국 사람 __", choices:["입니까?","입니다.","예요.","이에요."], answer:"입니까?", ex:["질문: 입니까?"]},
+    {type:"mc", title:"입니까? · асуулт 완성", prompt:"학생 __", choices:["입니까?","입니다.","예요.","이에요."], answer:"입니까?", ex:["학생입니까?"]},
+
+    // 21~24: 이/가 아닙니다 (formal negative) - separate; explain 이/가
+    {type:"info", title:"⑤ (이/가) 아닙니다 (албан ёсны үгүйсгэл)", body:"N(명사) + (이/가) 아닙니다 = "… биш"
+
+- Гийгүүлэгч төгсгөл → N+이 아닙니다
+- Эгшиг төгсгөл → N+가 아닙니다", ex:["미국 사람이 아닙니다.","가수가 아닙니다."]},
+    {type:"mc", title:"이/가 · Гийгүүлэгч төгсгөл", prompt:"사람 __ 아닙니다", choices:["이","가","은","는"], answer:"이", ex:["사람이 아닙니다"]},
+    {type:"mc", title:"이/가 · Эгшиг төгсгөл", prompt:"가수 __ 아닙니다", choices:["이","가","은","는"], answer:"가", ex:["가수가 아닙니다"]},
+    {type:"mc", title:"대화", prompt:"A: 미국 사람입니까?
+B: 아니요, 저는 미국 사람 ___ 아닙니다.", choices:["이","가","은","는"], answer:"이", ex:["사람: гийгүүлэгч төгсгөл → 이"]},
+
+    // 25: 정리
+    {type:"info", title:"정리 (хамгийн чухал)", body:"1) Энэ дүрэм нь <b>Нэр үг (N)</b>-тэй холбогдоно.
+2) Үг эгшиг/гийгүүлэгчээр төгсөхийг хар.
+
+- 은/는 (сэдэв)
+- 이에요/예요 (албан бус)
+- 입니다 / 입니까? / 아닙니다 (албан ёсны)", ex:["Эгшиг төгсгөл → 는 / 예요 / 가", "Гийгүүлэгч төгсгөл → 은 / 이에요 / 이"]}
   ];
 
-  // ====== Helpers ======
   function escapeHtml(s){
     return String(s)
-      .replaceAll("&","&amp;").replaceAll("<","&lt;").replaceAll(">","&gt;")
-      .replaceAll('"',"&quot;").replaceAll("'","&#39;");
+      .replaceAll("&","&amp;")
+      .replaceAll("<","&lt;")
+      .replaceAll(">","&gt;")
+      .replaceAll('"',"&quot;")
+      .replaceAll("'","&#39;");
   }
   function jsonp(url, timeoutMs=9000){
     return new Promise((resolve,reject)=>{
@@ -358,16 +398,14 @@
     }
   }
 
-  // ====== State ======
   let name="", klass="", token="", deviceId="";
   let idx=0;
   let answered=false;
   let correctCount=0;
-  let wrong=[]; // {i, title, prompt, answer, picked}
+  let wrong=[];
   let attempts=0;
   let lastScore=0;
 
-  // ====== DOM ======
   const whoEl=document.getElementById("who");
   const klassEl=document.getElementById("klass");
   const qTextEl=document.getElementById("qText");
@@ -377,7 +415,6 @@
   const statusEl=document.getElementById("status");
   const helpBox=document.getElementById("helpBox");
   const exBox=document.getElementById("exBox");
-  const exTitle=document.getElementById("exTitle");
   const exLines=document.getElementById("exLines");
 
   const quizBox=document.getElementById("quizBox");
@@ -394,7 +431,6 @@
   const resultDateEl=document.getElementById("resultDate");
   const logStatusEl=document.getElementById("logStatus");
 
-  // ====== Attempts ======
   function loadAttempts(){
     const k=`attempts_${lessonId}_${name}`;
     attempts=parseInt(localStorage.getItem(k)||"0",10)||0;
@@ -408,19 +444,16 @@
     localStorage.removeItem(k);
   }
 
-  // ====== Navigation ======
   function goBack(){
     try{
       if(history.length>1){ history.back(); return; }
     }catch(e){}
-    // fallback: grammar hub
     const u=new URL(location.href);
     const qs=new URLSearchParams();
     ["name","klass","token","lang"].forEach(k=>{ const v=u.searchParams.get(k); if(v) qs.set(k,v); });
     location.href = "GRAM-SNU-1A-hub.html" + (qs.toString()?`?${qs.toString()}`:"");
   }
 
-  // ====== Token validate (best-effort) ======
   async function validateTokenBestEffort(){
     if(!token) return false;
     const url=`${SCRIPT_URL}?action=validate&token=${encodeURIComponent(token)}&deviceId=${encodeURIComponent(deviceId)}&klass=${encodeURIComponent(klass)}&name=${encodeURIComponent(name)}`;
@@ -432,7 +465,6 @@
     }
   }
 
-  // ====== Logging (always attempt) ======
   async function sendLog(finalScore){
     try{
       const ua=navigator.userAgent||"";
@@ -457,11 +489,9 @@
     }
   }
 
-  // ====== UI render ======
   function setExample(ex){
     if(!ex || !ex.length){ exBox.classList.add("hidden"); return; }
     exBox.classList.remove("hidden");
-    exTitle.textContent = "Жишээ / Санаа";
     exLines.innerHTML = ex.map(x=>`• ${escapeHtml(x)}`).join("<br/>");
   }
 
@@ -473,7 +503,9 @@
     answered=false;
 
     if(s.type==="info"){
-      qTextEl.textContent = `${s.title}\n\n${s.body}`;
+      qTextEl.textContent = `${s.title}
+
+${s.body}`;
       setExample(s.ex||[]);
       choicesEl.innerHTML = "";
       const btn=document.createElement("button");
@@ -485,8 +517,8 @@
       return;
     }
 
-    // mc
-    qTextEl.textContent = `${s.title}\n${s.prompt}\n\n${s.question||""}`.trim();
+    qTextEl.textContent = `${s.title}
+${s.prompt}`.trim();
     setExample(s.ex||[]);
 
     choicesEl.innerHTML="";
@@ -517,8 +549,8 @@
     resultEl.classList.remove("hidden");
     resultEl.classList.add(ok?"ok":"bad");
     resultEl.innerHTML = ok
-      ? `<b style="color:var(--green)">Зөв!</b> <span class="muted small">(Зөв хариу: ${escapeHtml(s.answer)})</span>`
-      : `<b style="color:var(--red)">Буруу!</b> <span class="muted small">Зөв хариу: ${escapeHtml(s.answer)}</span>`;
+      ? `<b style="color:var(--green)">Зөв!</b> <span class="muted small">(Зөв: ${escapeHtml(s.answer)})</span>`
+      : `<b style="color:var(--red)">Буруу!</b> <span class="muted small">Зөв: ${escapeHtml(s.answer)}</span>`;
   }
 
   function nextSlide(){
@@ -540,7 +572,7 @@
     lastScore = score;
 
     reviewScoreEl.textContent = `Дүн: ${score} / 100`;
-    attemptInfoEl.textContent = `Оролдлого: ${attempts} · MC: ${correctCount}/${totalMc}`;
+    attemptInfoEl.textContent = `Оролдлого: ${attempts} · Зөв: ${correctCount}/${totalMc}`;
 
     reviewListEl.innerHTML="";
     if(!wrong.length){
@@ -552,7 +584,10 @@
       wrong.forEach(w=>{
         const div=document.createElement("div");
         div.className="reviewItem";
-        div.textContent = `#${w.i} ${w.title}\nТаны сонголт: ${w.picked}\nЗөв: ${w.answer}`;
+        div.textContent = `#${w.i} ${w.title}
+${w.prompt}
+Таны сонголт: ${w.picked}
+Зөв: ${w.answer}`;
         reviewListEl.appendChild(div);
       });
     }
@@ -571,8 +606,6 @@
     resultDateEl.textContent = `Огноо: ${nowStr()}`;
 
     await sendLog(lastScore);
-
-    // 정책: 결과 화면 표시 후 attempts 초기화
     clearAttempts();
   }
 
@@ -593,7 +626,6 @@
     renderSlide();
   }
 
-  // ====== Init ======
   (async function init(){
     const p=getParams();
     name=p.name||"—";
@@ -604,7 +636,6 @@
     whoEl.textContent = `Нэр: ${name}`;
     klassEl.textContent = `Анги: ${klass}`;
 
-    // validate is best-effort (do not block study)
     statusEl.textContent = "Loading...";
     const ok = await validateTokenBestEffort();
     statusEl.textContent = ok ? "로드 완료" : "(token баталгаажаагүй ч үргэлжилнэ)";
@@ -612,7 +643,6 @@
     loadAttempts();
     renderSlide();
 
-    // events
     document.getElementById("btnBack").addEventListener("click", goBack);
     document.getElementById("btnBack2").addEventListener("click", goBack);
     document.getElementById("btnBack3").addEventListener("click", goBack);
@@ -621,7 +651,6 @@
     document.getElementById("btnNext").addEventListener("click", ()=>{
       const s=slides[idx];
       if(s.type==="mc" && !answered){
-        // 안내만: 답 선택 전에는 다음으로 못 감
         resultEl.classList.remove("hidden");
         resultEl.classList.add("bad");
         resultEl.innerHTML = `<b style="color:var(--red)">Сонгоод дараа нь үргэлжлүүлээрэй.</b>`;
