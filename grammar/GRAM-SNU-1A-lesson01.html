@@ -257,10 +257,9 @@
   // ====== Slides (exact 25) ======
   // type: info | mc | table (table is “info with rendered table”)
   var slides = [
-    // 1
-    {type:"info", title:"[1] 🎯 Spotlight + Topic",
-      body:"Арга: 은/는 = сэдэв (онцлох) ⭐\n“Харин … бол/… нь” гэж онцолж ярьна\n예) 저는 … / 이 사람은 …"},
-
+     // 1 (UI 수정: 타이틀 영역에는 '은/는 = ...'만, 가운데에는 “...бол/…нь...” 문장)
+    {type:"info", title:"[1] 은/는 = сэдэв (онцлох) ⭐",
+     body:"“Харин … бол/… нь” гэж онцолж ярьна\n예) 저는 … / 이 사람은 …"},
     // 2
     {type:"info", title:"[2] ✅/❌ 카드 (학생/친구/저/사람)",
       body:"은/는\n✍️ 학생 → 학생은 (гийгүүлэгч)\n✍️ 친구 → 친구는 (эгшиг)\n✍️ 저 → 저는\n✍️ 사람 → 사람은"},
@@ -608,47 +607,73 @@
     Array.prototype.slice.call(choices.querySelectorAll("button")).forEach(function(b){ b.disabled=true; });
   }
 
-  function render(){
-    var s = slides[idx];
+ function render(){
+  var s = slides[idx];
 
-    elStep.textContent = "Step " + (idx+1) + " / " + slides.length;
-    elProgress.textContent = (idx+1) + " / " + slides.length;
-    elTitle.textContent = s.title;
+  elStep.textContent = "Step " + (idx+1) + " / " + slides.length;
+  elProgress.textContent = (idx+1) + " / " + slides.length;
+  elTitle.textContent = s.title;
 
-    resetSlideUI();
+  resetSlideUI();
 
-    // explanation always below
-    var desc = "";
-    if(s.body) desc += s.body;
+  // explanation always below
+  var desc = "";
+  if (s.body) desc += s.body;
 
-    // table slide
-    if(s.type === "table"){
-      exBox.classList.remove("hidden");
-      exTitle.textContent = "Хүснэгт";
-      var t = renderTableFromText(s.body);
-      if(t){
-        tableWrap.classList.remove("hidden");
-        tableWrap.appendChild(t);
-      }else{
-        exText.textContent = s.body || "";
-      }
+  // table slide
+  if (s.type === "table") {
+    exBox.classList.remove("hidden");
+    exTitle.textContent = "Хүснэгт";
+
+    var t = renderTableFromText(s.body);
+    if (t) {
+      tableWrap.classList.remove("hidden");
+      tableWrap.appendChild(t);
     } else {
-      // info/mc: show body + ex under exBox
-      var lines = [];
-      if(desc.trim()) lines.push(desc.trim());
-      if(s.ex) lines.push("\n" + String(s.ex).trim());
-      if(lines.join("\n").trim()){
-        exBox.classList.remove("hidden");
-        exTitle.textContent = (s.type==="mc") ? "Асуулт / Жишээ" : "Тайлбар / Жишээ";
+      // table 파싱이 안 되면 그냥 아래줄에 텍스트로 보여줌
+      exText.textContent = s.body || "";
+    }
+
+  } else {
+    // info/mc: show body + ex under exBox
+    var lines = [];
+    if (desc.trim()) lines.push(desc.trim());
+    if (s.ex) lines.push("\n" + String(s.ex).trim());
+
+    if (lines.join("\n").trim()) {
+      exBox.classList.remove("hidden");
+      exTitle.textContent = (s.type === "mc") ? "Асуулт / Жишээ" : "Тайлбар / Жишээ";
+
+      // ✅ Slide 1 전용 레이아웃:
+      // - 첫 줄(“Харин … бол/… нь …”)은 가운데 굵게
+      // - 나머지(예문)는 그 아래(왼쪽 정렬)
+      if (idx === 0) {
+        var raw = lines.join("\n").trim();
+        var parts = raw.split("\n");
+        var centerLine = (parts[0] || "").trim();
+        var rest = parts.slice(1).join("\n").trim();
+
+        exText.innerHTML =
+          "<div style='text-align:center;font-weight:950;line-height:1.7'>" + esc(centerLine) + "</div>" +
+          (rest ? "<div style='margin-top:10px;line-height:1.75;text-align:left;white-space:pre-line'>" + esc(rest) + "</div>" : "");
+
+      } else {
+        // 일반 슬라이드
         exText.textContent = lines.join("\n");
-        // if body contains a table style text, render it too (optional)
-        var t2 = renderTableFromText(s.body || "");
-        if(t2){
-          tableWrap.classList.remove("hidden");
-          tableWrap.appendChild(t2);
-        }
+      }
+
+      // if body contains a table style text, render it too (optional)
+      var t2 = renderTableFromText(s.body || "");
+      if (t2) {
+        tableWrap.classList.remove("hidden");
+        tableWrap.appendChild(t2);
       }
     }
+  }
+
+  setNavState();
+  elStatus.textContent = "로드 완료";
+}
 
     // MC choices
     if(s.type === "mc"){
