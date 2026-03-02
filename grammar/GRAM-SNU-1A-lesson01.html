@@ -10,68 +10,138 @@
 
   <style>
     :root{
-      --bg:#0b1220;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
-      --blue:#60a5fa;--green:#34d399;--red:#f87171;--amber:#fbbf24;--violet:#a78bfa;--teal:#22d3ee;
-      --shadow:0 10px 30px rgba(0,0,0,.25);
+      --bg:#0b1220; --panel:#0b1020; --card:#111827; --text:#e5e7eb; --muted:#9ca3af; --line:#243044;
+      --ok:#34d399; --bad:#f87171; --amber:#fbbf24; --violet:#a78bfa; --teal:#22d3ee;
+      --shadow:0 12px 28px rgba(0,0,0,.25);
     }
     *{box-sizing:border-box}
     html,body{overflow-x:hidden}
-    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text);text-align:center;}
+    body{margin:0; font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;
+      background:linear-gradient(180deg,#050814,var(--bg)); color:var(--text); text-align:center;}
     button{font-family:inherit}
-    .container{max-width:980px;margin:0 auto;padding:16px}
+    .container{max-width:980px; margin:0 auto; padding:14px}
 
-    .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 10px;background:rgba(5,8,20,.78);backdrop-filter:blur(10px);border-bottom:1px solid var(--line);}
-    .brand{display:flex;align-items:center;gap:10px;font-weight:950}
-    .dot{width:10px;height:10px;border-radius:999px;background:var(--amber)}
-    .btnRow{display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:flex-end}
+    /* top bar */
+    .topbar{position:sticky; top:0; z-index:50; display:flex; align-items:center; justify-content:space-between; gap:10px;
+      padding:10px 10px; background:rgba(5,8,20,.78); backdrop-filter:blur(10px); border-bottom:1px solid var(--line);}
+    .brand{display:flex; align-items:center; gap:10px; font-weight:950}
+    .dot{width:10px; height:10px; border-radius:999px; background:var(--amber)}
+    .btnRow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:flex-end}
 
-    .btn{padding:12px 16px;border-radius:16px;border:1px solid var(--line);background:#0b1020;color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:48px;font-size:16px;font-weight:900;letter-spacing:.2px;-webkit-tap-highlight-color:transparent;box-shadow:0 8px 18px rgba(0,0,0,.22);white-space:nowrap;}
+    .btn{
+      padding:10px 14px; border-radius:14px; border:1px solid var(--line);
+      background:#0b1020; color:var(--text); cursor:pointer;
+      display:inline-flex; align-items:center; justify-content:center;
+      min-height:44px; font-size:15px; font-weight:950; letter-spacing:.2px;
+      -webkit-tap-highlight-color:transparent; box-shadow:0 8px 18px rgba(0,0,0,.22);
+      white-space:nowrap;
+    }
     .btn:active{transform:translateY(1px)}
     .btn:hover{filter:brightness(1.06)}
+    .btnTopBack{min-width:52px; font-size:18px; background:linear-gradient(135deg,rgba(167,139,250,.22), rgba(11,16,32,.96)); border-color:rgba(167,139,250,.55);}
+    .btnHelp{background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96)); border-color:rgba(251,191,36,.50);}
 
-    .btnHelp{background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.50);}
-    .btnTopBack{background:linear-gradient(135deg,rgba(167,139,250,.22), rgba(11,16,32,.96));border-color:rgba(167,139,250,.55);min-width:56px;font-size:18px;}
-
-    .navBtn{min-width:110px}
-    .btnPrev{background:linear-gradient(135deg,rgba(167,139,250,.20), rgba(11,16,32,.96));border-color:rgba(167,139,250,.55);}
-    .btnNext{background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96));border-color:rgba(34,211,238,.52);}
-    .btnDisabled{opacity:.45;pointer-events:none}
-
-    .card{background:rgba(17,24,39,.9);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:var(--shadow);text-align:left;}
-    .headerRow{display:flex;justify-content:space-between;gap:12px;flex-wrap:wrap;align-items:flex-end}
-    h1{margin:0 0 6px;font-size:28px;font-weight:950;letter-spacing:.2px}
-    .muted{color:var(--muted);line-height:1.6}
+    /* layout card */
+    .card{
+      background:rgba(17,24,39,.92);
+      border:1px solid var(--line);
+      border-radius:20px;
+      padding:16px;
+      box-shadow:var(--shadow);
+      text-align:left;
+    }
+    h1{margin:0 0 6px; font-size:28px; font-weight:950}
+    .muted{color:var(--muted); line-height:1.6}
     .small{font-size:13px}
-    .bar{height:1px;background:var(--line);margin:12px 0}
+    .row{display:flex; justify-content:space-between; gap:12px; flex-wrap:wrap; align-items:flex-end}
+    .bar{height:1px; background:var(--line); margin:12px 0}
+    .stepRow{display:flex; align-items:center; justify-content:space-between; gap:10px; flex-wrap:wrap; margin-top:6px}
+    .step{color:#dbeafe; font-weight:950}
 
-    .stepRow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px}
-    .step{color:#dbeafe;font-weight:950}
+    /* quiz box */
+    .qbox{border:1px solid var(--line); background:var(--panel); border-radius:18px; padding:14px;}
+    .qHead{
+      margin-bottom:10px; text-align:center; padding:12px;
+      border-radius:16px; border:1px solid rgba(251,191,36,.22);
+      background:linear-gradient(135deg,rgba(251,191,36,.14), rgba(11,16,32,.96));
+      box-shadow:0 10px 22px rgba(0,0,0,.14);
+    }
+    .pill{display:inline-flex; align-items:center; gap:8px; padding:6px 10px; border-radius:999px; border:1px solid var(--line);
+      background:rgba(11,16,32,.65); font-size:12px; font-weight:950;}
+    .qTitle{
+      margin-top:8px;
+      font-weight:950;
+      letter-spacing:.2px;
+      text-align:center;
+      line-height:1.22;
+      font-size:24px;
+      word-break:keep-all;
+      overflow-wrap:anywhere;
+      white-space:pre-line;
+    }
 
-    .pill{display:inline-flex;align-items:center;gap:8px;padding:6px 10px;border-radius:999px;border:1px solid var(--line);background:rgba(11,16,32,.65);font-size:12px;font-weight:900;color:var(--text)}
+    /* explanation box always below title */
+    .exBox{
+      margin-top:10px;
+      border:1px solid rgba(96,165,250,.25);
+      background:linear-gradient(135deg,rgba(96,165,250,.10), rgba(11,16,32,.96));
+      border-radius:16px;
+      padding:12px;
+    }
+    .exTitle{font-weight:950; color:#dbeafe; text-align:left}
+    .exLine{margin-top:8px; line-height:1.75; white-space:pre-line; text-align:left}
 
-    .qbox{border:1px solid var(--line);background:#0b1020;border-radius:18px;padding:14px;}
-    .qHead{margin-bottom:10px;text-align:center;padding:12px 12px;border-radius:16px;border:1px solid rgba(251,191,36,.22);background:linear-gradient(135deg,rgba(251,191,36,.14), rgba(11,16,32,.96));box-shadow:0 10px 22px rgba(0,0,0,.14);}
-    .qLabel{color:var(--muted);font-size:13px;font-weight:800}
-    .qText{font-weight:950;letter-spacing:.2px;margin-top:8px;text-align:center;line-height:1.18;font-size:24px;word-break:keep-all;overflow-wrap:anywhere;white-space:pre-line;}
+    /* tables */
+    table.rule{width:100%; border-collapse:collapse; margin-top:10px; font-size:15px}
+    table.rule th, table.rule td{border:1px solid rgba(255,255,255,.10); padding:10px; text-align:center}
+    table.rule th{color:#dbeafe; background:rgba(96,165,250,.08); font-weight:950}
 
-    .exBox{margin-top:10px;border:1px solid rgba(96,165,250,.25);background:linear-gradient(135deg,rgba(96,165,250,.10), rgba(11,16,32,.96));border-radius:16px;padding:12px;color:var(--text);}
-    .exTitle{font-weight:950;color:#dbeafe}
-    .exLine{margin-top:6px;line-height:1.65;white-space:pre-line;}
+    /* choices */
+    .choices{display:grid; grid-template-columns:repeat(2,1fr); gap:8px; margin-top:12px;}
+    @media(max-width:820px){.choices{grid-template-columns:1fr}}
+    .choice{
+      padding:13px 12px; border-radius:18px; border:1px solid var(--line);
+      background:linear-gradient(135deg,rgba(255,255,255,.04), rgba(11,16,32,.96));
+      color:var(--text); cursor:pointer;
+      text-align:center; font-weight:950; font-size:20px; min-height:52px;
+      box-shadow:0 10px 22px rgba(0,0,0,.18);
+      -webkit-tap-highlight-color:transparent;
+    }
+    .choice:active{transform:translateY(1px)}
+    .choice:disabled{opacity:.55; cursor:default; transform:none}
 
-    table.rule{width:100%;border-collapse:collapse;margin-top:10px;font-size:15px}
-    table.rule th, table.rule td{border:1px solid rgba(255,255,255,.10);padding:10px 10px;text-align:center}
-    table.rule th{color:#dbeafe;background:rgba(96,165,250,.08);font-weight:950}
-
-    .choices{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-top:12px;}
-    @media(max-width:800px){.choices{grid-template-columns:1fr}}
-    .choice{padding:13px 12px;border-radius:18px;border:1px solid var(--line);background:linear-gradient(135deg,rgba(255,255,255,.04), rgba(11,16,32,.96));color:var(--text);cursor:pointer;text-align:center;font-weight:900;font-size:21px;min-height:52px;box-shadow:0 10px 22px rgba(0,0,0,.18);white-space:normal;overflow-wrap:anywhere;-webkit-tap-highlight-color:transparent;}
-
-    .result{margin-top:10px;padding:12px;border-radius:16px;border:1px solid var(--line);background:rgba(11,16,32,.7)}
+    .result{
+      margin-top:10px; padding:12px; border-radius:16px;
+      border:1px solid var(--line); background:rgba(11,16,32,.7);
+    }
     .result.ok{border-color:rgba(52,211,153,.6)}
     .result.bad{border-color:rgba(248,113,113,.6)}
     .hidden{display:none}
 
-    .danger{border-color:rgba(248,113,113,.55) !important;background:rgba(248,113,113,.08) !important;}
+    /* bottom nav */
+    .navRow{display:flex; gap:10px; flex-wrap:wrap; align-items:center; justify-content:space-between; margin-top:12px}
+    .navBtns{display:flex; gap:10px; flex-wrap:wrap}
+    .navBtn{min-width:110px}
+    .btnPrev{background:linear-gradient(135deg,rgba(167,139,250,.20), rgba(11,16,32,.96)); border-color:rgba(167,139,250,.55);}
+    .btnNext{background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96)); border-color:rgba(34,211,238,.52);}
+    .btnDisabled{opacity:.45; pointer-events:none}
+
+    /* review/results */
+    .reviewList{max-height:340px; overflow:auto; border:1px solid rgba(248,113,113,.45); background:rgba(248,113,113,.06);
+      border-radius:16px; padding:12px;}
+    .reviewItem{padding:8px 0; border-bottom:1px dashed rgba(248,113,113,.35); white-space:pre-line}
+    .reviewItem:last-child{border-bottom:none}
+    .resultCard{border:1px solid rgba(96,165,250,.28); background:rgba(96,165,250,.06); border-radius:18px; padding:14px}
+    .scoreBig{font-size:34px; font-weight:950}
+
+    @media(max-width:520px){
+      .container{padding:10px}
+      .card{padding:14px}
+      .btn{min-height:50px; font-size:15px; padding:10px 12px}
+      .qTitle{font-size:22px}
+      .choice{font-size:18px}
+      .navBtn{min-width:96px}
+    }
   </style>
 </head>
 
@@ -86,12 +156,12 @@
 
 <main class="container">
   <section class="card">
-    <div class="headerRow">
+    <div class="row">
       <div>
         <h1>1A 1과 · 문법</h1>
-        <div class="muted">Дарааллаар явна · N(명사=нэр үг) дээр холбогдоно · Эгшиг/Гийгүүлэгч төгсгөлөөр сонгоно.</div>
+        <div class="muted">Дарааллаар явна · N(명사=нэр үг) дээр holбогдоно · Эгшиг/Гийгүүлэгч төгсгөлөөр сонгоно.</div>
       </div>
-      <div class="muted small" id="status">로딩...</div>
+      <div class="muted small" id="status">로드 중...</div>
     </div>
 
     <div class="stepRow">
@@ -103,325 +173,694 @@
 
     <div id="helpBox" class="qbox hidden">
       <div class="muted" style="text-align:left;">
-        <div style="font-weight:950; color:#fff;">Тусламж</div>
-        <div style="margin-top:6px;">• Энэ дүрэм нь <b>Нэр үг (N, 명사)</b>-тэй холбогдоно.</div>
-        <div>• Үг нь <b>эгшиг</b> эсвэл <b>гийгүүлэгч</b>-ээр төгсөхийг хараад хэлбэрээ сонгоно.</div>
-        <div>• Дуусмагц эхлээд <b>Review</b>, дараа нь <b>Results</b> гарна.</div>
+        <div style="font-weight:950;color:#fff;">Тусламж</div>
+        <div style="margin-top:6px;">• Энэ дүрэм нь <b>N(명사=нэр үг)</b>-тэй holбогдоно.</div>
+        <div>• Эгшиг/Гийгүүлэгч төгсгөлөөр хэлбэрээ сонгоно.</div>
+        <div>• Дуусмагц эхлээд <b>Review</b>, дараа нь <b>Results</b>.</div>
       </div>
     </div>
 
+    <!-- QUIZ -->
     <div id="quizBox" class="qbox">
       <div class="qHead">
         <div class="qLabel"><span class="pill" id="who">Нэр: —</span> <span class="pill" id="klass">Анги: —</span></div>
-        <div class="qText" id="qText">Эхэлж байна...</div>
+        <div class="qTitle" id="qTitle">Loading...</div>
       </div>
 
-      <div id="exBox" class="exBox hidden">
+      <!-- 예/설명: 항상 여기 (아랫줄) -->
+      <div class="exBox hidden" id="exBox">
         <div class="exTitle" id="exTitle">Тайлбар / Жишээ</div>
-        <div class="exLine" id="exLines"></div>
-        <div id="ruleTableWrap" class="hidden"></div>
+        <div class="exLine" id="exText"></div>
+        <div id="tableWrap" class="hidden"></div>
       </div>
 
       <div class="choices" id="choices"></div>
-      <div class="result hidden" id="result"></div>
+      <div class="result hidden" id="resultBox"></div>
 
       <div class="bar"></div>
-      <div style="display:flex;gap:10px;flex-wrap:wrap;align-items:center;justify-content:space-between;">
+      <div class="navRow">
         <div class="muted small" id="progress">1 / 25</div>
-        <div style="display:flex;gap:10px;flex-wrap:wrap;">
+        <div class="navBtns">
           <button class="btn navBtn btnPrev" id="btnPrev" type="button">◀</button>
           <button class="btn navBtn btnNext" id="btnNext" type="button">▶</button>
         </div>
       </div>
     </div>
+
+    <!-- REVIEW -->
+    <div id="reviewBox" class="hidden" style="margin-top:12px;">
+      <div class="qbox">
+        <div class="qHead">
+          <div class="qLabel">Review · Алдаа</div>
+          <div class="qTitle" id="reviewScore">Дүн: 0 / 100</div>
+        </div>
+        <div class="reviewList" id="reviewList"></div>
+        <div class="muted small" id="attemptInfo" style="margin-top:10px;"></div>
+        <div class="btnRow" style="margin-top:12px;justify-content:flex-start;">
+          <button class="btn" id="btnGoResult" type="button" style="background:linear-gradient(135deg,rgba(52,211,153,.18), rgba(11,16,32,.96));border-color:rgba(52,211,153,.52);">Results</button>
+          <button class="btn" id="btnRetry" type="button" style="background:linear-gradient(135deg,rgba(251,191,36,.18), rgba(11,16,32,.96));border-color:rgba(251,191,36,.50);">Дахин</button>
+          <button class="btn btnTopBack" id="btnBackHubFromReview" type="button">←</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RESULTS -->
+    <div id="finalBox" class="hidden" style="margin-top:12px;">
+      <div class="qbox">
+        <div class="qHead">
+          <div class="qLabel" id="finalTitle">Results</div>
+          <div class="qTitle" id="finalMain">—</div>
+        </div>
+        <div class="resultCard">
+          <div class="scoreBig" id="finalScore">0</div>
+          <div class="muted" id="finalMeta" style="margin-top:6px;"></div>
+          <div class="muted" id="finalDate" style="margin-top:6px;"></div>
+          <div style="margin-top:12px;font-weight:950;color:#fff;">Есүс танд хайртай!</div>
+          <div class="muted small" id="logStatus" style="margin-top:8px;"></div>
+        </div>
+        <div class="btnRow" style="margin-top:12px;justify-content:flex-start;">
+          <button class="btn btnTopBack" id="btnBackHub" type="button">←</button>
+        </div>
+      </div>
+    </div>
+
   </section>
 </main>
 
 <script>
-// ====== Hard crash visibility ======
-window.addEventListener('error', function(e){
-  try{
-    var q=document.getElementById('qText');
-    var st=document.getElementById('status');
-    if(st) st.textContent='JS Error';
-    if(q){
-      q.textContent = 'Алдаа гарлаа. Console-г шалгана уу.';
-      var qb=document.getElementById('quizBox');
-      if(qb) qb.classList.add('danger');
-    }
-  }catch(_){}
-});
-
 (function(){
+  // ====== CONFIG ======
+  var SCRIPT_URL = "https://script.google.com/macros/s/AKfycbwBe6Y0W3IJKjWV8MLFnR5b9OMePDPHGVACPekJQpvLWRrlayRmHBJCezamKqN9rZg6/exec";
+  var lessonId = "GRAM-SNU-1A-lesson01";
+  var bookId = "GRAMMAR";
+
+  // ====== Slides (exact 25) ======
+  // type: info | mc | table (table is “info with rendered table”)
   var slides = [
-    {type:"info", title:"[1] ⭐ 은/는 = сэдэв (topic)", body:"‘Харин … бол/… нь’ гэж онцолно
-예) 저는 … / 이 사람은 …", ex:["N(명사=нэр үг)+은/는"]},
-    {type:"info", title:"[2] 🔗 은/는 holbох", body:"명사(N=нэр үг) дээр
+    // 1
+    {type:"info", title:"[1] 🎯 Spotlight + Topic",
+      body:"Арга: 은/는 = сэдэв (онцлох) ⭐\n“Харин … бол/… нь” гэж онцолж ярьна\n예) 저는 … / 이 사람은 …"},
 
-гийгүүлэгчээр төгсвөл → 은
-эгшигээр төгсвөл → 는", ex:["N + 은/는"]},
-    {type:"info", title:"[3] ✍️ Жишээ", body:"학생 → 학생은 (гийгүүлэгч)
-친구 → 친구는 (эгшиг)
-저 → 저는 (эгшиг)
-사람 → 사람은 (гийгүүлэгч)", ex:[]},
-    {type:"info", title:"[4] 🧠 이다 = “~ байна/юм”", body:"✅ 명사(N=нэр үг)-тэй л холбогдоно
-Яriand(албан бус) → 이에요/예요", ex:["N дээр"]},
-    {type:"info", title:"[5] ✅ 이에요/예요 сонгох", body:"гийгүүлэгчээр төгссөн 명사 → -이에요
-эгшигээр төгссөн 명사 → -예요", ex:["책이에요 / 의사예요"]},
-    {type:"info", title:"[6] 🔎 Шалгах арга", body:"“책” → ㄱ = гийгүүлэгч → 책이에요
-“의사” → ㅏ = эгшиг → 의사예요", ex:[]},
-    {type:"info", title:"[7] 💬 Хэрэглэх (이에요/예요)", body:"A: 뭐예요?
-B: 책이에요. / 의자예요.", ex:["Албан бус"]},
-    {type:"info", title:"[8] 🙇 입니다/입니까? (албан ёсны)", body:"명사(N=нэр үг)+입니다
-명사+입니까?", ex:["офис/학교"]},
-    {type:"info", title:"[9] 🎤 Хэрэглэх", body:"A: 학생입니까?
-B: 네, 학생입니다.", ex:["입니까?=асуулт", "입니다=хариулт"]},
-    {type:"info", title:"[10] 🧩 결합 1", body:"명사(N)+은/는+이에요/예요
-예) 저는 학생이에요.", ex:[]},
-    {type:"table", title:"[11] 📌 은/는 хүснэгт", table:{ headers:["төгсгөл","붙им"], rows:[["гийгүүлэгч","은"],["эгшиг","는"]] }},
-    {type:"table", title:"[12] 📌 이에요/예요 хүснэгт", table:{ headers:["төгсгөл","붙им"], rows:[["гийгүүлэгч","-이에요"],["эгшиг","-예요"]] }},
-    {type:"mc", title:"[13] ✍️ 퀴즈", prompt:"결합 완성! (3문장)", question:"저는 선생님__ ___.
-저는 의사__ ___.
-저는 학생__ ___.", choices:[
-      "선생님은 예요 / 의사는 이에요 / 학생은 예요",
-      "선생님은 이에요 / 의사는 예요 / 학생은 이에요",
-      "선생님는 이에요 / 의사는 예요 / 학생는 이에요",
-      "선생님은 입니다 / 의사는 입니다 / 학생은 입니다"
-    ], answer:"선생님은 이에요 / 의사는 예요 / 학생은 이에요", ex:["선생님(ㅁ)=이에요","의사(ㅏ)=예요","학생(ㅇ)=이에요"]},
-    {type:"info", title:"[14] ✅ 정답", body:"저는 선생님이에요.
-저는 의사예요.
-저는 학생이에요.", ex:[]},
-    {type:"info", title:"[15] 💡 이/가 = шинэ мэдээлэл", body:"‘Яг хэн/яг юу?’
-예) 이름이 뭐예요?", ex:[]},
-    {type:"info", title:"[16] 🔗 이/가 holbох", body:"명사(N) дээр
+    // 2
+    {type:"info", title:"[2] ✅/❌ 카드 (학생/친구/저/사람)",
+      body:"은/는\n✍️ 학생 → 학생은 (гийгүүлэгч)\n✍️ 친구 → 친구는 (эгшиг)\n✍️ 저 → 저는\n✍️ 사람 → 사람은"},
 
-гийгүүлэгч → 이
-эгшиг → 가", ex:["이름이 / 학교가"]},
-    {type:"info", title:"[17] 💬 Жишээ", body:"이름이 지수예요.
-전공이 한국어예요.", ex:[]},
-    {type:"info", title:"[18] ❌ 부정 (үгүй)", body:"아닙니다 = албан ёсны 🙇
-아니에요 = өдөр тутмын 🙂", ex:[]},
-    {type:"info", title:"[19] ⚖️ Ялгаа", body:"✅ Утга адил (“үгүй”)
-🔥 Зөвхөн хэв маяг өөр", ex:[]},
-    {type:"info", title:"[20] 🧩 결합 2", body:"명사(N)+이/га+아니에요/아닙니다
-예) 저는 학생이 아니에요.", ex:[]},
-    {type:"mc", title:"[21] 📝 빈칸", prompt:"빈칸 채우기", question:"A: 민수__ 학생이에요?
-B: 아니에요. 민수__ 학생__ 아니에요.", choices:["는 / 는 / 이","은 / 은 / 가","가 / 는 / 이","는 / 가 / 이"], answer:"는 / 는 / 이", ex:["민수(ㅜ)=는","학생(ㅇ)=이"]},
-    {type:"info", title:"[22] ✅ 정답", body:"A: 민수는 학생이에요?
-B: 아니에요. 민수는 학생이 아니에요.", ex:[]},
-    {type:"info", title:"[23] 🎭 Роль", body:"🙇 A: 학생입니까? / B: 아닙니다.
-🙂 A: 학생이에요? / B: 아니에요.", ex:[]},
-    {type:"mc", title:"[24] 🎮 Сонго!", prompt:"аль нь зөв?", question:"상황에 따라", choices:[
-      "안내데스크→입니다/입니까, 아닙니다 · 친구→이에요/예요, 아니에요 · 답(хариулт)→이/가",
-      "안내데스크→이에요/예요 · 친구→입니다/입니까 · 답→은/는",
-      "안내데스크→아니에요 · 친구→아닙니다 · 답→은/는",
-      "안내데스크→입니까?만 · 친구→예요만 · 답→없음"
-    ], answer:"안내데스크→입니다/입니까, 아닙니다 · 친구→이에요/예요, 아니에요 · 답(хариулт)→이/가", ex:[]},
-    {type:"info", title:"[25] 🏁 Дүгнэлт", body:"✅ 명사(N)+은/는+이에요/예요
-✅ 명사+이/가+아니에요/아닙니다
-🌟 Сайн ажиллалаа!", ex:[]}
+    // 3 (table practice -> mc)
+    {type:"mc", title:"[3] 🧩 은/는 연습 (명사(N)=нэр үг)",
+      body:"| 명사 | 은/는 |\n| 책 | __ |\n| 친구 | __ |",
+      choices:["책은 / 친구는","책는 / 친구은","책은 / 친구은","책는 / 친구는"],
+      answer:"책은 / 친구는",
+      ex:"Гийгүүлэгч → 은\nЭгшиг → 는"},
+
+    // 4
+    {type:"info", title:"[4] 🧱 이에요/예요 = “~ байна/юм” 🙂",
+      body:"✅ 명사(N)=нэр үг-тэй holбогдоно\nЯриand хамгийн түгээмэл хэлбэр!"},
+
+    // 5
+    {type:"info", title:"[5] 🔎 сүүлийн авиа (책/의사)",
+      body:"이에요/예요\n책(ㄱ=гийгүүлэгч) → 책이에요\n의사(ㅏ=эгшиг) → 의사예요"},
+
+    // 6 (table practice -> mc)
+    {type:"mc", title:"[6] 🧩 이에요/예요 연습 (명사(N)=нэр үг)",
+      body:"| 명사 | -이에요 / -예요 |\n| 학생 | __ |\n| 의자 | __ |",
+      choices:["학생이에요 / 의자예요","학생예요 / 의자이에요","학생이에요 / 의자이에요","학생예요 / 의자예요"],
+      answer:"학생이에요 / 의자예요",
+      ex:"학생(ㅇ)=기에요\n의자(ㅏ)=예요"},
+
+    // 7
+    {type:"info", title:"[7] 🙇 입니다/입니까? = албан ёсны",
+      body:"Арга: 입니다/입니까? = албан ёсны 🙇\n명사(N)=нэр үг + 입니다\n명사 + 입니까? (… уу?)"},
+
+    // 8
+    {type:"info", title:"[8] 💬 공식 대화",
+      body:"입니다/입니까?\nA: 학생입니까?\nB: 네, 학생입니다."},
+
+    // 9 (practice -> mc)
+    {type:"mc", title:"[9] 🎮 입니다/입니까? 연습",
+      body:"1) (안내데스크) “선생님__?”\n2) (답) “네, 선생님__.”",
+      choices:["입니까 / 입니다","입니다 / 입니까","예요 / 이에요","이에요 / 예요"],
+      answer:"입니까 / 입니다",
+      ex:"질문 → 입니까?\n대답 → 입니다"},
+
+    // 10
+    {type:"info", title:"[10] 🧩 결합: 은/는 + 이에요/예요 🔗",
+      body:"Арга: 은/는 + 이에요/예요 결합\n명사(N)=нэр үг + 은/는 + 이에요/예요\n예) 저는 학생이에요."},
+
+    // 11
+    {type:"info", title:"[11] 💬 예문 (저/친구)",
+      body:"은/는 + 이에요/예요\n저는 민수예요. (Би Минсу.)\n친구는 의사예요. (Найз маань эмч.)"},
+
+    // 12 (fill blank -> mc)
+    {type:"mc", title:"[12] 📝 결합 연습 (빈칸)",
+      body:"1) 저__ 학생___.\n2) 친구__ 회사원___.",
+      choices:[
+        "저는 학생이에요 / 친구는 회사원이에요",
+        "저은 학생예요 / 친구은 회사원예요",
+        "저는 학생예요 / 친구는 회사원이에요",
+        "저는 학생이에요 / 친구는 회사원예요"
+      ],
+      answer:"저는 학생이에요 / 친구는 회사원이에요",
+      ex:"저(ㅓ)=는\n학생(ㅇ)=이에요\n친구(ㅜ)=는\n회사원(ㄴ)=이에요"},
+
+    // 13
+    {type:"info", title:"[13] 💡 이/가 = хариулт/шинэ мэдээлэл",
+      body:"Арга: 이/가 = хариулт/шинэ мэдээлэл 💡\n“Яг хэн? яг юу?” гэж асуухад\n예) 이름이 뭐예요?"},
+
+    // 14
+    {type:"info", title:"[14] 🧱 예문 (이름/전공)",
+      body:"이/가\n이름이 지수예요.\n전공이 한국어예요."},
+
+    // 15 (practice -> mc)
+    {type:"mc", title:"[15] 🧩 이/가 연습 (명사(N)=нэр үг)",
+      body:"| 명사 | 이/가 |\n| 이름 | __ |\n| 학교 | __ |",
+      choices:["이름이 / 학교가","이름가 / 학교이","이름이 / 학교이","이름가 / 학교가"],
+      answer:"이름이 / 학교가",
+      ex:"이름(ㅁ)=이\n학교(ㅛ)=가"},
+
+    // 16
+    {type:"info", title:"[16] ❌ 부정(үгүй) = 아닙니다 / 아니에요",
+      body:"Арга: 부정(үгүй) = 아닙니다/아니에요 ❌\n🙇 아닙니다 (албан ёсны)\n🙂 아니에요 (өдөр тутмын)"},
+
+    // 17
+    {type:"info", title:"[17] ⚖️ 아닙니다 vs 아니에요",
+      body:"✅ Утга адил: “үгүй/биш”\n🔥 Ялгаа: хэв маяг (албан/өдөр тутам)"},
+
+    // 18
+    {type:"info", title:"[18] 🙇 아닙니다 (албан) жишээ",
+      body:"A: 학생입니까?\nB: 아닙니다. 회사원입니다."},
+
+    // 19 (situation choose -> mc)
+    {type:"mc", title:"[19] 🎮 아닙니다/아니에요 연습",
+      body:"1) 회사 → ____\n2) 친구 → ____",
+      choices:["아닙니다 / 아니에요","아니에요 / 아닙니다","아니에요 / 아니에요","아닙니다 / 아닙니다"],
+      answer:"아닙니다 / 아니에요",
+      ex:"албан → 아닙니다\nөдөр тутам → 아니에요"},
+
+    // 20
+    {type:"info", title:"[20] 🧩 이/가 + 부정 결합 🔗",
+      body:"Арга: 이/가 + 부정 결합\n명사(N)=нэр үг + 이/가 + 아니에요/아닙니다\n예) 학생이 아니에요."},
+
+    // 21
+    {type:"info", title:"[21] 💬 일상 대화 (아니에요)",
+      body:"이/가 + 아니에요 (өдөр тутам)\nA: 의사예요?\nB: 아니에요. 의사가 아니에요."},
+
+    // 22
+    {type:"info", title:"[22] 💬 공식 대화 (아닙니다)",
+      body:"이/가 + 아닙니다 (албан)\nA: 의사입니까?\nB: 아닙니다. 의사가 아닙니다."},
+
+    // 23 (fill blank -> mc)
+    {type:"mc", title:"[23] 📝 결합 연습 (이/가 + 부정)",
+      body:"A: 학생__ 아니에요?\nB: 아니에요. 학생__ 아니에요.",
+      choices:["이 /이","가 /가","이 /가","가 /이"],
+      answer:"이 /이",
+      ex:"학생(ㅇ)=이\n학생이 아니에요"},
+
+    // 24 (role-play -> mc)
+    {type:"mc", title:"[24] 🎭 РОЛЬ-ТОГЛОЛТ (30초)",
+      body:"1) 저는 ___이에요/예요.\n2) 이름이 ___예요.\n3) ___이/가 아니에요.",
+      choices:[
+        "저는 학생이에요 / 이름이 민수예요 / 의사가 아니에요",
+        "저는 학생예요 / 이름이 민수예요 / 의사가 아니에요",
+        "저는 학생이에요 / 이름이 민수가예요 / 의사가 아니에요",
+        "저는 학생이에요 / 이름이 민수예요 / 의사이 아니에요"
+      ],
+      answer:"저는 학생이에요 / 이름이 민수예요 / 의사가 아니에요",
+      ex:"자연스러운 жишээ сонгоно"},
+
+    // 25
+    {type:"info", title:"[25] 🏁 Finish ✅",
+      body:"✅ Нэг өгүүлбэрээр!\n명사(N)=нэр үг + 은/는 / 이/가 + 이에요/예요\n❌ 부정: 아니에요 / 아닙니다"}
   ];
 
-  function qp(){
+  // ====== Helpers ======
+  function esc(s){
+    return String(s).replace(/&/g,"&amp;").replace(/</g,"&lt;").replace(/>/g,"&gt;").replace(/\"/g,"&quot;").replace(/'/g,"&#39;");
+  }
+  function qs(){
     var p=new URLSearchParams(location.search);
     return {
-      name:(p.get('name')||'').trim(),
-      klass:(p.get('klass')||'').trim(),
-      token:(p.get('token')||'').trim()
+      name:(p.get("name")||"").trim(),
+      klass:(p.get("klass")||"").trim(),
+      token:(p.get("token")||"").trim(),
+      lang:(p.get("lang")||"").trim()
     };
   }
+  function getDeviceId(){
+    var k="kquiz_deviceId";
+    var id=localStorage.getItem(k);
+    if(!id){
+      id=(window.crypto && crypto.randomUUID) ? crypto.randomUUID() : (String(Date.now())+"_"+String(Math.random())).replace(/\./g,"");
+      localStorage.setItem(k,id);
+    }
+    return id;
+  }
+  function nowStr(){
+    try{
+      var d=new Date();
+      return new Intl.DateTimeFormat("mn-MN",{year:"numeric",month:"2-digit",day:"2-digit",hour:"2-digit",minute:"2-digit"}).format(d);
+    }catch(e){
+      return new Date().toISOString();
+    }
+  }
+  function jsonp(url, timeoutMs){
+    timeoutMs = timeoutMs || 9000;
+    return new Promise(function(resolve,reject){
+      var cb="cb_"+Date.now()+"_"+Math.floor(Math.random()*10000);
+      var done=false;
+      var s=document.createElement("script");
+      var timer=setTimeout(function(){
+        if(done) return;
+        done=true;
+        try{s.remove();}catch(e){}
+        try{delete window[cb];}catch(e){}
+        reject(new Error("jsonp_timeout"));
+      }, timeoutMs);
 
-  function tableEl(table){
-    var t=document.createElement('table');
-    t.className='rule';
-    var thead=document.createElement('thead');
-    var trh=document.createElement('tr');
-    (table.headers||[]).forEach(function(h){
-      var th=document.createElement('th');
-      th.textContent=h;
-      trh.appendChild(th);
+      window[cb]=function(data){
+        if(done) return;
+        done=true;
+        clearTimeout(timer);
+        try{s.remove();}catch(e){}
+        try{delete window[cb];}catch(e){}
+        resolve(data);
+      };
+
+      s.onerror=function(){
+        if(done) return;
+        done=true;
+        clearTimeout(timer);
+        try{s.remove();}catch(e){}
+        try{delete window[cb];}catch(e){}
+        reject(new Error("jsonp_error"));
+      };
+
+      s.src = url + (url.indexOf("?")>=0 ? "&" : "?") + "callback=" + cb;
+      document.body.appendChild(s);
+    });
+  }
+
+  // ====== DOM ======
+  var elStatus = document.getElementById("status");
+  var elStep = document.getElementById("stepTitle");
+  var elProgress = document.getElementById("progress");
+  var elWho = document.getElementById("who");
+  var elKlass = document.getElementById("klass");
+
+  var elHelpBox = document.getElementById("helpBox");
+  var btnHelp = document.getElementById("btnHelp");
+  var btnTopBack = document.getElementById("btnTopBack");
+
+  var quizBox = document.getElementById("quizBox");
+  var reviewBox = document.getElementById("reviewBox");
+  var finalBox = document.getElementById("finalBox");
+
+  var elTitle = document.getElementById("qTitle");
+  var exBox = document.getElementById("exBox");
+  var exTitle = document.getElementById("exTitle");
+  var exText = document.getElementById("exText");
+  var tableWrap = document.getElementById("tableWrap");
+
+  var choices = document.getElementById("choices");
+  var resultBox = document.getElementById("resultBox");
+
+  var btnPrev = document.getElementById("btnPrev");
+  var btnNext = document.getElementById("btnNext");
+
+  var reviewScore = document.getElementById("reviewScore");
+  var reviewList = document.getElementById("reviewList");
+  var attemptInfo = document.getElementById("attemptInfo");
+  var btnGoResult = document.getElementById("btnGoResult");
+  var btnRetry = document.getElementById("btnRetry");
+  var btnBackHubFromReview = document.getElementById("btnBackHubFromReview");
+
+  var finalTitle = document.getElementById("finalTitle");
+  var finalMain = document.getElementById("finalMain");
+  var finalScore = document.getElementById("finalScore");
+  var finalMeta = document.getElementById("finalMeta");
+  var finalDate = document.getElementById("finalDate");
+  var logStatus = document.getElementById("logStatus");
+  var btnBackHub = document.getElementById("btnBackHub");
+
+  // ====== State ======
+  var P = qs();
+  var name = P.name || "—";
+  var klass = P.klass || "—";
+  var token = P.token || "";
+  var deviceId = getDeviceId();
+
+  var idx = 0;
+  var answered = {}; // slideIdx => {picked, correct}
+  var attempts = 0;
+  var lastScore = 0;
+
+  function attemptsKey(){ return "attempts_"+lessonId+"_"+name; }
+  function loadAttempts(){
+    var v=parseInt(localStorage.getItem(attemptsKey())||"0",10);
+    attempts = isFinite(v)?v:0;
+  }
+  function saveAttempts(){ localStorage.setItem(attemptsKey(), String(attempts)); }
+  function clearAttempts(){ localStorage.removeItem(attemptsKey()); }
+
+  function goHub(){
+    // keep params
+    var u=new URL(location.href);
+    var qs2=new URLSearchParams();
+    ["name","klass","token","lang"].forEach(function(k){
+      var v=u.searchParams.get(k);
+      if(v) qs2.set(k,v);
+    });
+    location.href = "GRAM-SNU-1A-hub.html" + (qs2.toString()?("?"+qs2.toString()):"");
+  }
+
+  function goTopBack(){
+    try{ if(history.length>1){ history.back(); return; } }catch(e){}
+    goHub();
+  }
+
+  function setNavState(){
+    btnPrev.classList.toggle("btnDisabled", idx<=0);
+    btnNext.classList.toggle("btnDisabled", idx>=slides.length-1);
+  }
+
+  function resetSlideUI(){
+    exBox.classList.add("hidden");
+    exTitle.textContent = "Тайлбар / Жишээ";
+    exText.textContent = "";
+    tableWrap.classList.add("hidden");
+    tableWrap.innerHTML = "";
+    choices.innerHTML = "";
+    resultBox.classList.add("hidden");
+    resultBox.classList.remove("ok","bad");
+    resultBox.innerHTML = "";
+  }
+
+  function renderTableFromText(body){
+    // parse simple “| a | b |” lines
+    var lines = String(body||"").split("\n").map(function(x){return x.trim();}).filter(Boolean);
+    var rows = [];
+    lines.forEach(function(line){
+      if(line.startsWith("|") && line.endsWith("|")){
+        var parts = line.split("|").map(function(x){return x.trim();}).filter(Boolean);
+        if(parts.length>=2) rows.push(parts.slice(0,2));
+      }
+    });
+    if(rows.length<2) return null;
+    var headers = rows.shift();
+
+    var t=document.createElement("table");
+    t.className="rule";
+    var thead=document.createElement("thead");
+    var trh=document.createElement("tr");
+    headers.forEach(function(h){
+      var th=document.createElement("th"); th.textContent=h; trh.appendChild(th);
     });
     thead.appendChild(trh);
     t.appendChild(thead);
-    var tbody=document.createElement('tbody');
-    (table.rows||[]).forEach(function(r){
-      var tr=document.createElement('tr');
-      var td1=document.createElement('td');
-      var td2=document.createElement('td');
-      td1.textContent=r[0];
-      td2.textContent=r[1];
-      tr.appendChild(td1);tr.appendChild(td2);
+
+    var tbody=document.createElement("tbody");
+    rows.forEach(function(r){
+      var tr=document.createElement("tr");
+      var td1=document.createElement("td"); td1.textContent=r[0]||"";
+      var td2=document.createElement("td"); td2.textContent=r[1]||"";
+      tr.appendChild(td1); tr.appendChild(td2);
       tbody.appendChild(tr);
     });
     t.appendChild(tbody);
     return t;
   }
 
-  function init(){
-    var btnTopBack=document.getElementById('btnTopBack');
-    var btnHelp=document.getElementById('btnHelp');
-    var helpBox=document.getElementById('helpBox');
+  function showMessageBad(html){
+    resultBox.classList.remove("hidden");
+    resultBox.classList.add("bad");
+    resultBox.innerHTML = html;
+  }
 
-    var whoEl=document.getElementById('who');
-    var klassEl=document.getElementById('klass');
-    var statusEl=document.getElementById('status');
-    var stepTitle=document.getElementById('stepTitle');
-    var progressEl=document.getElementById('progress');
+  function showCheck(ok, ans){
+    resultBox.classList.remove("hidden");
+    resultBox.classList.remove("ok","bad");
+    resultBox.classList.add(ok ? "ok" : "bad");
+    resultBox.innerHTML = ok
+      ? "<b style='color:var(--ok)'>Зөв!</b> <span class='muted small'>(Зөв: "+esc(ans)+")</span>"
+      : "<b style='color:var(--bad)'>Буруу!</b> <span class='muted small'>Зөв: "+esc(ans)+"</span>";
+  }
 
-    var qTextEl=document.getElementById('qText');
-    var exBox=document.getElementById('exBox');
-    var exTitle=document.getElementById('exTitle');
-    var exLines=document.getElementById('exLines');
-    var ruleTableWrap=document.getElementById('ruleTableWrap');
-    var choicesEl=document.getElementById('choices');
-    var resultEl=document.getElementById('result');
+  function lockChoices(){
+    Array.prototype.slice.call(choices.querySelectorAll("button")).forEach(function(b){ b.disabled=true; });
+  }
 
-    var btnPrev=document.getElementById('btnPrev');
-    var btnNext=document.getElementById('btnNext');
+  function render(){
+    var s = slides[idx];
 
-    // If any critical element is missing -> show
-    if(!qTextEl || !btnPrev || !btnNext){
-      if(statusEl) statusEl.textContent='DOM missing';
-      return;
-    }
+    elStep.textContent = "Step " + (idx+1) + " / " + slides.length;
+    elProgress.textContent = (idx+1) + " / " + slides.length;
+    elTitle.textContent = s.title;
 
-    var p=qp();
-    whoEl.textContent = 'Нэр: ' + (p.name||'—');
-    klassEl.textContent = 'Анги: ' + (p.klass||'—');
+    resetSlideUI();
 
-    var idx=0;
-    var answers={};
+    // explanation always below
+    var desc = "";
+    if(s.body) desc += s.body;
 
-    function setNav(){
-      btnPrev.classList.toggle('btnDisabled', idx<=0);
-      btnNext.classList.toggle('btnDisabled', idx>=slides.length-1);
-    }
-
-    function clearBelow(){
-      exBox.classList.add('hidden');
-      exTitle.textContent='Тайлбар / Жишээ';
-      exLines.textContent='';
-      ruleTableWrap.classList.add('hidden');
-      ruleTableWrap.innerHTML='';
-      choicesEl.innerHTML='';
-      resultEl.classList.add('hidden');
-      resultEl.classList.remove('ok');
-      resultEl.classList.remove('bad');
-    }
-
-    function showNeedPick(){
-      resultEl.classList.remove('hidden');
-      resultEl.classList.add('bad');
-      resultEl.innerHTML = "<b style='color:var(--red)'>Сонгоод дараа нь ▶ дарна уу.</b>";
-    }
-
-    function showCheck(ok, ans){
-      resultEl.classList.remove('hidden');
-      resultEl.classList.remove('ok');
-      resultEl.classList.remove('bad');
-      resultEl.classList.add(ok?'ok':'bad');
-      resultEl.innerHTML = ok
-        ? "<b style='color:var(--green)'>Зөв!</b> <span class='muted small'>(Зөв: "+ans+")</span>"
-        : "<b style='color:var(--red)'>Буруу!</b> <span class='muted small'>Зөв: "+ans+"</span>";
-    }
-
-    function render(){
-      var s=slides[idx];
-      stepTitle.textContent = 'Step ' + (idx+1) + ' / ' + slides.length;
-      progressEl.textContent = (idx+1) + ' / ' + slides.length;
-      qTextEl.textContent = s.title;
-      clearBelow();
-
-      if(s.type==='table'){
-        exBox.classList.remove('hidden');
-        exTitle.textContent='Хүснэгт';
-        ruleTableWrap.classList.remove('hidden');
-        ruleTableWrap.appendChild(tableEl(s.table));
-      } else {
-        var desc='';
-        if(s.body) desc += s.body;
-        if(s.ex && s.ex.length) desc += '
-
-' + s.ex.map(function(x){return '• '+x;}).join('
-');
-        if(desc.trim()){
-          exBox.classList.remove('hidden');
-          exTitle.textContent='Тайлбар / Жишээ';
-          exLines.textContent=desc;
+    // table slide
+    if(s.type === "table"){
+      exBox.classList.remove("hidden");
+      exTitle.textContent = "Хүснэгт";
+      var t = renderTableFromText(s.body);
+      if(t){
+        tableWrap.classList.remove("hidden");
+        tableWrap.appendChild(t);
+      }else{
+        exText.textContent = s.body || "";
+      }
+    } else {
+      // info/mc: show body + ex under exBox
+      var lines = [];
+      if(desc.trim()) lines.push(desc.trim());
+      if(s.ex) lines.push("\n" + String(s.ex).trim());
+      if(lines.join("\n").trim()){
+        exBox.classList.remove("hidden");
+        exTitle.textContent = (s.type==="mc") ? "Асуулт / Жишээ" : "Тайлбар / Жишээ";
+        exText.textContent = lines.join("\n");
+        // if body contains a table style text, render it too (optional)
+        var t2 = renderTableFromText(s.body || "");
+        if(t2){
+          tableWrap.classList.remove("hidden");
+          tableWrap.appendChild(t2);
         }
       }
+    }
 
-      if(s.type==='mc'){
-        var qq=(s.prompt||'') + (s.question?"
-
-"+s.question:'');
-        if(!exBox.classList.contains('hidden')) exLines.textContent = (exLines.textContent? exLines.textContent+'
-
-' : '') + qq;
-        else { exBox.classList.remove('hidden'); exTitle.textContent='Асуулт'; exLines.textContent=qq; }
-
-        (s.choices||[]).forEach(function(ch){
-          var b=document.createElement('button');
-          b.type='button';
-          b.className='choice';
-          b.textContent=ch;
-          b.addEventListener('click', function(){
-            if(answers[idx]) return;
-            var ok = (ch===s.answer);
-            answers[idx] = {picked:ch, correct:ok};
-            Array.prototype.slice.call(choicesEl.querySelectorAll('button')).forEach(function(x){x.disabled=true;});
-            showCheck(ok, s.answer);
-          });
-          choicesEl.appendChild(b);
+    // MC choices
+    if(s.type === "mc"){
+      (s.choices||[]).forEach(function(ch){
+        var b=document.createElement("button");
+        b.type="button";
+        b.className="choice";
+        b.textContent=ch;
+        b.addEventListener("click", function(){
+          if(answered[idx]) return;
+          var ok = (ch === s.answer);
+          answered[idx] = { picked: ch, correct: ok };
+          lockChoices();
+          showCheck(ok, s.answer);
         });
+        choices.appendChild(b);
+      });
 
-        if(answers[idx]){
-          Array.prototype.slice.call(choicesEl.querySelectorAll('button')).forEach(function(x){x.disabled=true;});
-          showCheck(!!answers[idx].correct, s.answer);
-        }
+      if(answered[idx]){
+        lockChoices();
+        showCheck(!!answered[idx].correct, s.answer);
       }
-
-      setNav();
-      statusEl.textContent='로드 완료';
     }
 
-    function prev(){
-      if(idx<=0) return;
-      idx--;
-      render();
-    }
+    setNavState();
+    elStatus.textContent = "로드 완료";
+  }
 
-    function next(){
-      if(idx>=slides.length-1) return;
-      var s=slides[idx];
-      if(s.type==='mc' && !answers[idx]){ showNeedPick(); return; }
-      idx++;
-      render();
-    }
-
-    btnPrev.addEventListener('click', prev);
-    btnNext.addEventListener('click', next);
-
-    btnHelp.addEventListener('click', function(){ helpBox.classList.toggle('hidden'); });
-
-    btnTopBack.addEventListener('click', function(){
-      try{ if(history.length>1){ history.back(); return; } }catch(e){}
-      // fallback to grammar hub
-      var u=new URL(location.href);
-      var qs=new URLSearchParams();
-      ['name','klass','token','lang'].forEach(function(k){ var v=u.searchParams.get(k); if(v) qs.set(k,v); });
-      location.href = 'GRAM-SNU-1A-hub.html' + (qs.toString()?'?'+qs.toString():'');
-    });
-
-    // start immediately
+  function prev(){
+    if(idx<=0) return;
+    idx--;
     render();
   }
 
-  if(document.readyState==='loading'){
-    document.addEventListener('DOMContentLoaded', init);
-  }else{
-    init();
+  function next(){
+    if(idx>=slides.length-1) return;
+    var s=slides[idx];
+    if(s.type==="mc" && !answered[idx]){
+      showMessageBad("<b style='color:var(--bad)'>Сонгоод дараа нь ▶ дарна уу.</b>");
+      return;
+    }
+    idx++;
+    render();
   }
+
+  function computeScore(){
+    var mc=0, correct=0;
+    for(var i=0;i<slides.length;i++){
+      if(slides[i].type!=="mc") continue;
+      mc++;
+      if(answered[i] && answered[i].correct) correct++;
+    }
+    return mc ? Math.round((correct/mc)*100) : 0;
+  }
+
+  function buildWrong(){
+    var out=[];
+    for(var i=0;i<slides.length;i++){
+      if(slides[i].type!=="mc") continue;
+      if(!answered[i] || answered[i].correct) continue;
+      out.push({
+        no: i+1,
+        title: slides[i].title,
+        picked: answered[i].picked,
+        answer: slides[i].answer
+      });
+    }
+    return out;
+  }
+
+  function finishAttempt(){
+    // require answer on last mc slide too (if last slide is mc)
+    var s=slides[idx];
+    if(s.type==="mc" && !answered[idx]){
+      showMessageBad("<b style='color:var(--bad)'>Сонгоод дараа нь ▶ дарна уу.</b>");
+      return;
+    }
+
+    attempts++;
+    saveAttempts();
+
+    lastScore = computeScore();
+
+    // show review first (policy)
+    quizBox.classList.add("hidden");
+    finalBox.classList.add("hidden");
+    reviewBox.classList.remove("hidden");
+
+    reviewScore.textContent = "Дүн: " + lastScore + " / 100";
+    attemptInfo.textContent = "Оролдлого: " + attempts;
+
+    var wrong = buildWrong();
+    reviewList.innerHTML = "";
+    if(!wrong.length){
+      var div=document.createElement("div");
+      div.className="reviewItem";
+      div.textContent = "🎉 Бүгд зөв байна!";
+      reviewList.appendChild(div);
+    }else{
+      wrong.forEach(function(w){
+        var div=document.createElement("div");
+        div.className="reviewItem";
+        div.textContent = "#" + w.no + " " + w.title + "\nТаны сонголт: " + w.picked + "\nЗөв: " + w.answer;
+        reviewList.appendChild(div);
+      });
+    }
+  }
+
+  function showResults(){
+    reviewBox.classList.add("hidden");
+    quizBox.classList.add("hidden");
+    finalBox.classList.remove("hidden");
+
+    var pass = (lastScore >= 80);
+    finalTitle.textContent = pass ? "Тэнцлээ!" : "Дахин оролдоорой";
+    finalMain.textContent = pass ? (name + " · Тэнцлээ!") : (name + " · Хичээгээрэй!");
+    finalScore.textContent = String(lastScore);
+    finalMeta.textContent = "Нэр: " + name + " · Анги: " + klass + " · Оролдлого: " + attempts;
+    finalDate.textContent = "Огноо: " + nowStr();
+
+    // log all attempts (best-effort)
+    logStatus.textContent = "Бүртгэл илгээж байна...";
+    sendLog(lastScore).finally(function(){
+      // policy: attempts shown on result, then reset attempts counter
+      clearAttempts();
+    });
+  }
+
+  function retry(){
+    idx = 0;
+    answered = {};
+    reviewBox.classList.add("hidden");
+    finalBox.classList.add("hidden");
+    quizBox.classList.remove("hidden");
+    render();
+  }
+
+  function sendLog(score){
+    var ua = navigator.userAgent || "";
+    var safeToken = token || ("no_token_"+deviceId);
+    var url = SCRIPT_URL +
+      "?action=log" +
+      "&book=" + encodeURIComponent(bookId) +
+      "&lesson=" + encodeURIComponent(lessonId) +
+      "&score=" + encodeURIComponent(String(score)) +
+      "&attempts=" + encodeURIComponent(String(attempts)) +
+      "&ua=" + encodeURIComponent(ua) +
+      "&token=" + encodeURIComponent(safeToken) +
+      "&deviceId=" + encodeURIComponent(deviceId);
+
+    return jsonp(url, 9000).then(function(res){
+      if(res && res.ok){
+        logStatus.textContent = "Бүртгэл амжилттай илгээгдлээ.";
+      }else{
+        logStatus.textContent = "Бүртгэл илгээхэд алдаа гарлаа. (Сургалт үргэлжилнэ)";
+      }
+    }).catch(function(){
+      logStatus.textContent = "Бүртгэл илгээхэд алдаа гарлаа. (Сургалт үргэлжилнэ)";
+    });
+  }
+
+  // ====== Bind ======
+  btnHelp.addEventListener("click", function(){ elHelpBox.classList.toggle("hidden"); });
+  btnTopBack.addEventListener("click", goTopBack);
+
+  btnPrev.addEventListener("click", prev);
+
+  btnNext.addEventListener("click", function(){
+    // if last slide -> finish attempt
+    if(idx >= slides.length-1){
+      finishAttempt();
+      return;
+    }
+    next();
+  });
+
+  btnGoResult.addEventListener("click", showResults);
+  btnRetry.addEventListener("click", retry);
+  btnBackHubFromReview.addEventListener("click", goHub);
+  btnBackHub.addEventListener("click", goHub);
+
+  // Keyboard (optional)
+  document.addEventListener("keydown", function(e){
+    if(e.key === "ArrowLeft") prev();
+    if(e.key === "ArrowRight") btnNext.click();
+  });
+
+  // ====== Start ======
+  elWho.textContent = "Нэр: " + name;
+  elKlass.textContent = "Анги: " + klass;
+  loadAttempts();
+  render();
+
+  // best-effort validate (never blocks UI)
+  setTimeout(function(){
+    if(!token){
+      elStatus.textContent = "(token 없음 · үргэлжилнэ)";
+      return;
+    }
+    var vurl = SCRIPT_URL +
+      "?action=validate" +
+      "&token=" + encodeURIComponent(token) +
+      "&deviceId=" + encodeURIComponent(deviceId) +
+      "&klass=" + encodeURIComponent(klass) +
+      "&name=" + encodeURIComponent(name);
+    jsonp(vurl, 7000).then(function(res){
+      elStatus.textContent = (res && res.ok) ? "로드 완료" : "(token баталгаажаагүй ч үргэлжилнэ)";
+    }).catch(function(){
+      elStatus.textContent = "(token шалгалт алдаа · үргэлжилнэ)";
+    });
+  }, 200);
+
 })();
 </script>
 </body>
