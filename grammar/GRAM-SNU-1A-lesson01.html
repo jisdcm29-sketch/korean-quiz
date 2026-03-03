@@ -73,7 +73,7 @@
     .stepRow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px}
     .step{color:#dbeafe;font-weight:950}
 
-    /* (요청) 로드완료/상태 문구 숨김 */
+    /* 상태 문구 숨김 */
     #status{display:none !important;}
 
     .qbox{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:14px;}
@@ -204,9 +204,8 @@
     <div class="row">
       <div>
         <h1>1A 1과 · 문법</h1>
-        <!-- (요청) 상단 안내문(두번째 캡처) 삭제: 아래 줄 제거 -->
       </div>
-      <div class="muted small" id="status">로드 중...</div>
+      <div class="muted small" id="status"></div>
     </div>
 
     <div class="stepRow">
@@ -305,13 +304,12 @@
     {type:"info", title:"[1] 은/는", body:"Нэр үгэнд залгаж тухайн нэр үгийг тодотгон өгүүлбэрийн эзэн биеийг илэрхийлнэ."},
     {type:"info", title:"[2] 은/는 (규칙)", body:"명사(N=нэр үг) + (은/는): гийгүүлэгчээр төгсвөл 은 / эгшгээр төгсвөл 는"},
 
-    /* (요청) 제목에서 ‘연습’ 삭제 */
-    {type:"exercise", title:"[3] 은/는", body:"학생 __ · 한국 __ · 몽골 __ · 이름 __ (은/는)",
+    {type:"exercise", title:"[3] 은/는", body:"학교 __ · 한국 __ · 가수 __ · 이름 __ (은/는)",
       options:["은","는"],
       items:[
-        {prompt:"학생 __", answer:"은"},
+        {prompt:"학교 __", answer:"가"},
         {prompt:"한국 __", answer:"은"},
-        {prompt:"몽골 __", answer:"은"},
+        {prompt:"가수 __", answer:"가"},
         {prompt:"이름 __", answer:"은"}
       ]
     },
@@ -319,13 +317,13 @@
     {type:"info", title:"[4] 이에요/예요", body:"Өгүүлбэрийг төгсгөж байгаа нэр үгэн дээр залгаж одоо цагийг илэрхийлнэ."},
     {type:"info", title:"[5] 이에요/예요 (규칙)", body:"명사(N=нэр үг) + (이에요/예요): гийгүүлэгч→-이에요 / эгшиг→-예요"},
 
-    {type:"exercise", title:"[6] 이에요/예요", body:"학생 __ · 몽골 사람 __ · 한국어 __ · 대학교 __ (이에요/예요)",
+    {type:"exercise", title:"[6] 이에요/예요", body:"학생 __ · 요리사 __ · 몽골 사람 __ · 기자 __ (이에요/예요)",
       options:["이에요","예요"],
       items:[
         {prompt:"학생 __", answer:"이에요"},
+        {prompt:"요리사 __", answer:"예요"},
         {prompt:"몽골 사람 __", answer:"이에요"},
-        {prompt:"한국어 __", answer:"예요"},
-        {prompt:"대학교 __", answer:"예요"}
+        {prompt:"기자 __", answer:"예요"}
       ]
     },
 
@@ -343,13 +341,13 @@
     {type:"info", title:"[10] 이/가", body:"Нэр үгэнд залгаж, өгүүлбэрийн эзэн биеийг илэрхийлэх нэрлэхийн тийн ялгалын нөхцөл."},
     {type:"info", title:"[11] 이/가 (규칙)", body:"명사(N=нэр үг) + (이/가): гийгүүлэгчээр төгсвөл 이 / эгшгээр төгсвөл 가"},
 
-    {type:"exercise", title:"[12] 이/가", body:"이름 __ · 국적 __ · 학교 __ · 전공 __ (이/가)",
+    {type:"exercise", title:"[12] 이/가", body:"이름 __ · 국적 __ · 학교 __ · 직업 __ (이/가)",
       options:["이","가"],
       items:[
         {prompt:"이름 __", answer:"이"},
         {prompt:"국적 __", answer:"이"},
         {prompt:"학교 __", answer:"가"},
-        {prompt:"전공 __", answer:"이"}
+        {prompt:"직업 __", answer:"이"}
       ]
     },
 
@@ -472,7 +470,6 @@
     });
   }
 
-  var elStatus = document.getElementById("status");
   var elStep = document.getElementById("stepTitle");
   var elProgress = document.getElementById("progress");
 
@@ -575,27 +572,49 @@
     resultBox.innerHTML = "";
   }
 
+  function prevSlide(){
+    if(idx<=0) return;
+    idx--;
+    renderSlide();
+  }
+
+  function nextSlide(){
+    if(idx>=slides.length-1){
+      finishAttempt();
+      return;
+    }
+    var s=slides[idx];
+    if(s.type==="exercise"){
+      var st=exState[idx];
+      if(!(st && st.done)){
+        resultBox.classList.remove("hidden");
+        resultBox.classList.add("bad");
+        resultBox.innerHTML = "<b style='color:var(--bad)'>Энэ дасгалыг эхлээд дуусгаарай.</b>";
+        return;
+      }
+    }
+    idx++;
+    renderSlide();
+  }
+
+  // ✅ 핵심 수정: 연습을 다 풀면 “완료 화면” 없이 자동으로 다음 슬라이드로 이동
   function renderExerciseSlide(s){
     exerciseArea.classList.remove("hidden");
+    if(promptBox) promptBox.classList.remove("hidden");
 
     if(!exState[idx]) exState[idx] = { q:0, wrongs:[], done:false };
     var st = exState[idx];
     var items = s.items || [];
-    var qIndex = Math.min(st.q, Math.max(0, items.length-1));
 
+    // 이미 done이면 (뒤로 갔다가 다시 온 경우) 즉시 다음으로 보내기
     if(st.done){
-      // (요청) “✅ Дууслаа! (Бэлэн)” 같은 완료 문구 삭제
-      exProgress.textContent = items.length + " / " + items.length;
-      if(promptBox) promptBox.classList.add("hidden");
-      choices.innerHTML = "";
-      resultBox.classList.add("hidden");
-      btnNext.classList.remove("btnDisabled");
+      setTimeout(function(){ nextSlide(); }, 0);
       return;
     }
 
-    if(promptBox) promptBox.classList.remove("hidden");
-
+    var qIndex = Math.min(st.q, Math.max(0, items.length-1));
     var item = items[qIndex];
+
     exProgress.textContent = (qIndex+1) + " / " + items.length;
     exPrompt.textContent = item.prompt;
 
@@ -618,18 +637,19 @@
 
         showResult(true, item.answer);
 
+        // 다음 문항/슬라이드 이동
         setTimeout(function(){
           st.q++;
           if(st.q >= items.length){
             st.done = true;
-            clearExerciseUI();
-            renderExerciseSlide(s);
-            setNavState();
-          }else{
-            clearExerciseUI();
-            renderExerciseSlide(s);
+            setNavState(); // next 활성화(보조)
+            // ✅ “완료 화면” 렌더링하지 않고 바로 다음 슬라이드로
+            nextSlide();
+            return;
           }
-        }, 350);
+          clearExerciseUI();
+          renderExerciseSlide(s);
+        }, 280);
       });
       choices.appendChild(b);
     });
@@ -658,32 +678,6 @@
     }
 
     setNavState();
-    if(elStatus) elStatus.textContent = "";
-  }
-
-  function prevSlide(){
-    if(idx<=0) return;
-    idx--;
-    renderSlide();
-  }
-
-  function nextSlide(){
-    if(idx>=slides.length-1){
-      finishAttempt();
-      return;
-    }
-    var s=slides[idx];
-    if(s.type==="exercise"){
-      var st=exState[idx];
-      if(!(st && st.done)){
-        resultBox.classList.remove("hidden");
-        resultBox.classList.add("bad");
-        resultBox.innerHTML = "<b style='color:var(--bad)'>Энэ дасгалыг эхлээд дуусгаарай.</b>";
-        return;
-      }
-    }
-    idx++;
-    renderSlide();
   }
 
   function computeScore(){
@@ -814,17 +808,14 @@
   renderSlide();
 
   setTimeout(function(){
-    if(!token){
-      if(elStatus) elStatus.textContent = "";
-      return;
-    }
+    if(!token) return;
     var vurl = SCRIPT_URL +
       "?action=validate" +
       "&token=" + encodeURIComponent(token) +
       "&deviceId=" + encodeURIComponent(deviceId) +
       "&klass=" + encodeURIComponent(klass) +
       "&name=" + encodeURIComponent(name);
-    jsonp(vurl, 7000).then(function(){ /* no UI text */ }).catch(function(){ /* no UI text */ });
+    jsonp(vurl, 7000).then(function(){ }).catch(function(){ });
   }, 200);
 
 })();
