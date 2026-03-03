@@ -10,7 +10,7 @@
 
   <style>
     :root{
-      --bg:#0b1220;--panel:#0b1020;--card:#111827;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
+      --bg:#0b1220;--panel:#0b1020;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
       --ok:#34d399;--bad:#f87171;--amber:#fbbf24;--violet:#a78bfa;--teal:#22d3ee;
       --shadow:0 12px 30px rgba(0,0,0,.25);
     }
@@ -72,6 +72,9 @@
     .bar{height:1px;background:var(--line);margin:12px 0}
     .stepRow{display:flex;align-items:center;justify-content:space-between;gap:10px;flex-wrap:wrap;margin-top:6px}
     .step{color:#dbeafe;font-weight:950}
+
+    /* (요청) 로드완료/상태 문구 숨김 */
+    #status{display:none !important;}
 
     .qbox{border:1px solid var(--line);background:var(--panel);border-radius:18px;padding:14px;}
     .qHead{
@@ -201,7 +204,7 @@
     <div class="row">
       <div>
         <h1>1A 1과 · 문법</h1>
-        <div class="muted">Дарааллаар явна · N(명사=нэр үг) дээр holбогдоно · Эгшиг/Гийгүүлэгч төгсгөлөөр сонгоно.</div>
+        <!-- (요청) 상단 안내문(두번째 캡처) 삭제: 아래 줄 제거 -->
       </div>
       <div class="muted small" id="status">로드 중...</div>
     </div>
@@ -238,7 +241,7 @@
           <div class="badge" id="exHint">✅ Зөв! Цэнхэр OK 🔵 / ❌ Буруу! Дахин сонгоорой 🔴</div>
         </div>
 
-        <div class="promptBox">
+        <div class="promptBox" id="promptBox">
           <div class="prompt" id="exPrompt">—</div>
         </div>
 
@@ -298,35 +301,38 @@
   var lessonId = "GRAM-SNU-1A-lesson01";
   var bookId = "GRAMMAR";
 
-  // ✅ 설명 문장 교체 반영(요청)
   var slides = [
     {type:"info", title:"[1] 은/는", body:"Нэр үгэнд залгаж тухайн нэр үгийг тодотгон өгүүлбэрийн эзэн биеийг илэрхийлнэ."},
     {type:"info", title:"[2] 은/는 (규칙)", body:"명사(N=нэр үг) + (은/는): гийгүүлэгчээр төгсвөл 은 / эгшгээр төгсвөл 는"},
-    {type:"exercise", title:"[3] 은/는 연습", body:"학교 __ · 한국 __ · 몽골 __ · 나라 __ (은/는)",
+
+    /* (요청) 제목에서 ‘연습’ 삭제 */
+    {type:"exercise", title:"[3] 은/는", body:"학생 __ · 한국 __ · 몽골 __ · 이름 __ (은/는)",
       options:["은","는"],
       items:[
-        {prompt:"학교 __", answer:"는"},
+        {prompt:"학생 __", answer:"은"},
         {prompt:"한국 __", answer:"은"},
         {prompt:"몽골 __", answer:"은"},
-        {prompt:"나라 __", answer:"는"}
+        {prompt:"이름 __", answer:"은"}
       ]
     },
 
     {type:"info", title:"[4] 이에요/예요", body:"Өгүүлбэрийг төгсгөж байгаа нэр үгэн дээр залгаж одоо цагийг илэрхийлнэ."},
     {type:"info", title:"[5] 이에요/예요 (규칙)", body:"명사(N=нэр үг) + (이에요/예요): гийгүүлэгч→-이에요 / эгшиг→-예요"},
-    {type:"exercise", title:"[6] 이에요/예요 연습", body:"학생 __ · 몽골 사람 __ · 기자 __ · 대학교 __ (이에요/예요)",
+
+    {type:"exercise", title:"[6] 이에요/예요", body:"학생 __ · 몽골 사람 __ · 한국어 __ · 대학교 __ (이에요/예요)",
       options:["이에요","예요"],
       items:[
         {prompt:"학생 __", answer:"이에요"},
         {prompt:"몽골 사람 __", answer:"이에요"},
-        {prompt:"기자 __", answer:"예요"},
+        {prompt:"한국어 __", answer:"예요"},
         {prompt:"대학교 __", answer:"예요"}
       ]
     },
 
     {type:"info", title:"[7] 입니다/입니까?", body:"입니다/입니까? = албан ёсны “~ байна/~ уу?”\nАлбан газар/ангийн эхэнд/танилцуулгад илүү тохирно."},
     {type:"info", title:"[8] 입니다/입니까? (хэрэглээ)", body:"명사(N=нэр үг)+입니다 / 명사+입니까? (сонголтгүй, шууд хэрэглэнэ)"},
-    {type:"exercise", title:"[9] 입니다/입니까? 연습", body:"A: 학생__? (입니까) / B: 네, 학생__. (입니다)",
+
+    {type:"exercise", title:"[9] 입니다/입니까?", body:"A: 학생__? (입니까) / B: 네, 학생__. (입니다)",
       options:["입니까","입니다"],
       items:[
         {prompt:"A: 학생 __ ?", answer:"입니까"},
@@ -335,20 +341,22 @@
     },
 
     {type:"info", title:"[10] 이/가", body:"Нэр үгэнд залгаж, өгүүлбэрийн эзэн биеийг илэрхийлэх нэрлэхийн тийн ялгалын нөхцөл."},
-    {type:"info", title:"[11] 이/가 (규칙)", body:"명사(N=нэр үг) + (이/가): гийгүүлэгчээр төгсвөл 이 / эгшгээр төгсvөл 가"},
-    {type:"exercise", title:"[12] 이/가 연습", body:"이름 __ · 국적 __ · 학교 __ · 직업 __ (이/가)",
+    {type:"info", title:"[11] 이/가 (규칙)", body:"명사(N=нэр үг) + (이/가): гийгүүлэгчээр төгсвөл 이 / эгшгээр төгсвөл 가"},
+
+    {type:"exercise", title:"[12] 이/가", body:"이름 __ · 국적 __ · 학교 __ · 전공 __ (이/가)",
       options:["이","가"],
       items:[
         {prompt:"이름 __", answer:"이"},
         {prompt:"국적 __", answer:"이"},
         {prompt:"학교 __", answer:"가"},
-        {prompt:"직업 __", answer:"이"}
+        {prompt:"전공 __", answer:"이"}
       ]
     },
 
     {type:"info", title:"[13] 아니에요/아닙니다", body:"부정 “үгүй/биш”\n(утга адил, хэв маяг өөр)"},
     {type:"info", title:"[14] 아니에요 vs 아닙니다", body:"🙂 아니에요 = өдөр тутам\n🙇 아닙니다 = албан ёсны\n➡️ Ялгаа: хэв маяг л өөр"},
-    {type:"exercise", title:"[15] 아니에요/아닙니다 연습", body:"친구🙂: 학생이에요? → (아니에요/아닙니다)\n회사🙇: 학생입니까? → (아니에요/아닙니다)",
+
+    {type:"exercise", title:"[15] 아니에요/아닙니다", body:"친구🙂: 학생이에요? → (아니에요/아닙니다)\n회사🙇: 학생입니까? → (아니에요/아닙니다)",
       options:["아니에요","아닙니다"],
       items:[
         {prompt:"친구🙂: 학생이에요? → ____", answer:"아니에요"},
@@ -357,8 +365,9 @@
     },
 
     {type:"info", title:"[16] 이/가 아니에요/아닙니다", body:"Нэр үгэнд залгаж үгүйсгэх утга илэрхийлнэ."},
-    {type:"info", title:"[17] 이/가 + 아니에요 (өдөр тутам)", body:"명사(N=нэр үг) + 이/가 + 아니에요\n예) 학생이 아니에요 / 대학교가 아니에요"},
-    {type:"exercise", title:"[18] 이/가 + 아니에요 연습", body:"학생 __ 아니에요 · 한국 __ 아니에요 · 몽골 사람 __ 아니에요 · 대학교 __ 아니에요",
+    {type:"info", title:"[17] 이/가 + 아니에요", body:"명사(N=нэр үг) + 이/가 + 아니에요\n예) 학생이 아니에요 / 대학교가 아니에요"},
+
+    {type:"exercise", title:"[18] 이/가 아니에요", body:"학생 __ 아니에요 · 한국 __ 아니에요 · 몽골 사람 __ 아니에요 · 대학교 __ 아니에요",
       options:["이","가"],
       items:[
         {prompt:"학생 __ 아니에요", answer:"이"},
@@ -368,9 +377,10 @@
       ]
     },
 
-    {type:"info", title:"[19] 이/가 + 아닙니다 (албан)", body:"명사(N=нэр үг) + 이/가 + 아닙니다\n예) 학생이 아닙니다 / 대학교가 아닙니다"},
+    {type:"info", title:"[19] 이/가 + 아닙니다", body:"명사(N=нэр үг) + 이/가 + 아닙니다\n예) 학생이 아닙니다 / 대학교가 아닙니다"},
     {type:"info", title:"[20] 알бан нөхцөл", body:"Албан нөхцөлд “아닙니다” ашиглаж хүндэтгэлтэй хэлнэ."},
-    {type:"exercise", title:"[21] 이/가 + 아닙니다 연습", body:"학생 __ 아닙니다 · 한국 __ 아닙니다 · 몽골 사람 __ 아닙니다 · 대학교 __ 아닙니다",
+
+    {type:"exercise", title:"[21] 이/가 아닙니다", body:"학생 __ 아닙니다 · 한국 __ 아닙니다 · 몽골 사람 __ 아닙니다 · 대학교 __ 아닙니다",
       options:["이","가"],
       items:[
         {prompt:"학생 __ 아닙니다", answer:"이"},
@@ -382,7 +392,8 @@
 
     {type:"info", title:"[22] 은/는 + 이에요/예요", body:"Өөрийгөө танилцуулахад хамгийн түгээмэл бүтэц."},
     {type:"info", title:"[23] 결합", body:"명사(사람)+은/는 + 명사(정체)+이에요/예요 (хоёул сонгоно)"},
-    {type:"exercise", title:"[24] 은/는 + 이에요/예요 연습", body:"저 __ 학생 __\n저 __ 몽골 사람 __  (은/는 + 이에요/예요)",
+
+    {type:"exercise", title:"[24] 결합", body:"저 __ 학생 __\n저 __ 몽골 사람 __  (은/는 + 이에요/예요)",
       options:null,
       items:[
         {prompt:"저 __", options:["은","는"], answer:"는"},
@@ -391,6 +402,7 @@
         {prompt:"몽골 사람 __", options:["이에요","예요"], answer:"이에요"}
       ]
     },
+
     {type:"info", title:"[25] Дүгнэлт", body:"은/는 / 이에요·예요 / 이·가 / 이·가 아니에요·아닙니다"}
   ];
 
@@ -460,7 +472,6 @@
     });
   }
 
-  // DOM
   var elStatus = document.getElementById("status");
   var elStep = document.getElementById("stepTitle");
   var elProgress = document.getElementById("progress");
@@ -479,6 +490,7 @@
   var exText = document.getElementById("exText");
 
   var exerciseArea = document.getElementById("exerciseArea");
+  var promptBox = document.getElementById("promptBox");
   var exPrompt = document.getElementById("exPrompt");
   var exProgress = document.getElementById("exProgress");
   var choices = document.getElementById("choices");
@@ -501,7 +513,6 @@
   var logStatus = document.getElementById("logStatus");
   var btnBackHub = document.getElementById("btnBackHub");
 
-  // State
   var P = params();
   var name = P.name || "—";
   var klass = P.klass || "—";
@@ -511,7 +522,7 @@
   var idx = 0;
   var attempts = 0;
   var lastScore = 0;
-  var exState = {}; // slideIdx -> {q, wrongs[], done}
+  var exState = {};
 
   function attemptsKey(){ return "attempts_"+lessonId+"_"+name; }
   function loadAttempts(){
@@ -557,7 +568,7 @@
   }
 
   function clearExerciseUI(){
-    exPrompt.textContent = "—";
+    exPrompt.textContent = "";
     choices.innerHTML = "";
     resultBox.classList.add("hidden");
     resultBox.classList.remove("ok","bad");
@@ -573,13 +584,16 @@
     var qIndex = Math.min(st.q, Math.max(0, items.length-1));
 
     if(st.done){
+      // (요청) “✅ Дууслаа! (Бэлэн)” 같은 완료 문구 삭제
       exProgress.textContent = items.length + " / " + items.length;
-      exPrompt.textContent = "✅ Дууслаа! (Бэлэн)";
+      if(promptBox) promptBox.classList.add("hidden");
       choices.innerHTML = "";
       resultBox.classList.add("hidden");
       btnNext.classList.remove("btnDisabled");
       return;
     }
+
+    if(promptBox) promptBox.classList.remove("hidden");
 
     var item = items[qIndex];
     exProgress.textContent = (qIndex+1) + " / " + items.length;
@@ -644,7 +658,7 @@
     }
 
     setNavState();
-    elStatus.textContent = "로드 완료";
+    if(elStatus) elStatus.textContent = "";
   }
 
   function prevSlide(){
@@ -801,7 +815,7 @@
 
   setTimeout(function(){
     if(!token){
-      elStatus.textContent = "(token 없음 · үргэлжилнэ)";
+      if(elStatus) elStatus.textContent = "";
       return;
     }
     var vurl = SCRIPT_URL +
@@ -810,11 +824,7 @@
       "&deviceId=" + encodeURIComponent(deviceId) +
       "&klass=" + encodeURIComponent(klass) +
       "&name=" + encodeURIComponent(name);
-    jsonp(vurl, 7000).then(function(res){
-      elStatus.textContent = (res && res.ok) ? "로드 완료" : "(token баталгаажаагүй ч үргэлжилнэ)";
-    }).catch(function(){
-      elStatus.textContent = "(token шалгалт алдаа · үргэлжилнэ)";
-    });
+    jsonp(vurl, 7000).then(function(){ /* no UI text */ }).catch(function(){ /* no UI text */ });
   }, 200);
 
 })();
