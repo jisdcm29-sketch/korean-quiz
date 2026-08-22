@@ -216,9 +216,9 @@
   const AUTO_LOGOUT_MIN = 30;
 
   const PATHS = {
-    SNU: "/korean-quiz/snu/index.html",
-    TOPIK1: "/korean-quiz/topik1/index.html",
-    TOPIK2: "/korean-quiz/topik2/index.html",
+    SNU: "./snu/index.html",
+    TOPIK1: "./topik1/index.html",
+    TOPIK2: "./topik2/index.html",
   };
 
   // ====== i18n ======
@@ -365,7 +365,7 @@
   }
 
   function buildUrlWithParams(basePath, params){
-    const u = new URL(basePath, location.origin);
+    const u = new URL(basePath, location.href);
     Object.keys(params).forEach(k => u.searchParams.set(k, params[k]));
     return u.toString();
   }
