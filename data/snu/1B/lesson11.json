@@ -44,6 +44,6 @@
     { "ko": "안내문", "mn": "зарлал, заавар", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "민간요법", "mn": "ардын эмчилгээ", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-1B-lesson11.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-1B-lesson11.html",
   "grammar": []
 }

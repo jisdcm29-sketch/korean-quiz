@@ -47,6 +47,6 @@
     { "ko": "전화번호", "mn": "утасны дугаар", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "여보세요", "mn": "Байна уу?", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-1B-lesson13.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-1B-lesson13.html",
   "grammar": []
 }

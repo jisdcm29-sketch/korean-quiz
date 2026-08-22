@@ -39,6 +39,6 @@
     { "ko": "공공 기관", "mn": "төрийн байгууллага", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "이용하다", "mn": "ашиглах", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-1B-lesson10.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-1B-lesson10.html",
   "grammar": []
 }

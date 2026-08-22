@@ -48,6 +48,6 @@
     { "ko": "빨래하다", "mn": "хувцас угаах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "숙제하다", "mn": "гэрийн даалгавар хийх", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-1B-lesson12.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-1B-lesson12.html",
   "grammar": []
 }

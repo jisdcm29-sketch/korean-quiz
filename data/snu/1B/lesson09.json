@@ -52,6 +52,6 @@
     { "ko": "사랑하다", "mn": "хайрлах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "주부", "mn": "гэрийн эзэгтэй", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "../SNU-1B-lesson09.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-1B-lesson09.html",
   "grammar": []
 }

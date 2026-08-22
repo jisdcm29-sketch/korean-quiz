@@ -45,6 +45,6 @@
     { "ko": "건너다", "mn": "хөндлөн гарах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "쭉", "mn": "шулуун", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-1B-lesson16.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-1B-lesson16.html",
   "grammar": []
 }

@@ -46,6 +46,6 @@
     { "ko": "예매하다", "mn": "тасалбар урьдчилан авах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "돌아오다", "mn": "буцаж ирэх", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-1B-lesson14.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-1B-lesson14.html",
   "grammar": []
 }
