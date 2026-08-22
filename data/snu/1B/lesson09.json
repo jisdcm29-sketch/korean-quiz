@@ -37,7 +37,7 @@
     { "ko": "댁", "mn": "гэр (хүндэтгэлийн)", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "쪽(방향)", "mn": "тал (чиглэл)", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "동아리", "mn": "дугуйлан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "같은 과", "mn": "Нэг анги/танхим", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "같은 과", "mn": "нэг тэнхимд сурах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "역사", "mn": "түүх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "수영", "mn": "усанд сэлэлт", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "회사에 다니다", "mn": "компанид ажиллах", "pos": "", "example_kr": "", "example_mn": "" },

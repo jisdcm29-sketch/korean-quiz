@@ -13,7 +13,7 @@
     { "ko": "오후", "mn": "үдээс хойш", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "시(시간)", "mn": "цаг", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "분(시간)", "mn": "минут", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "반(30 분/절반)", "mn": "хагас цаг", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "반(30 분/절반)", "mn": "хагас", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "일어나다", "mn": "босох", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "세수하다", "mn": "нүүрээ угаах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "이를 닦다", "mn": "шүдээ угаах", "pos": "", "example_kr": "", "example_mn": "" },
