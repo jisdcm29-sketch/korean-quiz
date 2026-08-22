@@ -46,6 +46,6 @@
     { "ko": "교통이 편리해지다", "mn": "Зам тээвэр тохиромжтой болох", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "살기 좋아지다", "mn": "Амьдрахад сайхан болох", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2B-lesson15.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2B-lesson15.html",
   "grammar": []
 }

@@ -45,6 +45,6 @@
     { "ko": "분실물 센터에 신고하다", "mn": "Гээсэн эд зүйлийн төвд мэдэгдэх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "잃어버린 물건을 찾다", "mn": "Гээсэн зүйлээ олох", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2B-lesson17.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2B-lesson17.html",
   "grammar": []
 }

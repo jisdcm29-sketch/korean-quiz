@@ -45,6 +45,6 @@
     { "ko": "한국 생활에 적응하다", "mn": "Солонгосын амьдралд дасах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "친구가 생기다", "mn": "найзтай болох", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2B-lesson18.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2B-lesson18.html",
   "grammar": []
 }

@@ -46,6 +46,6 @@
     { "ko": "지하철역이 가깝다", "mn": "метроны буудал ойр", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "룸메이트를 구하다", "mn": "Өрөөний хамтрагч олох", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2B-lesson13.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2B-lesson13.html",
   "grammar": []
 }

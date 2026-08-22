@@ -45,6 +45,6 @@
     { "ko": "성격이 좋다", "mn": "зан сайтай", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "머리 모양이 마음에 들다", "mn": "үсний засалт таалагдах", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2B-lesson12.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2B-lesson12.html",
   "grammar": []
 }

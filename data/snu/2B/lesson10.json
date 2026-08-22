@@ -45,6 +45,6 @@
     { "ko": "자리가 있다", "mn": "сул суудал байна", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "인기가 많다", "mn": "алдартай", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2B-lesson10.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2B-lesson10.html",
   "grammar": []
 }
