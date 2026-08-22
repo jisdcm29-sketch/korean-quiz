@@ -17,7 +17,7 @@
     { "ko": "낚시", "mn": "загас барих", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "컴퓨터 게임", "mn": "компьютер тоглоом", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "아주", "mn": "маш", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "별로", "mn": "гоёд, нэг их", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "별로", "mn": "нэг их ... биш", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "전혀", "mn": "огт", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "동호회", "mn": "сонирхогчдын клуб", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "가입하다", "mn": "элсэх", "pos": "", "example_kr": "", "example_mn": "" },
@@ -43,7 +43,7 @@
     { "ko": "이야기를 하다", "mn": "ярих", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "노래를 하다", "mn": "дуулах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "버스를 타다", "mn": "автобусанд суух", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "시간이 있다", "mn": "Цаг байгаа", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "시간이 있다", "mn": "завтай", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "장갑을 끼다", "mn": "бээлий өмсөх", "pos": "", "example_kr": "", "example_mn": "" }
   ],
   "legacy_vocab_url": "./SNU-2A-lesson02.html",

@@ -20,7 +20,7 @@
     { "ko": "환전하다", "mn": "валют солих", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "돈을 찾다", "mn": "мөнгө авах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "돈을 보내다", "mn": "мөнгө шилжүүлэх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "돈을 넣다(입금하다)", "mn": "мөнгө шилжүүлэх", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "돈을 넣다(입금하다)", "mn": "дансанд мөнгө хийх", "pos": "", "example_kr": "", "example_mn": "" },
 
     { "ko": "문자를 보내다", "mn": "мессеж илгээх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "문자를 받다", "mn": "мессеж хүлээж авах", "pos": "", "example_kr": "", "example_mn": "" },
@@ -34,7 +34,7 @@
     { "ko": "배로 보내다", "mn": "Усан онгоцоор илгээх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "시간이 걸리다", "mn": "хугацаа орох", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "요금이 비싸다", "mn": "Өндөр төлбөртэй", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "무게를 재다", "mn": "жинг хэмжих", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "무게를 재다", "mn": "жинлэх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "저울에 올리다", "mn": "жин дээр тавих", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "소포가 도착하다", "mn": "илгээмж хүрэх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "택배를 신청하다", "mn": "хүргэлт захиалах", "pos": "", "example_kr": "", "example_mn": "" },

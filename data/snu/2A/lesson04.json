@@ -16,19 +16,19 @@
     { "ko": "넥타이를 하다", "mn": "зангиа зүүх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "디자인이 귀엽다", "mn": "загвар нь хөөрхөн", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "사람이 똑똑하다", "mn": "Ухаантай хүн", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "사람이 멋있다", "mn": "Хээнцэр хүн", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "사람이 멋있다", "mn": "хүн сүрлэг, ганган харагдах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "사람이 친절하다", "mn": "Эелдэг хүн", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "마음에 들다", "mn": "таалагдах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "잘 어울리다", "mn": "сайн зохицох", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "굽이 높다", "mn": "Өндөр өсгийт", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "굽이 낮다", "mn": "Намхан өсгийт", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "굽이 높다", "mn": "өсгий өндөр", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "굽이 낮다", "mn": "өсгий намхан", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "옷이 두껍다", "mn": "Зузаан хувцас", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "옷이 얇다", "mn": "нимгэн хувцас", "pos": "", "example_kr": "", "example_mn": "" },
 
     { "ko": "색깔이 밝다", "mn": "Тод өнгө", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "색깔이 어둡다", "mn": "Бараан өнгө", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "길이가 길다", "mn": "Урт нь илүү", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "길이가 짧다", "mn": "Урт нь богино", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "길이가 길다", "mn": "урт", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "길이가 짧다", "mn": "богино", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "사이즈가 크다", "mn": "размер том", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "사이즈가 작다", "mn": "размер жижиг", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "물건을 교환하다", "mn": "барааг солих", "pos": "", "example_kr": "", "example_mn": "" },
@@ -44,7 +44,7 @@
     { "ko": "편지를 쓰다", "mn": "захиа бичих", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "청소를 하다", "mn": "цэвэрлэгээ хийх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "주소를 찾다", "mn": "хаяг хайх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "약속을 지키다", "mn": "Амлалтандаа хүрэх", "pos": "", "example_kr": "", "example_mn": "" }
+    { "ko": "약속을 지키다", "mn": "амлалтаа биелүүлэх", "pos": "", "example_kr": "", "example_mn": "" }
   ],
   "legacy_vocab_url": "./SNU-2A-lesson04.html",
   "grammar": []
