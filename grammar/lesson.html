@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1">
+  <meta http-equiv="Cache-Control" content="no-cache, no-store, must-revalidate">
+  <title>SNU 문법 연습</title>
+  <style>
+    :root{--bg:#07101f;--panel:#111a2a;--box:#0b1323;--text:#f3f4f6;--muted:#9fb0ca;--line:#293751;--blue:#3b82f6;--green:#22c55e;--red:#ef4444;--amber:#fbbf24;--violet:#8b5cf6}
+    *{box-sizing:border-box} body{margin:0;background:linear-gradient(180deg,#040914,var(--bg));color:var(--text);font-family:system-ui,-apple-system,"Noto Sans KR",Arial,sans-serif}button{font:inherit}
+    header{position:sticky;top:0;z-index:5;display:flex;justify-content:space-between;align-items:center;padding:12px 18px;background:rgba(4,9,20,.92);border-bottom:1px solid var(--line)}
+    .brand{font-weight:900}.dot{display:inline-block;width:10px;height:10px;border-radius:50%;background:var(--amber);margin-right:9px}.topBtns,.controls,.tabs{display:flex;gap:8px;flex-wrap:wrap}
+    .btn,.tab,.choice{border:1px solid var(--line);color:var(--text);background:#101829;border-radius:14px;cursor:pointer;font-weight:850}.btn{padding:10px 15px;min-height:44px}.btn.back{border-color:#6852a6}.btn.lang{border-color:#168b72}.btn.active{border-color:var(--amber);background:#302715}
+    main{max-width:980px;margin:16px auto;padding:0 14px}.card{background:rgba(17,26,42,.94);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 15px 35px rgba(0,0,0,.25)}
+    h1{margin:0;font-size:28px}.sub,.muted{color:var(--muted)}.sub{margin-top:5px}.tabs{margin-top:16px;border-bottom:1px solid var(--line);padding-bottom:12px}.tab{padding:10px 16px}.tab.active{border-color:var(--amber);background:linear-gradient(135deg,#3a2c12,#111827)}
+    .panel{display:none}.panel.active{display:block}.studyNav{display:grid;grid-template-columns:repeat(4,1fr);gap:7px;margin-top:14px}.studyPick{padding:9px 6px;border:1px solid var(--line);border-radius:12px;background:#0d1627;color:var(--muted);font-weight:850;cursor:pointer}.studyPick.active{color:#fff;border-color:var(--amber);background:#352913}.point{margin-top:10px;padding:16px;background:var(--box);border:1px solid var(--line);border-radius:17px}.point h2{margin:0 0 12px;font-size:23px;color:#fde68a;text-align:center}.patternVisual{display:grid;grid-template-columns:1fr 1fr;gap:8px}.rule{padding:12px 8px;text-align:center;border-radius:14px;background:#17243a;border:1px solid #345177;font-weight:900;line-height:1.45}.rule strong{display:block;color:#93c5fd;font-size:19px}.shortUse{text-align:center;color:var(--muted);margin:12px 0 4px}.ex{margin-top:8px;padding:10px 12px;border-left:3px solid var(--blue);background:#101a2d;border-radius:8px;line-height:1.55}.studyArrows{display:flex;justify-content:space-between;align-items:center;gap:8px;margin-top:11px}.studyCount{color:var(--muted);font-weight:800}.studyArrow{min-width:92px}
+    .quizTop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.stat{padding:10px;text-align:center;border:1px solid var(--line);background:var(--box);border-radius:14px}.stat small{display:block;color:var(--muted)}.stat b{font-size:20px}.timer.urgent{border-color:var(--red);color:#fecaca}
+    .qbox{padding:14px;background:var(--box);border:1px solid var(--line);border-radius:18px}.prompt{padding:16px;text-align:center;font-size:24px;font-weight:900;line-height:1.55;background:#12213a;border:1px solid #29456f;border-radius:14px;white-space:pre-line}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.choice{padding:13px;min-height:54px;font-size:18px}.choice:hover{filter:brightness(1.15)}.choice:disabled{cursor:default}.choice.correct{background:#0e442d;border-color:var(--green)}.choice.wrong{background:#4b1720;border-color:var(--red)}
+    .feedback{display:none;margin-top:10px;padding:11px;border-radius:12px;border:1px solid var(--line);line-height:1.55}.feedback.ok{display:block;border-color:var(--green);background:#0b3022}.feedback.bad{display:block;border-color:var(--red);background:#3a151b}.summary{text-align:center;padding:28px}.score{font-size:48px;font-weight:950;color:#93c5fd}.wrongList{text-align:left;margin-top:16px}.wrongItem{padding:10px 0;border-bottom:1px solid var(--line)}
+    @media(max-width:650px){.choices,.stats{grid-template-columns:1fr 1fr}.prompt{font-size:20px}.stat b{font-size:17px}.studyNav{grid-template-columns:repeat(2,1fr)}.patternVisual{grid-template-columns:1fr}.point{padding:13px}.point h2{font-size:21px}}
+  </style>
+</head>
+<body>
+<header><div class="brand"><span class="dot"></span><span id="brand">Grammar · SNU</span></div><div class="topBtns"><button class="btn back" id="back">←</button><button class="btn lang" id="lang">KR</button></div></header>
+<main><section class="card">
+  <h1 id="title">문법</h1><div class="sub" id="subtitle">불러오는 중...</div>
+  <div class="tabs"><button class="tab active" data-panel="study" id="studyTab">문법 이해</button><button class="tab" data-panel="practice" id="practiceTab">문법 연습</button></div>
+  <div class="panel active" id="study"><div class="studyNav" id="studyNav"></div><div id="points"></div></div>
+  <div class="panel" id="practice">
+    <div class="quizTop"><div class="muted" id="hint"></div><div class="controls"><button class="btn" id="time10">10초</button><button class="btn active" id="time15">15초</button><button class="btn" id="restart">다시 시작</button></div></div>
+    <div id="quiz"></div>
+  </div>
+</section></main>
+<script>
+  const $=id=>document.getElementById(id), params=new URL(location.href).searchParams;
+  let data=null,state=null,timer=null,seconds=15,studyIndex=0;
+  const lang=()=>((params.get('lang')||localStorage.getItem('kq_lang')||'KR').toUpperCase()==='MN'?'MN':'KR');
+  const tx=(ko,mn)=>lang()==='MN'?mn:ko;
+  function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
+  function pass(){const p=new URLSearchParams();['data','name','klass','token','lang'].forEach(k=>{const v=params.get(k);if(v)p.set(k,v)});return p.toString()}
+  function lessonUrl(){return `../snu/lesson.html?${pass()}`}
+  function applyText(){ $('lang').textContent=lang();$('studyTab').textContent=tx('문법 이해','Дүрмийн тайлбар');$('practiceTab').textContent=tx('문법 연습','Дүрмийн дасгал');$('restart').textContent=tx('다시 시작','Дахин эхлэх');$('hint').textContent=tx('모든 문제를 중복 없이 무작위 순서로 풉니다.','Бүх асуултыг давталгүй санамсаргүй дарааллаар ажиллана.'); }
+  function show(panel){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.panel===panel));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===panel));if(panel==='practice'&&!state)start()}
+  function splitPattern(pattern){const parts=String(pattern||'').split(/\s*\/\s*|\s*·\s*/).filter(Boolean);return parts.length>1?parts:[pattern]}
+  function renderStudy(){
+    const gs=data.grammar||[];
+    if(!gs.length){$('points').innerHTML=`<p class="muted">${tx('문법 자료가 없습니다.','Дүрмийн материал алга.')}</p>`;$('studyNav').innerHTML='';return}
+    studyIndex=Math.max(0,Math.min(studyIndex,gs.length-1));
+    $('studyNav').innerHTML=gs.map((g,i)=>`<button class="studyPick ${i===studyIndex?'active':''}" data-i="${i}">${i+1}. ${g.title}</button>`).join('');
+    document.querySelectorAll('.studyPick').forEach(b=>b.onclick=()=>{studyIndex=Number(b.dataset.i);renderStudy()});
+    const g=gs[studyIndex],rules=(g.visual_rules&&g.visual_rules.length?g.visual_rules:splitPattern(g.pattern)).slice(0,2);
+    $('points').innerHTML=`<article class="point"><h2>${studyIndex+1}. ${g.title||''}</h2><div class="patternVisual">${rules.map(r=>`<div class="rule">${r}</div>`).join('')}</div><div class="shortUse">${lang()==='MN'?(g.use_mn||''):(g.use_kr||'')}</div>${(g.examples||[]).slice(0,2).map(e=>`<div class="ex"><b>${e.kr||''}</b><br><span class="muted">${e.mn||''}</span></div>`).join('')}<div class="studyArrows"><button class="btn studyArrow" id="studyPrev">← ${tx('이전','Өмнөх')}</button><span class="studyCount">${studyIndex+1} / ${gs.length}</span><button class="btn studyArrow" id="studyNext">${tx('다음','Дараах')} →</button></div></article>`;
+    $('studyPrev').disabled=studyIndex===0;$('studyNext').disabled=studyIndex===gs.length-1;
+    $('studyPrev').onclick=()=>{if(studyIndex>0){studyIndex--;renderStudy()}};$('studyNext').onclick=()=>{if(studyIndex<gs.length-1){studyIndex++;renderStudy()}};
+  }
+  function stop(){if(timer){clearInterval(timer);timer=null}}
+  function start(){stop();const qs=(data.grammar_questions||[]).filter(q=>q.prompt&&q.correct&&Array.isArray(q.choices));state={queue:shuffle(qs),i:0,correct:0,wrong:0,timeout:0,locked:false,left:seconds,miss:[]};renderQ()}
+  function stats(){return `<div class="stats"><div class="stat"><small>${tx('진행','Явц')}</small><b>${Math.min(state.i+1,state.queue.length)} / ${state.queue.length}</b></div><div class="stat"><small>${tx('정답','Зөв')}</small><b id="c">${state.correct}</b></div><div class="stat"><small>${tx('오답','Буруу')}</small><b id="w">${state.wrong}</b></div><div class="stat timer" id="timerBox"><small>${tx('남은 시간','Үлдсэн хугацаа')}</small><b><span id="left">${state.left}</span>${tx('초',' сек')}</b></div></div>`}
+  function update(){if($('c'))$('c').textContent=state.correct;if($('w'))$('w').textContent=state.wrong;if($('left'))$('left').textContent=state.left;if($('timerBox'))$('timerBox').classList.toggle('urgent',state.left<=5)}
+  function finish(){stop();const total=state.queue.length,pct=total?Math.round(state.correct/total*100):0;$('quiz').innerHTML=`<div class="qbox summary"><div>${tx('문법 연습 완료','Дүрмийн дасгал дууслаа')}</div><div class="score">${pct}%</div><div>${tx('정답','Зөв')} <b>${state.correct}</b> · ${tx('오답','Буруу')} <b>${state.wrong}</b> · ${tx('시간 초과','Хугацаа хэтэрсэн')} <b>${state.timeout}</b></div>${state.miss.length?`<div class="wrongList"><h3>${tx('다시 볼 문제','Дахин харах асуулт')}</h3>${state.miss.map(m=>`<div class="wrongItem"><b>${m.prompt}</b><br><span class="muted">${tx('정답','Зөв хариулт')}: ${m.correct}</span></div>`).join('')}</div>`:''}</div>`}
+  function next(){setTimeout(()=>{state.i++;renderQ()},650)}
+  function renderQ(){stop();if(!state.queue.length){$('quiz').innerHTML=`<p class="muted">${tx('문법 문제가 없습니다.','Дүрмийн асуулт алга.')}</p>`;return}if(state.i>=state.queue.length){finish();return}state.locked=false;state.left=seconds;const q=state.queue[state.i],choices=shuffle([...new Set(q.choices.concat(q.correct))]);$('quiz').innerHTML=stats()+`<div class="qbox"><div class="prompt">${q.prompt}</div><div class="choices">${choices.map(c=>`<button class="choice" data-v="${encodeURIComponent(c)}">${c}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(decodeURIComponent(b.dataset.v),b,q));update();timer=setInterval(()=>{if(state.locked)return;state.left--;update();if(state.left<=0)answer(null,null,q,true)},1000)}
+  function answer(v,btn,q,timed=false){if(state.locked)return;state.locked=true;stop();const ok=v===q.correct;if(ok)state.correct++;else{state.wrong++;if(timed)state.timeout++;state.miss.push(q)}document.querySelectorAll('.choice').forEach(b=>{b.disabled=true;const val=decodeURIComponent(b.dataset.v);if(val===q.correct)b.classList.add('correct');else if(b===btn)b.classList.add('wrong')});const f=$('feedback');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=`<b>${ok?tx('정답!','Зөв!'):timed?tx('시간 초과','Хугацаа дууслаа'):tx('오답','Буруу')}</b> · ${q.correct}`;update();next()}
+  async function init(){applyText();$('back').onclick=()=>location.href=lessonUrl();$('lang').onclick=()=>{params.set('lang',lang()==='KR'?'MN':'KR');localStorage.setItem('kq_lang',params.get('lang'));location.search=params.toString()};document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.panel));$('time10').onclick=()=>{seconds=10;$('time10').classList.add('active');$('time15').classList.remove('active');if(state)start()};$('time15').onclick=()=>{seconds=15;$('time15').classList.add('active');$('time10').classList.remove('active');if(state)start()};$('restart').onclick=start;const path=params.get('data');if(!path){$('subtitle').textContent='data 경로가 없습니다.';return}try{const res=await fetch(new URL(path,location.href),{cache:'no-store'});if(!res.ok)throw Error(res.status);data=await res.json();$('title').textContent=`${data.level||''} ${parseInt(data.lesson)||''}과 · ${tx('문법','Дүрэм')}`;$('subtitle').textContent=data.title_mn||'';$('brand').textContent=`Grammar · SNU ${data.level||''}`;renderStudy()}catch(e){$('subtitle').textContent='불러오기 오류: '+e.message}}
+  init();
+</script>
+</body></html>
