@@ -4,54 +4,651 @@
   "title_kr": "5과",
   "title_mn": "5-р хичээл",
   "vocab": [
-    { "ko": "일", "mn": "нэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "이", "mn": "хоёр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "삼", "mn": "гурав", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "사", "mn": "дөрөв", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "오", "mn": "тав", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "육", "mn": "зургаа", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "칠", "mn": "долоо", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "팔", "mn": "найм", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "구", "mn": "ес", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "십", "mn": "арав", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "월요일", "mn": "Даваа гараг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "화요일", "mn": "Мягмар гараг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "수요일", "mn": "Лхагва гараг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "목요일", "mn": "Пүрэв гараг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "금요일", "mn": "Баасан гараг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "토요일", "mn": "Бямба гараг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "일요일", "mn": "Ням гараг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "주말", "mn": "амралтын өдөр", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "생일", "mn": "Төрсөн өдөр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "약속", "mn": "амлалт", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "어제", "mn": "өчигдөр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "내일", "mn": "маргааш", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "쇼핑하다", "mn": "дэлгүүр хэсэх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "산책하다", "mn": "салхилах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "사진을 찍다", "mn": "зураг авах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "같이", "mn": "хамт", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "세수하다", "mn": "нүүрээ угаах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "이를 닦다", "mn": "шүдээ угаах", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "선물", "mn": "бэлэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "파티", "mn": "үдэшлэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "명절", "mn": "баярын өдөр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "음력", "mn": "билийн тоолол", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "양력", "mn": "аргын тоолол", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "며칠", "mn": "хэд хоног", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "언제", "mn": "хэзээ", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "그래서", "mn": "тиймээс", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "공항", "mn": "нисэх онгоцны буудал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "은행", "mn": "банк", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "가게", "mn": "дэлгүүр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "기념품", "mn": "бэлэг дурсгал", "pos": "", "example_kr": "", "example_mn": "" }
+    {
+      "ko": "일",
+      "mn": "нэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "이",
+      "mn": "хоёр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "삼",
+      "mn": "гурав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "사",
+      "mn": "дөрөв",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "오",
+      "mn": "тав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "육",
+      "mn": "зургаа",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "칠",
+      "mn": "долоо",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "팔",
+      "mn": "найм",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "구",
+      "mn": "ес",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "십",
+      "mn": "арав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "월요일",
+      "mn": "Даваа гараг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "화요일",
+      "mn": "Мягмар гараг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "수요일",
+      "mn": "Лхагва гараг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "목요일",
+      "mn": "Пүрэв гараг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "금요일",
+      "mn": "Баасан гараг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "토요일",
+      "mn": "Бямба гараг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "일요일",
+      "mn": "Ням гараг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "주말",
+      "mn": "амралтын өдөр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "생일",
+      "mn": "Төрсөн өдөр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "약속",
+      "mn": "амлалт",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "어제",
+      "mn": "өчигдөр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "내일",
+      "mn": "маргааш",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "쇼핑하다",
+      "mn": "дэлгүүр хэсэх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "산책하다",
+      "mn": "салхилах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "사진을 찍다",
+      "mn": "зураг авах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "같이",
+      "mn": "хамт",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "세수하다",
+      "mn": "нүүрээ угаах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "이를 닦다",
+      "mn": "шүдээ угаах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "선물",
+      "mn": "бэлэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "파티",
+      "mn": "үдэшлэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "명절",
+      "mn": "баярын өдөр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "음력",
+      "mn": "билийн тоолол",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "양력",
+      "mn": "аргын тоолол",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "며칠",
+      "mn": "хэд хоног",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "언제",
+      "mn": "хэзээ",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "그래서",
+      "mn": "тиймээс",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "공항",
+      "mn": "нисэх онгоцны буудал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "은행",
+      "mn": "банк",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "가게",
+      "mn": "дэлгүүр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "기념품",
+      "mn": "бэлэг дурсгал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    }
   ],
-  "legacy_vocab_url": "../SNU-1A-lesson05.html",
-  "grammar": []
+  "legacy_vocab_url": "../snu-lessons/SNU-1A-lesson05.html",
+  "grammar": [
+    {
+      "id": "date",
+      "title": "날짜와 요일",
+      "pattern": "몇 월 며칠? / 무슨 요일?",
+      "visual_rules": [
+        "몇 월 며칠?",
+        "무슨 요일?"
+      ],
+      "use_kr": "날짜와 요일을 묻고 답합니다.",
+      "use_mn": "Огноо, гарагийг асууж хариулна.",
+      "examples": [
+        {
+          "kr": "오늘은 5월 3일이에요.",
+          "mn": "Өнөөдөр 5 сарын 3."
+        },
+        {
+          "kr": "오늘은 월요일이에요.",
+          "mn": "Өнөөдөр даваа гараг."
+        }
+      ]
+    },
+    {
+      "id": "time_particle",
+      "title": "N에",
+      "pattern": "시간 + 에 / 월요일에 만나요",
+      "visual_rules": [
+        "시간 + 에",
+        "월요일에 만나요"
+      ],
+      "use_kr": "일이 일어나는 시간을 말합니다.",
+      "use_mn": "Үйл явдлын цагийг хэлнэ.",
+      "examples": [
+        {
+          "kr": "토요일에 친구를 만나요.",
+          "mn": "Бямба гарагт найзтай уулзана."
+        },
+        {
+          "kr": "세 시에 공부해요.",
+          "mn": "Гурван цагт хичээллэнэ."
+        }
+      ]
+    },
+    {
+      "id": "past",
+      "title": "V-았/었어요",
+      "pattern": "ㅏ·ㅗ → 았어요 / 그 밖 → 었어요",
+      "visual_rules": [
+        "ㅏ·ㅗ → 았어요",
+        "그 밖 → 었어요"
+      ],
+      "use_kr": "지난 일을 말합니다.",
+      "use_mn": "Өнгөрсөн үйлдлийг хэлнэ.",
+      "examples": [
+        {
+          "kr": "어제 영화를 봤어요.",
+          "mn": "Өчигдөр кино үзсэн."
+        },
+        {
+          "kr": "친구를 만났어요.",
+          "mn": "Найзтай уулзсан."
+        }
+      ]
+    },
+    {
+      "id": "sequence",
+      "title": "V-고",
+      "pattern": "동사 + 고 / 먹고 공부해요",
+      "visual_rules": [
+        "동사 + 고",
+        "먹고 공부해요"
+      ],
+      "use_kr": "두 동작을 연결합니다.",
+      "use_mn": "Хоёр үйлдлийг холбоно.",
+      "examples": [
+        {
+          "kr": "밥을 먹고 공부해요.",
+          "mn": "Хоол идээд хичээллэнэ."
+        },
+        {
+          "kr": "쇼핑하고 산책했어요.",
+          "mn": "Дэлгүүр хэсээд алхсан."
+        }
+      ]
+    }
+  ],
+  "grammar_questions": [
+    {
+      "id": "g01",
+      "prompt": "가: 오늘은 몇 월 며칠이에요?\n나: ___.",
+      "choices": [
+        "5월 3일이에요",
+        "월요일에 가요",
+        "어제 만났어요",
+        "다섯 시예요?"
+      ],
+      "correct": "5월 3일이에요"
+    },
+    {
+      "id": "g02",
+      "prompt": "가: 오늘은 무슨 요일이에요?\n나: ___.",
+      "choices": [
+        "월요일이에요",
+        "5월이에요",
+        "세 시에 만나요",
+        "어제예요"
+      ],
+      "correct": "월요일이에요"
+    },
+    {
+      "id": "g03",
+      "prompt": "가: 생일이 언제예요?\n나: ___.",
+      "choices": [
+        "7월 8일이에요",
+        "토요일을 만나요",
+        "일곱 시가 가요",
+        "어제 봐요"
+      ],
+      "correct": "7월 8일이에요"
+    },
+    {
+      "id": "g04",
+      "prompt": "가: 내일은 무슨 요일이에요?\n나: ___.",
+      "choices": [
+        "화요일이에요",
+        "2월이에요",
+        "둘이에요",
+        "화요일을"
+      ],
+      "correct": "화요일이에요"
+    },
+    {
+      "id": "g05",
+      "prompt": "토요일___ 친구를 만나요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g06",
+      "prompt": "세 시___ 공부해요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g07",
+      "prompt": "생일___ 파티를 해요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g08",
+      "prompt": "월요일___ 학교에 가요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g09",
+      "prompt": "가: 어제 뭐 했어요?\n나: 영화를 ___.",
+      "choices": [
+        "봤어요",
+        "봐요",
+        "보어요",
+        "보고요"
+      ],
+      "correct": "봤어요"
+    },
+    {
+      "id": "g10",
+      "prompt": "가: 주말에 뭐 했어요?\n나: 친구를 ___.",
+      "choices": [
+        "만났어요",
+        "만나요",
+        "만나었어요",
+        "만나고요"
+      ],
+      "correct": "만났어요"
+    },
+    {
+      "id": "g11",
+      "prompt": "가: 어제 쇼핑했어요?\n나: 네, ___.",
+      "choices": [
+        "쇼핑했어요",
+        "쇼핑해요",
+        "쇼핑하어요",
+        "쇼핑고"
+      ],
+      "correct": "쇼핑했어요"
+    },
+    {
+      "id": "g12",
+      "prompt": "가: 사진을 찍었어요?\n나: 네, 사진을 ___.",
+      "choices": [
+        "찍었어요",
+        "찍어요",
+        "찍고요",
+        "찍았어요?"
+      ],
+      "correct": "찍었어요"
+    },
+    {
+      "id": "g13",
+      "prompt": "밥을 먹___ 공부해요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "았어요"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g14",
+      "prompt": "세수하___ 이를 닦아요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "았어요"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g15",
+      "prompt": "영화를 보___ 산책했어요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "았어요"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g16",
+      "prompt": "친구를 만나___ 쇼핑했어요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "았어요"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g17",
+      "prompt": "가: 어제 뭐 했어요?\n나: 집에서 ___.",
+      "choices": [
+        "쉬었어요",
+        "쉬어요",
+        "쉬고요",
+        "쉬에요"
+      ],
+      "correct": "쉬었어요"
+    },
+    {
+      "id": "g18",
+      "prompt": "가: 언제 만나요?\n나: 금요일___ 만나요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g19",
+      "prompt": "가: 주말에 뭐 했어요?\n나: 산책하___ 사진을 찍었어요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "가"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g20",
+      "prompt": "가: 어제 학교에 갔어요?\n나: 아니요, 안 ___.",
+      "choices": [
+        "갔어요",
+        "가요",
+        "가고",
+        "가에"
+      ],
+      "correct": "갔어요"
+    }
+  ],
+  "mixed_questions": [
+    {
+      "category": "integrated",
+      "prompt": "가: 오늘은 무슨 요일이에요?\n나: ____________",
+      "choices": [
+        "금요일이에요.",
+        "5월이에요.",
+        "다섯 시예요.",
+        "어제 만났어요."
+      ],
+      "correct": "금요일이에요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 주말에 뭐 했어요?\n나: ____________",
+      "choices": [
+        "친구를 만났어요.",
+        "친구를 만나요?",
+        "친구에 있어요.",
+        "친구가 학생이에요."
+      ],
+      "correct": "친구를 만났어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 언제 영화를 봐요?\n나: ____________",
+      "choices": [
+        "토요일에 봐요.",
+        "토요일을 봐요.",
+        "토요일에서 봐요.",
+        "토요일이 영화예요."
+      ],
+      "correct": "토요일에 봐요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 어제 뭐 했어요?\n나: ____________",
+      "choices": [
+        "쇼핑하고 산책했어요.",
+        "쇼핑에 산책해요.",
+        "쇼핑을 산책이에요.",
+        "쇼핑이 없어요."
+      ],
+      "correct": "쇼핑하고 산책했어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 생일이 언제예요?\n나: ____________",
+      "choices": [
+        "8월 10일이에요.",
+        "월요일을 만나요.",
+        "여덟 시가 생일이에요.",
+        "생일에 없어요."
+      ],
+      "correct": "8월 10일이에요."
+    }
+  ]
 }

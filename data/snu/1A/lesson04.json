@@ -4,49 +4,651 @@
   "title_kr": "4과",
   "title_mn": "4-р хичээл",
   "vocab": [
-    { "ko": "가게", "mn": "дэлгүүр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "공항", "mn": "нисэх онгоцны буудал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "대사관", "mn": "элчин сайдын яам", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "미용실", "mn": "үсчин", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "병원", "mn": "эмнэлэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "약국", "mn": "эмийн сан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "우체국", "mn": "шуудан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "은행", "mn": "банк", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "찻집", "mn": "цайны газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "위", "mn": "дээр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "아래", "mn": "доор", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "밑", "mn": "доод тал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "앞", "mn": "урд", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "뒤", "mn": "арын", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "옆", "mn": "хажууд", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "안", "mn": "дотор", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "남산", "mn": "Намсан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "명동", "mn": "Мёндун", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "인사동", "mn": "Инсадун", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "서울타워", "mn": "Сеул цамхаг", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "한국은행", "mn": "Солонгосын төв банк", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "기념품", "mn": "бэлэг дурсгал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "구경하다", "mn": "үзэж сонирхох", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "공원", "mn": "цэцэрлэгт хүрээлэн", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "극장", "mn": "кино театр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "도서관", "mn": "номын сан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "백화점", "mn": "их дэлгүүр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "시장", "mn": "зах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "식당", "mn": "хоолны газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "집", "mn": "гэр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "커피숍", "mn": "кофе шоп", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "학교", "mn": "сургууль", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "회사", "mn": "компани", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "언어교육원", "mn": "хэлний төв", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "학생 식당", "mn": "оюутны хоолны газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "스포츠 센터", "mn": "спорт төв", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "노래방", "mn": "караоке", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "찜질방", "mn": "саун", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "PC 방", "mn": "PC тоглоомын газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "빨래방", "mn": "угаалгын газар", "pos": "", "example_kr": "", "example_mn": "" }
+    {
+      "ko": "가게",
+      "mn": "дэлгүүр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "공항",
+      "mn": "нисэх онгоцны буудал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "대사관",
+      "mn": "элчин сайдын яам",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "미용실",
+      "mn": "үсчин",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "병원",
+      "mn": "эмнэлэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "약국",
+      "mn": "эмийн сан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "우체국",
+      "mn": "шуудан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "은행",
+      "mn": "банк",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "찻집",
+      "mn": "цайны газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "위",
+      "mn": "дээр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "아래",
+      "mn": "доор",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "밑",
+      "mn": "доод тал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "앞",
+      "mn": "урд",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "뒤",
+      "mn": "арын",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "옆",
+      "mn": "хажууд",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "안",
+      "mn": "дотор",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "남산",
+      "mn": "Намсан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "명동",
+      "mn": "Мёндун",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "인사동",
+      "mn": "Инсадун",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "서울타워",
+      "mn": "Сеул цамхаг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "한국은행",
+      "mn": "Солонгосын төв банк",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "기념품",
+      "mn": "бэлэг дурсгал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "구경하다",
+      "mn": "үзэж сонирхох",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "공원",
+      "mn": "цэцэрлэгт хүрээлэн",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "극장",
+      "mn": "кино театр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "도서관",
+      "mn": "номын сан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "백화점",
+      "mn": "их дэлгүүр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "시장",
+      "mn": "зах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "식당",
+      "mn": "хоолны газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "집",
+      "mn": "гэр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "커피숍",
+      "mn": "кофе шоп",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "학교",
+      "mn": "сургууль",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "회사",
+      "mn": "компани",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "언어교육원",
+      "mn": "хэлний төв",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "학생 식당",
+      "mn": "оюутны хоолны газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "스포츠 센터",
+      "mn": "спорт төв",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "노래방",
+      "mn": "караоке",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "찜질방",
+      "mn": "саун",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "PC 방",
+      "mn": "PC тоглоомын газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "빨래방",
+      "mn": "угаалгын газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    }
   ],
-  "legacy_vocab_url": "../SNU-1A-lesson04.html",
-  "grammar": []
+  "legacy_vocab_url": "../snu-lessons/SNU-1A-lesson04.html",
+  "grammar": [
+    {
+      "id": "place_copula",
+      "title": "여기가 N이에요/예요",
+      "pattern": "여기가 + 받침 O 이에요 / 여기가 + 받침 X 예요",
+      "visual_rules": [
+        "여기가 + 받침 O 이에요",
+        "여기가 + 받침 X 예요"
+      ],
+      "use_kr": "장소를 소개합니다.",
+      "use_mn": "Газрыг танилцуулна.",
+      "examples": [
+        {
+          "kr": "여기가 은행이에요.",
+          "mn": "Энд банк."
+        },
+        {
+          "kr": "여기가 학교예요.",
+          "mn": "Энд сургууль."
+        }
+      ]
+    },
+    {
+      "id": "location",
+      "title": "N에 있어요·없어요",
+      "pattern": "장소 + 에 있어요 / 장소 + 에 없어요",
+      "visual_rules": [
+        "장소 + 에 있어요",
+        "장소 + 에 없어요"
+      ],
+      "use_kr": "사람이나 물건의 위치를 말합니다.",
+      "use_mn": "Хүн, юмны байршлыг хэлнэ.",
+      "examples": [
+        {
+          "kr": "책이 책상 위에 있어요.",
+          "mn": "Ном ширээн дээр байна."
+        },
+        {
+          "kr": "우체국이 여기에 없어요.",
+          "mn": "Шуудан энд алга."
+        }
+      ]
+    },
+    {
+      "id": "destination",
+      "title": "N에 가요·와요",
+      "pattern": "목적지 + 에 가요 / 오는 곳 + 에 와요",
+      "visual_rules": [
+        "목적지 + 에 가요",
+        "오는 곳 + 에 와요"
+      ],
+      "use_kr": "가는 곳과 오는 곳을 말합니다.",
+      "use_mn": "Явах, ирэх газрыг хэлнэ.",
+      "examples": [
+        {
+          "kr": "학교에 가요.",
+          "mn": "Сургууль руу явна."
+        },
+        {
+          "kr": "친구가 집에 와요.",
+          "mn": "Найз гэрт ирнэ."
+        }
+      ]
+    },
+    {
+      "id": "position",
+      "title": "N 앞·뒤·옆",
+      "pattern": "앞 / 뒤 / 옆 / 안",
+      "visual_rules": [
+        "앞 / 뒤",
+        "옆 / 안"
+      ],
+      "use_kr": "물건의 위치를 말합니다.",
+      "use_mn": "Юмны байрлалыг хэлнэ.",
+      "examples": [
+        {
+          "kr": "은행 앞에 있어요.",
+          "mn": "Банкны өмнө байна."
+        },
+        {
+          "kr": "학교 옆에 있어요.",
+          "mn": "Сургуулийн хажууд байна."
+        }
+      ]
+    }
+  ],
+  "grammar_questions": [
+    {
+      "id": "g01",
+      "prompt": "가: 여기가 어디예요?\n나: 여기가 은행___.",
+      "choices": [
+        "이에요",
+        "예요",
+        "에 가요",
+        "에 있어요"
+      ],
+      "correct": "이에요"
+    },
+    {
+      "id": "g02",
+      "prompt": "가: 여기가 어디예요?\n나: 여기가 학교___.",
+      "choices": [
+        "예요",
+        "이에요",
+        "가 있어요",
+        "를 가요"
+      ],
+      "correct": "예요"
+    },
+    {
+      "id": "g03",
+      "prompt": "가: 여기가 병원이에요?\n나: 네, ___.",
+      "choices": [
+        "병원이에요",
+        "병원에 가요",
+        "병원이 없어요",
+        "병원 앞이에요?"
+      ],
+      "correct": "병원이에요"
+    },
+    {
+      "id": "g04",
+      "prompt": "가: 여기가 약국이에요?\n나: 아니요, ___.",
+      "choices": [
+        "은행이에요",
+        "약국에 있어요",
+        "약국이 없어요",
+        "은행에 가요"
+      ],
+      "correct": "은행이에요"
+    },
+    {
+      "id": "g05",
+      "prompt": "책이 책상 위___ 있어요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g06",
+      "prompt": "가: 가방이 어디에 있어요?\n나: 의자 옆___ 있어요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g07",
+      "prompt": "가: 우체국이 여기에 있어요?\n나: 아니요, ___.",
+      "choices": [
+        "없어요",
+        "있어요",
+        "가요",
+        "와요"
+      ],
+      "correct": "없어요"
+    },
+    {
+      "id": "g08",
+      "prompt": "가: 민수 씨가 어디에 있어요?\n나: 집___ 있어요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g09",
+      "prompt": "가: 어디에 가요?\n나: 학교___ 가요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g10",
+      "prompt": "가: 친구가 어디에 와요?\n나: 우리 집___ 와요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g11",
+      "prompt": "가: 은행에 가요?\n나: 네, 은행에 ___.",
+      "choices": [
+        "가요",
+        "와요",
+        "있어요?",
+        "은행이에요"
+      ],
+      "correct": "가요"
+    },
+    {
+      "id": "g12",
+      "prompt": "가: 수진 씨가 학교에 와요?\n나: 네, ___.",
+      "choices": [
+        "학교에 와요",
+        "학교에서 와요",
+        "학교를 와요",
+        "학교예요"
+      ],
+      "correct": "학교에 와요"
+    },
+    {
+      "id": "g13",
+      "prompt": "가: 은행이 어디에 있어요?\n나: 학교 ___에 있어요.",
+      "choices": [
+        "앞",
+        "가",
+        "를",
+        "에서"
+      ],
+      "correct": "앞"
+    },
+    {
+      "id": "g14",
+      "prompt": "가: 약국이 어디에 있어요?\n나: 병원 ___에 있어요.",
+      "choices": [
+        "옆",
+        "를",
+        "가",
+        "에서"
+      ],
+      "correct": "옆"
+    },
+    {
+      "id": "g15",
+      "prompt": "가: 가방이 어디에 있어요?\n나: 의자 ___에 있어요.",
+      "choices": [
+        "뒤",
+        "를",
+        "가",
+        "에서"
+      ],
+      "correct": "뒤"
+    },
+    {
+      "id": "g16",
+      "prompt": "가: 지갑이 어디에 있어요?\n나: 가방 ___에 있어요.",
+      "choices": [
+        "안",
+        "를",
+        "가",
+        "에서"
+      ],
+      "correct": "안"
+    },
+    {
+      "id": "g17",
+      "prompt": "가: 여기가 어디예요?\n나: 서울타워___.",
+      "choices": [
+        "예요",
+        "이에요",
+        "에 있어요?",
+        "를 가요"
+      ],
+      "correct": "예요"
+    },
+    {
+      "id": "g18",
+      "prompt": "가: 대사관이 어디에 있어요?\n나: 은행 옆___ 있어요.",
+      "choices": [
+        "에",
+        "를",
+        "가",
+        "에서"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g19",
+      "prompt": "가: 어디에 가요?\n나: 명동___ 가요.",
+      "choices": [
+        "에",
+        "에서",
+        "를",
+        "가"
+      ],
+      "correct": "에"
+    },
+    {
+      "id": "g20",
+      "prompt": "가: 학교에 있어요?\n나: 아니요, 집에 ___.",
+      "choices": [
+        "있어요",
+        "가요",
+        "집이에요",
+        "없어요?"
+      ],
+      "correct": "있어요"
+    }
+  ],
+  "mixed_questions": [
+    {
+      "category": "integrated",
+      "prompt": "가: 여기가 어디예요?\n나: ____________",
+      "choices": [
+        "여기가 도서관이에요.",
+        "도서관에서 읽어요.",
+        "도서관이 없어요.",
+        "도서관에 가요?"
+      ],
+      "correct": "여기가 도서관이에요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 약국이 어디에 있어요?\n나: ____________",
+      "choices": [
+        "병원 옆에 있어요.",
+        "병원에서 있어요.",
+        "병원을 가요.",
+        "병원이 약국이에요."
+      ],
+      "correct": "병원 옆에 있어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 어디에 가요?\n나: ____________",
+      "choices": [
+        "인사동에 가요.",
+        "인사동에서 가요.",
+        "인사동이 있어요.",
+        "인사동을 있어요."
+      ],
+      "correct": "인사동에 가요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 가방이 어디에 있어요?\n나: ____________",
+      "choices": [
+        "책상 아래에 있어요.",
+        "책상에서 있어요.",
+        "책상을 가요.",
+        "책상이 없어요?"
+      ],
+      "correct": "책상 아래에 있어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 친구가 어디에 와요?\n나: ____________",
+      "choices": [
+        "학교에 와요.",
+        "학교를 와요.",
+        "학교에서 있어요.",
+        "학교가 친구예요."
+      ],
+      "correct": "학교에 와요."
+    }
+  ]
 }

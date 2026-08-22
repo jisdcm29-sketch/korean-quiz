@@ -4,61 +4,707 @@
   "title_kr": "6과",
   "title_mn": "6-р хичээл",
   "vocab": [
-    { "ko": "귤", "mn": "мандарин", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "딸기", "mn": "гүзээлзгэнэ", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "사과", "mn": "алим", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "수박", "mn": "тарвас", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "하나", "mn": "нэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "둘", "mn": "хоёр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "셋", "mn": "гурав", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "넷", "mn": "дөрөв", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "다섯", "mn": "тав", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "여섯", "mn": "зургаа", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "일곱", "mn": "долоо", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "여덟", "mn": "найм", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "아홉", "mn": "ес", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "열", "mn": "арав", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "얼마", "mn": "хэд", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "어서 오세요", "mn": "тавтай морилно уу", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "앉다", "mn": "суух", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "메뉴", "mn": "цэс", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "잠깐만", "mn": "түр хүлээнэ үү", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "기다리다", "mn": "хүлээх", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "개", "mn": "ширхэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "병", "mn": "лонх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "잔", "mn": "аяга", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "그릇", "mn": "сав", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "짜장면", "mn": "хар буурцгийн соустай гоймон", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "짬뽕", "mn": "Халуун ногоотой гоймон", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "우동", "mn": "удон", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "초밥", "mn": "суши", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "탕수육", "mn": "чихэрлэг, исгэлэн соустай шарсан гахайн мах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "돈가스", "mn": "донкацу", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "만두", "mn": "банш", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "튀김", "mn": "Шарсан зүйл", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "샐러드", "mn": "салат", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "맛있다", "mn": "амттай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "싸다", "mn": "хямд", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "다", "mn": "бүгд", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "아저씨", "mn": "ах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "배", "mn": "лийр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "너무", "mn": "маш", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "비싸다", "mn": "үнэтэй", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "깎다", "mn": "үнийг буулгах", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "달걀", "mn": "өндөг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "과자", "mn": "жигнэмэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "사고팔다", "mn": "авах, зарах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "좋아하다", "mn": "дуртай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "넣다", "mn": "дотор хийх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "놓다", "mn": "тавих", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "라면", "mn": "бэлэн гоймон", "pos": "", "example_kr": "", "example_mn": "" }
+    {
+      "ko": "귤",
+      "mn": "мандарин",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "딸기",
+      "mn": "гүзээлзгэнэ",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "사과",
+      "mn": "алим",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "수박",
+      "mn": "тарвас",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "하나",
+      "mn": "нэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "둘",
+      "mn": "хоёр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "셋",
+      "mn": "гурав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "넷",
+      "mn": "дөрөв",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "다섯",
+      "mn": "тав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "여섯",
+      "mn": "зургаа",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "일곱",
+      "mn": "долоо",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "여덟",
+      "mn": "найм",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "아홉",
+      "mn": "ес",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "열",
+      "mn": "арав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "얼마",
+      "mn": "хэд",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "어서 오세요",
+      "mn": "тавтай морилно уу",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "앉다",
+      "mn": "суух",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "메뉴",
+      "mn": "цэс",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "잠깐만",
+      "mn": "түр хүлээнэ үү",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "기다리다",
+      "mn": "хүлээх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "개",
+      "mn": "ширхэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "병",
+      "mn": "лонх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "잔",
+      "mn": "аяга",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "그릇",
+      "mn": "сав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "짜장면",
+      "mn": "хар буурцгийн соустай гоймон",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "짬뽕",
+      "mn": "Халуун ногоотой гоймон",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "우동",
+      "mn": "удон",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "초밥",
+      "mn": "суши",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "탕수육",
+      "mn": "чихэрлэг, исгэлэн соустай шарсан гахайн мах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "돈가스",
+      "mn": "донкацу",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "만두",
+      "mn": "банш",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "튀김",
+      "mn": "Шарсан зүйл",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "샐러드",
+      "mn": "салат",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "맛있다",
+      "mn": "амттай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "싸다",
+      "mn": "хямд",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "다",
+      "mn": "бүгд",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "아저씨",
+      "mn": "ах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "배",
+      "mn": "лийр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "너무",
+      "mn": "маш",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "비싸다",
+      "mn": "үнэтэй",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "깎다",
+      "mn": "үнийг буулгах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "달걀",
+      "mn": "өндөг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "과자",
+      "mn": "жигнэмэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "사고팔다",
+      "mn": "авах, зарах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "좋아하다",
+      "mn": "дуртай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "넣다",
+      "mn": "дотор хийх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "놓다",
+      "mn": "тавих",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "라면",
+      "mn": "бэлэн гоймон",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    }
   ],
-  "legacy_vocab_url": "../SNU-1A-lesson06.html",
-  "grammar": []
+  "legacy_vocab_url": "../snu-lessons/SNU-1A-lesson06.html",
+  "grammar": [
+    {
+      "id": "request_verb",
+      "title": "V-(으)세요",
+      "pattern": "받침 O → 으세요 / 받침 X → 세요",
+      "visual_rules": [
+        "받침 O → 으세요",
+        "받침 X → 세요"
+      ],
+      "use_kr": "공손하게 부탁합니다.",
+      "use_mn": "Эелдгээр хүсэлт тавина.",
+      "examples": [
+        {
+          "kr": "여기 앉으세요.",
+          "mn": "Энд сууна уу."
+        },
+        {
+          "kr": "잠깐 기다리세요.",
+          "mn": "Түр хүлээнэ үү."
+        }
+      ]
+    },
+    {
+      "id": "counter",
+      "title": "N 개·병·잔·그릇",
+      "pattern": "사과 → 개 / 물 → 병 / 커피 → 잔",
+      "visual_rules": [
+        "사과 → 개",
+        "물 → 병 / 커피 → 잔"
+      ],
+      "use_kr": "물건의 수를 셉니다.",
+      "use_mn": "Юмны тоог тоолно.",
+      "examples": [
+        {
+          "kr": "사과 두 개 주세요.",
+          "mn": "Хоёр алим өгнө үү."
+        },
+        {
+          "kr": "커피 한 잔 주세요.",
+          "mn": "Нэг аяга кофе өгнө үү."
+        }
+      ]
+    },
+    {
+      "id": "adjective",
+      "title": "N이/가 A-아요/어요",
+      "pattern": "맛이 좋아요 / 가격이 비싸요",
+      "visual_rules": [
+        "맛이 좋아요",
+        "가격이 비싸요"
+      ],
+      "use_kr": "상태나 느낌을 말합니다.",
+      "use_mn": "Байдал, шинжийг хэлнэ.",
+      "examples": [
+        {
+          "kr": "짜장면이 맛있어요.",
+          "mn": "Жажанмён амттай."
+        },
+        {
+          "kr": "수박이 싸요.",
+          "mn": "Тарвас хямд."
+        }
+      ]
+    },
+    {
+      "id": "also",
+      "title": "N도",
+      "pattern": "N + 도 / 저도 학생이에요",
+      "visual_rules": [
+        "N + 도",
+        "저도 학생이에요"
+      ],
+      "use_kr": "같은 내용을 더합니다.",
+      "use_mn": "Ижил зүйлийг нэмж хэлнэ.",
+      "examples": [
+        {
+          "kr": "저도 커피를 마셔요.",
+          "mn": "Би ч бас кофе уудаг."
+        },
+        {
+          "kr": "만두도 맛있어요.",
+          "mn": "Бууз ч бас амттай."
+        }
+      ]
+    }
+  ],
+  "grammar_questions": [
+    {
+      "id": "g01",
+      "prompt": "가: 어디에 앉아요?\n나: 여기 ___.",
+      "choices": [
+        "앉으세요",
+        "앉세요",
+        "앉아요?",
+        "앉고"
+      ],
+      "correct": "앉으세요"
+    },
+    {
+      "id": "g02",
+      "prompt": "가: 잠깐 ___.\n나: 네.",
+      "choices": [
+        "기다리세요",
+        "기다으세요",
+        "기다려요?",
+        "기다리고"
+      ],
+      "correct": "기다리세요"
+    },
+    {
+      "id": "g03",
+      "prompt": "가: 메뉴를 ___.\n나: 네, 여기 있어요.",
+      "choices": [
+        "보세요",
+        "보으세요",
+        "봐요?",
+        "보고"
+      ],
+      "correct": "보세요"
+    },
+    {
+      "id": "g04",
+      "prompt": "가: 이거 드세요.\n나: 네, ___.",
+      "choices": [
+        "감사합니다",
+        "먹으세요",
+        "있어요",
+        "얼마예요"
+      ],
+      "correct": "감사합니다"
+    },
+    {
+      "id": "g05",
+      "prompt": "사과 두 ___ 주세요.",
+      "choices": [
+        "개",
+        "병",
+        "잔",
+        "그릇"
+      ],
+      "correct": "개"
+    },
+    {
+      "id": "g06",
+      "prompt": "물 한 ___ 주세요.",
+      "choices": [
+        "병",
+        "개",
+        "잔",
+        "그릇"
+      ],
+      "correct": "병"
+    },
+    {
+      "id": "g07",
+      "prompt": "커피 두 ___ 주세요.",
+      "choices": [
+        "잔",
+        "개",
+        "병",
+        "그릇"
+      ],
+      "correct": "잔"
+    },
+    {
+      "id": "g08",
+      "prompt": "짜장면 한 ___ 주세요.",
+      "choices": [
+        "그릇",
+        "개",
+        "병",
+        "잔"
+      ],
+      "correct": "그릇"
+    },
+    {
+      "id": "g09",
+      "prompt": "가: 짜장면이 어때요?\n나: ___.",
+      "choices": [
+        "맛있어요",
+        "맛있습니다?",
+        "맛을 있어요",
+        "맛있고요?"
+      ],
+      "correct": "맛있어요"
+    },
+    {
+      "id": "g10",
+      "prompt": "가: 수박이 어때요?\n나: ___.",
+      "choices": [
+        "싸요",
+        "싸세요",
+        "싸를",
+        "싸에"
+      ],
+      "correct": "싸요"
+    },
+    {
+      "id": "g11",
+      "prompt": "가: 이 가방이 어때요?\n나: 너무 ___.",
+      "choices": [
+        "비싸요",
+        "비싸세요",
+        "비싸를",
+        "비싸에"
+      ],
+      "correct": "비싸요"
+    },
+    {
+      "id": "g12",
+      "prompt": "가: 음식이 어때요?\n나: ___.",
+      "choices": [
+        "좋아요",
+        "좋으세요",
+        "좋을",
+        "좋에"
+      ],
+      "correct": "좋아요"
+    },
+    {
+      "id": "g13",
+      "prompt": "가: 저는 커피를 마셔요.\n나: 저___ 커피를 마셔요.",
+      "choices": [
+        "도",
+        "를",
+        "에",
+        "가"
+      ],
+      "correct": "도"
+    },
+    {
+      "id": "g14",
+      "prompt": "가: 만두가 맛있어요.\n나: 탕수육___ 맛있어요.",
+      "choices": [
+        "도",
+        "를",
+        "에",
+        "가"
+      ],
+      "correct": "도"
+    },
+    {
+      "id": "g15",
+      "prompt": "가: 사과 주세요.\n나: 귤___ 주세요.",
+      "choices": [
+        "도",
+        "를",
+        "에",
+        "가"
+      ],
+      "correct": "도"
+    },
+    {
+      "id": "g16",
+      "prompt": "가: 저는 학생이에요.\n나: 저___ 학생이에요.",
+      "choices": [
+        "도",
+        "를",
+        "에",
+        "가"
+      ],
+      "correct": "도"
+    },
+    {
+      "id": "g17",
+      "prompt": "가: 뭘 드릴까요?\n나: 주스 한 ___ 주세요.",
+      "choices": [
+        "잔",
+        "개",
+        "병",
+        "그릇"
+      ],
+      "correct": "잔"
+    },
+    {
+      "id": "g18",
+      "prompt": "가: 어디에 앉아요?\n나: 저기에 ___.",
+      "choices": [
+        "앉으세요",
+        "앉세요",
+        "앉고",
+        "앉에"
+      ],
+      "correct": "앉으세요"
+    },
+    {
+      "id": "g19",
+      "prompt": "가: 초밥이 맛있어요?\n나: 네, ___.",
+      "choices": [
+        "맛있어요",
+        "맛있으세요",
+        "맛있를",
+        "맛있에"
+      ],
+      "correct": "맛있어요"
+    },
+    {
+      "id": "g20",
+      "prompt": "가: 저는 만두를 좋아해요.\n나: 저___ 좋아해요.",
+      "choices": [
+        "도",
+        "를",
+        "에",
+        "가"
+      ],
+      "correct": "도"
+    }
+  ],
+  "mixed_questions": [
+    {
+      "category": "integrated",
+      "prompt": "가: 뭘 드릴까요?\n나: ____________",
+      "choices": [
+        "커피 한 잔 주세요.",
+        "커피 한 병 주세요.",
+        "커피 한 개 주세요.",
+        "커피 한 그릇 주세요."
+      ],
+      "correct": "커피 한 잔 주세요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 여기 앉아요?\n나: 네, ____________",
+      "choices": [
+        "여기 앉으세요.",
+        "여기 앉세요.",
+        "여기 앉을 주세요.",
+        "여기 앉도."
+      ],
+      "correct": "여기 앉으세요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 짜장면이 어때요?\n나: ____________",
+      "choices": [
+        "맛있어요.",
+        "맛을 있어요.",
+        "맛있으세요.",
+        "짜장면 한 병이에요."
+      ],
+      "correct": "맛있어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 저는 만두를 좋아해요.\n나: ____________",
+      "choices": [
+        "저도 좋아해요.",
+        "저를 좋아해요.",
+        "저에 좋아해요.",
+        "저가 만두예요."
+      ],
+      "correct": "저도 좋아해요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 사과 몇 개 주세요?\n나: ____________",
+      "choices": [
+        "세 개 주세요.",
+        "세 병 주세요.",
+        "세 잔 주세요.",
+        "세 그릇 주세요."
+      ],
+      "correct": "세 개 주세요."
+    }
+  ]
 }

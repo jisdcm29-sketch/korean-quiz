@@ -4,47 +4,651 @@
   "title_kr": "3과",
   "title_mn": "3-р хичээл",
   "vocab": [
-    { "ko": "공부하다", "mn": "сурах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "밥을 먹다", "mn": "хоол идэх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "숙제를 하다", "mn": "даалгавар хийх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "영화를 보다", "mn": "кино үзэх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "옷을 사다", "mn": "хувцас авах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "운동하다", "mn": "дасгал хийх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "일하다", "mn": "ажиллах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "자다", "mn": "унтах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "책을 읽다", "mn": "ном унших", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "친구를 만나다", "mn": "найзтайгаа уулзах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "커피를 마시다", "mn": "кофе уух", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "태권도를 배우다", "mn": "тэвкондо сурах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "쉬다", "mn": "амрах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "아르바이트하다", "mn": "цагийн ажил хийх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "청소하다", "mn": "цэвэрлэх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "노래하다", "mn": "дуулах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "빨래하다", "mn": "угаалга хийх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "공원", "mn": "цэцэрлэгт хүрээлэн", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "극장", "mn": "кино театр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "도서관", "mn": "номын сан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "백화점", "mn": "их дэлгүүр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "시장", "mn": "зах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "식당", "mn": "Хоолны газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "집", "mn": "гэр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "커피숍", "mn": "кофе шоп", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "학교", "mn": "сургууль", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "회사", "mn": "компани", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "언어교육원", "mn": "хэлний төв", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "학생 식당", "mn": "оюутны хоолны газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "스포츠 센터", "mn": "спорт төв", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "노래방", "mn": "караоке", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "찜질방", "mn": "саун", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "PC 방", "mn": "PC тоглоомын газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "빨래방", "mn": "угаалгын газар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "텔레비전", "mn": "телевизор", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "피자", "mn": "пицца", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "고기", "mn": "мах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "불고기", "mn": "булгуги", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "드라마", "mn": "драма", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "일본어", "mn": "япон хэл", "pos": "", "example_kr": "", "example_mn": "" }
+    {
+      "ko": "공부하다",
+      "mn": "сурах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "밥을 먹다",
+      "mn": "хоол идэх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "숙제를 하다",
+      "mn": "даалгавар хийх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "영화를 보다",
+      "mn": "кино үзэх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "옷을 사다",
+      "mn": "хувцас авах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "운동하다",
+      "mn": "дасгал хийх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "일하다",
+      "mn": "ажиллах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "자다",
+      "mn": "унтах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "책을 읽다",
+      "mn": "ном унших",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "친구를 만나다",
+      "mn": "найзтайгаа уулзах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "커피를 마시다",
+      "mn": "кофе уух",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "태권도를 배우다",
+      "mn": "тэвкондо сурах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "쉬다",
+      "mn": "амрах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "아르바이트하다",
+      "mn": "цагийн ажил хийх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "청소하다",
+      "mn": "цэвэрлэх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "노래하다",
+      "mn": "дуулах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "빨래하다",
+      "mn": "угаалга хийх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "공원",
+      "mn": "цэцэрлэгт хүрээлэн",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "극장",
+      "mn": "кино театр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "도서관",
+      "mn": "номын сан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "백화점",
+      "mn": "их дэлгүүр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "시장",
+      "mn": "зах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "식당",
+      "mn": "Хоолны газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "집",
+      "mn": "гэр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "커피숍",
+      "mn": "кофе шоп",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "학교",
+      "mn": "сургууль",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "회사",
+      "mn": "компани",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "언어교육원",
+      "mn": "хэлний төв",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "학생 식당",
+      "mn": "оюутны хоолны газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "스포츠 센터",
+      "mn": "спорт төв",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "노래방",
+      "mn": "караоке",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "찜질방",
+      "mn": "саун",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "PC 방",
+      "mn": "PC тоглоомын газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "빨래방",
+      "mn": "угаалгын газар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "텔레비전",
+      "mn": "телевизор",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "피자",
+      "mn": "пицца",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "고기",
+      "mn": "мах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "불고기",
+      "mn": "булгуги",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "드라마",
+      "mn": "драма",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "일본어",
+      "mn": "япон хэл",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    }
   ],
-  "legacy_vocab_url": "../SNU-1A-lesson03.html",
-  "grammar": []
+  "legacy_vocab_url": "../snu-lessons/SNU-1A-lesson03.html",
+  "grammar": [
+    {
+      "id": "present",
+      "title": "V-아요/어요",
+      "pattern": "ㅏ·ㅗ → 아요 / 그 밖 → 어요",
+      "visual_rules": [
+        "ㅏ·ㅗ → 아요",
+        "그 밖 → 어요"
+      ],
+      "use_kr": "지금 하는 일을 말합니다.",
+      "use_mn": "Одоо хийж буй үйлдлийг хэлнэ.",
+      "examples": [
+        {
+          "kr": "한국어를 공부해요.",
+          "mn": "Солонгос хэл сурдаг."
+        },
+        {
+          "kr": "커피를 마셔요.",
+          "mn": "Кофе уудаг."
+        }
+      ]
+    },
+    {
+      "id": "object",
+      "title": "N을/를",
+      "pattern": "받침 O → 을 / 받침 X → 를",
+      "visual_rules": [
+        "받침 O → 을",
+        "받침 X → 를"
+      ],
+      "use_kr": "동작의 대상을 표시합니다.",
+      "use_mn": "Үйлдлийн тусагдахууныг заана.",
+      "examples": [
+        {
+          "kr": "밥을 먹어요.",
+          "mn": "Хоол иддэг."
+        },
+        {
+          "kr": "영화를 봐요.",
+          "mn": "Кино үздэг."
+        }
+      ]
+    },
+    {
+      "id": "place_action",
+      "title": "N에서",
+      "pattern": "장소 + 에서 / 학교에서 공부해요",
+      "visual_rules": [
+        "장소 + 에서",
+        "학교에서 공부해요"
+      ],
+      "use_kr": "동작을 하는 장소를 말합니다.",
+      "use_mn": "Үйлдэл хийж буй газрыг хэлнэ.",
+      "examples": [
+        {
+          "kr": "도서관에서 책을 읽어요.",
+          "mn": "Номын санд ном уншдаг."
+        },
+        {
+          "kr": "공원에서 운동해요.",
+          "mn": "Цэцэрлэгт дасгал хийдэг."
+        }
+      ]
+    },
+    {
+      "id": "negative",
+      "title": "안 V",
+      "pattern": "안 + 동사 / 안 먹어요",
+      "visual_rules": [
+        "안 + 동사",
+        "안 먹어요"
+      ],
+      "use_kr": "동작을 부정합니다.",
+      "use_mn": "Үйлдлийг үгүйсгэнэ.",
+      "examples": [
+        {
+          "kr": "오늘은 안 가요.",
+          "mn": "Өнөөдөр явахгүй."
+        },
+        {
+          "kr": "커피를 안 마셔요.",
+          "mn": "Кофе уухгүй."
+        }
+      ]
+    }
+  ],
+  "grammar_questions": [
+    {
+      "id": "g01",
+      "prompt": "가: 뭐 해요?\n나: 한국어를 ___.",
+      "choices": [
+        "공부해요",
+        "공부아요",
+        "공부이에요",
+        "공부를"
+      ],
+      "correct": "공부해요"
+    },
+    {
+      "id": "g02",
+      "prompt": "가: 뭐 먹어요?\n나: 밥을 ___.",
+      "choices": [
+        "먹어요",
+        "먹아요",
+        "먹이에요",
+        "먹에서"
+      ],
+      "correct": "먹어요"
+    },
+    {
+      "id": "g03",
+      "prompt": "가: 뭐 봐요?\n나: 영화를 ___.",
+      "choices": [
+        "봐요",
+        "보어요",
+        "보이에요",
+        "보에서"
+      ],
+      "correct": "봐요"
+    },
+    {
+      "id": "g04",
+      "prompt": "가: 뭐 마셔요?\n나: 커피를 ___.",
+      "choices": [
+        "마셔요",
+        "마시아요",
+        "마시예요",
+        "마시에서"
+      ],
+      "correct": "마셔요"
+    },
+    {
+      "id": "g05",
+      "prompt": "밥___ 먹어요.",
+      "choices": [
+        "을",
+        "를",
+        "이",
+        "가"
+      ],
+      "correct": "을"
+    },
+    {
+      "id": "g06",
+      "prompt": "영화___ 봐요.",
+      "choices": [
+        "를",
+        "을",
+        "이",
+        "가"
+      ],
+      "correct": "를"
+    },
+    {
+      "id": "g07",
+      "prompt": "책___ 읽어요.",
+      "choices": [
+        "을",
+        "를",
+        "은",
+        "는"
+      ],
+      "correct": "을"
+    },
+    {
+      "id": "g08",
+      "prompt": "커피___ 마셔요.",
+      "choices": [
+        "를",
+        "을",
+        "이",
+        "은"
+      ],
+      "correct": "를"
+    },
+    {
+      "id": "g09",
+      "prompt": "가: 어디에서 공부해요?\n나: 학교___ 공부해요.",
+      "choices": [
+        "에서",
+        "에",
+        "를",
+        "가"
+      ],
+      "correct": "에서"
+    },
+    {
+      "id": "g10",
+      "prompt": "가: 어디에서 책을 읽어요?\n나: 도서관___ 읽어요.",
+      "choices": [
+        "에서",
+        "에",
+        "을",
+        "는"
+      ],
+      "correct": "에서"
+    },
+    {
+      "id": "g11",
+      "prompt": "가: 어디에서 운동해요?\n나: 공원___ 운동해요.",
+      "choices": [
+        "에서",
+        "에",
+        "가",
+        "를"
+      ],
+      "correct": "에서"
+    },
+    {
+      "id": "g12",
+      "prompt": "가: 어디에서 밥을 먹어요?\n나: 식당___ 먹어요.",
+      "choices": [
+        "에서",
+        "에",
+        "을",
+        "이"
+      ],
+      "correct": "에서"
+    },
+    {
+      "id": "g13",
+      "prompt": "가: 커피를 마셔요?\n나: 아니요, ___.",
+      "choices": [
+        "안 마셔요",
+        "마셔요",
+        "커피예요",
+        "마시에서"
+      ],
+      "correct": "안 마셔요"
+    },
+    {
+      "id": "g14",
+      "prompt": "가: 오늘 학교에 가요?\n나: 아니요, ___.",
+      "choices": [
+        "안 가요",
+        "가요",
+        "학교예요",
+        "가에서"
+      ],
+      "correct": "안 가요"
+    },
+    {
+      "id": "g15",
+      "prompt": "가: 영화를 봐요?\n나: 아니요, ___.",
+      "choices": [
+        "안 봐요",
+        "봐요",
+        "영화예요",
+        "보를"
+      ],
+      "correct": "안 봐요"
+    },
+    {
+      "id": "g16",
+      "prompt": "가: 운동해요?\n나: 아니요, ___.",
+      "choices": [
+        "안 해요",
+        "운동이에요",
+        "운동을",
+        "해요?"
+      ],
+      "correct": "안 해요"
+    },
+    {
+      "id": "g17",
+      "prompt": "가: 뭐 해요?\n나: 숙제___ 해요.",
+      "choices": [
+        "를",
+        "을",
+        "가",
+        "는"
+      ],
+      "correct": "를"
+    },
+    {
+      "id": "g18",
+      "prompt": "가: 어디에서 일해요?\n나: 회사___ 일해요.",
+      "choices": [
+        "에서",
+        "에",
+        "를",
+        "가"
+      ],
+      "correct": "에서"
+    },
+    {
+      "id": "g19",
+      "prompt": "가: 책을 읽어요?\n나: 네, ___.",
+      "choices": [
+        "읽어요",
+        "안 읽어요",
+        "책이에요",
+        "읽에서"
+      ],
+      "correct": "읽어요"
+    },
+    {
+      "id": "g20",
+      "prompt": "가: 피자를 먹어요?\n나: 아니요, ___.",
+      "choices": [
+        "안 먹어요",
+        "먹어요",
+        "피자예요",
+        "먹를"
+      ],
+      "correct": "안 먹어요"
+    }
+  ],
+  "mixed_questions": [
+    {
+      "category": "integrated",
+      "prompt": "가: 어디에서 공부해요?\n나: ____________",
+      "choices": [
+        "도서관에서 공부해요.",
+        "도서관을 공부해요.",
+        "도서관이 공부해요.",
+        "도서관 안 가요."
+      ],
+      "correct": "도서관에서 공부해요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 뭐 해요?\n나: ____________",
+      "choices": [
+        "영화를 봐요.",
+        "영화에서 봐요.",
+        "영화가 아니에요.",
+        "영화는 장소예요."
+      ],
+      "correct": "영화를 봐요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 커피를 마셔요?\n나: ____________",
+      "choices": [
+        "아니요, 안 마셔요.",
+        "네, 커피가 없어요.",
+        "커피에서 마셔요.",
+        "커피는 학생이에요."
+      ],
+      "correct": "아니요, 안 마셔요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 어디에서 운동해요?\n나: ____________",
+      "choices": [
+        "스포츠 센터에서 운동해요.",
+        "스포츠 센터를 운동해요.",
+        "운동이 센터예요.",
+        "센터 안 있어요."
+      ],
+      "correct": "스포츠 센터에서 운동해요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 뭐 먹어요?\n나: ____________",
+      "choices": [
+        "불고기를 먹어요.",
+        "불고기에서 먹어요.",
+        "불고기가 아니에요.",
+        "불고기 안 있어요."
+      ],
+      "correct": "불고기를 먹어요."
+    }
+  ]
 }

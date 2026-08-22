@@ -4,48 +4,662 @@
   "title_kr": "2과",
   "title_mn": "2-р хичээл",
   "vocab": [
-    { "ko": "책", "mn": "ном", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "공책", "mn": "дэвтэр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "사전", "mn": "толь бичиг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "전자사전", "mn": "цахим толь бичиг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "연필", "mn": "харандаа", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "볼펜", "mn": "бал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "지우개", "mn": "баллуур", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "필통", "mn": "үзэгний сав", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "자", "mn": "шугам", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "지도", "mn": "газрын зураг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "잡지", "mn": "сэтгүүл", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "신문", "mn": "сонин", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "엽서", "mn": "ил захидал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "CD", "mn": "CD", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "가방", "mn": "цүнх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "지갑", "mn": "түрийвч", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "모자", "mn": "малгай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "안경", "mn": "нүдний шил", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "우산", "mn": "шүхэр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "시계", "mn": "цаг", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "휴지", "mn": "ариун цаас", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "동전", "mn": "зоос", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "교통카드", "mn": "тээврийн карт", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "책상", "mn": "ширээ", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "의자", "mn": "сандал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "침대", "mn": "ор", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "텔레비전", "mn": "телевизор", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "냉장고", "mn": "хөргөгч", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "컴퓨터", "mn": "компьютер", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "카메라", "mn": "камер", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "휴대폰", "mn": "гар утас", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "물", "mn": "ус", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "주스", "mn": "жүүс", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "우유", "mn": "сүү", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "콜라", "mn": "кола", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "맥주", "mn": "шар айраг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "녹차", "mn": "ногоон цай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "커피", "mn": "кофе", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "룸메이트", "mn": "өрөөний хамтрагч", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "여자 친구", "mn": "найз охин", "pos": "", "example_kr": "", "example_mn": "" }
+    {
+      "ko": "책",
+      "mn": "ном",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "공책",
+      "mn": "дэвтэр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "사전",
+      "mn": "толь бичиг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "전자사전",
+      "mn": "цахим толь бичиг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "연필",
+      "mn": "харандаа",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "볼펜",
+      "mn": "бал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "지우개",
+      "mn": "баллуур",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "필통",
+      "mn": "үзэгний сав",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "자",
+      "mn": "шугам",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "지도",
+      "mn": "газрын зураг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "잡지",
+      "mn": "сэтгүүл",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "신문",
+      "mn": "сонин",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "엽서",
+      "mn": "ил захидал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "CD",
+      "mn": "CD",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "가방",
+      "mn": "цүнх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "지갑",
+      "mn": "түрийвч",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "모자",
+      "mn": "малгай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "안경",
+      "mn": "нүдний шил",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "우산",
+      "mn": "шүхэр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "시계",
+      "mn": "цаг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "휴지",
+      "mn": "ариун цаас",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "동전",
+      "mn": "зоос",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "교통카드",
+      "mn": "тээврийн карт",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "책상",
+      "mn": "ширээ",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "의자",
+      "mn": "сандал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "침대",
+      "mn": "ор",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "텔레비전",
+      "mn": "телевизор",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "냉장고",
+      "mn": "хөргөгч",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "컴퓨터",
+      "mn": "компьютер",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "카메라",
+      "mn": "камер",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "휴대폰",
+      "mn": "гар утас",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "물",
+      "mn": "ус",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "주스",
+      "mn": "жүүс",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "우유",
+      "mn": "сүү",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "콜라",
+      "mn": "кола",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "맥주",
+      "mn": "шар айраг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "녹차",
+      "mn": "ногоон цай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "커피",
+      "mn": "кофе",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "룸메이트",
+      "mn": "өрөөний хамтрагч",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "여자 친구",
+      "mn": "найз охин",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    }
   ],
-  "legacy_vocab_url": "../SNU-1A-lesson02.html",
-  "grammar": []
+  "legacy_vocab_url": "../snu-lessons/SNU-1A-lesson02.html",
+  "grammar": [
+    {
+      "id": "exist",
+      "title": "N이/가 있어요·없어요",
+      "pattern": "받침 O → 이 있어요 / 받침 X → 가 있어요",
+      "visual_rules": [
+        "받침 O → 이 있어요",
+        "받침 X → 가 있어요"
+      ],
+      "use_kr": "물건이 있는지 말합니다.",
+      "use_mn": "Юм байгаа эсэхийг хэлнэ.",
+      "examples": [
+        {
+          "kr": "책이 있어요.",
+          "mn": "Ном байна."
+        },
+        {
+          "kr": "우산이 없어요.",
+          "mn": "Шүхэр алга."
+        }
+      ]
+    },
+    {
+      "id": "demonstrative",
+      "title": "이거·그거·저거",
+      "pattern": "가까이 → 이거 / 멀리 → 그거 / 저거",
+      "visual_rules": [
+        "가까이 → 이거",
+        "멀리 → 그거 / 저거"
+      ],
+      "use_kr": "물건을 가리켜 말합니다.",
+      "use_mn": "Юмыг зааж хэлнэ.",
+      "examples": [
+        {
+          "kr": "이거는 사전이에요.",
+          "mn": "Энэ толь бичиг."
+        },
+        {
+          "kr": "저거는 가방이에요.",
+          "mn": "Тэр цүнх."
+        }
+      ]
+    },
+    {
+      "id": "request",
+      "title": "N 주세요",
+      "pattern": "물건 + 주세요 / 물 + 주세요",
+      "visual_rules": [
+        "물건 + 주세요",
+        "물 + 주세요"
+      ],
+      "use_kr": "물건을 부탁합니다.",
+      "use_mn": "Юм хүсэж авна.",
+      "examples": [
+        {
+          "kr": "물 주세요.",
+          "mn": "Ус өгнө үү."
+        },
+        {
+          "kr": "볼펜 주세요.",
+          "mn": "Үзэг өгнө үү."
+        }
+      ]
+    },
+    {
+      "id": "and",
+      "title": "N하고 N · N과/와 N",
+      "pattern": "말할 때 → 하고 / 받침 O 과 / 받침 X 와",
+      "visual_rules": [
+        "말할 때 → 하고",
+        "받침 O 과 / 받침 X 와"
+      ],
+      "use_kr": "두 명사를 연결합니다.",
+      "use_mn": "Хоёр нэр үгийг холбоно.",
+      "examples": [
+        {
+          "kr": "책하고 공책이 있어요.",
+          "mn": "Ном, дэвтэр байна."
+        },
+        {
+          "kr": "연필과 지우개 주세요.",
+          "mn": "Харандаа, баллуур өгнө үү."
+        }
+      ]
+    }
+  ],
+  "grammar_questions": [
+    {
+      "id": "g01",
+      "prompt": "가: 책이 있어요?\n나: 네, 책___ 있어요.",
+      "choices": [
+        "이",
+        "가",
+        "은",
+        "는"
+      ],
+      "correct": "이"
+    },
+    {
+      "id": "g02",
+      "prompt": "가: 우산이 있어요?\n나: 아니요, 우산이 ___.",
+      "choices": [
+        "없어요",
+        "있어요",
+        "주세요",
+        "예요"
+      ],
+      "correct": "없어요"
+    },
+    {
+      "id": "g03",
+      "prompt": "가: 물이 있어요?\n나: 네, 물___ 있어요.",
+      "choices": [
+        "이",
+        "가",
+        "를",
+        "는"
+      ],
+      "correct": "이"
+    },
+    {
+      "id": "g04",
+      "prompt": "가: 카메라가 있어요?\n나: 아니요, 카메라___ 없어요.",
+      "choices": [
+        "가",
+        "이",
+        "는",
+        "를"
+      ],
+      "correct": "가"
+    },
+    {
+      "id": "g05",
+      "prompt": "가: 이거는 뭐예요?\n나: ___ 사전이에요.",
+      "choices": [
+        "이거는",
+        "그거를",
+        "저기는",
+        "이것이 없어요"
+      ],
+      "correct": "이거는"
+    },
+    {
+      "id": "g06",
+      "prompt": "가: 저거는 뭐예요?\n나: ___ 가방이에요.",
+      "choices": [
+        "저거는",
+        "이거를",
+        "그거가",
+        "저기에"
+      ],
+      "correct": "저거는"
+    },
+    {
+      "id": "g07",
+      "prompt": "가: 이거는 연필이에요?\n나: 네, ___.",
+      "choices": [
+        "연필이에요",
+        "연필이 없어요",
+        "연필 주세요",
+        "연필입니까"
+      ],
+      "correct": "연필이에요"
+    },
+    {
+      "id": "g08",
+      "prompt": "가: 그거는 책이에요?\n나: 아니요, ___.",
+      "choices": [
+        "공책이에요",
+        "책이에요",
+        "공책이 없어요",
+        "책 주세요"
+      ],
+      "correct": "공책이에요"
+    },
+    {
+      "id": "g09",
+      "prompt": "가: 뭐 드릴까요?\n나: 물 ___.",
+      "choices": [
+        "주세요",
+        "있어요",
+        "없어요",
+        "예요"
+      ],
+      "correct": "주세요"
+    },
+    {
+      "id": "g10",
+      "prompt": "가: 뭘 드릴까요?\n나: 커피 ___.",
+      "choices": [
+        "주세요",
+        "가 있어요",
+        "는 없어요",
+        "예요"
+      ],
+      "correct": "주세요"
+    },
+    {
+      "id": "g11",
+      "prompt": "가: 볼펜 주세요.\n나: 네, ___.",
+      "choices": [
+        "여기 있어요",
+        "없어요",
+        "볼펜이에요?",
+        "안녕히 가세요"
+      ],
+      "correct": "여기 있어요"
+    },
+    {
+      "id": "g12",
+      "prompt": "가: 사전 주세요.\n나: 네, ____________.",
+      "choices": [
+        "여기 있습니다",
+        "사전이 없습니까",
+        "저는 사전입니다",
+        "사전과 책입니다"
+      ],
+      "correct": "여기 있습니다"
+    },
+    {
+      "id": "g13",
+      "prompt": "책___ 공책이 있어요.",
+      "choices": [
+        "하고",
+        "이",
+        "가",
+        "를"
+      ],
+      "correct": "하고"
+    },
+    {
+      "id": "g14",
+      "prompt": "연필___ 지우개 주세요.",
+      "choices": [
+        "과",
+        "와",
+        "이",
+        "는"
+      ],
+      "correct": "과"
+    },
+    {
+      "id": "g15",
+      "prompt": "우유___ 주스 주세요.",
+      "choices": [
+        "와",
+        "과",
+        "이",
+        "를"
+      ],
+      "correct": "와"
+    },
+    {
+      "id": "g16",
+      "prompt": "가방___ 지갑이 있어요.",
+      "choices": [
+        "과",
+        "와",
+        "가",
+        "를"
+      ],
+      "correct": "과"
+    },
+    {
+      "id": "g17",
+      "prompt": "가: 뭐가 있어요?\n나: 책___ 공책이 있어요.",
+      "choices": [
+        "하고",
+        "를",
+        "가",
+        "는"
+      ],
+      "correct": "하고"
+    },
+    {
+      "id": "g18",
+      "prompt": "가: 뭐 주세요?\n나: 콜라___ 주스 주세요.",
+      "choices": [
+        "하고",
+        "가",
+        "이",
+        "를"
+      ],
+      "correct": "하고"
+    },
+    {
+      "id": "g19",
+      "prompt": "가: 휴대폰이 있어요?\n나: 네, ___.",
+      "choices": [
+        "있어요",
+        "없어요",
+        "주세요",
+        "예요"
+      ],
+      "correct": "있어요"
+    },
+    {
+      "id": "g20",
+      "prompt": "가: 지갑이 있어요?\n나: 아니요, ___.",
+      "choices": [
+        "없어요",
+        "있어요",
+        "주세요",
+        "이에요"
+      ],
+      "correct": "없어요"
+    }
+  ],
+  "mixed_questions": [
+    {
+      "category": "integrated",
+      "prompt": "가: 이거는 뭐예요?\n나: ____________",
+      "choices": [
+        "전자사전이에요.",
+        "전자사전 주세요.",
+        "전자사전이 없어요?",
+        "저는 전자사전이에요."
+      ],
+      "correct": "전자사전이에요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 뭘 드릴까요?\n나: ____________",
+      "choices": [
+        "녹차 주세요.",
+        "녹차가 없어요?",
+        "녹차예요?",
+        "녹차하고 있어요."
+      ],
+      "correct": "녹차 주세요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 방에 뭐가 있어요?\n나: ____________",
+      "choices": [
+        "침대하고 책상이 있어요.",
+        "침대 주세요.",
+        "침대가 아니에요.",
+        "책상에 가요."
+      ],
+      "correct": "침대하고 책상이 있어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 우산이 있어요?\n나: ____________",
+      "choices": [
+        "아니요, 없어요.",
+        "네, 우산 주세요.",
+        "우산이에요?",
+        "저거는 우산입니까?"
+      ],
+      "correct": "아니요, 없어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 저거는 뭐예요?\n나: ____________",
+      "choices": [
+        "카메라예요.",
+        "카메라 주세요?",
+        "카메라가 없어요?",
+        "카메라에 가요."
+      ],
+      "correct": "카메라예요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 뭐 주세요?\n나: ____________",
+      "choices": [
+        "물하고 주스 주세요.",
+        "물이 없어요.",
+        "물은 책이에요.",
+        "주스에 있어요."
+      ],
+      "correct": "물하고 주스 주세요."
+    }
+  ]
 }

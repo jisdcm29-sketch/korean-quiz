@@ -4,57 +4,651 @@
   "title_kr": "7과",
   "title_mn": "7-р хичээл",
   "vocab": [
-    { "ko": "눈이 오다", "mn": "цас орох", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "덥다", "mn": "халуун", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "따뜻하다", "mn": "дулаан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "맑다", "mn": "цэлмэг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "비가 오다", "mn": "бороо орох", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "시원하다", "mn": "сэрүүхэн", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "춥다", "mn": "хүйтэн", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "흐리다", "mn": "бүрхэг", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "계절", "mn": "улирал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "봄", "mn": "хавар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "여름", "mn": "зун", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "가을", "mn": "намар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "겨울", "mn": "өвөл", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "가볍다", "mn": "хөнгөн", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "무겁다", "mn": "хүнд", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "쉽다", "mn": "амархан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "어렵다", "mn": "хэцүү", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "맵다", "mn": "халуун ногоотой", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "아주", "mn": "маш", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "요즘", "mn": "сүүлийн үед", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "고향", "mn": "төрсөн нутаг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "스키장", "mn": "цанын бааз", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "단풍", "mn": "намрын өнгө орсон навч", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "구경하다", "mn": "үзэж сонирхох", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "수영장", "mn": "усан сан", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "꽃", "mn": "цэцэг", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "바다", "mn": "далай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "회", "mn": "түүхий загас", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "불꽃놀이", "mn": "салют", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "여행", "mn": "аялал", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "필요하다", "mn": "хэрэгтэй", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "준비하다", "mn": "бэлтгэх", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "선글라스", "mn": "нарны шил", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "부채", "mn": "дэвүүр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "슬리퍼", "mn": "углааш", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "하늘", "mn": "тэнгэр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "파랗다", "mn": "цэнхэр", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "눈사람", "mn": "цаасан хүн", "pos": "", "example_kr": "", "example_mn": "" },
-
-    { "ko": "맛있다", "mn": "амттай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "비싸다", "mn": "үнэтэй", "pos": "", "example_kr": "", "example_mn": "" }
+    {
+      "ko": "눈이 오다",
+      "mn": "цас орох",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "덥다",
+      "mn": "халуун",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "따뜻하다",
+      "mn": "дулаан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "맑다",
+      "mn": "цэлмэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "비가 오다",
+      "mn": "бороо орох",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "시원하다",
+      "mn": "сэрүүхэн",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "춥다",
+      "mn": "хүйтэн",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "흐리다",
+      "mn": "бүрхэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "계절",
+      "mn": "улирал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "봄",
+      "mn": "хавар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "여름",
+      "mn": "зун",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "가을",
+      "mn": "намар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "겨울",
+      "mn": "өвөл",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "가볍다",
+      "mn": "хөнгөн",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "무겁다",
+      "mn": "хүнд",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "쉽다",
+      "mn": "амархан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "어렵다",
+      "mn": "хэцүү",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "맵다",
+      "mn": "халуун ногоотой",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "아주",
+      "mn": "маш",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "요즘",
+      "mn": "сүүлийн үед",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "고향",
+      "mn": "төрсөн нутаг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "스키장",
+      "mn": "цанын бааз",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "단풍",
+      "mn": "намрын өнгө орсон навч",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "구경하다",
+      "mn": "үзэж сонирхох",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "수영장",
+      "mn": "усан сан",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "꽃",
+      "mn": "цэцэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "바다",
+      "mn": "далай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "회",
+      "mn": "түүхий загас",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "불꽃놀이",
+      "mn": "салют",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "여행",
+      "mn": "аялал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "필요하다",
+      "mn": "хэрэгтэй",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "준비하다",
+      "mn": "бэлтгэх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "선글라스",
+      "mn": "нарны шил",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "부채",
+      "mn": "дэвүүр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "슬리퍼",
+      "mn": "углааш",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "하늘",
+      "mn": "тэнгэр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "파랗다",
+      "mn": "цэнхэр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "눈사람",
+      "mn": "цаасан хүн",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "맛있다",
+      "mn": "амттай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "비싸다",
+      "mn": "үнэтэй",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    }
   ],
-  "legacy_vocab_url": "../SNU-1A-lesson07.html",
-  "grammar": []
+  "legacy_vocab_url": "../snu-lessons/SNU-1A-lesson07.html",
+  "grammar": [
+    {
+      "id": "bieup",
+      "title": "ㅂ 불규칙",
+      "pattern": "춥다 → 추워요 / 덥다 → 더워요",
+      "visual_rules": [
+        "춥다 → 추워요",
+        "덥다 → 더워요"
+      ],
+      "use_kr": "ㅂ이 우/오로 바뀝니다.",
+      "use_mn": "ㅂ нь 우/오 болж хувирна.",
+      "examples": [
+        {
+          "kr": "오늘은 추워요.",
+          "mn": "Өнөөдөр хүйтэн."
+        },
+        {
+          "kr": "여름은 더워요.",
+          "mn": "Зун халуун."
+        }
+      ]
+    },
+    {
+      "id": "contrast",
+      "title": "A/V-지만",
+      "pattern": "앞 내용 + 지만 / 반대 내용",
+      "visual_rules": [
+        "앞 내용 + 지만",
+        "반대 내용"
+      ],
+      "use_kr": "반대되는 두 내용을 연결합니다.",
+      "use_mn": "Эсрэг хоёр утгыг холбоно.",
+      "examples": [
+        {
+          "kr": "춥지만 맑아요.",
+          "mn": "Хүйтэн боловч цэлмэг."
+        },
+        {
+          "kr": "비싸지만 맛있어요.",
+          "mn": "Үнэтэй боловч амттай."
+        }
+      ]
+    },
+    {
+      "id": "formal",
+      "title": "A/V-습니다·ㅂ니다",
+      "pattern": "받침 O → 습니다 / 받침 X → ㅂ니다",
+      "visual_rules": [
+        "받침 O → 습니다",
+        "받침 X → ㅂ니다"
+      ],
+      "use_kr": "격식 있게 말합니다.",
+      "use_mn": "Албан ёсоор хэлнэ.",
+      "examples": [
+        {
+          "kr": "날씨가 좋습니다.",
+          "mn": "Цаг агаар сайхан байна."
+        },
+        {
+          "kr": "비가 옵니다.",
+          "mn": "Бороо орж байна."
+        }
+      ]
+    },
+    {
+      "id": "and_state",
+      "title": "A/V-고",
+      "pattern": "형용사 + 고 / 동사 + 고",
+      "visual_rules": [
+        "형용사 + 고",
+        "동사 + 고"
+      ],
+      "use_kr": "두 상태나 동작을 연결합니다.",
+      "use_mn": "Хоёр байдал, үйлдлийг холбоно.",
+      "examples": [
+        {
+          "kr": "날씨가 맑고 따뜻해요.",
+          "mn": "Цэлмэг, дулаахан."
+        },
+        {
+          "kr": "눈이 오고 추워요.",
+          "mn": "Цас орж, хүйтэн байна."
+        }
+      ]
+    }
+  ],
+  "grammar_questions": [
+    {
+      "id": "g01",
+      "prompt": "가: 오늘 날씨가 어때요?\n나: ___.",
+      "choices": [
+        "추워요",
+        "춥어요",
+        "추세요",
+        "춥습니다?"
+      ],
+      "correct": "추워요"
+    },
+    {
+      "id": "g02",
+      "prompt": "가: 여름 날씨가 어때요?\n나: ___.",
+      "choices": [
+        "더워요",
+        "덥어요",
+        "더세요",
+        "덥에요"
+      ],
+      "correct": "더워요"
+    },
+    {
+      "id": "g03",
+      "prompt": "가: 봄 날씨가 어때요?\n나: ___.",
+      "choices": [
+        "따뜻해요",
+        "따뜻아요",
+        "따뜻으세요",
+        "따뜻를"
+      ],
+      "correct": "따뜻해요"
+    },
+    {
+      "id": "g04",
+      "prompt": "가: 이 가방이 어때요?\n나: ___.",
+      "choices": [
+        "가벼워요",
+        "가볍어요",
+        "가벼세요",
+        "가볍를"
+      ],
+      "correct": "가벼워요"
+    },
+    {
+      "id": "g05",
+      "prompt": "오늘은 춥___ 맑아요.",
+      "choices": [
+        "지만",
+        "고요",
+        "에",
+        "를"
+      ],
+      "correct": "지만"
+    },
+    {
+      "id": "g06",
+      "prompt": "이 음식은 맵___ 맛있어요.",
+      "choices": [
+        "지만",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct": "지만"
+    },
+    {
+      "id": "g07",
+      "prompt": "가방이 무겁___ 좋아요.",
+      "choices": [
+        "지만",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct": "지만"
+    },
+    {
+      "id": "g08",
+      "prompt": "문제가 어렵___ 재미있어요.",
+      "choices": [
+        "지만",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct": "지만"
+    },
+    {
+      "id": "g09",
+      "prompt": "날씨가 좋___.",
+      "choices": [
+        "습니다",
+        "ㅂ니다",
+        "어요?",
+        "으세요"
+      ],
+      "correct": "습니다"
+    },
+    {
+      "id": "g10",
+      "prompt": "비가 옵___.",
+      "choices": [
+        "니다",
+        "습니다",
+        "어요?",
+        "으세요"
+      ],
+      "correct": "니다"
+    },
+    {
+      "id": "g11",
+      "prompt": "오늘은 춥___.",
+      "choices": [
+        "습니다",
+        "ㅂ니다",
+        "어요?",
+        "으세요"
+      ],
+      "correct": "습니다"
+    },
+    {
+      "id": "g12",
+      "prompt": "하늘이 맑___.",
+      "choices": [
+        "습니다",
+        "ㅂ니다",
+        "어요?",
+        "으세요"
+      ],
+      "correct": "습니다"
+    },
+    {
+      "id": "g13",
+      "prompt": "날씨가 맑___ 따뜻해요.",
+      "choices": [
+        "고",
+        "지만요",
+        "에",
+        "를"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g14",
+      "prompt": "눈이 오___ 추워요.",
+      "choices": [
+        "고",
+        "지만요",
+        "에",
+        "를"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g15",
+      "prompt": "여름은 덥___ 비가 와요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g16",
+      "prompt": "가을은 시원하___ 맑아요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g17",
+      "prompt": "가: 오늘은 추워요?\n나: 네, ___.",
+      "choices": [
+        "추워요",
+        "춥어요",
+        "추우세요",
+        "추워를"
+      ],
+      "correct": "추워요"
+    },
+    {
+      "id": "g18",
+      "prompt": "가: 날씨가 좋습니까?\n나: 네, ___.",
+      "choices": [
+        "좋습니다",
+        "좋ㅂ니다",
+        "좋아요?",
+        "좋으세요"
+      ],
+      "correct": "좋습니다"
+    },
+    {
+      "id": "g19",
+      "prompt": "가: 겨울 날씨가 어때요?\n나: 눈이 오___ 추워요.",
+      "choices": [
+        "고",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct": "고"
+    },
+    {
+      "id": "g20",
+      "prompt": "가: 음식이 맛있어요?\n나: 네, 비싸___ 맛있어요.",
+      "choices": [
+        "지만",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct": "지만"
+    }
+  ],
+  "mixed_questions": [
+    {
+      "category": "integrated",
+      "prompt": "가: 오늘 날씨가 어때요?\n나: ____________",
+      "choices": [
+        "춥지만 맑아요.",
+        "춥어요지만 맑아요.",
+        "추워고 맑아요.",
+        "춥에 맑아요."
+      ],
+      "correct": "춥지만 맑아요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 여름 날씨가 어때요?\n나: ____________",
+      "choices": [
+        "덥고 비가 와요.",
+        "덥어요고 비가 와요.",
+        "더워지만 비가 와요.",
+        "덥에 비가 와요."
+      ],
+      "correct": "덥고 비가 와요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 날씨가 좋습니까?\n나: ____________",
+      "choices": [
+        "네, 좋습니다.",
+        "네, 좋ㅂ니다.",
+        "네, 좋으세요.",
+        "네, 좋아요?"
+      ],
+      "correct": "네, 좋습니다."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 이 음식이 어때요?\n나: ____________",
+      "choices": [
+        "맵지만 맛있어요.",
+        "매워고 맛있어요.",
+        "맵에 맛있어요.",
+        "맵습니다지만 맛있어요."
+      ],
+      "correct": "맵지만 맛있어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 가을은 어때요?\n나: ____________",
+      "choices": [
+        "시원하고 맑아요.",
+        "시원에 맑아요.",
+        "시원하지만 맑습니다?",
+        "시원를 맑아요."
+      ],
+      "correct": "시원하고 맑아요."
+    }
+  ]
 }

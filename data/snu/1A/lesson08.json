@@ -4,47 +4,651 @@
   "title_kr": "8과",
   "title_mn": "8-р хичээл",
   "vocab": [
-    { "ko": "골프", "mn": "гольф", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "테니스", "mn": "теннис", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "스키", "mn": "цана", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "당구", "mn": "биллиард", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "기타", "mn": "гитар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "축구", "mn": "хөлбөмбөг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "등산", "mn": "ууланд авирах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "게임", "mn": "тоглоом", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "산책", "mn": "салхилах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "자전거", "mn": "дугуй", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "피아노", "mn": "төгөлдөр хуур", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "치다", "mn": "цохих, тоглох", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "타다", "mn": "унах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "같이", "mn": "хамт", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "걷다", "mn": "алхах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "듣다", "mn": "сонсох", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "재미있다", "mn": "сонирхолтой", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "심심하다", "mn": "уйтгартай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "한강공원", "mn": "Хан мөрний цэцэрлэгт хүрээлэн", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "관악산", "mn": "Кванаксан уул", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "시청", "mn": "хотын захиргаа", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "찜질방", "mn": "саун", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "다음", "mn": "дараа", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "또", "mn": "дахиад", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "농구", "mn": "сагсан бөмбөг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "배우다", "mn": "сурах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "점심", "mn": "өдрийн хоол", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "운동장", "mn": "спортын талбай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "전화번호", "mn": "утасны дугаар", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "아이스크림", "mn": "зайрмаг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "미안하다", "mn": "уучлаарай", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "데이트", "mn": "болзоо", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "이야기하다", "mn": "ярилцах", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "주말", "mn": "амралтын өдрүүд", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "약속", "mn": "уулзах цаг", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "내일", "mn": "маргааш", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "어제", "mn": "өчигдөр", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "여행", "mn": "аялал", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "준비하다", "mn": "бэлтгэх", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "맑다", "mn": "цэлмэг", "pos": "", "example_kr": "", "example_mn": "" }
+    {
+      "ko": "골프",
+      "mn": "гольф",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "테니스",
+      "mn": "теннис",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "스키",
+      "mn": "цана",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "당구",
+      "mn": "биллиард",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "기타",
+      "mn": "гитар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "축구",
+      "mn": "хөлбөмбөг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "등산",
+      "mn": "ууланд авирах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "게임",
+      "mn": "тоглоом",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "산책",
+      "mn": "салхилах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "자전거",
+      "mn": "дугуй",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "피아노",
+      "mn": "төгөлдөр хуур",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "치다",
+      "mn": "цохих, тоглох",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "타다",
+      "mn": "унах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "같이",
+      "mn": "хамт",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "걷다",
+      "mn": "алхах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "듣다",
+      "mn": "сонсох",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "재미있다",
+      "mn": "сонирхолтой",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "심심하다",
+      "mn": "уйтгартай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "한강공원",
+      "mn": "Хан мөрний цэцэрлэгт хүрээлэн",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "관악산",
+      "mn": "Кванаксан уул",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "시청",
+      "mn": "хотын захиргаа",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "찜질방",
+      "mn": "саун",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "다음",
+      "mn": "дараа",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "또",
+      "mn": "дахиад",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "농구",
+      "mn": "сагсан бөмбөг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "배우다",
+      "mn": "сурах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "점심",
+      "mn": "өдрийн хоол",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "운동장",
+      "mn": "спортын талбай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "전화번호",
+      "mn": "утасны дугаар",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "아이스크림",
+      "mn": "зайрмаг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "미안하다",
+      "mn": "уучлаарай",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "데이트",
+      "mn": "болзоо",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "이야기하다",
+      "mn": "ярилцах",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "주말",
+      "mn": "амралтын өдрүүд",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "약속",
+      "mn": "уулзах цаг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "내일",
+      "mn": "маргааш",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "어제",
+      "mn": "өчигдөр",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "여행",
+      "mn": "аялал",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "준비하다",
+      "mn": "бэлтгэх",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    },
+    {
+      "ko": "맑다",
+      "mn": "цэлмэг",
+      "pos": "",
+      "example_kr": "",
+      "example_mn": ""
+    }
   ],
-  "legacy_vocab_url": "../SNU-1A-lesson08.html",
-  "grammar": []
+  "legacy_vocab_url": "../snu-lessons/SNU-1A-lesson08.html",
+  "grammar": [
+    {
+      "id": "suggestion",
+      "title": "V-(으)ㄹ까요?",
+      "pattern": "받침 O → 을까요? / 받침 X → ㄹ까요?",
+      "visual_rules": [
+        "받침 O → 을까요?",
+        "받침 X → ㄹ까요?"
+      ],
+      "use_kr": "함께 할 일을 제안합니다.",
+      "use_mn": "Хамт хийх зүйлийг санал болгоно.",
+      "examples": [
+        {
+          "kr": "영화 볼까요?",
+          "mn": "Кино үзэх үү?"
+        },
+        {
+          "kr": "같이 걸을까요?",
+          "mn": "Хамт алхах уу?"
+        }
+      ]
+    },
+    {
+      "id": "digeut",
+      "title": "ㄷ 불규칙",
+      "pattern": "듣다 → 들어요 / 걷다 → 걸어요",
+      "visual_rules": [
+        "듣다 → 들어요",
+        "걷다 → 걸어요"
+      ],
+      "use_kr": "ㄷ이 ㄹ로 바뀝니다.",
+      "use_mn": "ㄷ нь ㄹ болж хувирна.",
+      "examples": [
+        {
+          "kr": "음악을 들어요.",
+          "mn": "Хөгжим сонсдог."
+        },
+        {
+          "kr": "공원에서 걸어요.",
+          "mn": "Цэцэрлэгт алхдаг."
+        }
+      ]
+    },
+    {
+      "id": "demonstrative_n",
+      "title": "이·그·저 N",
+      "pattern": "가까이 → 이 N / 멀리 → 그 N / 저 N",
+      "visual_rules": [
+        "가까이 → 이 N",
+        "멀리 → 그 N / 저 N"
+      ],
+      "use_kr": "명사 앞에서 가리킵니다.",
+      "use_mn": "Нэр үгийн өмнө зааж хэлнэ.",
+      "examples": [
+        {
+          "kr": "이 영화가 재미있어요.",
+          "mn": "Энэ кино сонирхолтой."
+        },
+        {
+          "kr": "저 사람이 제 친구예요.",
+          "mn": "Тэр хүн миний найз."
+        }
+      ]
+    },
+    {
+      "id": "surprise",
+      "title": "A/V-네요",
+      "pattern": "형용사 + 네요 / 동사 + 네요",
+      "visual_rules": [
+        "형용사 + 네요",
+        "동사 + 네요"
+      ],
+      "use_kr": "새로 알거나 느낀 것을 말합니다.",
+      "use_mn": "Шинээр мэдсэн, мэдэрснээ хэлнэ.",
+      "examples": [
+        {
+          "kr": "영화가 재미있네요.",
+          "mn": "Кино сонирхолтой юм."
+        },
+        {
+          "kr": "피아노를 잘 치네요.",
+          "mn": "Төгөлдөр хуур сайн тоглодог юм."
+        }
+      ]
+    }
+  ],
+  "grammar_questions": [
+    {
+      "id": "g01",
+      "prompt": "가: 같이 영화를 __?\n나: 좋아요.",
+      "choices": [
+        "볼까요",
+        "봐요",
+        "보세요",
+        "보고"
+      ],
+      "correct": "볼까요"
+    },
+    {
+      "id": "g02",
+      "prompt": "가: 같이 산책__?\n나: 네, 좋아요.",
+      "choices": [
+        "할까요",
+        "해요",
+        "하세요",
+        "하고"
+      ],
+      "correct": "할까요"
+    },
+    {
+      "id": "g03",
+      "prompt": "가: 주말에 등산__?\n나: 미안해요.",
+      "choices": [
+        "갈까요",
+        "가요",
+        "가세요",
+        "가고"
+      ],
+      "correct": "갈까요"
+    },
+    {
+      "id": "g04",
+      "prompt": "가: 같이 음악을 __?\n나: 좋아요.",
+      "choices": [
+        "들을까요",
+        "듣을까요",
+        "들어요",
+        "들으세요"
+      ],
+      "correct": "들을까요"
+    },
+    {
+      "id": "g05",
+      "prompt": "가: 음악을 들어요?\n나: 네, 음악을 ___.",
+      "choices": [
+        "들어요",
+        "듣어요",
+        "듣아요",
+        "들을까요?"
+      ],
+      "correct": "들어요"
+    },
+    {
+      "id": "g06",
+      "prompt": "가: 공원에서 뭐 해요?\n나: 공원에서 ___.",
+      "choices": [
+        "걸어요",
+        "걷어요",
+        "걷아요",
+        "걸을까요?"
+      ],
+      "correct": "걸어요"
+    },
+    {
+      "id": "g07",
+      "prompt": "가: 매일 음악을 들어요?\n나: 네, ___.",
+      "choices": [
+        "들어요",
+        "듣어요",
+        "듣으세요",
+        "듣고요?"
+      ],
+      "correct": "들어요"
+    },
+    {
+      "id": "g08",
+      "prompt": "가: 학교까지 걸어요?\n나: 네, ___.",
+      "choices": [
+        "걸어요",
+        "걷어요",
+        "걷으세요",
+        "걷를"
+      ],
+      "correct": "걸어요"
+    },
+    {
+      "id": "g09",
+      "prompt": "___ 영화가 재미있어요.",
+      "choices": [
+        "이",
+        "영화",
+        "를",
+        "에"
+      ],
+      "correct": "이"
+    },
+    {
+      "id": "g10",
+      "prompt": "___ 사람은 제 친구예요.",
+      "choices": [
+        "저",
+        "사람",
+        "를",
+        "에"
+      ],
+      "correct": "저"
+    },
+    {
+      "id": "g11",
+      "prompt": "가: 이 책이에요?\n나: 아니요, ___ 책이에요.",
+      "choices": [
+        "그",
+        "책을",
+        "이에요",
+        "가"
+      ],
+      "correct": "그"
+    },
+    {
+      "id": "g12",
+      "prompt": "가: 어느 자전거예요?\n나: ___ 자전거예요.",
+      "choices": [
+        "저",
+        "자전거를",
+        "가",
+        "에"
+      ],
+      "correct": "저"
+    },
+    {
+      "id": "g13",
+      "prompt": "가: 영화가 어때요?\n나: 재미있___.",
+      "choices": [
+        "네요",
+        "어요?",
+        "으세요",
+        "를"
+      ],
+      "correct": "네요"
+    },
+    {
+      "id": "g14",
+      "prompt": "가: 피아노를 잘 치___.\n나: 감사합니다.",
+      "choices": [
+        "네요",
+        "어요?",
+        "으세요",
+        "를"
+      ],
+      "correct": "네요"
+    },
+    {
+      "id": "g15",
+      "prompt": "가: 날씨가 좋___.\n나: 네, 좋아요.",
+      "choices": [
+        "네요",
+        "어요?",
+        "으세요",
+        "를"
+      ],
+      "correct": "네요"
+    },
+    {
+      "id": "g16",
+      "prompt": "가: 기타를 잘 치___.\n나: 네, 매일 연습해요.",
+      "choices": [
+        "네요",
+        "어요?",
+        "으세요",
+        "를"
+      ],
+      "correct": "네요"
+    },
+    {
+      "id": "g17",
+      "prompt": "가: 같이 테니스 칠까요?\n나: ___.",
+      "choices": [
+        "좋아요",
+        "테니스예요",
+        "쳤어요?",
+        "테니스를 없어요"
+      ],
+      "correct": "좋아요"
+    },
+    {
+      "id": "g18",
+      "prompt": "가: 같이 걸을까요?\n나: 네, ___.",
+      "choices": [
+        "걸어요",
+        "걷어요",
+        "걷으세요",
+        "걷를"
+      ],
+      "correct": "걸어요"
+    },
+    {
+      "id": "g19",
+      "prompt": "가: 이 영화가 어때요?\n나: ___.",
+      "choices": [
+        "재미있네요",
+        "재미있으세요",
+        "재미있를",
+        "재미있에"
+      ],
+      "correct": "재미있네요"
+    },
+    {
+      "id": "g20",
+      "prompt": "가: 저 사람이 누구예요?\n나: ___.",
+      "choices": [
+        "제 친구예요",
+        "저 사람을",
+        "친구에 가요",
+        "사람이 없어요"
+      ],
+      "correct": "제 친구예요"
+    }
+  ],
+  "mixed_questions": [
+    {
+      "category": "integrated",
+      "prompt": "가: 같이 영화 볼까요?\n나: ____________",
+      "choices": [
+        "네, 좋아요.",
+        "영화가 없어요.",
+        "영화는 사람입니다.",
+        "네, 봤어요?"
+      ],
+      "correct": "네, 좋아요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 공원에서 뭐 해요?\n나: ____________",
+      "choices": [
+        "공원에서 걸어요.",
+        "공원에서 걷어요.",
+        "공원을 사람이에요.",
+        "공원에 영화예요."
+      ],
+      "correct": "공원에서 걸어요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 어느 기타예요?\n나: ____________",
+      "choices": [
+        "저 기타예요.",
+        "기타를 쳐요.",
+        "저는 기타예요.",
+        "기타가 없어요?"
+      ],
+      "correct": "저 기타예요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 영화가 어때요?\n나: ____________",
+      "choices": [
+        "재미있네요.",
+        "재미있으세요.",
+        "재미있를까요.",
+        "재미있에요."
+      ],
+      "correct": "재미있네요."
+    },
+    {
+      "category": "integrated",
+      "prompt": "가: 같이 음악을 들을까요?\n나: ____________",
+      "choices": [
+        "좋아요. 같이 들어요.",
+        "음악이 사람이에요.",
+        "음악을 걸어요.",
+        "음악에 없어요."
+      ],
+      "correct": "좋아요. 같이 들어요."
+    }
+  ]
 }
