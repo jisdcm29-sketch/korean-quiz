@@ -12,7 +12,7 @@
     { "ko": "두 손으로 드리다", "mn": "хоёр гараар өгөх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "자리를 양보하다", "mn": "суудал тавьж өгөх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "다리를 꼬고 앉다", "mn": "хөлөө ачиж суух", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "고개를 돌리고 마시다", "mn": "Буруу харж уух", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "고개를 돌리고 마시다", "mn": "толгойгоо буруулж уух", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "고개를 숙여서 인사하다", "mn": "толгой бөхийж мэндлэх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "사진을 찍다", "mn": "зураг авах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "담배를 피우다", "mn": "тамхи татах", "pos": "", "example_kr": "", "example_mn": "" },
@@ -29,7 +29,7 @@
     { "ko": "밥그릇을 들고 먹다", "mn": "аягаа барьж идэх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "밥그릇을 놓고 먹다", "mn": "аягаа тавьж идэх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "큰 소리로 떠들다", "mn": "чангаар шуугих", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "작품을 만지다", "mn": "үзмэрт хүрэх", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "작품을 만지다", "mn": "бүтээлд хүрэх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "음악을 크게 틀다", "mn": "хөгжим чанга тавих", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "쓰레기를 버리다", "mn": "хог хаях", "pos": "", "example_kr": "", "example_mn": "" },
 
@@ -38,7 +38,7 @@
     { "ko": "오해하다", "mn": "буруу ойлгох", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "문화가 다르다", "mn": "Өөр соёлтой", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "나이가 많다", "mn": "нас ихтэй", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "몸이 불편하다", "mn": "бие тавгүйрхэх", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "몸이 불편하다", "mn": "биеийн хөдөлгөөн хязгаарлагдмал", "pos": "", "example_kr": "", "example_mn": "" },
 
     { "ko": "할인을 받다", "mn": "хөнгөлөлт авах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "신분증을 보여주다", "mn": "Биеийн байцаалтаа үзүүлэх", "pos": "", "example_kr": "", "example_mn": "" },
