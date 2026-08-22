@@ -45,7 +45,7 @@
 
     { "ko": "며칠", "mn": "хэд хоног", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "언제", "mn": "хэзээ", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "그래서", "mn": "тэгиймээс", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "그래서", "mn": "тиймээс", "pos": "", "example_kr": "", "example_mn": "" },
 
     { "ko": "공항", "mn": "нисэх онгоцны буудал", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "은행", "mn": "банк", "pos": "", "example_kr": "", "example_mn": "" },

@@ -4,7 +4,7 @@
   "title_kr": "6과",
   "title_mn": "6-р хичээл",
   "vocab": [
-    { "ko": "귤", "mn": "жүрж", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "귤", "mn": "мандарин", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "딸기", "mn": "гүзээлзгэнэ", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "사과", "mn": "алим", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "수박", "mn": "тарвас", "pos": "", "example_kr": "", "example_mn": "" },
@@ -32,11 +32,11 @@
     { "ko": "잔", "mn": "аяга", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "그릇", "mn": "сав", "pos": "", "example_kr": "", "example_mn": "" },
 
-    { "ko": "짜장면", "mn": "Жанитай гоймон", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "짜장면", "mn": "хар буурцгийн соустай гоймон", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "짬뽕", "mn": "Халуун ногоотой гоймон", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "우동", "mn": "удон", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "초밥", "mn": "суши", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "탕수육", "mn": "Чихэрлэг гахайн мах", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "탕수육", "mn": "чихэрлэг, исгэлэн соустай шарсан гахайн мах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "돈가스", "mn": "донкацу", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "만두", "mn": "банш", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "튀김", "mn": "Шарсан зүйл", "pos": "", "example_kr": "", "example_mn": "" },
@@ -49,7 +49,7 @@
     { "ko": "배", "mn": "лийр", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "너무", "mn": "маш", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "비싸다", "mn": "үнэтэй", "pos": "", "example_kr": "", "example_mn": "" },
-    { "ko": "깎다", "mn": "хямдруулах", "pos": "", "example_kr": "", "example_mn": "" },
+    { "ko": "깎다", "mn": "үнийг буулгах", "pos": "", "example_kr": "", "example_mn": "" },
 
     { "ko": "달걀", "mn": "өндөг", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "과자", "mn": "жигнэмэг", "pos": "", "example_kr": "", "example_mn": "" },
