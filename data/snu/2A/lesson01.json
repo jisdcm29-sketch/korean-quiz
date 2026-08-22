@@ -45,6 +45,6 @@
     { "ko": "약을 먹다", "mn": "эм уух", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "지갑을 잃어버리다", "mn": "түрийвчээ гээх", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2A-lesson01.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2A-lesson01.html",
   "grammar": []
 }

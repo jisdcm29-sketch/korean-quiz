@@ -53,6 +53,6 @@
     { "ko": "일등석", "mn": "нэгдүгээр ангиллын суудал", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "편도", "mn": "нэг талын", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2A-lesson05.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2A-lesson05.html",
   "grammar": []
 }

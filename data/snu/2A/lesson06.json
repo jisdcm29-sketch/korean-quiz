@@ -48,6 +48,6 @@
     { "ko": "가방이 무겁다", "mn": "цүнх хүнд", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "옷이 들어 있다", "mn": "Дотор нь хувцас байгаа", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2A-lesson06.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2A-lesson06.html",
   "grammar": []
 }

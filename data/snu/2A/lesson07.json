@@ -45,6 +45,6 @@
     { "ko": "일찍 출발하다", "mn": "эрт хөдлөх", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "늦게 도착하다", "mn": "оройтож хүрэх", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2A-lesson07.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2A-lesson07.html",
   "grammar": []
 }

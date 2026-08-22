@@ -46,6 +46,6 @@
     { "ko": "시간이 있다", "mn": "завтай", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "장갑을 끼다", "mn": "бээлий өмсөх", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2A-lesson02.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2A-lesson02.html",
   "grammar": []
 }

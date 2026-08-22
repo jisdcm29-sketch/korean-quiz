@@ -46,6 +46,6 @@
     { "ko": "잠이 들다", "mn": "унтах", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "놓치다", "mn": "алдах", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2A-lesson08.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2A-lesson08.html",
   "grammar": []
 }

@@ -46,6 +46,6 @@
     { "ko": "비가 계속 오다", "mn": "бороо үргэлжлэн орох", "pos": "", "example_kr": "", "example_mn": "" },
     { "ko": "단어를 모르다", "mn": "үг мэдэхгүй", "pos": "", "example_kr": "", "example_mn": "" }
   ],
-  "legacy_vocab_url": "./SNU-2A-lesson03.html",
+  "legacy_vocab_url": "../snu-lessons/SNU-2A-lesson03.html",
   "grammar": []
 }
