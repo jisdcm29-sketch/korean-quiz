@@ -296,7 +296,9 @@
 
       <div class="panel" id="panel-mixed">
         <div class="btnRow" style="margin-bottom:10px;">
-          <button class="btn btnNew" id="btnNewMixed" type="button">새 문제</button>
+          <button class="timeBtn active" id="btnMixed10" type="button">문항당 10초</button>
+          <button class="timeBtn" id="btnMixed15" type="button">문항당 15초</button>
+          <button class="btn btnNew" id="btnNewMixed" type="button">다시 시작</button>
         </div>
         <div class="muted small" id="mixedHint"></div>
         <div class="bar"></div>
@@ -429,6 +431,9 @@
     let QUIZ_SECONDS = 7;
     let QUIZ_STATE = null;
     let QUIZ_TIMER = null;
+    let MIXED_STATE = null;
+    let MIXED_TIMER = null;
+    let MIXED_SECONDS = 10;
 
     function applyTexts(){
       document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
@@ -445,7 +450,7 @@
       document.getElementById("btnTime10").textContent = tr("time10");
       document.getElementById("btnTime7").classList.toggle("active", QUIZ_SECONDS===7);
       document.getElementById("btnTime10").classList.toggle("active", QUIZ_SECONDS===10);
-      document.getElementById("btnNewMixed").textContent = tr("newQ");
+      document.getElementById("btnNewMixed").textContent = tr("restart");
       document.getElementById("btnMode").textContent = (QUIZ_MODE==="KO2MN") ? tr("modeK2M") : tr("modeM2K");
     }
 
@@ -675,35 +680,84 @@
       startQuiz(d);
     }
 
-    function buildMixedQuestion(d){
-      const mq = Array.isArray(d.mixed_questions) ? d.mixed_questions : [];
-      const usable = mq.filter(x => x && x.prompt && x.correct && Array.isArray(x.choices) && x.choices.length >= 2);
-      if(usable.length){
-        const pick = usable[Math.floor(Math.random()*usable.length)];
-        const uniq = Array.from(new Set([pick.correct, ...pick.choices])).filter(Boolean);
-        const fixed = shuffle(uniq).slice(0,4);
-        while(fixed.length < 4 && pick.correct) fixed.push(pick.correct);
-        const finalChoices = shuffle(Array.from(new Set(fixed))).slice(0,4);
-        return { prompt: pick.prompt, correct: pick.correct, choices: finalChoices };
+    function stopMixedTimer(){ if(MIXED_TIMER){clearInterval(MIXED_TIMER);MIXED_TIMER=null;} }
+
+    function makeMixedVocabQuestion(item, vocab, mode){
+      const prompt=mode==="KO2MN"?(item.ko||""):(item.mn||"");
+      const correct=mode==="KO2MN"?(item.mn||""):(item.ko||"");
+      const answers=vocab.map(v=>mode==="KO2MN"?(v.mn||""):(v.ko||""))
+        .filter(x=>x&&x!==correct);
+      const distractors=shuffle(Array.from(new Set(answers))).slice(0,3);
+      return {category:"vocab",prompt,correct,choices:shuffle([correct,...distractors])};
+    }
+
+    function buildMixedQueue(d){
+      const vocab=usableVocab(d.vocab);
+      const grammarBank=(Array.isArray(d.grammar_questions)?d.grammar_questions:[])
+        .filter(x=>x&&x.prompt&&x.correct&&Array.isArray(x.choices)&&x.choices.length>=2)
+        .map(x=>({...x,category:"grammar"}));
+      const integratedBank=(Array.isArray(d.mixed_questions)?d.mixed_questions:[])
+        .filter(x=>x&&x.category==="integrated"&&x.prompt&&x.correct&&Array.isArray(x.choices)&&x.choices.length>=2);
+      const storageKey=`kq_mixed_last_${d.level||""}_${d.lesson||""}`;
+      const previous=sessionStorage.getItem(storageKey)||"";
+      let queue=[],signature="";
+      for(let attempt=0;attempt<12;attempt++){
+        const vocabItems=shuffle(vocab).slice(0,Math.min(8,vocab.length));
+        const vocabQuestions=vocabItems.map(item=>makeMixedVocabQuestion(item,vocab,Math.random()<.5?"KO2MN":"MN2KO"));
+        const grammarQuestions=shuffle(grammarBank).slice(0,Math.min(8,grammarBank.length));
+        const integratedQuestions=shuffle(integratedBank).slice(0,Math.min(4,integratedBank.length));
+        queue=[...vocabQuestions,...grammarQuestions,...integratedQuestions];
+        signature=queue.map(q=>`${q.category}|${q.prompt}|${q.correct}`).sort().join("\u0001");
+        if(signature!==previous) break;
       }
-      const vocab = d.vocab || [];
-      const pool=usableVocab(vocab);
-      return pool.length ? makeVocabQuestion(pool[Math.floor(Math.random()*pool.length)], pool) : null;
+      sessionStorage.setItem(storageKey,signature);
+      return shuffle(queue);
+    }
+
+    function startMixed(d){
+      stopMixedTimer();
+      const queue=buildMixedQueue(d);
+      MIXED_STATE={queue,index:0,correct:0,wrong:0,timeout:0,locked:false,remaining:MIXED_SECONDS,category:{vocab:{c:0,t:0},grammar:{c:0,t:0},integrated:{c:0,t:0}}};
+      renderCurrentMixed(d);
+    }
+
+    function mixedStats(total){
+      const s=MIXED_STATE;
+      return `<div class="quizStats">
+        <div class="statBox"><span class="statLabel">${tr("progress")}</span><span class="statValue">${Math.min(s.index+1,total)} / ${total}</span></div>
+        <div class="statBox"><span class="statLabel">${tr("correctCount")}</span><span class="statValue" id="mixedCorrect">${s.correct}</span></div>
+        <div class="statBox"><span class="statLabel">${tr("wrongCount")}</span><span class="statValue" id="mixedWrong">${s.wrong}</span></div>
+        <div class="statBox timerBox" id="mixedTimerBox"><span class="statLabel">${tr("timeLeft")}</span><span class="statValue"><span id="mixedTime">${s.remaining}</span>${tr("seconds")}</span></div>
+      </div>`;
+    }
+
+    function updateMixed(){
+      const s=MIXED_STATE;
+      const c=document.getElementById("mixedCorrect"),w=document.getElementById("mixedWrong"),t=document.getElementById("mixedTime"),b=document.getElementById("mixedTimerBox");
+      if(c)c.textContent=s.correct;if(w)w.textContent=s.wrong;if(t)t.textContent=s.remaining;if(b)b.classList.toggle("urgent",s.remaining<=3);
+    }
+
+    function finishMixed(){
+      stopMixedTimer();const s=MIXED_STATE,total=s.queue.length,pct=total?Math.round(s.correct/total*100):0;
+      const label={vocab:getLang()==="MN"?"Үг":"어휘",grammar:getLang()==="MN"?"Дүрэм":"문법",integrated:getLang()==="MN"?"Нэгдсэн":"통합"};
+      const rows=Object.keys(s.category).map(k=>`<div class="statBox"><span class="statLabel">${label[k]}</span><span class="statValue">${s.category[k].c} / ${s.category[k].t}</span></div>`).join("");
+      document.getElementById("mixed").innerHTML=`<div class="qbox quizSummary"><div class="qLabel">${tr("completed")}</div><div class="summaryScore">${pct}%</div><div>${tr("correctCount")}: <b>${s.correct}</b> / ${tr("wrongCount")}: <b>${s.wrong}</b> / ${tr("timeoutCount")}: <b>${s.timeout}</b></div><div class="quizStats" style="margin-top:12px">${rows}</div></div>`;
+    }
+
+    function renderCurrentMixed(d){
+      stopMixedTimer();const div=document.getElementById("mixed"),s=MIXED_STATE;
+      if(!s||!s.queue.length){div.innerHTML=`<div class='muted'>${tr("cant")}</div>`;return;}
+      if(s.index>=s.queue.length){finishMixed();return;}
+      s.locked=false;s.remaining=MIXED_SECONDS;const raw=s.queue[s.index];const q={prompt:raw.prompt,correct:raw.correct,choices:shuffle(Array.from(new Set([raw.correct,...raw.choices])).filter(Boolean))};
+      div.innerHTML=mixedStats(s.queue.length);const holder=document.createElement("div");div.appendChild(holder);
+      renderQuestionInto(holder,q,(ok,btn,wrap)=>{if(s.locked)return;s.locked=true;stopMixedTimer();const cat=s.category[raw.category]||s.category.integrated;cat.t++;if(ok){s.correct++;cat.c++;}else s.wrong++;[...wrap.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});if(!ok)btn.classList.add("wrongChoice");updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},650)});
+      updateMixed();MIXED_TIMER=setInterval(()=>{if(s.locked)return;s.remaining--;updateMixed();if(s.remaining<=0){s.locked=true;stopMixedTimer();s.wrong++;s.timeout++;const cat=s.category[raw.category]||s.category.integrated;cat.t++;holder.querySelectorAll("button.choice").forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});const result=holder.querySelector(".result");if(result){result.style.display="";result.classList.add("bad");result.innerHTML=`<b>${tr("timeout")}</b> <span class="muted small">${tr("answer")}: ${q.correct}</span>`;}updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},700)}},1000);
     }
 
     function renderMixed(d){
-      const mixedDiv = document.getElementById("mixed");
-      const mixedHint = document.getElementById("mixedHint");
-      const nv = (d.vocab||[]).length;
-      const ng = (d.grammar||[]).length;
-      mixedHint.textContent = tr("mixedHint", nv, ng);
-
-      const q = buildMixedQuestion(d);
-      if(!q){
-        mixedDiv.innerHTML = `<div class='muted'>${tr("cant")}</div>`;
-        return;
-      }
-      renderQuestionInto(mixedDiv, q);
+      const nv=(d.vocab||[]).length,ng=(d.grammar_questions||[]).length;
+      document.getElementById("mixedHint").textContent=getLang()==="MN"?`Шалгалт бүрт ${nv} үгээс 8, дүрмээс 8, харилцан ярианаас 4 асуултыг шинээр сонгоно.`:`시험을 시작할 때마다 어휘 ${nv}개 중 8개, 문법 ${ng}개 중 8개, 통합 대화 4개를 새로 선택합니다.`;
+      startMixed(d);
     }
 
     function makeLessonLabel(lessonRaw){
@@ -752,9 +806,11 @@
         return;
       }
 
-      const qs = passthroughQS();
-      // snu/lesson.html -> ../grammar/...
-      location.href = `../grammar/${file}` + (qs ? `?${qs}` : "");
+      const p = new URLSearchParams(passthroughQS());
+      const dataPath = getParam("data");
+      if(dataPath) p.set("data", dataPath);
+      // 모든 과가 함께 사용하는 공통 문법 연습 화면으로 이동합니다.
+      location.href = `../grammar/lesson.html?${p.toString()}`;
     }
 
     async function main(){
@@ -806,6 +862,12 @@
 
       document.getElementById("btnNewMixed").addEventListener("click", ()=>{
         if(LESSON) renderMixed(LESSON);
+      });
+      document.getElementById("btnMixed10").addEventListener("click", ()=>{
+        MIXED_SECONDS=10;document.getElementById("btnMixed10").classList.add("active");document.getElementById("btnMixed15").classList.remove("active");if(LESSON)renderMixed(LESSON);
+      });
+      document.getElementById("btnMixed15").addEventListener("click", ()=>{
+        MIXED_SECONDS=15;document.getElementById("btnMixed15").classList.add("active");document.getElementById("btnMixed10").classList.remove("active");if(LESSON)renderMixed(LESSON);
       });
 
       const dataPath = getParam("data");
