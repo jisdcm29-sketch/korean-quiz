@@ -133,6 +133,10 @@
       word-break:keep-all;
       overflow-wrap:anywhere;
     }
+    .qDialogue{display:inline-grid;width:max-content;max-width:100%;text-align:left}
+    .qLine{display:block;overflow-wrap:anywhere}
+    .qLine.answerLine{display:flex;width:100%;align-items:baseline;white-space:nowrap}
+    .qBlank{display:inline-block;flex:1 1 auto;min-width:8ch;margin:0 4px 3px;border-bottom:3px solid currentColor}
 
     .choices{
       display:grid;
@@ -235,6 +239,9 @@
       #btnNewMixed{font-size:13px;padding:10px 10px;min-height:44px;border-radius:14px}
 
       .qText{font-size:26px;}
+      .qDialogue{width:100%}
+      .qLine.answerLine{white-space:normal}
+      .qBlank{min-width:6ch}
       .choices{gap:6px;}
       .choice{font-size:22px;min-height:48px;padding:12px 10px;}
     }
@@ -614,6 +621,23 @@
       },1000);
     }
 
+    function escapeQuestionHtml(value){
+      return String(value ?? "").replace(/[&<>"']/g, ch=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[ch]));
+    }
+
+    function formatQuestionPrompt(raw){
+      const lines=String(raw ?? "").split(/\r?\n/);
+      if(lines.length<2){
+        return escapeQuestionHtml(raw).replace(/_{2,}/g,'<span class="qBlank" aria-label="빈칸"></span>');
+      }
+      return `<div class="qDialogue">${lines.slice(0,2).map((line,index)=>{
+        const safe=escapeQuestionHtml(line);
+        const hasBlank=index===1 && /_{2,}/.test(safe);
+        const content=safe.replace(/_{2,}/g,'<span class="qBlank" aria-label="빈칸"></span>');
+        return `<div class="qLine${hasBlank?' answerLine':''}">${content}</div>`;
+      }).join("")}</div>`;
+    }
+
     function renderQuestionInto(containerEl, q, onAnswered){
       containerEl.innerHTML = "";
       if(!q){
@@ -626,7 +650,7 @@
 
       const head = document.createElement("div");
       head.className = "qHead";
-      head.innerHTML = `<div class="qLabel">${tr("qLabel")}</div><div class="qText">${q.prompt}</div>`;
+      head.innerHTML = `<div class="qLabel">${tr("qLabel")}</div><div class="qText">${formatQuestionPrompt(q.prompt)}</div>`;
       box.appendChild(head);
 
       const choicesWrap = document.createElement("div");
