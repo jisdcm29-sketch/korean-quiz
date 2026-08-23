@@ -706,13 +706,119 @@
 
     function stopMixedTimer(){ if(MIXED_TIMER){clearInterval(MIXED_TIMER);MIXED_TIMER=null;} }
 
-    function makeMixedVocabQuestion(item, vocab, mode){
+    function mixedPromptKey(q){
+      return String((q&&q.prompt)||"").replace(/\s+/g," ").trim();
+    }
+
+    function makeMixedVocabQuestion(item, vocab, mode, avoidSameMeaning=false){
       const prompt=mode==="KO2MN"?(item.ko||""):(item.mn||"");
       const correct=mode==="KO2MN"?(item.mn||""):(item.ko||"");
-      const answers=vocab.map(v=>mode==="KO2MN"?(v.mn||""):(v.ko||""))
+      const answers=vocab
+        .filter(v=>!(avoidSameMeaning&&mode==="MN2KO"&&(v.mn||"")===(item.mn||"")))
+        .map(v=>mode==="KO2MN"?(v.mn||""):(v.ko||""))
         .filter(x=>x&&x!==correct);
       const distractors=shuffle(Array.from(new Set(answers))).slice(0,3);
       return {category:"vocab",prompt,correct,choices:shuffle([correct,...distractors])};
+    }
+
+    const MIXED_DUP_GROUPS_3A={
+      "01":[
+        ["가: 축제가 재미있다고 들었어요? 나: 네, 선배도 아주 __.","가: 학교 축제가 아주 재미있다고 들었어요. 나: 네, 친구들도 __."],
+        ["내일 발표가 있는데 아직 준비를 못 했어요. 오늘 꼭 __.","내일 시험이 있는데 아직 복습을 못 했어요. 오늘 꼭 __."],
+        ["가: 유나 씨가 교환 학생이라고 들었어요? 나: 네, 이번 학기 __.","가: 수진 씨가 교환 학생이에요? 나: 네, __."]
+      ],
+      "02":[
+        ["아침에 __ 물부터 마셔요.","저는 눈을 뜨면 __ 창문부터 열어요."],
+        ["의사 선생님이 건강을 위해 일찍 __.","의사가 밤 11시 전에는 꼭 __."],
+        ["이 운동은 어렵지 않아서 __ 할 수 있어요.","이 스트레칭은 쉬워서 __ 따라 할 수 있어요."],
+        ["수업이 __ 바로 도서관에 갔어요.","회의가 __ 바로 집에 갔어요."]
+      ],
+      "03":[
+        ["오후에는 아마 비가 __ 우산을 가져가세요.","내일은 아마 비가 __ 우산을 챙기세요."],
+        ["퇴근 시간에는 길이 아마 __ 일찍 출발합시다.","퇴근 시간에는 길이 아마 __ 일찍 출발하세요."],
+        ["엄마가 밖이 __.","친구가 내일 날씨가 __."],
+        ["주말에 친구가 같이 등산을 __.","친구가 주말에 캠프에 같이 __."]
+      ],
+      "04":[
+        ["줄이 아주 길어요. 이 식당이 __.","사람들이 줄을 서 있어요. 이 집이 __."],
+        ["배가 조금 고파요. __ 먹을까요?","간단히 먹고 싶어요. __ 먹을까요?"],
+        ["이 음식을 직접 __ 생각보다 맛있었어요.","그 음식을 직접 __ 생각보다 맵지 않았어요."],
+        ["주방에서 좋은 냄새가 나요. 누군가 요리를 __.","주방에서 계속 칼 소리가 나요. 요리를 __."]
+      ],
+      "05":[
+        ["이 신발을 살지 아직 결정하지 못했어요. 지금도 __.","이 가방을 살지 아직 결정하지 못했어요. 계속 __."],
+        ["사이즈가 안 맞아요? 다른 사이즈로 __?","사이즈가 안 맞아요? 다른 제품으로 __?"],
+        ["인터넷 가격이 더 쌌어요. 사기 전에 __.","가격이 더 싼 곳을 찾았어요. 미리 __."],
+        ["파란색이 품절됐어요. __.","원하는 색이 품절됐어요. __."],
+        ["상품에 하자가 있어요? 고객 센터에 __?","상품이 마음에 안 들면 매장에 __?"]
+      ],
+      "06":[
+        ["가: 왜 그 카페에서 만나요? 나: __.","가: 왜 이 카페에서 자주 만나요? 나: __."],
+        ["일요일에는 일정이 비어서 __ 없어요.","오늘은 일정이 비어서 __ 없어요."],
+        ["직원이 예약 시간을 바꿨어요. → 예약 시간이 __.","직원이 회의 시간을 바꿨어요. → 회의 시간이 __."],
+        ["가: 왜 미리 예약해야 해요? 나: __.","가: 왜 미리 예약했어요? 나: __."]
+      ],
+      "07":[
+        ["컴퓨터가 멈추면 전원을 __ 다시 켜 보세요.","기계가 멈추면 전원을 __ 다시 켜 보세요."],
+        ["전원을 __ 화면이 나오지 않아요.","전원을 __ 화면이 여전히 안 나와요."],
+        ["화면이 자꾸 __ 갑자기 꺼졌어요.","모니터가 몇 번 __ 화면이 검게 변했어요."],
+        ["세탁기를 사용하기 전에 __.","기계를 사용하기 전에 __."],
+        ["연결이 안 되면 플러그를 __ 다시 꽂아 보세요.","연결이 안 되면 플러그를 __ 다시 꽂으세요."]
+      ],
+      "08":[
+        ["길을 __ 넘어져서 다쳤어요.","산책을 __ 발을 헛디뎌 넘어졌어요."],
+        ["가: 민수 씨가 교통사고를 당했어요. 나: 교통사고를 __?","가: 수진 씨가 어제 사고를 당했대요. 나: 정말 __?"],
+        ["시간이 아주 촉박해요. 그래도 __ 신호를 지켜야 해요.","시간이 부족해도 교통 법규는 지켜야 해요. __ 신호를 지켜야 해요."],
+        ["친구가 많이 다쳤어요. 빨리 __.","친구가 입원했어요. 빨리 __."],
+        ["자전거를 __ 차에 부딪힐 뻔했어요.","자전거를 __ 넘어질 뻔했어요."]
+      ],
+      "09":[
+        ["한글날 행사를 준비한 목적은 기념하는 것이에요. 한글날을 __ 행사를 준비했어요.","기념 행사를 연 목적이 있어요. 한글날을 __ 행사를 준비했어요."],
+        ["세종대왕이 한글을 만들었어요. → 한글이 __.","세종대왕 때 새 문자가 __."],
+        ["비가 많이 왔지만 행사는 예정대로 열렸어요. __ 행사는 예정대로 열렸어요.","비가 왔지만 야외 행사는 계속됐어요. __ 야외 행사는 계속됐어요."],
+        ["수업에서 __ 배웠어요.","발표를 준비하면서 __ 조사했어요."],
+        ["수업 시간에 __ 영화를 봤어요.","도서관에서 __ 자료를 찾았어요."]
+      ]
+    };
+
+    function mixedQuestionKey(q,level,lesson){
+      const base=mixedPromptKey(q);
+      if(String(level||"").toUpperCase()!=="3A") return base;
+      const nn=String(lesson||"").replace(/\D/g,"").padStart(2,"0");
+      const groups=MIXED_DUP_GROUPS_3A[nn]||[];
+      for(let i=0;i<groups.length;i++){
+        const normalized=groups[i].map(p=>String(p).replace(/\s+/g," ").trim());
+        if(normalized.includes(base)) return `3A-${nn}-group-${i+1}`;
+      }
+      return base;
+    }
+
+    function takeUniqueByPrompt(items,count,usedPrompts,level,lesson){
+      const out=[];
+      for(const q of shuffle(items)){
+        const key=mixedQuestionKey(q,level,lesson);
+        if(!key||usedPrompts.has(key)) continue;
+        usedPrompts.add(key);
+        out.push(q);
+        if(out.length>=count) break;
+      }
+      return out;
+    }
+
+    function makeUniqueVocabQuestions(vocab,count,usedPrompts,avoidSameMeaning){
+      const out=[];
+      for(const item of shuffle(vocab)){
+        for(const mode of shuffle(["KO2MN","MN2KO"])){
+          const q=makeMixedVocabQuestion(item,vocab,mode,avoidSameMeaning);
+          const key=mixedPromptKey(q);
+          if(!key||usedPrompts.has(key)) continue;
+          usedPrompts.add(key);
+          out.push(q);
+          break;
+        }
+        if(out.length>=count) break;
+      }
+      return out;
     }
 
     function buildMixedQueue(d){
@@ -722,15 +828,32 @@
         .map(x=>({...x,category:"grammar"}));
       const integratedBank=(Array.isArray(d.mixed_questions)?d.mixed_questions:[])
         .filter(x=>x&&x.category==="integrated"&&x.prompt&&x.correct&&Array.isArray(x.choices)&&x.choices.length>=2);
+      const mixedLevel=String(d.level||"").toUpperCase();
+      const useUniqueMixed=(mixedLevel==="2A"||mixedLevel==="2B"||mixedLevel==="3A"||mixedLevel==="3B"||mixedLevel==="4A"||mixedLevel==="4B");
       const storageKey=`kq_mixed_last_${d.level||""}_${d.lesson||""}`;
       const previous=sessionStorage.getItem(storageKey)||"";
       let queue=[],signature="";
       for(let attempt=0;attempt<12;attempt++){
-        const vocabItems=shuffle(vocab).slice(0,Math.min(8,vocab.length));
-        const vocabQuestions=vocabItems.map(item=>makeMixedVocabQuestion(item,vocab,Math.random()<.5?"KO2MN":"MN2KO"));
-        const grammarQuestions=shuffle(grammarBank).slice(0,Math.min(8,grammarBank.length));
-        const integratedQuestions=shuffle(integratedBank).slice(0,Math.min(4,integratedBank.length));
-        queue=[...vocabQuestions,...grammarQuestions,...integratedQuestions];
+        if(useUniqueMixed){
+          const usedPrompts=new Set();
+          const vocabQuestions=makeUniqueVocabQuestions(vocab,Math.min(8,vocab.length),usedPrompts,true);
+          let grammarQuestions,integratedQuestions;
+          if(mixedLevel==="3A"||mixedLevel==="3B"){
+            // 3A/3B는 통합 5문항 중 4문항을 먼저 확보한 뒤, 같은 질문의 문법 문항을 제외한다.
+            integratedQuestions=takeUniqueByPrompt(integratedBank,Math.min(4,integratedBank.length),usedPrompts,d.level,d.lesson);
+            grammarQuestions=takeUniqueByPrompt(grammarBank,Math.min(8,grammarBank.length),usedPrompts,d.level,d.lesson);
+          }else{
+            grammarQuestions=takeUniqueByPrompt(grammarBank,Math.min(8,grammarBank.length),usedPrompts,d.level,d.lesson);
+            integratedQuestions=takeUniqueByPrompt(integratedBank,Math.min(4,integratedBank.length),usedPrompts,d.level,d.lesson);
+          }
+          queue=[...vocabQuestions,...grammarQuestions,...integratedQuestions];
+        }else{
+          const vocabItems=shuffle(vocab).slice(0,Math.min(8,vocab.length));
+          const vocabQuestions=vocabItems.map(item=>makeMixedVocabQuestion(item,vocab,Math.random()<.5?"KO2MN":"MN2KO"));
+          const grammarQuestions=shuffle(grammarBank).slice(0,Math.min(8,grammarBank.length));
+          const integratedQuestions=shuffle(integratedBank).slice(0,Math.min(4,integratedBank.length));
+          queue=[...vocabQuestions,...grammarQuestions,...integratedQuestions];
+        }
         signature=queue.map(q=>`${q.category}|${q.prompt}|${q.correct}`).sort().join("\u0001");
         if(signature!==previous) break;
       }
