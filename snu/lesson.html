@@ -185,6 +185,7 @@
     .choice.wrongChoice{border-color:var(--red);background:rgba(248,113,113,.16)}
     .quizSummary{text-align:center;padding:18px}
     .summaryScore{font-size:34px;font-weight:950;color:var(--green);margin:8px 0}
+    .reviewList{text-align:left;margin-top:18px;border-top:1px solid var(--line);padding-top:12px}.reviewTitle{font-size:18px;font-weight:950;margin:0 0 8px}.reviewItem{padding:12px 0;border-bottom:1px solid var(--line);line-height:1.6}.reviewPrompt{font-weight:900;white-space:pre-line}.reviewMeta{margin-top:5px;font-size:14px}.reviewMine{color:#fecaca}.reviewCorrect{color:#d1fae5}.reviewTimeout{display:inline-block;margin-left:7px;padding:2px 7px;border-radius:999px;border:1px solid rgba(248,113,113,.55);color:#fecaca;font-size:11px;font-weight:900}
 
     .btnMode{
       background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96));
@@ -548,7 +549,7 @@
     function startQuiz(d){
       stopQuizTimer();
       const pool = usableVocab(d.vocab);
-      QUIZ_STATE = { queue:shuffle(pool), index:0, correct:0, wrong:0, timeout:0, locked:false, remaining:QUIZ_SECONDS };
+      QUIZ_STATE = { queue:shuffle(pool), index:0, correct:0, wrong:0, timeout:0, locked:false, remaining:QUIZ_SECONDS, miss:[] };
       renderCurrentQuizQuestion(d);
     }
 
@@ -575,11 +576,13 @@
       stopQuizTimer();
       const s=QUIZ_STATE, total=s.queue.length;
       const accuracy=total ? Math.round((s.correct/total)*100) : 0;
+      const review = (s.miss||[]).length ? `<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"Алдсан асуулт ба зөв хариулт":"틀린 문제와 정답"}</div>${s.miss.map((m,i)=>`<div class="reviewItem"><div class="reviewPrompt">${i+1}. ${escapeQuestionHtml(m.prompt)}</div><div class="reviewMeta reviewMine">${getLang()==="MN"?"Миний хариулт":"내 답"}: <b>${m.reason==="timeout"?(getLang()==="MN"?"Хугацаа хэтэрсэн":"시간 초과"):escapeQuestionHtml(m.selected||"")}</b>${m.reason==="timeout"?`<span class="reviewTimeout">${tr("timeout")}</span>`:""}</div><div class="reviewMeta reviewCorrect">${tr("answer")}: <b>${escapeQuestionHtml(m.correct)}</b></div></div>`).join("")}</div>` : `<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"🎉 Бүгд зөв байна.":"🎉 모두 맞았습니다."}</div></div>`;
       document.getElementById("quiz").innerHTML=`<div class="qbox quizSummary">
         <div class="qLabel">${tr("completed")}</div>
         <div class="summaryScore">${accuracy}%</div>
         <div>${tr("correctCount")}: <b>${s.correct}</b> / ${tr("wrongCount")}: <b>${s.wrong}</b> / ${tr("timeoutCount")}: <b>${s.timeout}</b></div>
         <div class="muted small" style="margin-top:8px">${tr("accuracy")}: ${s.correct} / ${total}</div>
+        ${review}
       </div>`;
     }
 
@@ -596,7 +599,7 @@
       renderQuestionInto(holder,q,(ok,btn,choicesWrap)=>{
         if(s.locked) return;
         s.locked=true; stopQuizTimer();
-        if(ok) s.correct++; else s.wrong++;
+        if(ok) s.correct++; else { s.wrong++; s.miss.push({prompt:q.prompt,selected:btn?btn.textContent:"",correct:q.correct,reason:"wrong"}); }
         [...choicesWrap.querySelectorAll("button")].forEach(b=>{
           b.disabled=true;
           if(b.textContent===q.correct) b.classList.add("correctChoice");
@@ -611,7 +614,7 @@
         s.remaining--;
         updateQuizStats();
         if(s.remaining<=0){
-          s.locked=true; stopQuizTimer(); s.wrong++; s.timeout++; updateQuizStats();
+          s.locked=true; stopQuizTimer(); s.wrong++; s.timeout++; s.miss.push({prompt:q.prompt,selected:"",correct:q.correct,reason:"timeout"}); updateQuizStats();
           const buttons=[...holder.querySelectorAll("button.choice")];
           buttons.forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice");});
           const result=holder.querySelector(".result");
@@ -864,7 +867,7 @@
     function startMixed(d){
       stopMixedTimer();
       const queue=buildMixedQueue(d);
-      MIXED_STATE={queue,index:0,correct:0,wrong:0,timeout:0,locked:false,remaining:MIXED_SECONDS,category:{vocab:{c:0,t:0},grammar:{c:0,t:0},integrated:{c:0,t:0}}};
+      MIXED_STATE={queue,index:0,correct:0,wrong:0,timeout:0,locked:false,remaining:MIXED_SECONDS,miss:[],category:{vocab:{c:0,t:0},grammar:{c:0,t:0},integrated:{c:0,t:0}}};
       renderCurrentMixed(d);
     }
 
@@ -888,7 +891,8 @@
       stopMixedTimer();const s=MIXED_STATE,total=s.queue.length,pct=total?Math.round(s.correct/total*100):0;
       const label={vocab:getLang()==="MN"?"Үг":"어휘",grammar:getLang()==="MN"?"Дүрэм":"문법",integrated:getLang()==="MN"?"Нэгдсэн":"통합"};
       const rows=Object.keys(s.category).map(k=>`<div class="statBox"><span class="statLabel">${label[k]}</span><span class="statValue">${s.category[k].c} / ${s.category[k].t}</span></div>`).join("");
-      document.getElementById("mixed").innerHTML=`<div class="qbox quizSummary"><div class="qLabel">${tr("completed")}</div><div class="summaryScore">${pct}%</div><div>${tr("correctCount")}: <b>${s.correct}</b> / ${tr("wrongCount")}: <b>${s.wrong}</b> / ${tr("timeoutCount")}: <b>${s.timeout}</b></div><div class="quizStats" style="margin-top:12px">${rows}</div></div>`;
+      const review=(s.miss||[]).length?`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"Алдсан асуулт ба зөв хариулт":"틀린 문제와 정답"}</div>${s.miss.map((m,i)=>`<div class="reviewItem"><div class="reviewPrompt">${i+1}. [${label[m.category]||label.integrated}] ${escapeQuestionHtml(m.prompt)}</div><div class="reviewMeta reviewMine">${getLang()==="MN"?"Миний хариулт":"내 답"}: <b>${m.reason==="timeout"?(getLang()==="MN"?"Хугацаа хэтэрсэн":"시간 초과"):escapeQuestionHtml(m.selected||"")}</b>${m.reason==="timeout"?`<span class="reviewTimeout">${tr("timeout")}</span>`:""}</div><div class="reviewMeta reviewCorrect">${tr("answer")}: <b>${escapeQuestionHtml(m.correct)}</b></div></div>`).join("")}</div>`:`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"🎉 Бүгд зөв байна.":"🎉 모두 맞았습니다."}</div></div>`;
+      document.getElementById("mixed").innerHTML=`<div class="qbox quizSummary"><div class="qLabel">${tr("completed")}</div><div class="summaryScore">${pct}%</div><div>${tr("correctCount")}: <b>${s.correct}</b> / ${tr("wrongCount")}: <b>${s.wrong}</b> / ${tr("timeoutCount")}: <b>${s.timeout}</b></div><div class="quizStats" style="margin-top:12px">${rows}</div>${review}</div>`;
     }
 
     function renderCurrentMixed(d){
@@ -897,8 +901,8 @@
       if(s.index>=s.queue.length){finishMixed();return;}
       s.locked=false;s.remaining=MIXED_SECONDS;const raw=s.queue[s.index];const q={prompt:raw.prompt,correct:raw.correct,choices:shuffle(Array.from(new Set([raw.correct,...raw.choices])).filter(Boolean))};
       div.innerHTML=mixedStats(s.queue.length);const holder=document.createElement("div");div.appendChild(holder);
-      renderQuestionInto(holder,q,(ok,btn,wrap)=>{if(s.locked)return;s.locked=true;stopMixedTimer();const cat=s.category[raw.category]||s.category.integrated;cat.t++;if(ok){s.correct++;cat.c++;}else s.wrong++;[...wrap.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});if(!ok)btn.classList.add("wrongChoice");updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},650)});
-      updateMixed();MIXED_TIMER=setInterval(()=>{if(s.locked)return;s.remaining--;updateMixed();if(s.remaining<=0){s.locked=true;stopMixedTimer();s.wrong++;s.timeout++;const cat=s.category[raw.category]||s.category.integrated;cat.t++;holder.querySelectorAll("button.choice").forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});const result=holder.querySelector(".result");if(result){result.style.display="";result.classList.add("bad");result.innerHTML=`<b>${tr("timeout")}</b> <span class="muted small">${tr("answer")}: ${q.correct}</span>`;}updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},700)}},1000);
+      renderQuestionInto(holder,q,(ok,btn,wrap)=>{if(s.locked)return;s.locked=true;stopMixedTimer();const cat=s.category[raw.category]||s.category.integrated;cat.t++;if(ok){s.correct++;cat.c++;}else{s.wrong++;s.miss.push({category:raw.category||"integrated",prompt:q.prompt,selected:btn?btn.textContent:"",correct:q.correct,reason:"wrong"});}[...wrap.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});if(!ok)btn.classList.add("wrongChoice");updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},650)});
+      updateMixed();MIXED_TIMER=setInterval(()=>{if(s.locked)return;s.remaining--;updateMixed();if(s.remaining<=0){s.locked=true;stopMixedTimer();s.wrong++;s.timeout++;s.miss.push({category:raw.category||"integrated",prompt:q.prompt,selected:"",correct:q.correct,reason:"timeout"});const cat=s.category[raw.category]||s.category.integrated;cat.t++;holder.querySelectorAll("button.choice").forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});const result=holder.querySelector(".result");if(result){result.style.display="";result.classList.add("bad");result.innerHTML=`<b>${tr("timeout")}</b> <span class="muted small">${tr("answer")}: ${q.correct}</span>`;}updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},700)}},1000);
     }
 
     function renderMixed(d){
