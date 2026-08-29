@@ -1,0 +1,199 @@
+{
+  "version": 3,
+  "updated_at": "2026-08-27",
+  "categories": [
+    {
+      "id": "vocab",
+      "title": "어휘",
+      "subtitle": "연어 표현",
+      "levels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ],
+      "subtitle_kr": "연어 표현 · 500개",
+      "subtitle_mn": "Үгийн холбоо · 500",
+      "groups": [
+        {
+          "id": "collocation",
+          "title_kr": "연어 표현",
+          "title_mn": "Үгийн холбоо",
+          "subtitle_kr": "500개 · 50개씩 10세트",
+          "subtitle_mn": "Нийт 500 · 10 багц (багц бүр 50)",
+          "sets": [
+            {
+              "id": 1,
+              "label_kr": "1-50",
+              "label_mn": "1-50",
+              "data": "../data/topik1/collocation/set01.json"
+            },
+            {
+              "id": 2,
+              "label_kr": "51-100",
+              "label_mn": "51-100",
+              "data": "../data/topik1/collocation/set02.json"
+            },
+            {
+              "id": 3,
+              "label_kr": "101-150",
+              "label_mn": "101-150",
+              "data": "../data/topik1/collocation/set03.json"
+            },
+            {
+              "id": 4,
+              "label_kr": "151-200",
+              "label_mn": "151-200",
+              "data": "../data/topik1/collocation/set04.json"
+            },
+            {
+              "id": 5,
+              "label_kr": "201-250",
+              "label_mn": "201-250",
+              "data": "../data/topik1/collocation/set05.json"
+            },
+            {
+              "id": 6,
+              "label_kr": "251-300",
+              "label_mn": "251-300",
+              "data": "../data/topik1/collocation/set06.json"
+            },
+            {
+              "id": 7,
+              "label_kr": "301-350",
+              "label_mn": "301-350",
+              "data": "../data/topik1/collocation/set07.json"
+            },
+            {
+              "id": 8,
+              "label_kr": "351-400",
+              "label_mn": "351-400",
+              "data": "../data/topik1/collocation/set08.json"
+            },
+            {
+              "id": 9,
+              "label_kr": "401-450",
+              "label_mn": "401-450",
+              "data": "../data/topik1/collocation/set09.json"
+            },
+            {
+              "id": 10,
+              "label_kr": "451-500",
+              "label_mn": "451-500",
+              "data": "../data/topik1/collocation/set10.json"
+            }
+          ]
+        }
+      ]
+    },
+    {
+      "id": "grammar",
+      "title": "문법",
+      "subtitle": "1~10단계 · 쉬운 문법부터 심화 문법까지",
+      "subtitle_kr": "1~10단계 · 기초 문장부터 TOPIK I 후반 문법까지",
+      "subtitle_mn": "1-10 шат · суурь өгүүлбэрээс TOPIK I ахисан дүрэм хүртэл",
+      "stages": [
+        {
+          "id": 1,
+          "label_kr": "1단계 · 기본 문장",
+          "label_mn": "1-р шат · Суурь өгүүлбэр",
+          "data": "../data/topik1/grammar/stage01.json"
+        },
+        {
+          "id": 2,
+          "label_kr": "2단계 · 기본 시제·상태",
+          "label_mn": "2-р шат · Суурь цаг·төлөв",
+          "data": "../data/topik1/grammar/stage02.json"
+        },
+        {
+          "id": 3,
+          "label_kr": "3단계 · 부정·범위",
+          "label_mn": "3-р шат · Үгүйсгэл·хүрээ",
+          "data": "../data/topik1/grammar/stage03.json"
+        },
+        {
+          "id": 4,
+          "label_kr": "4단계 · 문장 연결",
+          "label_mn": "4-р шат · Өгүүлбэр холбох",
+          "data": "../data/topik1/grammar/stage04.json"
+        },
+        {
+          "id": 5,
+          "label_kr": "5단계 · 희망·가능·목적",
+          "label_mn": "5-р шат · Хүсэл·боломж·зорилго",
+          "data": "../data/topik1/grammar/stage05.json"
+        },
+        {
+          "id": 6,
+          "label_kr": "6단계 · 시간·동시·경험",
+          "label_mn": "6-р шат · Цаг·зэрэг үйлдэл·туршлага",
+          "data": "../data/topik1/grammar/stage06.json"
+        },
+        {
+          "id": 7,
+          "label_kr": "7단계 · 부탁·허락·제안",
+          "label_mn": "7-р шат · Хүсэлт·зөвшөөрөл·санал",
+          "data": "../data/topik1/grammar/stage07.json"
+        },
+        {
+          "id": 8,
+          "label_kr": "8단계 · 꾸미기·비교·계획",
+          "label_mn": "8-р шат · Тодотгол·харьцуулалт·төлөвлөгөө",
+          "data": "../data/topik1/grammar/stage08.json"
+        },
+        {
+          "id": 9,
+          "label_kr": "9단계 · 높임·인용·추측",
+          "label_mn": "9-р шат · Хүндэтгэл·дам яриа·таамаг",
+          "data": "../data/topik1/grammar/stage09.json"
+        },
+        {
+          "id": 10,
+          "label_kr": "10단계 · 후반 심화",
+          "label_mn": "10-р шат · Ахисан дүрэм",
+          "data": "../data/topik1/grammar/stage10.json"
+        }
+      ]
+    },
+    {
+      "id": "reading",
+      "title": "읽기평가",
+      "subtitle": "레벨 1~10",
+      "levels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ]
+    },
+    {
+      "id": "listening",
+      "title": "듣기평가",
+      "subtitle": "레벨 1~10",
+      "levels": [
+        "Level 1",
+        "Level 2",
+        "Level 3",
+        "Level 4",
+        "Level 5",
+        "Level 6",
+        "Level 7",
+        "Level 8",
+        "Level 9",
+        "Level 10"
+      ]
+    }
+  ]
+}
