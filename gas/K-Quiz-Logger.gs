@@ -1,412 +1,251 @@
-/******************************************************
- * K-Quiz Logger (JSONP) - Google Apps Script
- * action=issue     : 선생님 비번으로 토큰 발급
- * action=validate  : 학생 입장 검증
- * action=log       : 시험 종료 기록 + 텔레그램 알림
- *
- * - iPhone/Android 안정성을 위해 JSONP 지원
- * - 기록은 Spreadsheet에 저장 (최우선)
- * - 텔레그램은 성공/실패 모두 TELEGRAM_LOG 시트에 기록(항상)
- * - 텔레그램 실패는 TELEGRAM_FAIL 시트에도 기록
- *
- * ★★★ 학생 접속 시에도 텔레그램 알림이 오려면 ★★★
- *     반드시 "배포" 시 "실행 사용자: 나" 로 설정해야 합니다.
- *     "실행 사용자: 앱에 접속한 사용자" 이면 학생 계정으로 실행되어
- *     스크립트 속성(TELEGRAM_TOKEN 등)을 읽지 못해 알림이 가지 않습니다.
- *     자세한 설정: 프로젝트 내 gas/DEPLOY-GUIDE.md 참고
- ******************************************************/
+const AUTH_SHEET_NAME = "인증목록";
+const AUTH_TOKEN_TTL_SEC = 60 * 60 * 2;
 
-// ====== 설정 ======
-const TOKEN_TTL_SEC = 60 * 60 * 2; // 토큰 유효시간: 2시간
-
-// ✅ 허용 반(화이트리스트) — 이 반만 토큰 발급/기록 허용
-const ALLOWED_CLASSES = ["BBTA1반", "EKO2반"];
-
-// 텔레그램 재시도 설정(429/일시 오류 대비)
-const TG_MAX_RETRIES = 5;      // 최대 재시도 횟수
-const TG_BASE_WAIT_MS = 1200;  // 기본 대기(ms)
-
-/**
- * (권장) 아래 3개 값은 "스크립트 속성"에 넣어 사용하세요.
- * - MASTER_PASSWORD
- * - TELEGRAM_TOKEN
- * - TELEGRAM_CHAT_ID
- */
-const FALLBACK_MASTER_PASSWORD = "";
-const FALLBACK_TELEGRAM_TOKEN = "";
-const FALLBACK_TELEGRAM_CHAT_ID = "5418932608";
-
-// ====== 공통 유틸 ======
-function nowMs_() { return Date.now(); }
-
-// JSONP callback 인젝션 방지: JS 식별자/점(.)만 허용
-function sanitizeCallback_(cb) {
-  cb = (cb || "").trim();
-  if (!cb) return "";
-  const ok = /^[a-zA-Z_$][0-9a-zA-Z_$\.]{0,63}$/.test(cb);
-  return ok ? cb : "";
+function normalizePhone_(value) {
+  return String(value == null ? "" : value).replace(/\D/g, "");
 }
 
-function jsonp_(callback, obj) {
-  const cb = sanitizeCallback_(callback);
-  const text = cb ? `${cb}(${JSON.stringify(obj)});` : JSON.stringify(obj);
-  return ContentService.createTextOutput(text)
-    .setMimeType(cb ? ContentService.MimeType.JAVASCRIPT : ContentService.MimeType.JSON);
+function isEnabled_(value) {
+  if (value === true) return true;
+  const s = String(value == null ? "" : value).trim().toLowerCase();
+  return s === "true" || s === "1" || s === "yes" || s === "y" || s === "사용" || s === "사용중";
 }
 
-// Script Properties에서 값 읽기(없으면 fallback)
-function getSecret_(key, fallback) {
-  const v = PropertiesService.getScriptProperties().getProperty(key);
-  return (v && String(v).trim()) ? String(v).trim() : (fallback || "");
+function authTokenKey_(token) {
+  return "phone_auth_" + token;
 }
 
-function tokenKey_(t) { return "t_" + t; }
+function checkAuthorizedPhone_(ss, phone) {
+  const sh = ss.getSheetByName(AUTH_SHEET_NAME);
+  if (!sh) return { ok: false, error: "auth_sheet_missing" };
 
-/**
- * 토큰 로드 + 공통 검증
- * - Cache 존재 확인
- * - JSON 파싱 확인
- * - exp(만료) 확인(이중 안전)
- * - deviceId 일치 확인
- */
-function loadAndVerifyToken_(token, deviceId) {
-  const raw = CacheService.getScriptCache().get(tokenKey_(token));
+  const target = normalizePhone_(phone);
+  if (!target) return { ok: false, error: "missing_phone" };
+
+  const lastRow = sh.getLastRow();
+  if (lastRow < 2) return { ok: false, error: "not_authorized" };
+
+  // A: 인증번호(전화번호), B: 학생이름(관리용), C: 사용여부
+  const values = sh.getRange(2, 1, lastRow - 1, 3).getValues();
+  for (let i = 0; i < values.length; i++) {
+    const savedPhone = normalizePhone_(values[i][0]);
+    const enabled = isEnabled_(values[i][2]);
+    if (savedPhone === target && enabled) {
+      return { ok: true, phone: target };
+    }
+  }
+
+  return { ok: false, error: "not_authorized" };
+}
+
+function issueAuthToken_(phone, name, deviceId) {
+  const token = Utilities.getUuid().replace(/-/g, "");
+  const payload = {
+    phone: normalizePhone_(phone),
+    name: String(name || "").trim(),
+    deviceId: String(deviceId || "").trim(),
+    iat: Date.now(),
+    exp: Date.now() + AUTH_TOKEN_TTL_SEC * 1000
+  };
+  CacheService.getScriptCache().put(authTokenKey_(token), JSON.stringify(payload), AUTH_TOKEN_TTL_SEC);
+  return token;
+}
+
+function validateAuthToken_(ss, token, deviceId, name) {
+  token = String(token || "").trim();
+  deviceId = String(deviceId || "").trim();
+  name = String(name || "").trim();
+
+  if (!token) return { ok: false, error: "missing_token" };
+
+  const raw = CacheService.getScriptCache().get(authTokenKey_(token));
   if (!raw) return { ok: false, error: "expired_or_invalid" };
 
   let payload;
-  try { payload = JSON.parse(raw); }
-  catch (e) { return { ok: false, error: "corrupt_token" }; }
+  try {
+    payload = JSON.parse(raw);
+  } catch (err) {
+    return { ok: false, error: "corrupt_token" };
+  }
 
-  if (!payload || !payload.deviceId) return { ok: false, error: "corrupt_token" };
-
-  if (payload.exp && nowMs_() > payload.exp) {
-    CacheService.getScriptCache().remove(tokenKey_(token));
+  if (!payload || !payload.phone) return { ok: false, error: "corrupt_token" };
+  if (payload.exp && Date.now() > payload.exp) {
+    CacheService.getScriptCache().remove(authTokenKey_(token));
     return { ok: false, error: "expired_or_invalid" };
   }
 
-  if ((deviceId || "") !== payload.deviceId) {
+  if (payload.deviceId && deviceId && payload.deviceId !== deviceId) {
     return { ok: false, error: "device_mismatch" };
   }
+  if (payload.name && name && payload.name !== name) {
+    return { ok: false, error: "identity_mismatch" };
+  }
 
-  return { ok: true, payload };
+  // 시트에서 삭제하거나 FALSE로 바꾸면 다음 검증부터 즉시 차단
+  const auth = checkAuthorizedPhone_(ss, payload.phone);
+  if (!auth.ok) {
+    CacheService.getScriptCache().remove(authTokenKey_(token));
+    return { ok: false, error: "not_authorized" };
+  }
+
+  return { ok: true, payload: payload };
 }
 
-/**
- * (선택) token 공유 방지: URL로 넘어온 klass/name과 payload 비교
- * - validate/log에서 klass/name이 비어있으면 검증 스킵(호환성 유지)
- */
-function verifyIdentityOptional_(payload, klass, name) {
-  if (klass && klass !== payload.klass) return { ok: false, error: "identity_mismatch" };
-  if (name && name !== payload.name) return { ok: false, error: "identity_mismatch" };
-  return { ok: true };
+function jsonpOutput_(callback, obj) {
+  const cb = String(callback || "callback").replace(/[^\w$]/g, "") || "callback";
+  return ContentService
+    .createTextOutput(`${cb}(${JSON.stringify(obj)})`)
+    .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
-// ====== 메인 엔드포인트 ======
 function doGet(e) {
   const p = (e && e.parameter) ? e.parameter : {};
-  const action = (p.action || "").toLowerCase();
-  const callback = p.callback || "";
+  const ss = SpreadsheetApp.getActive();
+  const action = String(p.action || "").trim().toLowerCase();
+  const callback = p.callback || "callback";
 
-  // 1) 토큰 발급: action=issue
-  if (action === "issue") {
-    const MASTER_PASSWORD = getSecret_("MASTER_PASSWORD", FALLBACK_MASTER_PASSWORD);
+  // 1) 전화번호 인증 + 서버 토큰 발급
+  if (action === "auth") {
+    const phone = normalizePhone_(p.phone || "");
+    const name = String(p.name || "").trim();
+    const deviceId = String(p.deviceId || "").trim();
 
-    const pass = (p.pass || "").trim();
-    const klass = (p.klass || "").trim();
-    const name = (p.name || "").trim();
-    const deviceId = (p.deviceId || "").trim();
+    if (!name) return jsonpOutput_(callback, { ok: false, error: "missing_name" });
 
-    if (!MASTER_PASSWORD) return jsonp_(callback, { ok: false, error: "server_not_configured" });
-    if (pass !== MASTER_PASSWORD) return jsonp_(callback, { ok: false, error: "bad_password" });
-    if (!klass || !name || !deviceId) return jsonp_(callback, { ok: false, error: "missing_fields" });
+    const auth = checkAuthorizedPhone_(ss, phone);
+    if (!auth.ok) return jsonpOutput_(callback, auth);
 
-    // ✅ 허용 반만 발급
-    if (!ALLOWED_CLASSES.includes(klass)) {
-      return jsonp_(callback, { ok: false, error: "invalid_class" });
-    }
-
-    const t = Utilities.getUuid().replace(/-/g, "");
-    const payload = { klass, name, deviceId, iat: nowMs_(), exp: nowMs_() + TOKEN_TTL_SEC * 1000 };
-
-    CacheService.getScriptCache().put(tokenKey_(t), JSON.stringify(payload), TOKEN_TTL_SEC);
-    return jsonp_(callback, { ok: true, token: t });
+    const token = issueAuthToken_(phone, name, deviceId);
+    return jsonpOutput_(callback, { ok: true, token: token });
   }
 
-  // 2) 토큰 검증: action=validate
+  // 2) 페이지 진입 시 토큰 검증
   if (action === "validate") {
-    const token = (p.token || "").trim();
-    const deviceId = (p.deviceId || "").trim();
-
-    const klass = (p.klass || "").trim();
-    const name = (p.name || "").trim();
-
-    if (!token || !deviceId) return jsonp_(callback, { ok: false, error: "missing_fields" });
-
-    const v = loadAndVerifyToken_(token, deviceId);
-    if (!v.ok) return jsonp_(callback, v);
-
-    if (!ALLOWED_CLASSES.includes(v.payload.klass)) {
-      return jsonp_(callback, { ok: false, error: "invalid_class" });
-    }
-
-    const idv = verifyIdentityOptional_(v.payload, klass, name);
-    if (!idv.ok) return jsonp_(callback, idv);
-
-    return jsonp_(callback, { ok: true });
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+    return jsonpOutput_(callback, { ok: true });
   }
 
-  // 3) 기록 저장 + 텔레그램: action=log
-  if (action === "log") {
-    const token = (p.token || "").trim();
-    const deviceId = (p.deviceId || "").trim();
+  // 3) 인증이 필요한 기록 요청 보호
+  if (action === "log" || action === "session_start") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+  }
 
-    const klassParam = (p.klass || "").trim();
-    const nameParam = (p.name || "").trim();
+  // 일반 이벤트 로그 시트
+  const sheetName = p.sheet || "Log";
+  const sh = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
 
-    const book = (p.book || "").trim();
-    const lesson = (p.lesson || "").trim();
-    const score = (p.score || "").trim();
-    const attempts = (p.attempts || "").trim();
-    const ua = (p.ua || "").trim();
+  // 세션 시트
+  const sessName = "Sessions";
+  const sess = ss.getSheetByName(sessName) || ss.insertSheet(sessName);
 
-    if (!token || !deviceId || !book || !lesson) {
-      return jsonp_(callback, { ok: false, error: "missing_fields" });
-    }
+  if (sh.getLastRow() === 0) {
+    sh.appendRow([
+      "ts","action","name","klass","token","deviceId","book","lesson",
+      "score","attempts","ua","lang","extra"
+    ]);
+  }
 
-    const v = loadAndVerifyToken_(token, deviceId);
-    if (!v.ok) return jsonp_(callback, v);
+  if (sess.getLastRow() === 0) {
+    sess.appendRow([
+      "sessionId","name","klass","token","deviceId","lang",
+      "loginAt","logoutAt","durationSec","reason","ua","updatedAt"
+    ]);
+  }
 
-    // ✅ 허용 반이 아니면 차단(시트 생성 방지)
-    if (!ALLOWED_CLASSES.includes(v.payload.klass)) {
-      CacheService.getScriptCache().remove(tokenKey_(token));
-      return jsonp_(callback, { ok: false, error: "invalid_class" });
-    }
+  const ts = new Date();
+  const sessionId = String(p.sessionId || "");
 
-    const idv = verifyIdentityOptional_(v.payload, klassParam, nameParam);
-    if (!idv.ok) return jsonp_(callback, idv);
-
+  if ((action === "session_start" || action === "session_end") && sessionId) {
     const lock = LockService.getScriptLock();
-    lock.waitLock(15000);
-
+    lock.tryLock(5000);
     try {
-      // [A] 스프레드시트 기록(최우선)
-      const ss = SpreadsheetApp.getActiveSpreadsheet();
-      let sh = ss.getSheetByName(v.payload.klass);
-      if (!sh) sh = ss.insertSheet(v.payload.klass);
+      const lastRow = sess.getLastRow();
+      const values = lastRow ? sess.getRange(1, 1, lastRow, 12).getValues() : [];
+      let rowIndex = -1;
 
-      const header = ["timestamp", "class", "name", "book", "lesson", "score", "attempts", "deviceId", "userAgent"];
-      if (sh.getLastRow() === 0) {
-        sh.appendRow(header);
-      } else {
-        const existing = sh.getRange(1, 1, 1, 9).getValues()[0];
-        const same = existing && existing.length === 9 && existing.every((val, i) => String(val) === header[i]);
-        if (!same) {
-          sh.insertRowBefore(1);
-          sh.getRange(1, 1, 1, 9).setValues([header]);
+      for (let i = 1; i < values.length; i++) {
+        if (String(values[i][0]) === sessionId) {
+          rowIndex = i + 1;
+          break;
         }
       }
 
-      const uaSafe = ua.length > 500 ? ua.slice(0, 500) : ua;
+      if (action === "session_start" && rowIndex === -1) {
+        const loginAt = p.loginAt ? new Date(p.loginAt) : ts;
+        sess.appendRow([
+          sessionId,
+          p.name || "",
+          p.klass || "",
+          p.token || "",
+          p.deviceId || "",
+          p.lang || "",
+          loginAt,
+          "",
+          "",
+          "login",
+          p.ua || "",
+          ts
+        ]);
+      }
 
-      sh.appendRow([
-        new Date(),
-        v.payload.klass,
-        v.payload.name,
-        book,
-        lesson,
-        score,
-        attempts,
-        v.payload.deviceId,
-        uaSafe
-      ]);
+      if (action === "session_end") {
+        const loginAt = p.loginAt ? new Date(p.loginAt) : ts;
+        const logoutAt = p.logoutAt ? new Date(p.logoutAt) : ts;
+        const durSec = Math.max(0, Math.round((logoutAt.getTime() - loginAt.getTime()) / 1000));
+        const reason = String(p.reason || "logout");
 
-      // [B] 텔레그램 알림 (성공/실패 모두 TELEGRAM_LOG에 기록)
-      const tgToken = getSecret_("TELEGRAM_TOKEN", FALLBACK_TELEGRAM_TOKEN);
-      const tgChatId = getSecret_("TELEGRAM_CHAT_ID", FALLBACK_TELEGRAM_CHAT_ID);
-
-      const tgMessage =
-        `✅ [학습 기록 접수]\n` +
-        `반: ${v.payload.klass}\n` +
-        `이름: ${v.payload.name}\n` +
-        `교재: ${book}\n` +
-        `단원: ${lesson}\n` +
-        `점수: ${score}점\n` +
-        `시도: ${attempts}회`;
-
-      let tgRes;
-      if (tgToken && tgChatId) {
-        try {
-          tgRes = sendTelegram_(tgToken, tgChatId, tgMessage);
-        } catch (ex) {
-          tgRes = { ok: false, code: "EXCEPTION", body: String(ex), tries: 0, message_id: "" };
+        if (rowIndex === -1) {
+          sess.appendRow([
+            sessionId,
+            p.name || "",
+            p.klass || "",
+            p.token || "",
+            p.deviceId || "",
+            p.lang || "",
+            loginAt,
+            logoutAt,
+            durSec,
+            reason,
+            p.ua || "",
+            ts
+          ]);
+        } else {
+          sess.getRange(rowIndex, 2).setValue(p.name || "");
+          sess.getRange(rowIndex, 3).setValue(p.klass || "");
+          sess.getRange(rowIndex, 4).setValue(p.token || "");
+          sess.getRange(rowIndex, 5).setValue(p.deviceId || "");
+          sess.getRange(rowIndex, 6).setValue(p.lang || "");
+          sess.getRange(rowIndex, 7).setValue(loginAt);
+          sess.getRange(rowIndex, 8).setValue(logoutAt);
+          sess.getRange(rowIndex, 9).setValue(durSec);
+          sess.getRange(rowIndex, 10).setValue(reason);
+          sess.getRange(rowIndex, 11).setValue(p.ua || "");
+          sess.getRange(rowIndex, 12).setValue(ts);
         }
-      } else {
-        tgRes = { ok: false, code: "NO_CONFIG", body: "Missing TELEGRAM_TOKEN or TELEGRAM_CHAT_ID", tries: 0, message_id: "" };
       }
-
-      // ✅ 항상 기록: 성공/실패 모두 TELEGRAM_LOG
-      logTelegramLog_(v.payload, book, lesson, score, attempts, tgChatId, tgRes);
-
-      // ✅ 실패면 TELEGRAM_FAIL에도 기록
-      if (!tgRes.ok) {
-        logTelegramFail_(v.payload, book, lesson, score, attempts, tgChatId, tgRes);
-      }
-
-      // [C] 토큰 무효화(재사용 방지)
-      CacheService.getScriptCache().remove(tokenKey_(token));
-
-      return jsonp_(callback, { ok: true });
-
-    } catch (err) {
-      return jsonp_(callback, { ok: false, error: "save_failed", detail: String(err) });
     } finally {
-      try { lock.releaseLock(); } catch (e2) {}
+      try { lock.releaseLock(); } catch (err) {}
     }
   }
 
-  return jsonp_(callback, { ok: false, error: "unknown_action" });
-}
-
-// ====== 텔레그램 전송(내부용) ======
-// ✅ 429(Too Many Requests) / 5xx 대비 재시도, 결과 리턴
-function sendTelegram_(telegramToken, chatId, text) {
-  const url = "https://api.telegram.org/bot" + telegramToken + "/sendMessage";
-
-  let lastCode = "";
-  let lastBody = "";
-  let tries = 0;
-  let messageId = "";
-
-  for (let attempt = 1; attempt <= TG_MAX_RETRIES; attempt++) {
-    tries = attempt;
-
-    const res = UrlFetchApp.fetch(url, {
-      method: "post",
-      contentType: "application/json",
-      muteHttpExceptions: true,
-      payload: JSON.stringify({
-        chat_id: chatId,
-        text: text,
-        disable_web_page_preview: true
-      })
-    });
-
-    const code = res.getResponseCode();
-    const body = res.getContentText();
-
-    lastCode = code;
-    lastBody = body;
-
-    // 성공
-    if (code >= 200 && code < 300) {
-      try {
-        const obj = JSON.parse(body);
-        messageId = obj?.result?.message_id ? String(obj.result.message_id) : "";
-      } catch (e) {}
-      return { ok: true, code, body, tries, message_id: messageId };
-    }
-
-    // 429면 retry_after 존중
-    if (code === 429) {
-      let waitMs = TG_BASE_WAIT_MS;
-      try {
-        const obj = JSON.parse(body);
-        const retryAfter = obj?.parameters?.retry_after;
-        if (retryAfter) waitMs = (Number(retryAfter) + 1) * 1000;
-      } catch (e) {}
-      Utilities.sleep(waitMs);
-      continue;
-    }
-
-    // 5xx면 잠깐 쉬고 재시도
-    if (code >= 500 && code <= 599) {
-      Utilities.sleep(TG_BASE_WAIT_MS * attempt);
-      continue;
-    }
-
-    // 그 외(401/400/403 등)는 즉시 종료
-    return { ok: false, code, body, tries, message_id: "" };
-  }
-
-  return { ok: false, code: lastCode || "UNKNOWN", body: lastBody || "no response body", tries, message_id: "" };
-}
-
-// ✅ 텔레그램 전송 결과를 항상 기록(성공/실패 공통)
-function logTelegramLog_(payload, book, lesson, score, attempts, tgChatId, tgRes) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName("TELEGRAM_LOG");
-  if (!sh) sh = ss.insertSheet("TELEGRAM_LOG");
-
-  if (sh.getLastRow() === 0) {
-    sh.appendRow([
-      "timestamp","class","name","book","lesson","score","attempts","deviceId",
-      "tgChatId","tgOk","tgHttp","tgTries","tgMessageId","tgBody"
-    ]);
-  }
-
-  const bodyShort = String(tgRes.body || "").slice(0, 500);
-
+  // 모든 일반 요청을 Log 시트에 기록
   sh.appendRow([
-    new Date(),
-    payload.klass,
-    payload.name,
-    book,
-    lesson,
-    score,
-    attempts,
-    payload.deviceId,
-    tgChatId || "",
-    tgRes.ok ? "TRUE" : "FALSE",
-    String(tgRes.code),
-    String(tgRes.tries || ""),
-    String(tgRes.message_id || ""),
-    bodyShort
+    ts,
+    p.action || "",
+    p.name || "",
+    p.klass || "",
+    p.token || "",
+    p.deviceId || "",
+    p.book || "",
+    p.lesson || "",
+    p.score || "",
+    p.attempts || "",
+    p.ua || "",
+    p.lang || "",
+    JSON.stringify(p)
   ]);
-}
 
-// ✅ 실패만 따로 모으는 탭(빠른 확인용)
-function logTelegramFail_(payload, book, lesson, score, attempts, tgChatId, tgRes) {
-  const ss = SpreadsheetApp.getActiveSpreadsheet();
-  let sh = ss.getSheetByName("TELEGRAM_FAIL");
-  if (!sh) sh = ss.insertSheet("TELEGRAM_FAIL");
-
-  if (sh.getLastRow() === 0) {
-    sh.appendRow([
-      "timestamp","class","name","book","lesson","score","attempts","deviceId",
-      "tgChatId","tgHttp","tgTries","tgBody"
-    ]);
-  }
-
-  const bodyShort = String(tgRes.body || "").slice(0, 500);
-
-  sh.appendRow([
-    new Date(),
-    payload.klass,
-    payload.name,
-    book,
-    lesson,
-    score,
-    attempts,
-    payload.deviceId,
-    tgChatId || "",
-    String(tgRes.code),
-    String(tgRes.tries || ""),
-    bodyShort
-  ]);
-}
-
-// ====== 권한 승인용(유지) ======
-function authorizeUrlFetch() {
-  const tgToken = getSecret_("TELEGRAM_TOKEN", FALLBACK_TELEGRAM_TOKEN);
-  const tgChatId = getSecret_("TELEGRAM_CHAT_ID", FALLBACK_TELEGRAM_CHAT_ID);
-  if (!tgToken || !tgChatId) {
-    throw new Error("스크립트 속성에 TELEGRAM_TOKEN, TELEGRAM_CHAT_ID를 설정한 뒤 다시 실행하세요.");
-  }
-  const url = "https://api.telegram.org/bot" + tgToken + "/sendMessage";
-  UrlFetchApp.fetch(url, {
-    method: "post",
-    contentType: "application/json",
-    payload: JSON.stringify({ chat_id: tgChatId, text: "✅ Apps Script 권한 승인 테스트" }),
-    muteHttpExceptions: true
-  });
+  return jsonpOutput_(callback, { ok: true, ts: ts.toISOString() });
 }
