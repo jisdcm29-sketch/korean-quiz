@@ -246,6 +246,7 @@
       .choices{gap:6px;}
       .choice{font-size:22px;min-height:48px;padding:12px 10px;}
     }
+  .tab-reading{background:linear-gradient(135deg,rgba(251,191,36,.18),rgba(11,16,32,.96));border-color:rgba(251,191,36,.42)}
   </style>
 </head>
 
@@ -277,6 +278,7 @@
         <button class="tab tab-quiz" id="tab-quiz" type="button">어휘 테스트</button>
         <button class="tab tab-grammar" id="tab-grammar" type="button">문법</button>
         <button class="tab tab-mixed" id="tab-mixed" type="button">종합 테스트</button>
+        <button class="tab tab-reading" id="tab-reading" type="button">읽기 연습</button>
       </div>
 
       <div class="bar"></div>
@@ -324,6 +326,7 @@
         vocabQuiz: "어휘 테스트",
         grammar: "문법",
         mixed: "종합 테스트",
+        reading: "읽기 연습",
         thKo: "한국어",
         thMn: "몽골어",
         noVocab: "어휘 데이터가 없습니다.",
@@ -359,6 +362,7 @@
         vocabQuiz: "Үг шалгалт",
         grammar: "Дүрэм",
         mixed: "Нэгдсэн тест",
+        reading: "Унших дасгал",
         thKo: "Солонгос",
         thMn: "Монгол",
         noVocab: "Үгийн өгөгдөл алга.",
@@ -452,6 +456,7 @@
       document.getElementById("tab-quiz").textContent = tr("vocabQuiz");
       document.getElementById("tab-grammar").textContent = tr("grammar");
       document.getElementById("tab-mixed").textContent = tr("mixed");
+      document.getElementById("tab-reading").textContent = tr("reading");
 
       document.getElementById("btnNew").textContent = tr("restart");
       document.getElementById("btnTime7").textContent = tr("time7");
@@ -977,6 +982,19 @@
       document.getElementById("tab-quiz").addEventListener("click", ()=>{setActiveTab("quiz");if(LESSON && !QUIZ_STATE) renderQuiz(LESSON);});
       document.getElementById("tab-grammar").addEventListener("click", openGrammarQuiz);
       document.getElementById("tab-mixed").addEventListener("click", ()=>setActiveTab("mixed"));
+      document.getElementById("tab-reading").addEventListener("click", ()=>{
+        if(!LESSON) return;
+        const raw=String((LESSON.meta&&LESSON.meta.lesson)||LESSON.lesson||"1");
+        const n=Math.max(1,Math.min(8,parseInt(raw,10)||1));
+        const current=new URL(location.href);
+        const p=new URLSearchParams();
+        ["name","klass","token","lang"].forEach(k=>{const v=current.searchParams.get(k);if(v)p.set(k,v)});
+        p.set("lesson",String(n));
+        p.set("data",`../data/snu/1A/reading/lesson${String(n).padStart(2,"0")}.json`);
+        const source=current.searchParams.get("data");
+        if(source) p.set("lessonData",source);
+        location.href=`./reading.html?${p.toString()}`;
+      });
 
       document.getElementById("btnLang").addEventListener("click", ()=>{
         const next = (getLang()==="KR") ? "MN" : "KR";
@@ -1064,7 +1082,7 @@
       }
     }
 
-    main();
+  main();
   </script>
 </body>
 </html>

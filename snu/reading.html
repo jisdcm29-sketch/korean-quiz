@@ -1,0 +1,222 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8"/>
+  <meta name="viewport" content="width=device-width, initial-scale=1"/>
+  <title>SNU 1A 읽기 학습</title>
+  <style>
+    :root{
+      --bg:#0b1220;--card:#111827;--card2:#0b1020;--text:#e5e7eb;--muted:#9ca3af;--line:#243044;
+      --blue:#60a5fa;--green:#34d399;--amber:#fbbf24;--violet:#a78bfa;--red:#f87171;
+      --shadow:0 10px 30px rgba(0,0,0,.25);
+    }
+    *{box-sizing:border-box} html,body{overflow-x:hidden}
+    body{margin:0;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",Arial,sans-serif;background:linear-gradient(180deg,#050814,var(--bg));color:var(--text)}
+    a{color:inherit;text-decoration:none} button{font:inherit;touch-action:manipulation}
+    .hidden{display:none!important}
+    .topbar{position:sticky;top:0;z-index:30;display:flex;align-items:center;justify-content:space-between;gap:10px;padding:10px 14px;background:rgba(5,8,20,.82);backdrop-filter:blur(10px);border-bottom:1px solid var(--line)}
+    .brand{display:flex;align-items:center;gap:10px;font-weight:950;white-space:nowrap}.dot{width:10px;height:10px;border-radius:999px;background:var(--blue)}
+    .right{display:flex;gap:8px;align-items:center;justify-content:flex-end;min-width:0}.pill{padding:9px 12px;border-radius:999px;border:1px solid var(--line);background:rgba(11,16,32,.72);color:var(--muted);font-size:13px;white-space:nowrap;max-width:240px;overflow:hidden;text-overflow:ellipsis}
+    .btn{padding:11px 15px;border-radius:15px;border:1px solid var(--line);background:var(--card2);color:var(--text);cursor:pointer;display:inline-flex;align-items:center;justify-content:center;min-height:46px;font-weight:900;box-shadow:0 7px 18px rgba(0,0,0,.18);-webkit-tap-highlight-color:transparent}
+    .btn:hover{filter:brightness(1.07)}.btn:active{transform:translateY(1px)}.btn:disabled{opacity:.42;cursor:not-allowed;filter:none;transform:none}
+    .btnBack{min-width:52px;background:linear-gradient(135deg,rgba(96,165,250,.20),rgba(11,16,32,.96));border-color:rgba(96,165,250,.50);font-size:18px}.btnLang{min-width:58px;background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(11,16,32,.96));border-color:rgba(52,211,153,.50)}.btnHome{background:linear-gradient(135deg,rgba(248,113,113,.15),rgba(11,16,32,.96));border-color:rgba(248,113,113,.40)}
+    .container{max-width:980px;margin:0 auto;padding:16px}.card{background:rgba(17,24,39,.92);border:1px solid var(--line);border-radius:20px;padding:18px;box-shadow:var(--shadow)}
+    .titleRow{display:flex;justify-content:space-between;gap:14px;align-items:flex-end;flex-wrap:wrap}.h1{margin:0 0 6px;font-size:29px;font-weight:950;letter-spacing:.2px}.muted{color:var(--muted);line-height:1.62}.small{font-size:13px}
+    .progressMeta{display:flex;justify-content:space-between;gap:10px;align-items:center;margin-top:16px;color:var(--muted);font-size:13px;font-weight:800}.progressTrack{height:8px;margin-top:7px;border-radius:999px;background:#080d18;border:1px solid var(--line);overflow:hidden}.progressFill{height:100%;width:0;background:linear-gradient(90deg,var(--blue),var(--green));transition:width .25s ease}
+    .studyBox{margin-top:16px;border:1px solid rgba(96,165,250,.25);background:linear-gradient(145deg,rgba(96,165,250,.08),rgba(11,16,32,.95));border-radius:20px;padding:20px}
+    .sectionBadge{display:inline-flex;align-items:center;gap:7px;padding:7px 11px;border-radius:999px;background:rgba(251,191,36,.10);border:1px solid rgba(251,191,36,.30);color:#fde68a;font-size:13px;font-weight:850;max-width:100%;white-space:normal;line-height:1.35}
+    .questionNo{margin-top:17px;color:var(--muted);font-size:13px;font-weight:850;text-align:center}.koSentence{font-size:30px;line-height:1.45;font-weight:950;letter-spacing:.1px;text-align:center;margin:10px auto 8px;word-break:keep-all;overflow-wrap:anywhere;max-width:820px}.practiceHint{text-align:center;color:var(--muted);font-size:14px;line-height:1.6}
+    .checkRow{display:flex;justify-content:center;margin:20px 0 2px}.btnCheck{min-width:190px;background:linear-gradient(135deg,rgba(52,211,153,.22),rgba(11,16,32,.96));border-color:rgba(52,211,153,.58);font-size:17px}
+    .answerWrap{margin-top:18px;display:grid;gap:11px;animation:fadeIn .18s ease}@keyframes fadeIn{from{opacity:0;transform:translateY(4px)}to{opacity:1;transform:none}}
+    .answerCard{border:1px solid var(--line);border-radius:16px;padding:14px 15px;background:rgba(11,16,32,.78);line-height:1.72}.answerCard.translation{border-color:rgba(52,211,153,.40);background:linear-gradient(135deg,rgba(52,211,153,.11),rgba(11,16,32,.90))}.answerLabel{font-size:12px;font-weight:950;letter-spacing:.2px;color:var(--muted);margin-bottom:5px}.mnSentence{font-size:22px;font-weight:850;line-height:1.55;overflow-wrap:anywhere}.analysisText{font-size:16px;white-space:pre-wrap;overflow-wrap:anywhere}.structure{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Noto Sans KR",monospace;font-size:15px}
+    .navRow{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:18px}.navRow .next{justify-self:end;min-width:145px;background:linear-gradient(135deg,rgba(96,165,250,.22),rgba(11,16,32,.96));border-color:rgba(96,165,250,.55)}.navRow .prev{justify-self:start;min-width:120px}.counter{color:var(--muted);font-size:13px;font-weight:900;white-space:nowrap}
+    .notice{margin-top:16px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);border-radius:16px;padding:16px;line-height:1.65}.err{margin-top:16px;border:1px solid rgba(248,113,113,.45);background:rgba(248,113,113,.09);border-radius:16px;padding:16px;white-space:pre-wrap;line-height:1.6}.complete{text-align:center;padding:26px 12px}.completeIcon{font-size:46px}.completeTitle{font-size:26px;font-weight:950;margin:8px 0}.completeBtns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+    @media(max-width:760px){.pill{display:none}.topbar{padding:8px 10px}.brand{font-size:14px}.right{gap:6px}.btn{min-height:44px;padding:9px 11px;border-radius:13px}.btnBack{min-width:46px}.btnLang{min-width:52px}.container{padding:10px}.card{padding:14px;border-radius:18px}.h1{font-size:24px}.studyBox{padding:15px;border-radius:17px}.koSentence{font-size:25px}.mnSentence{font-size:20px}.analysisText{font-size:15px}.navRow{grid-template-columns:1fr 1fr}.counter{grid-column:1/-1;grid-row:1;text-align:center}.navRow .prev{grid-column:1;grid-row:2;width:100%}.navRow .next{grid-column:2;grid-row:2;width:100%;min-width:0}.btnCheck{width:100%}}
+    @media(max-width:480px){.topbar{padding:7px 8px}.brand{font-size:13px;gap:7px}.dot{width:8px;height:8px}.right{gap:5px}.btn{min-height:44px;padding:8px 9px}.btnBack{min-width:44px}.btnLang{min-width:48px}.container{padding:7px}.card{padding:10px;border-radius:16px}.h1{font-size:21px;line-height:1.28}.muted{font-size:13px;line-height:1.55}.studyBox{padding:11px;border-radius:15px}.sectionBadge{font-size:12px;padding:6px 9px}.questionNo{margin-top:14px}.koSentence{font-size:22px;line-height:1.48;margin-top:8px}.practiceHint{font-size:13px}.checkRow{margin-top:16px}.mnSentence{font-size:18px}.analysisText{font-size:14px;line-height:1.65}.answerCard{padding:12px}.navRow{gap:8px}.navRow .prev,.navRow .next{font-size:14px}.completeTitle{font-size:22px}}
+  </style>
+</head>
+<body>
+  <header class="topbar">
+    <div class="brand"><span class="dot"></span><a id="brandLink" href="../index.html">Korean Quiz</a></div>
+    <div class="right">
+      <span class="pill" id="pillName">학습자: -</span>
+      <span class="pill" id="pillToken">token: -</span>
+      <button class="btn btnBack" id="btnBack" type="button" aria-label="back">←</button>
+      <button class="btn btnLang" id="btnLang" type="button">KR</button>
+      <a class="btn btnHome" id="btnHome" href="../index.html">홈</a>
+    </div>
+  </header>
+
+  <main class="container">
+    <section class="card">
+      <div class="titleRow">
+        <div>
+          <h1 class="h1" id="title">TOPIK I · 읽기평가</h1>
+          <div class="muted" id="subtitle">불러오는 중...</div>
+        </div>
+        <div class="muted small" id="status"></div>
+      </div>
+
+      <div id="studyArea" class="hidden">
+        <div class="progressMeta"><span id="progressText">1 / 50</span><span id="progressPercent">2%</span></div>
+        <div class="progressTrack"><div class="progressFill" id="progressFill"></div></div>
+        <div class="studyBox" id="studyBox"></div>
+      </div>
+
+      <div class="notice hidden" id="notice"></div>
+      <div class="err hidden" id="err"></div>
+    </section>
+  </main>
+
+  <script>
+    const I18N={
+      KR:{
+        home:'홈', learner:'학습자: ', loading:'불러오는 중...', loaded:'로드 완료',
+        reading:'읽기평가', sentence:'한국어 문장', hint:'한국어 문장을 먼저 읽고 몽골어로 직접 번역해 보세요.',
+        check:'번역 확인', hide:'번역 숨기기', translation:'몽골어 번역', vocab:'핵심 어휘', grammar:'핵심 문법', structure:'문장 구조',
+        prev:'이전', next:'다음', finish:'학습 완료', prepared:'아직 이 단계의 학습 데이터가 준비되지 않았습니다.',
+        backLevels:'레벨 선택으로 돌아가기', completeTitle:'Level 1 학습 완료', completeBody:'50개의 한국어 문장을 모두 확인했습니다.', restart:'1단계 다시 학습',
+        loadError:'학습 데이터를 불러오지 못했습니다.'
+      },
+      MN:{
+        home:'Нүүр', learner:'Сурагч: ', loading:'Ачаалж байна...', loaded:'Ачааллаа',
+        reading:'Унших дасгал', sentence:'Солонгос өгүүлбэр', hint:'Солонгос өгүүлбэрийг эхлээд өөрөө монгол хэл рүү орчуулж үзээрэй.',
+        check:'Орчуулгыг шалгах', hide:'Орчуулгыг нуух', translation:'Монгол орчуулга', vocab:'Гол үгс', grammar:'Гол дүрэм', structure:'Өгүүлбэрийн бүтэц',
+        prev:'Өмнөх', next:'Дараах', finish:'Сургалт дуусгах', prepared:'Энэ шатны сургалтын өгөгдөл хараахан бэлэн болоогүй байна.',
+        backLevels:'Шат сонгох руу буцах', completeTitle:'Level 1 дууслаа', completeBody:'50 солонгос өгүүлбэрийг бүгдийг нь шалгалаа.', restart:'1-р шатыг дахин сурах',
+        loadError:'Сургалтын өгөгдлийг уншиж чадсангүй.'
+      }
+    };
+
+    const $=id=>document.getElementById(id);
+    const params=new URL(location.href).searchParams;
+    const cat=params.get('cat')||'reading';
+    const levelNo=Math.max(1,parseInt(params.get('level')||'1',10)||1);
+    const level=String(levelNo).padStart(2,'0');
+    let DATA=null,index=0,revealed=false;
+
+    function getLang(){
+      const q=(params.get('lang')||'').toUpperCase();
+      const st=(localStorage.getItem('kq_lang')||localStorage.getItem('lang')||'').toUpperCase();
+      const pick=(q==='KR'||q==='MN')?q:st;
+      return pick==='MN'?'MN':'KR';
+    }
+    function tr(k){return (I18N[getLang()]&&I18N[getLang()][k])||I18N.KR[k]||k}
+    function esc(s){return String(s??'').replace(/[&<>"']/g,c=>({'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c]))}
+    function pass(extra={}){
+      const p=new URLSearchParams();
+      ['name','klass','token','lang'].forEach(k=>{const v=params.get(k);if(v)p.set(k,v)});
+      if(!p.get('lang'))p.set('lang',getLang());
+      Object.entries(extra).forEach(([k,v])=>{if(v!==undefined&&v!==null)p.set(k,String(v))});
+      return p;
+    }
+    function withQS(url,extra={}){const p=pass(extra);return url+(url.includes('?')?'&':'?')+p.toString()}
+    function levelIndexUrl(){
+      const lessonData=params.get('lessonData');
+      if(lessonData){
+        const p=new URLSearchParams();
+        ['name','klass','token','lang'].forEach(k=>{const v=params.get(k);if(v)p.set(k,v)});
+        p.set('data',lessonData);
+        return `./lesson.html?${p.toString()}`;
+      }
+      return withQS('./index.html');
+    }
+
+    function applyTop(){
+      document.documentElement.lang=getLang()==='MN'?'mn':'ko';
+      $('brandLink').href=withQS('../index.html');
+      $('btnHome').href=withQS('../index.html');
+      $('btnHome').textContent=tr('home');
+      $('btnLang').textContent=getLang();
+      $('pillName').textContent=tr('learner')+(params.get('name')||'-');
+      $('pillToken').textContent='token: '+(params.get('token')||'-');
+      if(DATA){
+        $('title').textContent=getLang()==='MN'?(DATA.title_mn||DATA.title_kr):DATA.title_kr;
+        $('subtitle').textContent=getLang()==='MN'?(DATA.description_mn||DATA.description_kr):DATA.description_kr;
+        render();
+      }
+    }
+
+    function answerBlock(label,text,cls=''){
+      if(!text)return '';
+      return `<div class="answerCard ${cls}"><div class="answerLabel">${esc(label)}</div><div class="${cls==='translation'?'mnSentence':cls==='structure'?'analysisText structure':'analysisText'}">${esc(text)}</div></div>`;
+    }
+
+    function render(){
+      const items=(DATA&&Array.isArray(DATA.items))?DATA.items:[];
+      if(!items.length)return;
+      index=Math.max(0,Math.min(index,items.length-1));
+      const item=items[index], n=index+1, total=items.length, pct=Math.round(n/total*100);
+      $('progressText').textContent=`${n} / ${total}`;
+      $('progressPercent').textContent=`${pct}%`;
+      $('progressFill').style.width=`${pct}%`;
+      $('status').textContent=`${n} / ${total}`;
+      const nextLabel=n===total?tr('finish'):tr('next');
+      $('studyBox').innerHTML=`
+        ${(getLang()==='MN'?(item.section_mn||item.section):(item.section_kr||item.section))?`<div class="sectionBadge">${esc(getLang()==='MN'?(item.section_mn||item.section):(item.section_kr||item.section))}</div>`:''}
+        <div class="questionNo">${esc(tr('sentence'))} ${esc(item.id??n)}</div>
+        <div class="koSentence">${esc(item.ko)}</div>
+        <div class="practiceHint">${esc(tr('hint'))}</div>
+        <div class="checkRow"><button class="btn btnCheck" id="btnCheck" type="button">${esc(revealed?tr('hide'):tr('check'))}</button></div>
+        <div class="answerWrap ${revealed?'':'hidden'}" id="answerWrap">
+          ${answerBlock(tr('translation'),item.mn,'translation')}
+          ${answerBlock(tr('vocab'),item.vocab)}
+          ${answerBlock(tr('grammar'),item.grammar)}
+          ${answerBlock(tr('structure'),item.structure,'structure')}
+        </div>
+        <div class="navRow">
+          <button class="btn prev" id="btnPrev" type="button" ${index===0?'disabled':''}>← ${esc(tr('prev'))}</button>
+          <span class="counter">${n} / ${total}</span>
+          <button class="btn next" id="btnNext" type="button">${esc(nextLabel)} ${n===total?'✓':'→'}</button>
+        </div>`;
+      $('btnCheck').onclick=()=>{revealed=!revealed;render()};
+      $('btnPrev').onclick=()=>{if(index>0){index--;revealed=false;render();scrollStudyTop()}};
+      $('btnNext').onclick=()=>{if(index<items.length-1){index++;revealed=false;render();scrollStudyTop()}else showComplete(items.length)};
+    }
+
+    function scrollStudyTop(){
+      const y=$('studyArea').getBoundingClientRect().top+window.scrollY-78;
+      window.scrollTo({top:Math.max(0,y),behavior:'smooth'});
+    }
+
+    function showComplete(total){
+      $('progressText').textContent=`${total} / ${total}`;$('progressPercent').textContent='100%';$('progressFill').style.width='100%';$('status').textContent=`${total} / ${total}`;
+      const completeTitle=getLang()==='MN'?`Level ${levelNo} дууслаа`:`Level ${levelNo} 학습 완료`;
+      const restartLabel=getLang()==='MN'?`${levelNo}-р шатыг дахин сурах`:`${levelNo}단계 다시 학습`;
+      const completeBody=getLang()==='MN'?`${total} солонгос өгүүлбэрийг бүгдийг нь шалгалаа.`:`${total}개의 한국어 문장을 모두 확인했습니다.`;
+      $('studyBox').innerHTML=`<div class="complete"><div class="completeIcon">✅</div><div class="completeTitle">${esc(completeTitle)}</div><div class="muted">${esc(completeBody)}</div><div class="completeBtns"><button class="btn" id="btnRestart" type="button">${esc(restartLabel)}</button><a class="btn next" href="${esc(levelIndexUrl())}">${esc(tr('backLevels'))}</a></div></div>`;
+      $('btnRestart').onclick=()=>{index=0;revealed=false;render();scrollStudyTop()};
+    }
+
+    async function init(){
+      applyTop();
+      $('status').textContent=tr('loading');
+      $('btnBack').onclick=()=>{location.href=levelIndexUrl()};
+      $('btnLang').onclick=()=>{
+        const next=getLang()==='KR'?'MN':'KR';
+        localStorage.setItem('kq_lang',next);localStorage.setItem('lang',next);
+        params.set('lang',next);history.replaceState(null,'',`${location.pathname}?${params.toString()}${location.hash}`);applyTop();
+      };
+      const explicit=params.get('data');
+      const lessonNo=Math.max(1,Math.min(8,parseInt(params.get('lesson')||'1',10)||1));
+      const path=explicit || `../data/snu/1A/reading/lesson${String(lessonNo).padStart(2,'0')}.json`;
+      try{
+        const res=await fetch(new URL(path,location.href),{cache:'no-store'});
+        if(!res.ok){
+          if(res.status===404){
+            $('status').textContent='';$('subtitle').textContent='';$('notice').textContent=`Level ${levelNo}: ${tr('prepared')}`;$('notice').classList.remove('hidden');return;
+          }
+          throw new Error('HTTP '+res.status);
+        }
+        DATA=await res.json();
+        document.title=getLang()==='MN'?(DATA.title_mn||DATA.title_kr||document.title):(DATA.title_kr||document.title);
+        if(!Array.isArray(DATA.items)||DATA.items.length!==50)throw new Error(`문항 수 오류: ${Array.isArray(DATA.items)?DATA.items.length:0}`);
+        $('studyArea').classList.remove('hidden');$('status').textContent=tr('loaded');applyTop();
+      }catch(e){
+        $('status').textContent='';$('err').textContent=`${tr('loadError')}\n${e.message||e}\n${path}`;$('err').classList.remove('hidden');
+      }
+    }
+    init();
+  </script>
+</body>
+</html>
