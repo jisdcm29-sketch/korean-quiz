@@ -533,11 +533,50 @@
       $ok.style.display = "block";
     }
 
+    let lookupTimer = null;
+    let lookupSerial = 0;
+    let lastLookupPhone = "";
+
+    async function lookupRegisteredName(){
+      const phone = safeTrim($phone.value).replace(/\D/g, "");
+      $phone.value = phone;
+
+      if (!phone){
+        lastLookupPhone = "";
+        return "";
+      }
+
+      const serial = ++lookupSerial;
+      try{
+        const result = await jsonp(SCRIPT_URL, {
+          action: "lookup",
+          phone
+        }, 6000);
+
+        if (serial !== lookupSerial) return "";
+        if (result && result.ok && result.name){
+          lastLookupPhone = phone;
+          $name.value = String(result.name);
+          $err.style.display = "none";
+          return $name.value;
+        }
+      }catch(e){
+        // 조회 실패 시 로그인 버튼에서 기존 인증 절차가 다시 확인합니다.
+      }
+      return "";
+    }
+
     async function doLogin(){
       const phone = safeTrim($phone.value).replace(/\D/g, "");
-      const name = safeTrim($name.value);
+      $phone.value = phone;
 
       if (!phone) return showErr(t("needPhone"));
+
+      let name = safeTrim($name.value);
+      if (!name){
+        await lookupRegisteredName();
+        name = safeTrim($name.value);
+      }
       if (!name) return showErr(t("needName"));
 
       showOk(t("logging"));
@@ -561,8 +600,12 @@
         return showErr(t("authFailed"));
       }
 
+      // 시트에 관리용 이름이 있으면 그 이름을 최종 이름으로 사용합니다.
+      const finalName = safeTrim(auth.registeredName) || name;
+      $name.value = finalName;
+
       const session = {
-        name,
+        name: finalName,
         phone,
         // 기존 학습 페이지 호환을 위한 내부값이며 사용자가 반을 선택하지 않습니다.
         klass: "인증",
@@ -582,7 +625,33 @@
     }
 
     $btn.addEventListener("click", doLogin);
-    $phone.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
+
+    $phone.addEventListener("input", () => {
+      const phone = safeTrim($phone.value).replace(/\D/g, "");
+      $phone.value = phone;
+
+      if (phone !== lastLookupPhone){
+        $name.value = "";
+      }
+
+      clearTimeout(lookupTimer);
+      if (phone.length >= 8){
+        lookupTimer = setTimeout(lookupRegisteredName, 350);
+      }
+    });
+
+    $phone.addEventListener("blur", () => {
+      clearTimeout(lookupTimer);
+      lookupRegisteredName();
+    });
+
+    $phone.addEventListener("keydown", async (e)=>{
+      if(e.key === "Enter"){
+        e.preventDefault();
+        await lookupRegisteredName();
+        if (safeTrim($name.value)) $btn.focus();
+      }
+    });
     $name.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
   }
 
