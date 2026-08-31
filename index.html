@@ -212,7 +212,6 @@
   // ====== CONFIG (여기만 수정하면 됨) ======
   // 1) 아래 URL을 “내가 배포한 웹앱 URL”로 바꿔주세요.
   const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
-  const PASSWORD = "tae";
   const AUTO_LOGOUT_MIN = 30;
 
   const PATHS = {
@@ -227,17 +226,17 @@
     ko: {
       topHint: "언어 선택",
       appTitle: "Korean Quiz",
-      loginSubtitle: "비밀번호 입력 후 시작합니다",
+      loginSubtitle: "등록된 전화번호로 인증 후 시작합니다",
       loginTitle: "로그인",
-      pw: "비밀번호",
-      pwPh: "tae",
+      phone: "인증번호(전화번호)",
+      phonePh: "예: 99112233",
       name: "이름",
       namePh: "예: 바트",
-      klass: "반 선택",
+      authFailed: "등록되지 않았거나 사용이 중지된 전화번호입니다.",
       loginBtn: "로그인",
-      wrongPw: "비밀번호가 틀렸습니다.",
+      needPhone: "전화번호를 입력해 주세요.",
       needName: "이름을 입력해 주세요.",
-      needKlass: "반을 선택해 주세요.",
+      authError: "인증 중 오류가 발생했습니다. 잠시 후 다시 시도해 주세요.",
       logging: "기록 저장 중…",
       loginOk: "로그인 완료! 선택 화면으로 이동합니다.",
       loginOkNoLog: "로그인 완료! (기록 전송은 네트워크 상황에 따라 실패할 수 있어요)",
@@ -250,23 +249,23 @@
       topik1: "TOPIK 1",
       topik2: "TOPIK 2",
       pillName: "이름",
-      pillKlass: "반",
-      footer: "이동 시 name/klass/token/lang 파라미터가 자동으로 전달됩니다."
+      pillKlass: "인증",
+      footer: "인증 정보는 학습 페이지로 안전하게 전달됩니다."
     },
     mn: {
       topHint: "Хэл",
       appTitle: "Korean Quiz",
-      loginSubtitle: "Нууц үгээ оруулаад эхэлнэ",
+      loginSubtitle: "Бүртгэлтэй утасны дугаараар баталгаажуулж эхэлнэ",
       loginTitle: "Нэвтрэх",
-      pw: "Нууц үг",
-      pwPh: "tae",
+      phone: "Баталгаажуулах дугаар (утас)",
+      phonePh: "Жишээ: 99112233",
       name: "Нэр",
       namePh: "Жишээ: Бат",
-      klass: "Анги сонгох",
+      authFailed: "Утасны дугаар бүртгэлгүй эсвэл ашиглах эрхгүй байна.",
       loginBtn: "Нэвтрэх",
-      wrongPw: "Нууц үг буруу байна.",
+      needPhone: "Утасны дугаараа оруулна уу.",
       needName: "Нэрээ оруулна уу.",
-      needKlass: "Ангиа сонгоно уу.",
+      authError: "Баталгаажуулах үед алдаа гарлаа. Дахин оролдоно уу.",
       logging: "Бүртгэл илгээж байна…",
       loginOk: "Амжилттай! Сонголтын дэлгэц рүү шилжинэ.",
       loginOkNoLog: "Амжилттай! (Сүлжээнээс шалтгаалж илгээх амжилтгүй байж болно)",
@@ -279,8 +278,8 @@
       topik1: "TOPIK 1",
       topik2: "TOPIK 2",
       pillName: "Нэр",
-      pillKlass: "Анги",
-      footer: "Шилжих үед name/klass/token/lang параметр автоматаар дамжина."
+      pillKlass: "Баталгаажуулалт",
+      footer: "Баталгаажуулалтын мэдээлэл хичээлийн хуудсанд дамжина."
     }
   };
 
@@ -492,24 +491,13 @@
         <div class="sectionTitle">${escapeHtml(t("loginTitle"))}</div>
 
         <div class="field">
-          <label for="pw">${escapeHtml(t("pw"))}</label>
-          <input id="pw" type="password" inputmode="text" autocomplete="off" placeholder="${escapeHtml(t("pwPh"))}" />
+          <label for="phone">${escapeHtml(t("phone"))}</label>
+          <input id="phone" type="tel" inputmode="numeric" autocomplete="tel" placeholder="${escapeHtml(t("phonePh"))}" />
         </div>
 
         <div class="field">
           <label for="name">${escapeHtml(t("name"))}</label>
           <input id="name" type="text" inputmode="text" autocomplete="name" placeholder="${escapeHtml(t("namePh"))}" />
-        </div>
-
-        <div class="field">
-          <label for="klass">${escapeHtml(t("klass"))}</label>
-          <select id="klass">
-            <option value="BBTA1반">BBTA1반</option>
-            <option value="EKO1반">EKO1반</option>
-            <option value="EKO2반">EKO2반</option>
-            <option value="토픽반">토픽반</option>
-            <option value="기타반">기타반</option>
-          </select>
         </div>
 
         <button class="btn btnPrimary" id="btnLogin">${escapeHtml(t("loginBtn"))}</button>
@@ -528,9 +516,8 @@
 
     bindTopBar(renderLogin);
 
-    const $pw = document.getElementById("pw");
+    const $phone = document.getElementById("phone");
     const $name = document.getElementById("name");
-    const $klass = document.getElementById("klass");
     const $err = document.getElementById("err");
     const $ok = document.getElementById("ok");
     const $btn = document.getElementById("btnLogin");
@@ -547,18 +534,39 @@
     }
 
     async function doLogin(){
-      const pw = safeTrim($pw.value);
+      const phone = safeTrim($phone.value).replace(/\D/g, "");
       const name = safeTrim($name.value);
-      const klass = safeTrim($klass.value);
 
-      if (pw !== PASSWORD) return showErr(t("wrongPw"));
+      if (!phone) return showErr(t("needPhone"));
       if (!name) return showErr(t("needName"));
-      if (!klass) return showErr(t("needKlass"));
+
+      showOk(t("logging"));
+      $btn.disabled = true;
+
+      let auth;
+      try{
+        auth = await jsonp(SCRIPT_URL, {
+          action: "auth",
+          phone,
+          name,
+          deviceId: getDeviceId()
+        }, 8000);
+      }catch(e){
+        $btn.disabled = false;
+        return showErr(t("authError"));
+      }
+
+      if (!auth || !auth.ok || !auth.token){
+        $btn.disabled = false;
+        return showErr(t("authFailed"));
+      }
 
       const session = {
         name,
-        klass,
-        token: genToken(),
+        phone,
+        // 기존 학습 페이지 호환을 위한 내부값이며 사용자가 반을 선택하지 않습니다.
+        klass: "인증",
+        token: auth.token,
         sessionId: genSessionId(),
         deviceId: getDeviceId(),
         lastActive: now(),
@@ -566,12 +574,7 @@
       };
       writeSession(session);
 
-      showOk(t("logging"));
-
-      // (1) 세션 시작(로그인 시간) 기록 → Sessions 시트에 저장
       await sendSessionStart(session);
-
-      // (2) 기존 로그인 이벤트도 Log 시트에 남김(원하면 유지)
       const ok = await sendLoginLog(session);
       showOk(ok ? t("loginOk") : t("loginOkNoLog"));
 
@@ -579,7 +582,7 @@
     }
 
     $btn.addEventListener("click", doLogin);
-    $pw.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
+    $phone.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
     $name.addEventListener("keydown", (e)=>{ if(e.key==="Enter") doLogin(); });
   }
 
@@ -598,7 +601,7 @@
       <div class="dashTop">
         <div class="who">
           <div class="name">${escapeHtml(s.name)}</div>
-          <div class="klass">${escapeHtml(s.klass)} · <span class="mono">${AUTO_LOGOUT_MIN}m</span> auto</div>
+          <div class="klass"><span class="mono">${AUTO_LOGOUT_MIN}m</span> auto</div>
         </div>
         <button class="btnGhost" id="btnLogout">${escapeHtml(t("logout"))}</button>
       </div>
@@ -616,7 +619,6 @@
 
       <div class="smallRow">
         <div class="pill"><span>${escapeHtml(t("pillName"))}</span><b>${escapeHtml(s.name)}</b></div>
-        <div class="pill"><span>${escapeHtml(t("pillKlass"))}</span><b>${escapeHtml(s.klass)}</b></div>
       </div>
 
       <div class="footerMini">
