@@ -31,7 +31,11 @@ function checkAuthorizedPhone_(ss, phone) {
     const savedPhone = normalizePhone_(values[i][0]);
     const enabled = isEnabled_(values[i][2]);
     if (savedPhone === target && enabled) {
-      return { ok: true, phone: target };
+      return {
+        ok: true,
+        phone: target,
+        studentName: String(values[i][1] == null ? "" : values[i][1]).trim()
+      };
     }
   }
 
@@ -104,7 +108,19 @@ function doGet(e) {
   const action = String(p.action || "").trim().toLowerCase();
   const callback = p.callback || "callback";
 
-  // 1) 전화번호 인증 + 서버 토큰 발급
+  // 1) 등록 전화번호의 학생이름 조회
+  if (action === "lookup") {
+    const phone = normalizePhone_(p.phone || "");
+    const auth = checkAuthorizedPhone_(ss, phone);
+    if (!auth.ok) return jsonpOutput_(callback, auth);
+    return jsonpOutput_(callback, {
+      ok: true,
+      phone: auth.phone,
+      name: auth.studentName || ""
+    });
+  }
+
+  // 2) 전화번호 인증 + 서버 토큰 발급
   if (action === "auth") {
     const phone = normalizePhone_(p.phone || "");
     const name = String(p.name || "").trim();
@@ -116,17 +132,21 @@ function doGet(e) {
     if (!auth.ok) return jsonpOutput_(callback, auth);
 
     const token = issueAuthToken_(phone, name, deviceId);
-    return jsonpOutput_(callback, { ok: true, token: token });
+    return jsonpOutput_(callback, {
+      ok: true,
+      token: token,
+      registeredName: auth.studentName || ""
+    });
   }
 
-  // 2) 페이지 진입 시 토큰 검증
+  // 3) 페이지 진입 시 토큰 검증
   if (action === "validate") {
     const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
     if (!result.ok) return jsonpOutput_(callback, result);
     return jsonpOutput_(callback, { ok: true });
   }
 
-  // 3) 인증이 필요한 기록 요청 보호
+  // 4) 인증이 필요한 기록 요청 보호
   if (action === "log" || action === "session_start") {
     const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
     if (!result.ok) return jsonpOutput_(callback, result);
