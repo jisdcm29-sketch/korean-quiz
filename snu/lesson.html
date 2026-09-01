@@ -985,12 +985,13 @@
       document.getElementById("tab-reading").addEventListener("click", ()=>{
         if(!LESSON) return;
         const raw=String((LESSON.meta&&LESSON.meta.lesson)||LESSON.lesson||"1");
-        const n=Math.max(1,Math.min(8,parseInt(raw,10)||1));
+        const n=Math.max(1,Math.min(16,parseInt(raw,10)||1));
+        const level=String((LESSON.meta&&LESSON.meta.level)||LESSON.level||(n>=9?"1B":"1A"));
         const current=new URL(location.href);
         const p=new URLSearchParams();
         ["name","klass","token","lang"].forEach(k=>{const v=current.searchParams.get(k);if(v)p.set(k,v)});
         p.set("lesson",String(n));
-        p.set("data",`../data/snu/1A/reading/lesson${String(n).padStart(2,"0")}.json`);
+        p.set("data",`../data/snu/${level}/reading/lesson${String(n).padStart(2,"0")}.json`);
         const source=current.searchParams.get("data");
         if(source) p.set("lessonData",source);
         location.href=`./reading.html?${p.toString()}`;

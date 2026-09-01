@@ -147,28 +147,25 @@
       if(!items.length)return;
       index=Math.max(0,Math.min(index,items.length-1));
       const item=items[index], n=index+1, total=items.length, pct=Math.round(n/total*100);
-      $('progressText').textContent=`${n} / ${total}`;
-      $('progressPercent').textContent=`${pct}%`;
-      $('progressFill').style.width=`${pct}%`;
-      $('status').textContent=`${n} / ${total}`;
-      const nextLabel=n===total?tr('finish'):tr('next');
+      $('progressText').textContent=`${n} / ${total}`;$('progressPercent').textContent=`${pct}%`;
+      $('progressFill').style.width=`${pct}%`;$('status').textContent=`${n} / ${total}`;
+      const bullets=(arr)=>Array.isArray(arr)&&arr.length?arr.map(x=>`• ${esc(x)}`).join('<br>'):'';
+      const analysis=Array.isArray(item.analysis_rows)&&item.analysis_rows.length
+        ?item.analysis_rows.map(x=>`• <b>${esc(x.ko)}</b> → ${esc(x.mn)}`).join('<br>'):'';
       $('studyBox').innerHTML=`
-        ${(getLang()==='MN'?(item.section_mn||item.section):(item.section_kr||item.section))?`<div class="sectionBadge">${esc(getLang()==='MN'?(item.section_mn||item.section):(item.section_kr||item.section))}</div>`:''}
-        <div class="questionNo">${esc(tr('sentence'))} ${esc(item.id??n)}</div>
+        ${(item.section_mn||item.section)?`<div class="sectionBadge">${esc(item.section_mn||item.section)}</div>`:''}
+        <div class="questionNo">Солонгос өгүүлбэр ${esc(item.id??n)}</div>
         <div class="koSentence">${esc(item.ko)}</div>
-        <div class="practiceHint">${esc(tr('hint'))}</div>
-        <div class="checkRow"><button class="btn btnCheck" id="btnCheck" type="button">${esc(revealed?tr('hide'):tr('check'))}</button></div>
+        <div class="practiceHint">Эхлээд өөрөө монгол хэлээр орчуулж үзээрэй.</div>
+        <div class="checkRow"><button class="btn btnCheck" id="btnCheck" type="button">${revealed?'Орчуулгыг нуух':'Орчуулгыг шалгах'}</button></div>
         <div class="answerWrap ${revealed?'':'hidden'}" id="answerWrap">
-          ${answerBlock(tr('translation'),item.mn,'translation')}
-          ${answerBlock(tr('vocab'),item.vocab)}
-          ${answerBlock(tr('grammar'),item.grammar)}
-          ${answerBlock(tr('structure'),item.structure,'structure')}
+          ${answerBlock('Монгол орчуулга',item.mn,'translation')}
+          ${analysis?`<div class="answerBlock"><div class="answerLabel">1. Өгүүлбэрийн задлал</div><div>${analysis}</div></div>`:''}
+          ${item.grammar_mn?.length?`<div class="answerBlock"><div class="answerLabel">2. Дүрэм</div><div>${bullets(item.grammar_mn)}</div></div>`:''}
+          ${item.vocab_mn?.length?`<div class="answerBlock"><div class="answerLabel">3. Үг, хэллэг</div><div>${bullets(item.vocab_mn)}</div></div>`:''}
         </div>
-        <div class="navRow">
-          <button class="btn prev" id="btnPrev" type="button" ${index===0?'disabled':''}>← ${esc(tr('prev'))}</button>
-          <span class="counter">${n} / ${total}</span>
-          <button class="btn next" id="btnNext" type="button">${esc(nextLabel)} ${n===total?'✓':'→'}</button>
-        </div>`;
+        <div class="navRow"><button class="btn prev" id="btnPrev" type="button" ${index===0?'disabled':''}>← Өмнөх</button>
+        <span class="counter">${n} / ${total}</span><button class="btn next" id="btnNext" type="button">${n===total?'Дуусгах ✓':'Дараах →'}</button></div>`;
       $('btnCheck').onclick=()=>{revealed=!revealed;render()};
       $('btnPrev').onclick=()=>{if(index>0){index--;revealed=false;render();scrollStudyTop()}};
       $('btnNext').onclick=()=>{if(index<items.length-1){index++;revealed=false;render();scrollStudyTop()}else showComplete(items.length)};
