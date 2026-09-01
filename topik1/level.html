@@ -73,7 +73,7 @@
       KR:{
         home:'홈', learner:'학습자: ', loading:'불러오는 중...', loaded:'로드 완료',
         reading:'읽기평가', sentence:'한국어 문장', hint:'한국어 문장을 먼저 읽고 몽골어로 직접 번역해 보세요.',
-        check:'번역 확인', hide:'번역 숨기기', translation:'몽골어 번역', vocab:'핵심 어휘', grammar:'핵심 문법', structure:'문장 구조',
+        check:'번역 확인', hide:'번역 숨기기', translation:'몽골어 번역', analysis:'문장 분석', vocab:'어휘·표현', grammar:'문법', structure:'문장 구조',
         prev:'이전', next:'다음', finish:'학습 완료', prepared:'아직 이 단계의 학습 데이터가 준비되지 않았습니다.',
         backLevels:'레벨 선택으로 돌아가기', completeTitle:'Level 1 학습 완료', completeBody:'50개의 한국어 문장을 모두 확인했습니다.', restart:'1단계 다시 학습',
         loadError:'학습 데이터를 불러오지 못했습니다.'
@@ -81,7 +81,7 @@
       MN:{
         home:'Нүүр', learner:'Сурагч: ', loading:'Ачаалж байна...', loaded:'Ачааллаа',
         reading:'Унших дасгал', sentence:'Солонгос өгүүлбэр', hint:'Солонгос өгүүлбэрийг эхлээд өөрөө монгол хэл рүү орчуулж үзээрэй.',
-        check:'Орчуулгыг шалгах', hide:'Орчуулгыг нуух', translation:'Монгол орчуулга', vocab:'Гол үгс', grammar:'Гол дүрэм', structure:'Өгүүлбэрийн бүтэц',
+        check:'Орчуулгыг шалгах', hide:'Орчуулгыг нуух', translation:'Монгол орчуулга', analysis:'1. Өгүүлбэрийн задлал', grammar:'2. Дүрэм', vocab:'3. Үг, хэллэг', structure:'Өгүүлбэрийн бүтэц',
         prev:'Өмнөх', next:'Дараах', finish:'Сургалт дуусгах', prepared:'Энэ шатны сургалтын өгөгдөл хараахан бэлэн болоогүй байна.',
         backLevels:'Шат сонгох руу буцах', completeTitle:'Level 1 дууслаа', completeBody:'50 солонгос өгүүлбэрийг бүгдийг нь шалгалаа.', restart:'1-р шатыг дахин сурах',
         loadError:'Сургалтын өгөгдлийг уншиж чадсангүй.'
@@ -151,9 +151,9 @@
         <div class="checkRow"><button class="btn btnCheck" id="btnCheck" type="button">${esc(revealed?tr('hide'):tr('check'))}</button></div>
         <div class="answerWrap ${revealed?'':'hidden'}" id="answerWrap">
           ${answerBlock(tr('translation'),item.mn,'translation')}
-          ${answerBlock(tr('vocab'),item.vocab)}
-          ${answerBlock(tr('grammar'),item.grammar)}
-          ${answerBlock(tr('structure'),item.structure,'structure')}
+          ${answerBlock(tr('analysis'),Array.isArray(item.analysis_rows)?item.analysis_rows.map(r=>`${r.ko} → ${r.mn}`).join('\n'):item.structure)}
+          ${answerBlock(tr('grammar'),Array.isArray(item.grammar_mn)?item.grammar_mn.join('\n'):item.grammar)}
+          ${answerBlock(tr('vocab'),Array.isArray(item.vocab_mn)?item.vocab_mn.join('\n'):item.vocab)}
         </div>
         <div class="navRow">
           <button class="btn prev" id="btnPrev" type="button" ${index===0?'disabled':''}>← ${esc(tr('prev'))}</button>
