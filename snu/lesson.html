@@ -614,6 +614,17 @@
       return firstByLevel[level] || 1;
     }
 
+
+    function previousBookGateForLevel(levelRaw){
+      const level=String(levelRaw||"").toUpperCase();
+      const order=["1A","1B","2A","2B","3A","3B","4A","4B"];
+      const lastByLevel={"1A":8,"1B":16,"2A":9,"2B":18,"3A":9,"3B":18,"4A":9,"4B":18};
+      const idx=order.indexOf(level);
+      if(idx<=0)return null;
+      const prevLevel=order[idx-1];
+      return {level:prevLevel,lastLesson:lastByLevel[prevLevel]||0};
+    }
+
     function lessonRangeForLevel(levelRaw){
       const level = String(levelRaw || "").toUpperCase();
       const ranges = {
@@ -719,10 +730,36 @@
           return {allowed:true,level,lessonNo,firstLesson,lowerBookAccess:true,teacherOverride:true,role:"student"};
         }
 
+        const higherBook = accessProfile.higherBook === true || accessProfile.bookRelation === "higher";
+        if(higherBook){
+          const gateInfo = previousBookGateForLevel(level);
+          if(!gateInfo || !gateInfo.lastLesson){
+            return {allowed:false,error:"previous_book_gate_missing",level,lessonNo,firstLesson};
+          }
+          const gateTypes = ["vocab","grammar","mixed"];
+          const gateResponses = await Promise.all(gateTypes.map(testType=>sendResultJsonp({
+            action:"mastery_status", token:id.token, name:id.name,
+            book:`SNU-${gateInfo.level}`, lesson:String(gateInfo.lastLesson), testType
+          })));
+          const gateTests = {};
+          gateTypes.forEach((type,i)=>{ gateTests[type] = gateResponses[i] || {}; });
+          const gateError = gateTypes.map(type=>gateTests[type]).find(r=>!r || r.ok !== true);
+          const gateErrorText = gateError ? String(gateError.error || "status_check_failed") : "";
+          if(["expired_or_invalid","missing_token","invalid_token","unauthorized"].includes(gateErrorText)){
+            return {allowed:false,error:gateErrorText,authRequired:true,level,lessonNo,firstLesson};
+          }
+          const gatePassed = gateTypes.every(type=>gateTests[type] && gateTests[type].ok === true && gateTests[type].status === "PASS" && Number(gateTests[type].bestScore || 0) >= 90);
+          if(!gatePassed){
+            return {allowed:false,level,lessonNo,firstLesson,crossBookGate:true,previousBook:gateInfo.level,previousLesson:gateInfo.lastLesson,
+              previousScores:{vocab:Number(gateTests.vocab.bestScore||0),grammar:Number(gateTests.grammar.bestScore||0),mixed:Number(gateTests.mixed.bestScore||0)},
+              passScore:90,error:gateErrorText};
+          }
+        }
+
         // 교사가 지정한 시작 과가 있으면 그 과까지는 기존 진도로 인정한다.
         // 예: startLesson=3 -> 1, 2, 3과는 바로 접근 가능하고 4과부터 3과의 3개 시험 통과를 요구한다.
         let teacherStartLesson = 0;
-        if(accessProfile && accessProfile.ok === true && accessProfile.found === true && accessProfile.enabled === true){
+        if(!higherBook && accessProfile && accessProfile.ok === true && accessProfile.found === true && accessProfile.enabled === true){
           const requestedStart = Number(accessProfile.startLesson || 0);
           if(Number.isFinite(requestedStart) && requestedStart > 0){
             teacherStartLesson = Math.max(firstLesson, Math.floor(requestedStart));
@@ -828,6 +865,7 @@
       }
 
       const prev = Number(access && access.previousLesson || 0);
+      const prevLabel = access && access.crossBookGate && access.previousBook ? `${access.previousBook} ${prev}` : String(prev);
       const scores = (access && access.previousScores) || {vocab:0,grammar:0,mixed:0};
       const vocabScore = Number(scores.vocab || 0);
       const grammarScore = Number(scores.grammar || 0);
@@ -835,8 +873,8 @@
       const passScore = Number(access && access.passScore || 90);
       const titleText = mn ? "\u0414\u0430\u0440\u0430\u0430\u0433\u0438\u0439\u043d \u0445\u0438\u0447\u044d\u044d\u043b \u0442\u04af\u0433\u0436\u044d\u044d\u0442\u044d\u0439 \u0431\u0430\u0439\u043d\u0430" : "\uB2E4\uC74C \uACFC\uB294 \uC544\uC9C1 \uC7A0\uACA8 \uC788\uC2B5\uB2C8\uB2E4";
       const ruleText = mn
-        ? `${prev}-р хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр ${passScore}%-иас дээш байвал энэ хичээл нээгдэнэ.`
-        : `${prev}과의 어휘·문법·종합 테스트가 모두 ${passScore}% 이상이어야 이 과가 열립니다.`;
+        ? `${prevLabel}-р хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр ${passScore}%-иас дээш байвал энэ хичээл нээгдэнэ.`
+        : `${prevLabel}과의 어휘·문법·종합 테스트가 모두 ${passScore}% 이상이어야 이 과가 열립니다.`;
       const scoreText = mn
         ? `Үг ${vocabScore}% · Дүрэм ${grammarScore}% · Нэгдсэн ${mixedScore}%`
         : `어휘 ${vocabScore}% · 문법 ${grammarScore}% · 종합 ${mixedScore}%`;

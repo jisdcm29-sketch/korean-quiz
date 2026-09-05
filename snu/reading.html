@@ -165,6 +165,17 @@
       return firstByLevel[level]||1;
     }
 
+
+    function previousBookGateForLevel(levelRaw){
+      const level=String(levelRaw||'').toUpperCase();
+      const order=['1A','1B','2A','2B','3A','3B','4A','4B'];
+      const lastByLevel={'1A':8,'1B':16,'2A':9,'2B':18,'3A':9,'3B':18,'4A':9,'4B':18};
+      const idx=order.indexOf(level);
+      if(idx<=0)return null;
+      const prevLevel=order[idx-1];
+      return {level:prevLevel,lastLesson:lastByLevel[prevLevel]||0};
+    }
+
     function inferReadingLevel(d,path){
       const candidates=[
         d&&d.level,
@@ -266,8 +277,21 @@
         if(accessProfile.lowerBookAccess===true){
           return {allowed:true,level,lessonNo,firstLesson,lowerBookAccess:true,teacherOverride:true};
         }
+        const higherBook=accessProfile.higherBook===true||accessProfile.bookRelation==='higher';
+        if(higherBook){
+          const gateInfo=previousBookGateForLevel(level);
+          if(!gateInfo||!gateInfo.lastLesson)return {allowed:false,error:'previous_book_gate_missing',level,lessonNo,firstLesson};
+          const gateTypes=['vocab','grammar','mixed'];
+          const gateResponses=await Promise.all(gateTypes.map(testType=>sendAccessJsonp({action:'mastery_status',token,name,book:`SNU-${gateInfo.level}`,lesson:String(gateInfo.lastLesson),testType})));
+          const gateTests={}; gateTypes.forEach((type,i)=>{gateTests[type]=gateResponses[i]||{}});
+          const gateError=gateTypes.map(type=>gateTests[type]).find(r=>!r||r.ok!==true);
+          const gateErrorText=gateError?String(gateError.error||'status_check_failed'):'';
+          if(['expired_or_invalid','missing_token','invalid_token','unauthorized'].includes(gateErrorText))return {allowed:false,error:gateErrorText,authRequired:true,level,lessonNo,firstLesson};
+          const gatePassed=gateTypes.every(type=>gateTests[type]&&gateTests[type].ok===true&&gateTests[type].status==='PASS'&&Number(gateTests[type].bestScore||0)>=90);
+          if(!gatePassed)return {allowed:false,level,lessonNo,firstLesson,crossBookGate:true,previousBook:gateInfo.level,previousLesson:gateInfo.lastLesson,previousScores:{vocab:Number(gateTests.vocab.bestScore||0),grammar:Number(gateTests.grammar.bestScore||0),mixed:Number(gateTests.mixed.bestScore||0)},passScore:90,error:gateErrorText};
+        }
         let teacherStartLesson=0;
-        if(accessProfile&&accessProfile.ok===true&&accessProfile.found===true&&accessProfile.enabled===true){
+        if(!higherBook&&accessProfile&&accessProfile.ok===true&&accessProfile.found===true&&accessProfile.enabled===true){
           const requested=Number(accessProfile.startLesson||0);
           if(Number.isFinite(requested)&&requested>0)teacherStartLesson=Math.max(firstLesson,Math.floor(requested));
         }
@@ -322,12 +346,13 @@
       $('notice').classList.remove('hidden');
       $('err').classList.add('hidden');
       const prev=Number(access&&access.previousLesson||0);
+      const prevLabel=access&&access.crossBookGate&&access.previousBook?`${access.previousBook} ${prev}`:String(prev);
       const scores=(access&&access.previousScores)||{vocab:0,grammar:0,mixed:0};
       const passScore=Number(access&&access.passScore||90);
       const isMn=getLang()==='MN';
       const title=isMn?'Дараагийн хичээл түгжээтэй байна':'다음 과는 아직 잠겨 있습니다';
       const rule=prev>0
-        ?(isMn?`${prev}-р хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр ${passScore}%-иас дээш байвал энэ хичээл нээгдэнэ.`:`${prev}과의 어휘·문법·종합 테스트가 모두 ${passScore}% 이상이어야 이 과가 열립니다.`)
+        ?(isMn?`${prevLabel}-р хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр ${passScore}%-иас дээш байвал энэ хичээл нээгдэнэ.`:`${prevLabel}과의 어휘·문법·종합 테스트가 모두 ${passScore}% 이상이어야 이 과가 열립니다.`)
         :(isMn?'Нэвтрэх эрхийг шалгаж чадсангүй.':'학습 접근 권한을 확인할 수 없습니다.');
       const scoreLine=isMn
         ?`Үг ${Number(scores.vocab||0)}% · Дүрэм ${Number(scores.grammar||0)}% · Нэгдсэн ${Number(scores.mixed||0)}%`

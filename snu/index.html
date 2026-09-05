@@ -467,6 +467,21 @@
       };
     }
 
+    function previousBookGateInfo(bookId){
+      if(!MANIFEST || !Array.isArray(MANIFEST.books)) return null;
+      const id = String(bookId || "").toUpperCase();
+      const books = MANIFEST.books;
+      const idx = books.findIndex(b => String(b && b.id || "").toUpperCase() === id);
+      if(idx <= 0) return null;
+      const prev = books[idx - 1];
+      const prevLessons = Array.isArray(prev && prev.lessons) ? prev.lessons : [];
+      if(!prev || !prevLessons.length) return null;
+      const last = prevLessons[prevLessons.length - 1] || {};
+      const lessonNo = Number(last.no || 0);
+      if(!lessonNo) return null;
+      return {id:String(prev.id || "").toUpperCase(), lessonNo, label:last.label || String(lessonNo)};
+    }
+
     function scoreOf(result, type){
       return Number(result && result.tests && result.tests[type] && result.tests[type].bestScore || 0);
     }
@@ -620,13 +635,18 @@
         accessProfile && accessProfile.ok === true &&
         accessProfile.lowerBookAccess === true
       );
+      const higherBook = !!(
+        !isDeveloper &&
+        accessProfile && accessProfile.ok === true &&
+        (accessProfile.higherBook === true || accessProfile.bookRelation === "higher")
+      );
 
       // 교사가 지정한 시작 과를 실제 교재의 과 번호에 맞춰 해석한다.
       // 예: 1B는 9과부터 시작하므로 startLesson=1이면 자동으로 첫 과(9과)로 보정한다.
       let teacherStartIndex = -1;
       let teacherStartLesson = 0;
       const hasTeacherStart = !!(
-        !isDeveloper && !lowerBookAccess &&
+        !isDeveloper && !lowerBookAccess && !higherBook &&
         accessProfile && accessProfile.ok === true &&
         accessProfile.found === true && accessProfile.enabled === true &&
         Number(accessProfile.startLesson || 0) > 0
@@ -643,12 +663,27 @@
       }
 
       // 이전 과정 전체 인정 상태에서는 점수 조회가 필요 없다. learning_start 호출 자체로 인증도 확인되었다.
+      let higherGateInfo = null;
+      let higherGateResult = null;
+      let higherGatePassed = false;
+      if(higherBook){
+        higherGateInfo = previousBookGateInfo(pickedNow.id);
+        if(higherGateInfo){
+          higherGateResult = await getLessonMastery(higherGateInfo.id, higherGateInfo.lessonNo);
+          if(PICKED !== pickedNow) return;
+          higherGatePassed = !!(higherGateResult && higherGateResult.ok === true && higherGateResult.status === "PASS");
+        }
+      }
+
       const results = lowerBookAccess
         ? lessons.map(()=>({ok:true,status:"RECOGNIZED",tests:{vocab:{bestScore:0},grammar:{bestScore:0},mixed:{bestScore:0}}}))
         : await Promise.all(lessons.map(ls=>getLessonMastery(pickedNow.id, ls.no)));
       if(PICKED !== pickedNow) return;
 
-      const authError = lowerBookAccess ? null : results.find(r=>!r || r.ok !== true);
+      const authError = lowerBookAccess ? null :
+        ((higherBook && higherGateResult && higherGateResult.ok !== true)
+          ? higherGateResult
+          : results.find(r=>!r || r.ok !== true));
       if(authError){
         const msg = authError && authError.error === "missing_token" ? tr("needLogin") : tr("masteryError");
         showErr(msg + (authError && authError.error ? "\n" + authError.error : ""));
@@ -678,10 +713,13 @@
           }
         }
 
+        const higherBookUnlocked = higherBook && higherGatePassed &&
+          (isFirst || (previous && previous.ok === true && previous.status === "PASS"));
         const unlocked = isDeveloper
           || lowerBookAccess
-          || (teacherOverrideActive ? (idx <= teacherStartIndex || requiredChainPassed)
-                                    : (isFirst || (previous && previous.ok === true && previous.status === "PASS")));
+          || (higherBook ? higherBookUnlocked
+                         : (teacherOverrideActive ? (idx <= teacherStartIndex || requiredChainPassed)
+                                                  : (isFirst || (previous && previous.ok === true && previous.status === "PASS"))));
 
         const btn = document.createElement("button");
         btn.type = "button";
@@ -726,6 +764,14 @@
         }else{
           btn.disabled = true;
           btn.classList.add("locked");
+          if(higherBook && !higherGatePassed){
+            const gateLabel = higherGateInfo ? `${higherGateInfo.id} ${higherGateInfo.label || higherGateInfo.lessonNo}` : "";
+            if(higherGateResult && higherGateResult.ok === true){
+              stateText = `${gateLabel} · ${lessonScoreText(higherGateResult)}`;
+            }else{
+              stateText = tr("locked");
+            }
+          }else{
           const blockIdx = teacherOverrideActive && blockingIndex >= 0 ? blockingIndex : (idx - 1);
           const blockLesson = blockIdx >= 0 ? lessons[blockIdx] : null;
           const blockResult = blockIdx >= 0 ? results[blockIdx] : null;
@@ -734,6 +780,8 @@
             stateText = `🔒 ${prevLabel} · ${lessonScoreText(blockResult)} · 모두 90% 필요`;
           }else{
             stateText = `🔒 ${tr("locked")}`;
+          }
+
           }
         }
 
@@ -745,6 +793,8 @@
         statusEl.textContent = tr("developerAccess");
       }else if(lowerBookAccess){
         statusEl.textContent = tr("lowerCourseAccess");
+      }else if(higherBook){
+        statusEl.textContent = tr("masteryRule");
       }else if(teacherStartIndex >= 0){
         statusEl.textContent = `${tr("teacherOverride")} · ${teacherStartLesson}${getLang()==="MN" ? "-р хичээл" : "과"}`;
       }else{
