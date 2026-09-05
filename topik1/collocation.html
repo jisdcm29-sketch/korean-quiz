@@ -34,6 +34,7 @@
     .quizStats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin:10px 0}.statBox{border:1px solid var(--line);border-radius:14px;padding:9px 8px;text-align:center;background:rgba(11,16,32,.72)}.statLabel{display:block;color:var(--muted);font-size:12px;font-weight:800;margin-bottom:4px}.statValue{font-size:19px;font-weight:950}.timerBox{border-color:rgba(34,211,238,.52)}.timerBox.urgent{border-color:var(--red);background:rgba(248,113,113,.14);animation:timerPulse .7s infinite alternate}@keyframes timerPulse{from{filter:brightness(1)}to{filter:brightness(1.35)}}
     .choice.correctChoice{border-color:var(--green);background:rgba(52,211,153,.16)}.choice.wrongChoice{border-color:var(--red);background:rgba(248,113,113,.16)}.quizSummary{text-align:center;padding:18px}.summaryScore{font-size:34px;font-weight:950;color:var(--green);margin:8px 0}.reviewList{text-align:left;margin-top:18px;border-top:1px solid var(--line);padding-top:12px}.reviewTitle{font-size:18px;font-weight:950;margin-bottom:8px}.reviewItem{padding:12px 0;border-bottom:1px solid var(--line);line-height:1.6}.reviewPrompt{font-weight:900}.reviewMine{color:#fecaca;margin-top:5px}.reviewCorrect{color:#d1fae5;margin-top:3px}.reviewTimeout{display:inline-block;margin-left:6px;padding:2px 7px;border-radius:999px;border:1px solid rgba(248,113,113,.55);color:#fecaca;font-size:11px;font-weight:900}
     .btnMode{background:linear-gradient(135deg,rgba(34,211,238,.18),rgba(11,16,32,.96));border-color:rgba(34,211,238,.52)}.btnNew{background:linear-gradient(135deg,rgba(167,139,250,.20),rgba(11,16,32,.96));border-color:rgba(167,139,250,.52)}
+    .progressMsg{margin-top:14px;padding:12px 14px;border-radius:14px;border:1px solid var(--line);background:rgba(11,16,32,.72);line-height:1.65}.progressMsg.pass{border-color:rgba(52,211,153,.55);color:#d1fae5}.progressMsg.retry{border-color:rgba(251,191,36,.55);color:#fef3c7}.progressMsg.error{border-color:rgba(248,113,113,.55);color:#fecaca}.nextSetBtn{margin-top:12px;background:linear-gradient(135deg,rgba(52,211,153,.24),rgba(11,16,32,.96));border-color:rgba(52,211,153,.62)}
     @media(max-width:520px){.container{padding:10px}.card{padding:14px;border-radius:18px}.btnRow{flex-wrap:nowrap;gap:8px}.btn{min-height:50px;font-size:15px;padding:10px 12px;border-radius:14px}.btnBack{font-size:18px;min-width:52px}.btnLang{min-width:60px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.tab{min-height:48px;font-size:15px;padding:10px 8px;border-radius:14px;text-align:center}.quizControls{display:grid;grid-template-columns:1fr 1fr;justify-content:stretch}.quizControls .btnMode,.quizControls .btnNew{grid-column:span 2}.quizStats{grid-template-columns:repeat(2,1fr)}#btnMode,#btnNew{width:100%;font-size:13px;padding:10px;min-height:44px;border-radius:14px}.qText{font-size:26px}.choices{gap:6px}.choice{font-size:22px;min-height:48px;padding:12px 10px}th,td{padding:10px 8px}.numCol{width:46px}}
   </style>
 </head>
@@ -58,6 +59,255 @@
     </section>
   </main>
 <script>
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+  const DEVICE_KEY = "kq_deviceId_v1";
+  const SESSION_KEY = "kq_session_v1";
+  const PASS_SCORE = 90;
+  const PROGRESS_BOOK = "TOPIK1";
+  const PROGRESS_TYPE = "collocation";
+
+  function getDeviceId_(){
+    let id = localStorage.getItem(DEVICE_KEY) || "";
+    if(!id){
+      id = "dev_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+      localStorage.setItem(DEVICE_KEY, id);
+    }
+    return id;
+  }
+
+  function readLocalSession_(){
+    try{
+      const raw = localStorage.getItem(SESSION_KEY);
+      if(!raw) return null;
+      const s = JSON.parse(raw);
+      if(!s || !s.name || !s.klass || !s.token) return null;
+      return s;
+    }catch(e){
+      return null;
+    }
+  }
+
+  function clearLocalSession_(){
+    try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+  }
+
+  function jsonpRequest_(baseUrl, params, timeoutMs=10000){
+    return new Promise((resolve,reject)=>{
+      const cb = "cb_topik1_coll_auth_" + Date.now() + "_" + Math.floor(Math.random()*1e6);
+      const script = document.createElement("script");
+      let done = false;
+      const cleanup = ()=>{
+        try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+        if(script.parentNode) script.parentNode.removeChild(script);
+      };
+      const timer = setTimeout(()=>{
+        if(done) return; done=true; cleanup(); reject(new Error("timeout"));
+      }, timeoutMs);
+      window[cb] = data=>{
+        if(done) return; done=true; clearTimeout(timer); cleanup(); resolve(data);
+      };
+      script.onerror = ()=>{
+        if(done) return; done=true; clearTimeout(timer); cleanup(); reject(new Error("load_error"));
+      };
+      script.src = baseUrl + (baseUrl.includes("?") ? "&" : "?") +
+        new URLSearchParams({...params, callback:cb}).toString();
+      document.head.appendChild(script);
+    });
+  }
+
+  function renderAuthBlocked_(reason){
+    stopQuizTimer();
+    const main = document.querySelector("main.container");
+    if(!main) return;
+    const mn = getLang() === "MN";
+    main.innerHTML = `
+      <section class="card">
+        <div style="text-align:center;padding:28px 18px">
+          <div style="font-size:42px;margin-bottom:10px">🔐</div>
+          <h1 style="margin:0 0 12px;font-size:26px">${mn ? "Нэвтрэх шаардлагатай" : "로그인이 필요합니다"}</h1>
+          <div class="muted" style="line-height:1.7">${mn ? "TOPIK I үгийн холбоог ашиглахын тулд хүчинтэй нэвтрэх эрхээр дахин нэвтэрнэ үү." : "TOPIK I 연어 학습을 이용하려면 정상 인증으로 다시 로그인해야 합니다."}</div>
+          <div class="muted small" style="margin-top:8px">${String(reason || "expired_or_invalid")}</div>
+          <div style="margin-top:20px"><a class="btn btnBack" href="../index.html">← ${mn ? "Нэвтрэх дэлгэц рүү буцах" : "로그인 화면으로 돌아가기"}</a></div>
+        </div>
+      </section>`;
+  }
+
+  async function validateEntry_(){
+    const u = new URL(location.href);
+    const name = (u.searchParams.get("name") || "").trim();
+    const klass = (u.searchParams.get("klass") || "").trim();
+    const token = (u.searchParams.get("token") || "").trim();
+
+    if(!name || !klass || !token){
+      renderAuthBlocked_("missing_auth_params");
+      return false;
+    }
+
+    const session = readLocalSession_();
+    if(!session){
+      renderAuthBlocked_("missing_local_session");
+      return false;
+    }
+
+    const sameSession =
+      String(session.name || "") === name &&
+      String(session.klass || "") === klass &&
+      String(session.token || "") === token;
+
+    if(!sameSession){
+      clearLocalSession_();
+      renderAuthBlocked_("url_session_mismatch");
+      return false;
+    }
+
+    try{
+      const res = await jsonpRequest_(SCRIPT_URL,{
+        action:"validate", token, deviceId:getDeviceId_(), name, klass
+      });
+      if(!res || !res.ok){
+        clearLocalSession_();
+        renderAuthBlocked_((res && res.error) || "expired_or_invalid");
+        return false;
+      }
+      return true;
+    }catch(e){
+      renderAuthBlocked_("validation_network_error");
+      return false;
+    }
+  }
+
+
+  function requestedSet_(){
+    const n = Number(getParam("set"));
+    return Number.isInteger(n) && n >= 1 && n <= 10 ? n : 0;
+  }
+
+  function collocationDataSet_(path){
+    const text = decodeURIComponent(String(path || "")).replace(/\\/g,"/");
+    const m = text.match(/(?:^|\/)data\/topik1\/collocation\/set(\d{2})\.json(?:$|[?#])/i) ||
+              text.match(/(?:^|\/)topik1\/collocation\/set(\d{2})\.json(?:$|[?#])/i);
+    return m ? Number(m[1]) : 0;
+  }
+
+  function renderInvalidEntry_(reason){
+    stopQuizTimer();
+    const main = document.querySelector("main.container");
+    if(!main) return;
+    const mn = getLang() === "MN";
+    main.innerHTML = `
+      <section class="card">
+        <div style="text-align:center;padding:28px 18px">
+          <div style="font-size:42px;margin-bottom:10px">⚠️</div>
+          <h1 style="margin:0 0 12px;font-size:26px">${mn ? "Буруу хандалт" : "잘못된 접근입니다"}</h1>
+          <div class="muted" style="line-height:1.7">${mn ? "Багцын дугаар болон өгөгдлийн зам ижил багцыг заах ёстой." : "set 번호와 data 경로가 같은 연어 세트를 가리켜야 합니다."}</div>
+          <div class="muted small" style="margin-top:8px">${esc(reason || "invalid_collocation_url")}</div>
+          <div style="margin-top:20px"><a class="btn btnBack" href="./index.html?${passthroughQS()}">← ${mn ? "TOPIK I рүү буцах" : "TOPIK I로 돌아가기"}</a></div>
+        </div>
+      </section>`;
+  }
+
+  function renderProgressBlocked_(previousSet, bestScore){
+    stopQuizTimer();
+    const main = document.querySelector("main.container");
+    if(!main) return;
+    const mn = getLang() === "MN";
+    main.innerHTML = `
+      <section class="card">
+        <div style="text-align:center;padding:28px 18px">
+          <div style="font-size:42px;margin-bottom:10px">🔒</div>
+          <h1 style="margin:0 0 12px;font-size:26px">${mn ? "Дараагийн багц түгжээтэй байна" : "다음 연어 세트는 아직 잠겨 있습니다"}</h1>
+          <div class="muted" style="line-height:1.7">${mn ? `${previousSet}-р багцын шалгалтаас 90%-иас дээш авахад нээгдэнэ.` : `${previousSet}세트 연어 테스트에서 90% 이상을 받아야 다음 세트가 열립니다.`}</div>
+          <div class="muted" style="margin-top:8px">${mn ? "Одоогийн шилдэг оноо" : "현재 누적 최고점수"}: <b>${Number(bestScore||0)}%</b></div>
+          <div style="margin-top:20px"><a class="btn btnBack" href="./index.html?${passthroughQS()}">← ${mn ? "Багц сонголт руу буцах" : "세트 선택으로 돌아가기"}</a></div>
+        </div>
+      </section>`;
+  }
+
+  async function masteryStatus_(setNo){
+    const u = new URL(location.href);
+    return jsonpRequest_(SCRIPT_URL,{
+      action:"mastery_status",
+      token:(u.searchParams.get("token")||"").trim(),
+      deviceId:getDeviceId_(),
+      name:(u.searchParams.get("name")||"").trim(),
+      book:PROGRESS_BOOK,
+      lesson:String(setNo),
+      testType:PROGRESS_TYPE
+    });
+  }
+
+  async function developerAccess_(){
+    const u = new URL(location.href);
+    try{
+      const r = await jsonpRequest_(SCRIPT_URL,{
+        action:"learning_start",
+        token:(u.searchParams.get("token")||"").trim(),
+        deviceId:getDeviceId_(),
+        name:(u.searchParams.get("name")||"").trim(),
+        book:PROGRESS_BOOK
+      });
+      return !!(r && r.ok && (r.developerAccess || r.isDeveloper));
+    }catch(e){
+      return false;
+    }
+  }
+
+  async function validateProgressEntry_(){
+    const setNo = requestedSet_();
+    const dataSet = collocationDataSet_(getParam("data"));
+    if(!setNo || !dataSet || setNo !== dataSet){
+      renderInvalidEntry_("set_data_mismatch");
+      return false;
+    }
+    if(await developerAccess_()) return true;
+    if(setNo === 1) return true;
+    try{
+      const prev = await masteryStatus_(setNo - 1);
+      const passed = !!(prev && prev.ok && prev.status === "PASS" && Number(prev.bestScore||0) >= PASS_SCORE);
+      if(!passed){
+        renderProgressBlocked_(setNo - 1, prev && prev.bestScore);
+        return false;
+      }
+      return true;
+    }catch(e){
+      renderProgressBlocked_(setNo - 1, 0);
+      return false;
+    }
+  }
+
+  async function saveCollocationResult_(score, correct, total, timeout){
+    const u = new URL(location.href);
+    const setNo = requestedSet_();
+    return jsonpRequest_(SCRIPT_URL,{
+      action:"log",
+      token:(u.searchParams.get("token")||"").trim(),
+      deviceId:getDeviceId_(),
+      name:(u.searchParams.get("name")||"").trim(),
+      klass:(u.searchParams.get("klass")||"").trim(),
+      book:PROGRESS_BOOK,
+      lesson:String(setNo),
+      testType:PROGRESS_TYPE,
+      score:String(score),
+      correct:String(correct),
+      total:String(total),
+      timeout:String(timeout),
+      attempts:"1",
+      lang:getLang().toLowerCase(),
+      ua:navigator.userAgent
+    });
+  }
+
+  function nextSetUrl_(setNo){
+    const n = Number(setNo) + 1;
+    if(n > 10) return "";
+    const u = new URL("./collocation.html", location.href);
+    u.searchParams.set("set", String(n));
+    u.searchParams.set("data", `../data/topik1/collocation/set${String(n).padStart(2,"0")}.json`);
+    const pass = new URLSearchParams(passthroughQS());
+    pass.forEach((v,k)=>u.searchParams.set(k,v));
+    return u.toString();
+  }
+
   const I18N={
     KR:{loading:"불러오는 중...",loaded:"로드 완료",vocabView:"연어 보기",vocabQuiz:"연어 테스트",thNo:"번호",thKo:"한국어",thMn:"몽골어",noVocab:"연어 데이터가 없습니다.",modeK2M:"방향: 한국어 → 몽골어",modeM2K:"방향: 몽골어 → 한국어",qLabel:"문제",correct:"정답!",wrong:"오답!",answer:"정답",restart:"다시 시작",time7:"문항당 7초",time10:"문항당 10초",progress:"진행",correctCount:"정답",wrongCount:"오답",timeLeft:"남은 시간",seconds:"초",timeout:"시간 초과!",completed:"테스트 완료",accuracy:"정답률",timeoutCount:"시간 초과",quizHint:n=>n?`전체 연어 ${n}개를 중복 없이 무작위 순서로 출제합니다.`:"연어 데이터가 없어서 테스트를 만들 수 없습니다.",cant:"퀴즈를 만들 수 없습니다. (데이터 확인 필요)",subtitle:n=>`핵심 연어 ${n}개 · 한국어 + 몽골어`},
     MN:{loading:"Ачаалж байна...",loaded:"Ачааллаа",vocabView:"Үгийн холбоо харах",vocabQuiz:"Үгийн холбооны шалгалт",thNo:"№",thKo:"Солонгос",thMn:"Монгол",noVocab:"Үгийн холбооны өгөгдөл алга.",modeK2M:"Чиглэл: Солонгос → Монгол",modeM2K:"Чиглэл: Монгол → Солонгос",qLabel:"Асуулт",correct:"Зөв!",wrong:"Буруу!",answer:"Зөв хариулт",restart:"Дахин эхлэх",time7:"Асуулт бүр 7 сек",time10:"Асуулт бүр 10 сек",progress:"Явц",correctCount:"Зөв",wrongCount:"Буруу",timeLeft:"Үлдсэн хугацаа",seconds:"сек",timeout:"Хугацаа дууслаа!",completed:"Шалгалт дууслаа",accuracy:"Зөв хариултын хувь",timeoutCount:"Хугацаа хэтэрсэн",quizHint:n=>n?`Нийт ${n} үгийн холбоог давталгүй санамсаргүй дарааллаар асууна.`:"Өгөгдөл байхгүй тул шалгалт үүсгэж чадсангүй.",cant:"Шалгалт үүсгэж чадсангүй. (өгөгдөл шалгана уу)",subtitle:n=>`Үгийн холбоо ${n} · Солонгос + Монгол`}
@@ -80,13 +330,46 @@
   function startQuiz(d){stopQuizTimer();const pool=usableVocab(d.vocab);QUIZ_STATE={queue:shuffle(pool),index:0,correct:0,wrong:0,timeout:0,locked:false,remaining:QUIZ_SECONDS,miss:[]};renderCurrentQuizQuestion(d)}
   function renderQuizStats(total){const s=QUIZ_STATE;return `<div class="quizStats"><div class="statBox"><span class="statLabel">${tr("progress")}</span><span class="statValue">${Math.min(s.index+1,total)} / ${total}</span></div><div class="statBox"><span class="statLabel">${tr("correctCount")}</span><span class="statValue" id="correctCounter">${s.correct}</span></div><div class="statBox"><span class="statLabel">${tr("wrongCount")}</span><span class="statValue" id="wrongCounter">${s.wrong}</span></div><div class="statBox timerBox" id="timerBox"><span class="statLabel">${tr("timeLeft")}</span><span class="statValue"><span id="timeCounter">${s.remaining}</span>${tr("seconds")}</span></div></div>`}
   function updateQuizStats(){if(!QUIZ_STATE)return;const c=document.getElementById("correctCounter"),w=document.getElementById("wrongCounter"),t=document.getElementById("timeCounter"),b=document.getElementById("timerBox");if(c)c.textContent=QUIZ_STATE.correct;if(w)w.textContent=QUIZ_STATE.wrong;if(t)t.textContent=QUIZ_STATE.remaining;if(b)b.classList.toggle("urgent",QUIZ_STATE.remaining<=3)}
-  function finishQuiz(){stopQuizTimer();const s=QUIZ_STATE,total=s.queue.length,accuracy=total?Math.round(s.correct/total*100):0;const review=(s.miss||[]).length?`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"Алдсан асуулт ба зөв хариулт":"틀린 문제와 정답"}</div>${s.miss.map((m,i)=>`<div class="reviewItem"><div class="reviewPrompt">${i+1}. ${esc(m.prompt)}</div><div class="reviewMine">${getLang()==="MN"?"Миний хариулт":"내 답"}: <b>${m.reason==="timeout"?(getLang()==="MN"?"Хугацаа хэтэрсэн":"시간 초과"):esc(m.selected||"")}</b>${m.reason==="timeout"?`<span class="reviewTimeout">${tr("timeout")}</span>`:""}</div><div class="reviewCorrect">${tr("answer")}: <b>${esc(m.correct)}</b></div></div>`).join("")}</div>`:`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"🎉 Бүгд зөв байна.":"🎉 모두 맞았습니다."}</div></div>`;document.getElementById("quiz").innerHTML=`<div class="qbox quizSummary"><div class="qLabel">${tr("completed")}</div><div class="summaryScore">${accuracy}%</div><div>${tr("correctCount")}: <b>${s.correct}</b> / ${tr("wrongCount")}: <b>${s.wrong}</b> / ${tr("timeoutCount")}: <b>${s.timeout}</b></div><div class="muted small" style="margin-top:8px">${tr("accuracy")}: ${s.correct} / ${total}</div>${review}</div>`}
+  async function finishQuiz(){
+    stopQuizTimer();
+    const s=QUIZ_STATE,total=s.queue.length,accuracy=total?Math.round(s.correct/total*100):0;
+    const review=(s.miss||[]).length?`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"Алдсан асуулт ба зөв хариулт":"틀린 문제와 정답"}</div>${s.miss.map((m,i)=>`<div class="reviewItem"><div class="reviewPrompt">${i+1}. ${esc(m.prompt)}</div><div class="reviewMine">${getLang()==="MN"?"Миний хариулт":"내 답"}: <b>${m.reason==="timeout"?(getLang()==="MN"?"Хугацаа хэтэрсэн":"시간 초과"):esc(m.selected||"")}</b>${m.reason==="timeout"?`<span class="reviewTimeout">${tr("timeout")}</span>`:""}</div><div class="reviewCorrect">${tr("answer")}: <b>${esc(m.correct)}</b></div></div>`).join("")}</div>`:`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"🎉 Бүгд зөв байна.":"🎉 모두 맞았습니다."}</div></div>`;
+    const quiz=document.getElementById("quiz");
+    quiz.innerHTML=`<div class="qbox quizSummary"><div class="qLabel">${tr("completed")}</div><div class="summaryScore">${accuracy}%</div><div>${tr("correctCount")}: <b>${s.correct}</b> / ${tr("wrongCount")}: <b>${s.wrong}</b> / ${tr("timeoutCount")}: <b>${s.timeout}</b></div><div class="muted small" style="margin-top:8px">${tr("accuracy")}: ${s.correct} / ${total}</div><div class="progressMsg" id="progressSaveMsg">${getLang()==="MN"?"Сургалтын үр дүнг хадгалж байна...":"학습 결과 저장 중..."}</div>${review}</div>`;
+
+    let mastery=null;
+    try{
+      await saveCollocationResult_(accuracy,s.correct,total,s.timeout);
+      mastery=await masteryStatus_(requestedSet_());
+    }catch(e){
+      try{mastery=await masteryStatus_(requestedSet_());}catch(_e){}
+    }
+
+    const msg=document.getElementById("progressSaveMsg");
+    const best=Number(mastery&&mastery.bestScore||0);
+    const passed=!!(mastery&&mastery.ok&&mastery.status==="PASS"&&best>=PASS_SCORE);
+    if(msg){
+      if(passed){
+        msg.className="progressMsg pass";
+        msg.innerHTML=getLang()==="MN"?`✅ Тэнцсэн · Шилдэг оноо ${best}%`:`✅ 통과 · 누적 최고점수 ${best}%`;
+        const nextUrl=nextSetUrl_(requestedSet_());
+        if(nextUrl) msg.innerHTML+=`<br><a class="btn nextSetBtn" href="${esc(nextUrl)}">${getLang()==="MN"?"Дараагийн багц руу →":"다음 세트로 이동 →"}</a>`;
+        else msg.innerHTML+=`<br>${getLang()==="MN"?"🎉 10 багцыг бүгдийг дуусгалаа.":"🎉 연어 10세트를 모두 완료했습니다."}`;
+      }else if(mastery&&mastery.ok){
+        msg.className="progressMsg retry";
+        msg.innerHTML=getLang()==="MN"?`Одоогийн шилдэг оноо ${best}% · Дараагийн багцыг нээхийн тулд 90% шаардлагатай.`:`현재 누적 최고점수 ${best}% · 다음 세트를 열려면 90% 이상이 필요합니다.`;
+      }else{
+        msg.className="progressMsg error";
+        msg.textContent=getLang()==="MN"?"Үр дүн хадгалагдсан эсэхийг шалгаж чадсангүй. Дахин оролдоно уу.":"결과 저장 상태를 확인하지 못했습니다. 다시 시도해 주세요.";
+      }
+    }
+  }
   function renderQuestionInto(containerEl,q,onAnswered){containerEl.innerHTML="";if(!q){containerEl.innerHTML=`<div class='muted'>${tr("cant")}</div>`;return}const box=document.createElement("div");box.className="qbox";const head=document.createElement("div");head.className="qHead";head.innerHTML=`<div class="qLabel">${tr("qLabel")}</div><div class="qText">${esc(q.prompt)}</div>`;box.appendChild(head);const wrap=document.createElement("div");wrap.className="choices";const result=document.createElement("div");result.className="result";result.style.display="none";const lock=()=>[...wrap.querySelectorAll("button")].forEach(b=>b.disabled=true);q.choices.forEach(ch=>{const btn=document.createElement("button");btn.type="button";btn.className="choice";btn.textContent=ch;btn.addEventListener("click",()=>{const ok=ch===q.correct;result.style.display="";result.classList.remove("ok","bad");result.classList.add(ok?"ok":"bad");result.innerHTML=ok?`<b>${tr("correct")}</b> <span class="muted small">(${tr("answer")}: ${esc(q.correct)})</span>`:`<b>${tr("wrong")}</b> <span class="muted small">${tr("answer")}: ${esc(q.correct)}</span>`;lock();if(onAnswered)onAnswered(ok,btn,wrap)});wrap.appendChild(btn)});box.appendChild(wrap);box.appendChild(result);containerEl.appendChild(box)}
   function renderCurrentQuizQuestion(d){stopQuizTimer();const quiz=document.getElementById("quiz"),s=QUIZ_STATE;if(!s||s.index>=s.queue.length){finishQuiz();return}s.locked=false;s.remaining=QUIZ_SECONDS;const q=makeVocabQuestion(s.queue[s.index],usableVocab(d.vocab));if(!q){quiz.innerHTML=`<div class='muted'>${tr("cant")}</div>`;return}quiz.innerHTML=renderQuizStats(s.queue.length);const holder=document.createElement("div");quiz.appendChild(holder);renderQuestionInto(holder,q,(ok,btn,wrap)=>{if(s.locked)return;s.locked=true;stopQuizTimer();if(ok)s.correct++;else{s.wrong++;s.miss.push({prompt:q.prompt,selected:btn?btn.textContent:"",correct:q.correct,reason:"wrong"});}[...wrap.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});if(!ok)btn.classList.add("wrongChoice");updateQuizStats();setTimeout(()=>{s.index++;renderCurrentQuizQuestion(d)},ok?450:700)});updateQuizStats();QUIZ_TIMER=setInterval(()=>{if(s.locked)return;s.remaining--;updateQuizStats();if(s.remaining<=0){s.locked=true;stopQuizTimer();s.wrong++;s.timeout++;s.miss.push({prompt:q.prompt,selected:"",correct:q.correct,reason:"timeout"});updateQuizStats();[...holder.querySelectorAll("button.choice")].forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});const result=holder.querySelector(".result");if(result){result.style.display="";result.classList.add("bad");result.innerHTML=`<b>${tr("timeout")}</b> <span class="muted small">${tr("answer")}: ${esc(q.correct)}</span>`}setTimeout(()=>{s.index++;renderCurrentQuizQuestion(d)},700)}},1000)}
   function renderQuiz(d){const v=d.vocab||[];document.getElementById("quizHint").textContent=tr("quizHint",v.length);if(!v.length){document.getElementById("quiz").innerHTML=`<div class='muted'>${tr("noVocab")}</div>`;return}startQuiz(d)}
 
-  async function main(){applyTexts();document.getElementById("btnBack").addEventListener("click",()=>{stopQuizTimer();const qs=passthroughQS();location.href=`./index.html${qs?`?${qs}`:""}`});document.getElementById("tab-vocab").addEventListener("click",()=>setActiveTab("vocab"));document.getElementById("tab-quiz").addEventListener("click",()=>{setActiveTab("quiz");if(DATA&&!QUIZ_STATE)renderQuiz(DATA)});document.getElementById("btnLang").addEventListener("click",()=>{const next=getLang()==="KR"?"MN":"KR";setLang(next);const u=new URL(location.href);u.searchParams.set("lang",next);history.replaceState(null,"",u.toString());applyTexts();if(DATA){renderVocab(DATA);if(document.getElementById("panel-quiz").classList.contains("active"))renderQuiz(DATA)}});document.getElementById("btnMode").addEventListener("click",()=>{QUIZ_MODE=QUIZ_MODE==="KO2MN"?"MN2KO":"KO2MN";applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnTime7").addEventListener("click",()=>{QUIZ_SECONDS=7;applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnTime10").addEventListener("click",()=>{QUIZ_SECONDS=10;applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnNew").addEventListener("click",()=>{if(DATA)renderQuiz(DATA)});
-    const status=document.getElementById("status"),subtitle=document.getElementById("subtitle");let dataPath=getParam("data");if(!dataPath){const set=String(parseInt(getParam("set")||"1",10)||1).padStart(2,"0");dataPath=`../data/topik1/collocation/set${set}.json`}try{status.textContent="Loading...";subtitle.textContent=tr("loading");const res=await fetch(new URL(dataPath,location.href).toString(),{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);DATA=await res.json();applyTexts();renderVocab(DATA);status.textContent=tr("loaded")}catch(e){status.textContent="오류";subtitle.textContent=(e&&e.message)?e.message:String(e)}}
+  async function main(){const authOk=await validateEntry_();if(!authOk)return;const progressOk=await validateProgressEntry_();if(!progressOk)return;applyTexts();document.getElementById("btnBack").addEventListener("click",()=>{stopQuizTimer();const qs=passthroughQS();location.href=`./index.html${qs?`?${qs}`:""}`});document.getElementById("tab-vocab").addEventListener("click",()=>setActiveTab("vocab"));document.getElementById("tab-quiz").addEventListener("click",()=>{setActiveTab("quiz");if(DATA&&!QUIZ_STATE)renderQuiz(DATA)});document.getElementById("btnLang").addEventListener("click",()=>{const next=getLang()==="KR"?"MN":"KR";setLang(next);const u=new URL(location.href);u.searchParams.set("lang",next);history.replaceState(null,"",u.toString());applyTexts();if(DATA){renderVocab(DATA);if(document.getElementById("panel-quiz").classList.contains("active"))renderQuiz(DATA)}});document.getElementById("btnMode").addEventListener("click",()=>{QUIZ_MODE=QUIZ_MODE==="KO2MN"?"MN2KO":"KO2MN";applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnTime7").addEventListener("click",()=>{QUIZ_SECONDS=7;applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnTime10").addEventListener("click",()=>{QUIZ_SECONDS=10;applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnNew").addEventListener("click",()=>{if(DATA)renderQuiz(DATA)});
+    const status=document.getElementById("status"),subtitle=document.getElementById("subtitle");let dataPath=getParam("data");if(!dataPath){const set=String(parseInt(getParam("set")||"1",10)||1).padStart(2,"0");dataPath=`../data/topik1/collocation/set${set}.json`}try{status.textContent="Loading...";subtitle.textContent=tr("loading");const res=await fetch(new URL(dataPath,location.href).toString(),{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);DATA=await res.json();if(Number(DATA&&DATA.set)!==requestedSet_()||String(DATA&&DATA.type||"").toLowerCase()!=="topik1_collocation"){renderInvalidEntry_("json_set_mismatch");return;}applyTexts();renderVocab(DATA);status.textContent=tr("loaded")}catch(e){status.textContent="오류";subtitle.textContent=(e&&e.message)?e.message:String(e)}}
   main();
 </script>
 </body>

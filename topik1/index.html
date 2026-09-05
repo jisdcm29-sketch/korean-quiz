@@ -151,6 +151,10 @@
     }
     .levelBtn:hover{filter:brightness(1.06)}
     .levelBtn:active{transform:translateY(1px)}
+    .levelBtn.locked{opacity:.48;cursor:not-allowed;filter:saturate(.55);background:rgba(11,16,32,.72)}
+    .levelBtn.locked:hover{filter:saturate(.55)}
+    .levelBtn.pass{border-color:rgba(52,211,153,.58);background:linear-gradient(135deg,rgba(52,211,153,.18),rgba(11,16,32,.96))}
+    .levelMain{font-weight:950;line-height:1.25}.levelMeta{display:block;margin-top:6px;font-size:12px;color:rgba(229,231,235,.72);font-weight:800;white-space:normal}
 
     .err{
       border:1px solid rgba(248,113,113,.35);
@@ -248,6 +252,156 @@
   </main>
 
   <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+    const DEVICE_KEY = "kq_deviceId_v1";
+    const SESSION_KEY = "kq_session_v1";
+    const PASS_SCORE = 90;
+    const TOPIK_PROGRESS_BOOK = "TOPIK1";
+
+    function getDeviceId_(){
+      let id = localStorage.getItem(DEVICE_KEY) || "";
+      if(!id){
+        id = "dev_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+        localStorage.setItem(DEVICE_KEY, id);
+      }
+      return id;
+    }
+
+    function readLocalSession_(){
+      try{
+        const raw = localStorage.getItem(SESSION_KEY);
+        if(!raw) return null;
+        const s = JSON.parse(raw);
+        if(!s || !s.name || !s.klass || !s.token) return null;
+        return s;
+      }catch(e){
+        return null;
+      }
+    }
+
+    function clearLocalSession_(){
+      try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
+    }
+
+    function jsonpRequest_(baseUrl, params, timeoutMs=10000){
+      return new Promise((resolve,reject)=>{
+        const cb = "cb_topik1_auth_" + Date.now() + "_" + Math.floor(Math.random()*1e6);
+        const script = document.createElement("script");
+        let done = false;
+        const cleanup = ()=>{
+          try{ delete window[cb]; }catch(e){ window[cb]=undefined; }
+          if(script.parentNode) script.parentNode.removeChild(script);
+        };
+        const timer = setTimeout(()=>{
+          if(done) return; done=true; cleanup(); reject(new Error("timeout"));
+        }, timeoutMs);
+        window[cb] = data=>{
+          if(done) return; done=true; clearTimeout(timer); cleanup(); resolve(data);
+        };
+        script.onerror = ()=>{
+          if(done) return; done=true; clearTimeout(timer); cleanup(); reject(new Error("load_error"));
+        };
+        script.src = baseUrl + (baseUrl.includes("?") ? "&" : "?") +
+          new URLSearchParams({...params, callback:cb}).toString();
+        document.head.appendChild(script);
+      });
+    }
+
+    function renderAuthBlocked_(reason){
+      const main = document.querySelector("main.container");
+      if(!main) return;
+      const mn = getLang() === "MN";
+      main.innerHTML = `
+        <section class="card">
+          <div style="text-align:center;padding:28px 18px">
+            <div style="font-size:42px;margin-bottom:10px">🔐</div>
+            <h1 class="h1" style="margin-bottom:12px">${mn ? "Нэвтрэх шаардлагатай" : "로그인이 필요합니다"}</h1>
+            <div class="muted" style="line-height:1.7">${mn ? "TOPIK 1-ийг ашиглахын тулд хүчинтэй нэвтрэх эрхээр дахин нэвтэрнэ үү." : "TOPIK 1을 이용하려면 정상 인증으로 다시 로그인해야 합니다."}</div>
+            <div class="muted small" style="margin-top:8px">${String(reason || "expired_or_invalid")}</div>
+            <div style="margin-top:20px"><a class="btn btnHome" href="../index.html">← ${mn ? "Нэвтрэх дэлгэц рүү буцах" : "로그인 화면으로 돌아가기"}</a></div>
+          </div>
+        </section>`;
+    }
+
+    async function validateEntry_(){
+      const u = new URL(location.href);
+      const name = (u.searchParams.get("name") || "").trim();
+      const klass = (u.searchParams.get("klass") || "").trim();
+      const token = (u.searchParams.get("token") || "").trim();
+
+      // TOPIK 1은 루트 로그인 세션과 URL 인증정보가 모두 정확히 일치해야 진입한다.
+      // 주소창에서 token/name/klass 중 하나만 바꾸어도 기존 localStorage 세션을 재사용하지 못하게 한다.
+      if(!name || !klass || !token){
+        renderAuthBlocked_("missing_auth_params");
+        return false;
+      }
+
+      const session = readLocalSession_();
+      if(!session){
+        renderAuthBlocked_("missing_local_session");
+        return false;
+      }
+
+      const sameSession =
+        String(session.name || "") === name &&
+        String(session.klass || "") === klass &&
+        String(session.token || "") === token;
+
+      if(!sameSession){
+        clearLocalSession_();
+        renderAuthBlocked_("url_session_mismatch");
+        return false;
+      }
+
+      try{
+        const res = await jsonpRequest_(SCRIPT_URL,{
+          action:"validate", token, deviceId:getDeviceId_(), name, klass
+        });
+        if(!res || !res.ok){
+          clearLocalSession_();
+          renderAuthBlocked_((res && res.error) || "expired_or_invalid");
+          return false;
+        }
+        return true;
+      }catch(e){
+        renderAuthBlocked_("validation_network_error");
+        return false;
+      }
+    }
+
+
+    async function topik1Mastery_(lesson,testType){
+      const u=new URL(location.href);
+      return jsonpRequest_(SCRIPT_URL,{
+        action:"mastery_status",
+        token:(u.searchParams.get("token")||"").trim(),
+        deviceId:getDeviceId_(),
+        name:(u.searchParams.get("name")||"").trim(),
+        book:TOPIK_PROGRESS_BOOK,
+        lesson:String(lesson),
+        testType:String(testType)
+      });
+    }
+
+    let DEV_ACCESS_CACHE=null;
+    async function topik1DeveloperAccess_(){
+      if(DEV_ACCESS_CACHE!==null)return DEV_ACCESS_CACHE;
+      const u=new URL(location.href);
+      try{
+        const r=await jsonpRequest_(SCRIPT_URL,{
+          action:"learning_start",
+          token:(u.searchParams.get("token")||"").trim(),
+          deviceId:getDeviceId_(),
+          name:(u.searchParams.get("name")||"").trim(),
+          book:TOPIK_PROGRESS_BOOK
+        });
+        DEV_ACCESS_CACHE=!!(r&&r.ok&&(r.developerAccess||r.isDeveloper));
+      }catch(e){DEV_ACCESS_CACHE=false;}
+      return DEV_ACCESS_CACHE;
+    }
+
+    function isPassStatus_(r){return !!(r&&r.ok&&r.status==="PASS"&&Number(r.bestScore||0)>=PASS_SCORE);}
+
     const I18N = {
       KR: {
         home:"홈", loading:"불러오는 중...", loaded:"로드 완료",
@@ -337,30 +491,62 @@
       catWrap.classList.add("hidden");levelWrap.classList.add("hidden");groupWrap.classList.remove("hidden");
     }
 
-    function renderLevels(target,isGroup){
+    async function renderLevels(target,isGroup){
       pickedCat.textContent=isGroup?localized(target,"title",target.id):catTitle(target.id);
       pickedSub.textContent=isGroup?localized(target,"subtitle",""):localized(target,"subtitle",target.subtitle||"");
       btnReset.textContent=isGroup?tr("backVocab"):tr("reset");
       levelGrid.innerHTML="";
-      if(isGroup && Array.isArray(target.sets)){
-        target.sets.forEach(st=>{
-          const a=document.createElement("a");a.className="levelBtn";a.textContent=getLang()==="MN"?(st.label_mn||st.label_kr):(st.label_kr||st.label_mn);
-          const u=new URL("./collocation.html",location.href);u.searchParams.set("set",String(st.id));u.searchParams.set("data",st.data);
-          const pass=new URLSearchParams(passthroughQS());pass.forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();levelGrid.appendChild(a);
+      if(isGroup&&Array.isArray(target.sets)){
+        const dev=await topik1DeveloperAccess_();
+        const statuses=await Promise.all(target.sets.map(st=>topik1Mastery_(st.id,"collocation").catch(()=>({ok:false,bestScore:0,status:"NONE"}))));
+        target.sets.forEach((st,idx)=>{
+          const passed=isPassStatus_(statuses[idx]);
+          const previousPassed=idx===0||isPassStatus_(statuses[idx-1]);
+          const open=dev||previousPassed;
+          const el=document.createElement(open?"a":"button");
+          el.className="levelBtn"+(passed?" pass":"")+(open?"":" locked");
+          const label=getLang()==="MN"?(st.label_mn||st.label_kr):(st.label_kr||st.label_mn);
+          let meta="";
+          if(dev)meta=getLang()==="MN"?"🛠 Бүх багц нээлттэй":"🛠 개발자 전체 접근";
+          else if(passed)meta=getLang()==="MN"?`✅ Тэнцсэн ${Number(statuses[idx].bestScore||0)}%`:`✅ 통과 ${Number(statuses[idx].bestScore||0)}%`;
+          else if(open)meta=getLang()==="MN"?"Эхлэх боломжтой":"시작 가능";
+          else meta=getLang()==="MN"?`🔒 ${idx}-р багц 90% шаардлагатай`:`🔒 ${idx}세트 90% 이상 필요`;
+          el.innerHTML=`<span class="levelMain">${label}</span><span class="levelMeta">${meta}</span>`;
+          if(open){const u=new URL("./collocation.html",location.href);u.searchParams.set("set",String(st.id));u.searchParams.set("data",st.data);const pass=new URLSearchParams(passthroughQS());pass.forEach((v,k)=>u.searchParams.set(k,v));el.href=u.toString();}else{el.type="button";el.disabled=true;}
+          levelGrid.appendChild(el);
         });
-      }else if(target.id==="grammar" && Array.isArray(target.stages)){
-        target.stages.forEach(st=>{
-          const a=document.createElement("a");a.className="levelBtn";a.textContent=getLang()==="MN"?(st.label_mn||st.label_kr):(st.label_kr||st.label_mn);
-          const u=new URL("./grammar.html",location.href);u.searchParams.set("stage",String(st.id));u.searchParams.set("data",st.data);
-          const pass=new URLSearchParams(passthroughQS());pass.forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();levelGrid.appendChild(a);
+      }else if(target.id==="grammar"&&Array.isArray(target.stages)){
+        const dev=await topik1DeveloperAccess_();
+        const statuses=await Promise.all(target.stages.map(st=>topik1Mastery_(st.id,"grammar").catch(()=>({ok:false,bestScore:0,status:"NONE"}))));
+        target.stages.forEach((st,idx)=>{
+          const passed=isPassStatus_(statuses[idx]);
+          const previousPassed=idx===0||isPassStatus_(statuses[idx-1]);
+          const open=dev||previousPassed;
+          const el=document.createElement(open?"a":"button");
+          el.className="levelBtn"+(passed?" pass":"")+(open?"":" locked");
+          const label=getLang()==="MN"?(st.label_mn||st.label_kr):(st.label_kr||st.label_mn);
+          let meta="";
+          if(dev)meta=getLang()==="MN"?"🛠 Бүх шат нээлттэй":"🛠 개발자 전체 접근";
+          else if(passed)meta=getLang()==="MN"?`✅ Тэнцсэн ${Number(statuses[idx].bestScore||0)}%`:`✅ 통과 ${Number(statuses[idx].bestScore||0)}%`;
+          else if(open)meta=getLang()==="MN"?"Эхлэх боломжтой":"시작 가능";
+          else meta=getLang()==="MN"?`🔒 ${idx}-р шат 90% шаардлагатай`:`🔒 ${idx}단계 90% 이상 필요`;
+          el.innerHTML=`<span class="levelMain">${label}</span><span class="levelMeta">${meta}</span>`;
+          if(open){
+            const u=new URL("./grammar.html",location.href);
+            u.searchParams.set("stage",String(st.id));
+            u.searchParams.set("data",st.data);
+            const pass=new URLSearchParams(passthroughQS());
+            pass.forEach((v,k)=>u.searchParams.set(k,v));
+            el.href=u.toString();
+          }else{
+            el.type="button";
+            el.disabled=true;
+          }
+          levelGrid.appendChild(el);
         });
       }else{
         const levels=Array.isArray(target.levels)?target.levels:[];
-        levels.forEach((lv,idx)=>{
-          const a=document.createElement("a");a.className="levelBtn";a.textContent=lv;
-          const u=new URL("./level.html",location.href);u.searchParams.set("cat",target.id);u.searchParams.set("level",String(idx+1));
-          const pass=new URLSearchParams(passthroughQS());pass.forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();levelGrid.appendChild(a);
-        });
+        levels.forEach((lv,idx)=>{const a=document.createElement("a");a.className="levelBtn";a.textContent=lv;const u=new URL("./level.html",location.href);u.searchParams.set("cat",target.id);u.searchParams.set("level",String(idx+1));const pass=new URLSearchParams(passthroughQS());pass.forEach((v,k)=>u.searchParams.set(k,v));a.href=u.toString();levelGrid.appendChild(a);});
       }
       catWrap.classList.add("hidden");groupWrap.classList.add("hidden");levelWrap.classList.remove("hidden");
     }
@@ -383,7 +569,11 @@
         MANIFEST=await res.json();statusEl.textContent=tr("loaded");renderCats();
       }catch(e){statusEl.textContent="오류";showErr(tr("manifestFail")+"\n"+(e.message||e));}
     }
-    loadManifest();
+    (async function boot(){
+      const ok = await validateEntry_();
+      if(!ok) return;
+      await loadManifest();
+    })();
   </script>
 </body>
 </html>
