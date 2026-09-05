@@ -577,10 +577,364 @@
       if(box) box.classList.toggle("urgent", QUIZ_STATE.remaining<=3);
     }
 
+    const RESULT_LOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+    const RESULT_LOG_DEVICE_KEY = "kq_deviceId_v1";
+
+    function resultLogIdentity(){
+      const u = new URL(location.href);
+      return {
+        name: u.searchParams.get("name") || "",
+        klass: u.searchParams.get("klass") || "",
+        token: u.searchParams.get("token") || "",
+        deviceId: localStorage.getItem(RESULT_LOG_DEVICE_KEY) || "",
+        lang: u.searchParams.get("lang") || getLang().toLowerCase()
+      };
+    }
+
+    function sendResultJsonp(params){
+      return new Promise((resolve, reject)=>{
+        const cb = `kq_result_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script = document.createElement("script");
+        const query = new URLSearchParams({...params, callback:cb});
+        const cleanup = ()=>{
+          try{ delete window[cb]; }catch(e){}
+          if(script.parentNode) script.parentNode.removeChild(script);
+        };
+        const timer = setTimeout(()=>{ cleanup(); reject(new Error("result_log_timeout")); }, 8000);
+        window[cb] = (data)=>{ clearTimeout(timer); cleanup(); resolve(data); };
+        script.onerror = ()=>{ clearTimeout(timer); cleanup(); reject(new Error("result_log_error")); };
+        script.src = `${RESULT_LOG_SCRIPT_URL}?${query.toString()}`;
+        document.head.appendChild(script);
+      });
+    }
+
+    function firstLessonNoForLevel(levelRaw){
+      const level = String(levelRaw || "").toUpperCase();
+      const firstByLevel = {"1A":1,"1B":9,"2A":1,"2B":10,"3A":1,"3B":10,"4A":1,"4B":10};
+      return firstByLevel[level] || 1;
+    }
+
+    function lessonRangeForLevel(levelRaw){
+      const level = String(levelRaw || "").toUpperCase();
+      const ranges = {
+        "1A":[1,8], "1B":[9,16],
+        "2A":[1,9], "2B":[10,18],
+        "3A":[1,9], "3B":[10,18],
+        "4A":[1,9], "4B":[10,18]
+      };
+      return ranges[level] || null;
+    }
+
+    function parseLessonDataTarget(pathRaw){
+      try{
+        const u = new URL(String(pathRaw || ""), location.href);
+        const m = u.pathname.match(/\/data\/snu\/(1A|1B|2A|2B|3A|3B|4A|4B)\/lesson(\d{2})\.json$/i);
+        if(!m) return {ok:false,error:"lesson_data_path_invalid"};
+        const level = String(m[1]).toUpperCase();
+        const lessonNo = parseInt(m[2],10);
+        const range = lessonRangeForLevel(level);
+        if(!range || lessonNo < range[0] || lessonNo > range[1]){
+          return {ok:false,error:"lesson_data_range_invalid",level,lessonNo};
+        }
+        return {ok:true,level,lessonNo,url:u.toString()};
+      }catch(e){
+        return {ok:false,error:"lesson_data_path_invalid"};
+      }
+    }
+
+    function lessonSelectionUrl(){
+      const qs = passthroughQS();
+      return `./index.html${qs ? `?${qs}` : ""}`;
+    }
+
+    function renderLessonInvalidAccess(detail){
+      stopQuizTimer();
+      stopMixedTimer();
+      const tabs = document.querySelector(".tabs");
+      if(tabs) tabs.style.display = "none";
+      document.querySelectorAll(".panel").forEach(el=>el.classList.remove("active"));
+      const panel = document.getElementById("panel-vocab");
+      if(panel) panel.classList.add("active");
+      const vocab = document.getElementById("vocab");
+      const mn = getLang() === "MN";
+      const title = document.getElementById("title");
+      const subtitle = document.getElementById("subtitle");
+      const status = document.getElementById("status");
+      if(title) title.textContent = mn ? "Буруу хандалт" : "잘못된 접근";
+      if(subtitle) subtitle.textContent = mn ? "Хичээлийн мэдээлэл зөрсөн байна." : "레슨 주소의 교재·과 정보가 올바르지 않습니다.";
+      if(status) status.textContent = mn ? "Хориглосон" : "차단";
+      if(vocab){
+        vocab.innerHTML = `<div class="qbox" style="text-align:center;padding:30px 18px">
+          <div style="font-size:42px;margin-bottom:10px">⚠️</div>
+          <div style="font-size:24px;font-weight:950">${mn ? "Буруу хандалт байна" : "잘못된 접근입니다"}</div>
+          <div class="muted" style="margin-top:14px;line-height:1.7">${mn ? "data зам болон бодит хичээлийн мэдээлэл ижил байх ёстой." : "data 경로와 실제 교재·과 정보가 서로 일치해야 합니다."}</div>
+          ${detail ? `<div class="muted small" style="margin-top:8px">${escapeHtml(detail)}</div>` : ""}
+          <button class="btn btnBack" id="invalidLessonBack" style="margin-top:18px">${mn ? "← Хичээл сонголт руу" : "← 과 선택으로 돌아가기"}</button>
+        </div>`;
+        const b = document.getElementById("invalidLessonBack");
+        if(b) b.onclick = ()=>location.href = lessonSelectionUrl();
+      }
+    }
+
+    async function verifyLessonUnlocked(d){
+      const level = String((d && d.meta && d.meta.level) || (d && d.level) || "").toUpperCase();
+      const lessonRaw = String((d && d.meta && d.meta.lesson) || (d && d.lesson) || "");
+      const lessonNo = parseInt(lessonRaw.replace(/[^0-9]/g, ""), 10);
+      if(!level || !Number.isFinite(lessonNo)){
+        return {allowed:false,error:"lesson_meta_invalid",level,lessonNo:lessonRaw};
+      }
+
+      const firstLesson = firstLessonNoForLevel(level);
+      const id = resultLogIdentity();
+      if(!id.token){
+        // 모든 과는 반드시 정상 로그인 토큰이 있어야 한다. 첫 과도 예외로 열지 않는다.
+        return {allowed:false,error:"missing_token",authRequired:true,level,lessonNo,firstLesson};
+      }
+
+      try{
+        // learning_start 응답 자체가 서버의 토큰 검증 결과다.
+        // 토큰이 없거나 만료/변조된 경우 어떤 과도 열지 않는다.
+        const accessProfile = await sendResultJsonp({
+          action:"learning_start",
+          token:id.token,
+          name:id.name,
+          book:`SNU-${level}`
+        });
+        if(!accessProfile || accessProfile.ok !== true){
+          return {
+            allowed:false,
+            error:(accessProfile && accessProfile.error) || "auth_check_failed",
+            authRequired:true,
+            level,
+            lessonNo,
+            firstLesson
+          };
+        }
+        if(accessProfile.isDeveloper === true){
+          return {allowed:true,level,lessonNo,firstLesson,isDeveloper:true,role:"developer"};
+        }
+
+        // 교사가 지정한 시작 과가 있으면 그 과까지는 기존 진도로 인정한다.
+        // 예: startLesson=3 -> 1, 2, 3과는 바로 접근 가능하고 4과부터 3과의 3개 시험 통과를 요구한다.
+        let teacherStartLesson = 0;
+        if(accessProfile && accessProfile.ok === true && accessProfile.found === true && accessProfile.enabled === true){
+          const requestedStart = Number(accessProfile.startLesson || 0);
+          if(Number.isFinite(requestedStart) && requestedStart > 0){
+            teacherStartLesson = Math.max(firstLesson, Math.floor(requestedStart));
+          }
+        }
+
+        if(teacherStartLesson > 0 && lessonNo <= teacherStartLesson){
+          return {
+            allowed:true,
+            level,
+            lessonNo,
+            firstLesson,
+            teacherStartLesson,
+            teacherOverride:true,
+            role:"student"
+          };
+        }
+
+        if(lessonNo === firstLesson){
+          return {allowed:true,level,lessonNo,firstLesson,isFirst:true};
+        }
+
+        const previousLesson = lessonNo - 1;
+        const testTypes = ["vocab","grammar","mixed"];
+        const responses = await Promise.all(testTypes.map(testType=>sendResultJsonp({
+          action:"mastery_status",
+          token:id.token,
+          name:id.name,
+          book:`SNU-${level}`,
+          lesson:String(previousLesson),
+          testType
+        })));
+
+        const tests = {};
+        testTypes.forEach((type, i)=>{ tests[type] = responses[i] || {}; });
+        const allOk = testTypes.every(type=>tests[type] && tests[type].ok === true);
+        const allowed = allOk && testTypes.every(type=>tests[type].status === "PASS" && Number(tests[type].bestScore || 0) >= 90);
+        const firstError = testTypes.map(type=>tests[type]).find(r=>!r || r.ok !== true);
+
+        return {
+          allowed,
+          level,
+          lessonNo,
+          previousLesson,
+          previousScores:{
+            vocab:Number(tests.vocab.bestScore || 0),
+            grammar:Number(tests.grammar.bestScore || 0),
+            mixed:Number(tests.mixed.bestScore || 0)
+          },
+          passScore:90,
+          status:allowed ? "PASS" : "RETRY",
+          error:firstError ? (firstError.error || "status_check_failed") : ""
+        };
+      }catch(err){
+        return {
+          allowed:false,
+          error:(err && err.message) ? err.message : "status_check_failed",
+          level,
+          lessonNo,
+          previousLesson:lessonNo-1,
+          previousScores:{vocab:0,grammar:0,mixed:0},
+          passScore:90,
+          status:"NONE"
+        };
+      }
+    }
+
+    function renderLessonLocked(access, d){
+      stopQuizTimer();
+      stopMixedTimer();
+      const tabs = document.querySelector(".tabs");
+      if(tabs) tabs.style.display = "none";
+      document.querySelectorAll(".panel").forEach(el=>el.classList.remove("active"));
+      const panel = document.getElementById("panel-vocab");
+      if(panel) panel.classList.add("active");
+      const vocab = document.getElementById("vocab");
+      const mn = getLang() === "MN";
+
+      if(access && access.authRequired){
+        const titleText = mn ? "Нэвтрэх шаардлагатай" : "로그인이 필요합니다";
+        const ruleText = mn
+          ? "Энэ хичээлийг ашиглахын тулд хүчинтэй нэвтрэх эрхээр дахин нэвтэрнэ үү."
+          : "이 과를 이용하려면 정상 인증으로 다시 로그인해야 합니다.";
+        const detail = access.error ? `<div class="muted small" style="margin-top:10px">${escapeQuestionHtml(access.error)}</div>` : "";
+        const backText = mn ? "← Нэвтрэх дэлгэц рүү" : "← 로그인 화면으로 돌아가기";
+        document.getElementById("status").textContent = mn ? "Нэвтрэх" : "인증 필요";
+        if(vocab){
+          vocab.innerHTML = `<div class="qbox quizSummary" style="text-align:center;padding:30px 18px">
+            <div style="font-size:42px;margin-bottom:10px">🔐</div>
+            <div class="reviewTitle" style="font-size:22px">${titleText}</div>
+            <div style="margin-top:14px">${ruleText}</div>
+            ${detail}
+            <button type="button" class="btn" id="btnAuthBack" style="margin-top:20px">${backText}</button>
+          </div>`;
+          const btn = document.getElementById("btnAuthBack");
+          if(btn){
+            btn.addEventListener("click", ()=>{ location.href = "../index.html"; });
+          }
+        }
+        const langBtn = document.getElementById("btnLang");
+        if(langBtn) langBtn.disabled = true;
+        return;
+      }
+
+      const prev = Number(access && access.previousLesson || 0);
+      const scores = (access && access.previousScores) || {vocab:0,grammar:0,mixed:0};
+      const vocabScore = Number(scores.vocab || 0);
+      const grammarScore = Number(scores.grammar || 0);
+      const mixedScore = Number(scores.mixed || 0);
+      const passScore = Number(access && access.passScore || 90);
+      const titleText = mn ? "\u0414\u0430\u0440\u0430\u0430\u0433\u0438\u0439\u043d \u0445\u0438\u0447\u044d\u044d\u043b \u0442\u04af\u0433\u0436\u044d\u044d\u0442\u044d\u0439 \u0431\u0430\u0439\u043d\u0430" : "\uB2E4\uC74C \uACFC\uB294 \uC544\uC9C1 \uC7A0\uACA8 \uC788\uC2B5\uB2C8\uB2E4";
+      const ruleText = mn
+        ? `${prev}-р хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр ${passScore}%-иас дээш байвал энэ хичээл нээгдэнэ.`
+        : `${prev}과의 어휘·문법·종합 테스트가 모두 ${passScore}% 이상이어야 이 과가 열립니다.`;
+      const scoreText = mn
+        ? `Үг ${vocabScore}% · Дүрэм ${grammarScore}% · Нэгдсэн ${mixedScore}%`
+        : `어휘 ${vocabScore}% · 문법 ${grammarScore}% · 종합 ${mixedScore}%`;
+      const backText = mn ? "\u2190 \u0425\u0438\u0447\u044d\u044d\u043b \u0441\u043e\u043d\u0433\u043e\u0445" : "\u2190 \uACFC \uC120\uD0DD\uC73C\uB85C \uB3CC\uC544\uAC00\uAE30";
+      const checkError = access && access.error;
+      const errorText = checkError
+        ? (mn ? `\u0422\u04e9\u043b\u04e9\u0432 \u0448\u0430\u043b\u0433\u0430\u0445\u0430\u0434 \u0430\u043b\u0434\u0430\u0430 \u0433\u0430\u0440\u043b\u0430\u0430: ${escapeQuestionHtml(checkError)}` : `\uD1B5\uACFC \uC0C1\uD0DC \uD655\uC778 \uC624\uB958: ${escapeQuestionHtml(checkError)}`)
+        : "";
+
+      document.getElementById("status").textContent = mn ? "\u0422\u04af\u0433\u0436\u044d\u044d\u0442\u044d\u0439" : "\uC7A0\uAE40";
+      if(vocab){
+        vocab.innerHTML = `<div class="qbox quizSummary" style="text-align:center;padding:30px 18px">
+          <div style="font-size:42px;margin-bottom:10px">\ud83d\udd12</div>
+          <div class="reviewTitle" style="font-size:22px">${titleText}</div>
+          <div style="margin-top:14px">${ruleText}</div>
+          <div class="muted" style="margin-top:8px">${scoreText}</div>
+          ${errorText ? `<div class="reviewMeta reviewMine" style="margin-top:10px">${errorText}</div>` : ""}
+          <button type="button" class="btn" id="btnLockedBack" style="margin-top:20px">${backText}</button>
+        </div>`;
+        const btn = document.getElementById("btnLockedBack");
+        if(btn){
+          btn.addEventListener("click", ()=>{
+            const qs = passthroughQS();
+            location.href = `./index.html${qs ? `?${qs}` : ""}`;
+          });
+        }
+      }
+      const langBtn = document.getElementById("btnLang");
+      if(langBtn) langBtn.disabled = true;
+    }
+
+    async function logVocabularyResult(score, correct, total, timeoutCount){
+      try{
+        const id = resultLogIdentity();
+        if(!id.token || !id.name) return;
+        const level = String((LESSON && LESSON.meta && LESSON.meta.level) || (LESSON && LESSON.level) || "");
+        const lesson = String((LESSON && LESSON.meta && LESSON.meta.lesson) || (LESSON && LESSON.lesson) || "");
+        await sendResultJsonp({
+          action:"log",
+          token:id.token,
+          deviceId:id.deviceId,
+          name:id.name,
+          klass:id.klass,
+          book:`SNU-${level}`,
+          lesson:lesson,
+          score:String(score),
+          attempts:"1",
+          testType:"vocab",
+          correct:String(correct),
+          total:String(total),
+          timeout:String(timeoutCount || 0),
+          ua:(navigator.userAgent || "").slice(0,300),
+          lang:id.lang
+        });
+      }catch(err){
+        console.log("vocabulary result log failed:", err);
+      }
+    }
+
+    async function logMixedResult(score, state){
+      try{
+        const id = resultLogIdentity();
+        if(!id.token || !id.name || !state) return;
+        const level = String((LESSON && LESSON.meta && LESSON.meta.level) || (LESSON && LESSON.level) || "");
+        const lesson = String((LESSON && LESSON.meta && LESSON.meta.lesson) || (LESSON && LESSON.lesson) || "");
+        const total = Array.isArray(state.queue) ? state.queue.length : 0;
+        const category = state.category || {};
+        const vocab = category.vocab || {c:0,t:0};
+        const grammar = category.grammar || {c:0,t:0};
+        const integrated = category.integrated || {c:0,t:0};
+        await sendResultJsonp({
+          action:"log",
+          token:id.token,
+          deviceId:id.deviceId,
+          name:id.name,
+          klass:id.klass,
+          book:`SNU-${level}`,
+          lesson:lesson,
+          score:String(score),
+          attempts:"1",
+          testType:"mixed",
+          correct:String(state.correct || 0),
+          total:String(total),
+          timeout:String(state.timeout || 0),
+          vocabCorrect:String(vocab.c || 0),
+          vocabTotal:String(vocab.t || 0),
+          grammarCorrect:String(grammar.c || 0),
+          grammarTotal:String(grammar.t || 0),
+          integratedCorrect:String(integrated.c || 0),
+          integratedTotal:String(integrated.t || 0),
+          ua:(navigator.userAgent || "").slice(0,300),
+          lang:id.lang
+        });
+      }catch(err){
+        console.log("mixed result log failed:", err);
+      }
+    }
+
     function finishQuiz(){
       stopQuizTimer();
       const s=QUIZ_STATE, total=s.queue.length;
       const accuracy=total ? Math.round((s.correct/total)*100) : 0;
+      logVocabularyResult(accuracy, s.correct, total, s.timeout);
       const review = (s.miss||[]).length ? `<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"Алдсан асуулт ба зөв хариулт":"틀린 문제와 정답"}</div>${s.miss.map((m,i)=>`<div class="reviewItem"><div class="reviewPrompt">${i+1}. ${escapeQuestionHtml(m.prompt)}</div><div class="reviewMeta reviewMine">${getLang()==="MN"?"Миний хариулт":"내 답"}: <b>${m.reason==="timeout"?(getLang()==="MN"?"Хугацаа хэтэрсэн":"시간 초과"):escapeQuestionHtml(m.selected||"")}</b>${m.reason==="timeout"?`<span class="reviewTimeout">${tr("timeout")}</span>`:""}</div><div class="reviewMeta reviewCorrect">${tr("answer")}: <b>${escapeQuestionHtml(m.correct)}</b></div></div>`).join("")}</div>` : `<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"🎉 Бүгд зөв байна.":"🎉 모두 맞았습니다."}</div></div>`;
       document.getElementById("quiz").innerHTML=`<div class="qbox quizSummary">
         <div class="qLabel">${tr("completed")}</div>
@@ -894,6 +1248,7 @@
 
     function finishMixed(){
       stopMixedTimer();const s=MIXED_STATE,total=s.queue.length,pct=total?Math.round(s.correct/total*100):0;
+      logMixedResult(pct, s);
       const label={vocab:getLang()==="MN"?"Үг":"어휘",grammar:getLang()==="MN"?"Дүрэм":"문법",integrated:getLang()==="MN"?"Нэгдсэн":"통합"};
       const rows=Object.keys(s.category).map(k=>`<div class="statBox"><span class="statLabel">${label[k]}</span><span class="statValue">${s.category[k].c} / ${s.category[k].t}</span></div>`).join("");
       const review=(s.miss||[]).length?`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"Алдсан асуулт ба зөв хариулт":"틀린 문제와 정답"}</div>${s.miss.map((m,i)=>`<div class="reviewItem"><div class="reviewPrompt">${i+1}. [${label[m.category]||label.integrated}] ${escapeQuestionHtml(m.prompt)}</div><div class="reviewMeta reviewMine">${getLang()==="MN"?"Миний хариулт":"내 답"}: <b>${m.reason==="timeout"?(getLang()==="MN"?"Хугацаа хэтэрсэн":"시간 초과"):escapeQuestionHtml(m.selected||"")}</b>${m.reason==="timeout"?`<span class="reviewTimeout">${tr("timeout")}</span>`:""}</div><div class="reviewMeta reviewCorrect">${tr("answer")}: <b>${escapeQuestionHtml(m.correct)}</b></div></div>`).join("")}</div>`:`<div class="reviewList"><div class="reviewTitle">${getLang()==="MN"?"🎉 Бүгд зөв байна.":"🎉 모두 맞았습니다."}</div></div>`;
@@ -1051,26 +1406,43 @@
         return;
       }
 
+      const target = parseLessonDataTarget(dataPath);
+      if(!target.ok){
+        renderLessonInvalidAccess(target.error || "lesson_data_path_invalid");
+        return;
+      }
+
       try{
-        const dataUrl = new URL(dataPath, location.href).toString();
         status.textContent = "Loading...";
         subtitle.textContent = tr("loading");
 
-        const res = await fetch(dataUrl, { cache:"no-store" });
+        const res = await fetch(target.url, { cache:"no-store" });
         if(!res.ok) throw new Error("레슨 JSON 로드 실패: " + res.status);
 
         const d = await res.json();
-        LESSON = d;
+        const level = String((d.meta && d.meta.level) ? d.meta.level : (d.level || "")).toUpperCase();
+        const lessonRaw = (d.meta && d.meta.lesson) ? d.meta.lesson : (d.lesson || "");
+        const actualLessonNo = parseInt(String(lessonRaw).replace(/[^0-9]/g,""),10);
+        if(level !== target.level || actualLessonNo !== target.lessonNo){
+          renderLessonInvalidAccess(`URL=${target.level}-${target.lessonNo}, DATA=${level || "?"}-${Number.isFinite(actualLessonNo) ? actualLessonNo : "?"}`);
+          return;
+        }
 
-        const level = (d.meta && d.meta.level) ? d.meta.level : (d.level || "");
-        const lesson = (d.meta && d.meta.lesson) ? d.meta.lesson : (d.lesson || "");
+        LESSON = d;
+        const lesson = lessonRaw;
         const lessonLabel = makeLessonLabel(lesson);
         const tmn = d.title_mn || (d.meta && d.meta.title_mn) || "";
 
         title.textContent = `${level} ${lessonLabel}`.trim() || "레슨";
         subtitle.textContent = tmn || "";
-        status.textContent = tr("loaded");
+        status.textContent = getLang()==="MN" ? "\u041d\u044d\u044d\u0445 \u044d\u0440\u0445\u0438\u0439\u0433 \u0448\u0430\u043b\u0433\u0430\u0436 \u0431\u0430\u0439\u043d\u0430..." : "\uC218\uAC15 \uAC00\uB2A5 \uC5EC\uBD80 \uD655\uC778 \uC911...";
+        const access = await verifyLessonUnlocked(d);
+        if(!access.allowed){
+          renderLessonLocked(access, d);
+          return;
+        }
 
+        status.textContent = tr("loaded");
         renderVocab(d);
         renderGrammar(d);
         QUIZ_STATE = null;

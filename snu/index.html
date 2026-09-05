@@ -145,6 +145,25 @@
     }
     .lessonBtn:hover{filter:brightness(1.06)}
     .lessonBtn:active{transform:translateY(1px)}
+    .lessonBtn:disabled{transform:none}
+    .lessonBtn.locked{
+      cursor:not-allowed;
+      opacity:.62;
+      background:linear-gradient(135deg,rgba(107,114,128,.10), rgba(11,16,32,.96));
+      border-color:rgba(107,114,128,.30);
+    }
+    .lessonBtn.passed{
+      background:linear-gradient(135deg,rgba(52,211,153,.17), rgba(11,16,32,.96));
+      border-color:rgba(52,211,153,.48);
+    }
+    .lessonBtn.ready{
+      background:linear-gradient(135deg,rgba(96,165,250,.16), rgba(11,16,32,.96));
+      border-color:rgba(96,165,250,.48);
+    }
+    .lessonBtnInner{display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.15}
+    .lessonState{font-size:11px;font-weight:800;color:var(--muted);white-space:normal}
+    .lessonBtn.passed .lessonState{color:#86efac}
+    .lessonBtn.locked .lessonState{color:#cbd5e1}
 
     .err{
       border:1px solid rgba(248,113,113,.35);
@@ -250,7 +269,27 @@
         picked: "선택됨",
         reset: "교재 다시 선택",
         learner: "학습자: ",
-        books: "교재"
+        books: "교재",
+        masteryChecking: "학습 통과 상태 확인 중...",
+        masteryRule: "이전 과의 어휘·문법·종합 테스트가 모두 90% 이상이어야 다음 과가 열립니다.",
+        firstOpen: "시작 가능",
+        ready: "열림",
+        locked: "잠김",
+        pass: "통과",
+        needLogin: "로그인 정보가 필요합니다.",
+        authRequired: "로그인이 필요합니다",
+        authHelp: "서울대 교재를 이용하려면 정상 인증으로 다시 로그인해야 합니다.",
+        authStatus: "인증 필요",
+        authBack: "로그인 화면으로 돌아가기",
+        masteryError: "학습 통과 상태를 확인하지 못했습니다.",
+        vocabLabel: "어휘",
+        grammarLabel: "문법",
+        mixedLabel: "종합",
+        developerAccess: "개발자 전체 접근",
+        teacherRecognized: "교사 인정 · 기존 진도",
+        teacherStart: "교사 지정 시작 과",
+        teacherOverride: "교사 지정 시작점 적용",
+        teacherStartInvalid: "교사 지정 시작 과를 현재 교재 범위에 맞게 조정했습니다."
       },
       MN: {
         home: "Нүүр",
@@ -261,7 +300,27 @@
         picked: "Сонгосон",
         reset: "Ном дахин сонгох",
         learner: "Сурагч: ",
-        books: "Ном"
+        books: "Ном",
+        masteryChecking: "Тэнцсэн эсэхийг шалгаж байна...",
+        masteryRule: "Өмнөх хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр 90%-иас дээш байвал дараагийн хичээл нээгдэнэ.",
+        firstOpen: "Эхлэх боломжтой",
+        ready: "Нээлттэй",
+        locked: "Түгжээтэй",
+        pass: "Тэнцсэн",
+        needLogin: "Нэвтрэх мэдээлэл шаардлагатай.",
+        authRequired: "Нэвтрэх шаардлагатай",
+        authHelp: "Сөүлийн их сургуулийн хичээлийг ашиглахын тулд хүчинтэй эрхээр дахин нэвтэрнэ үү.",
+        authStatus: "Нэвтрэх шаардлагатай",
+        authBack: "Нэвтрэх дэлгэц рүү буцах",
+        masteryError: "Тэнцсэн эсэхийг шалгаж чадсангүй.",
+        vocabLabel: "Үг",
+        grammarLabel: "Дүрэм",
+        mixedLabel: "Нэгдсэн",
+        developerAccess: "Хөгжүүлэгчийн бүрэн эрх",
+        teacherRecognized: "Багш зөвшөөрсөн · өмнөх ахиц",
+        teacherStart: "Багшийн заасан эхлэх хичээл",
+        teacherOverride: "Багшийн эхлэх цэг хэрэгжиж байна",
+        teacherStartInvalid: "Багшийн заасан эхлэх хичээлийг энэ номын хүрээнд тохирууллаа."
       }
     };
 
@@ -298,6 +357,120 @@
     function withQS(url){
       const qs = passthroughQS();
       return url + (url.includes("?") ? "&" : "?") + qs;
+    }
+
+    const RESULT_LOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+
+    function jsonpRequest(params, timeoutMs=12000){
+      return new Promise((resolve, reject)=>{
+        const cb = "kqMastery_" + Date.now() + "_" + Math.random().toString(36).slice(2);
+        const script = document.createElement("script");
+        let done = false;
+
+        function cleanup(){
+          if(done) return;
+          done = true;
+          clearTimeout(timer);
+          try{ delete window[cb]; }catch(_){ window[cb] = undefined; }
+          if(script.parentNode) script.parentNode.removeChild(script);
+        }
+
+        window[cb] = (data)=>{
+          cleanup();
+          resolve(data);
+        };
+
+        const timer = setTimeout(()=>{
+          cleanup();
+          reject(new Error("timeout"));
+        }, timeoutMs);
+
+        const u = new URL(RESULT_LOG_SCRIPT_URL);
+        Object.entries(params || {}).forEach(([k,v])=>{
+          if(v !== undefined && v !== null && String(v) !== "") u.searchParams.set(k, String(v));
+        });
+        u.searchParams.set("callback", cb);
+        script.onerror = ()=>{
+          cleanup();
+          reject(new Error("network_error"));
+        };
+        script.src = u.toString();
+        document.head.appendChild(script);
+      });
+    }
+
+    async function validateSession(){
+      const token = getParam("token");
+      if(!token) return {ok:false,error:"missing_token"};
+      try{
+        const data = await jsonpRequest({
+          action:"validate",
+          token,
+          name:getParam("name")
+        });
+        return data || {ok:false,error:"empty_response"};
+      }catch(e){
+        return {ok:false,error:(e && e.message) ? e.message : "request_failed"};
+      }
+    }
+
+    async function getLearningAccess(bookId){
+      const token = getParam("token");
+      if(!token) return {ok:false,error:"missing_token",isDeveloper:false};
+      try{
+        const data = await jsonpRequest({
+          action:"learning_start",
+          token,
+          name:getParam("name"),
+          book:"SNU-" + String(bookId || "").toUpperCase()
+        });
+        return data || {ok:false,error:"empty_response",isDeveloper:false};
+      }catch(e){
+        return {ok:false,error:(e && e.message) ? e.message : "request_failed",isDeveloper:false};
+      }
+    }
+
+    async function getTestMastery(bookId, lessonNo, testType){
+      const token = getParam("token");
+      if(!token) return {ok:false,error:"missing_token",found:false,bestScore:0,status:"NONE",testType};
+      try{
+        const data = await jsonpRequest({
+          action:"mastery_status",
+          token,
+          name:getParam("name"),
+          book:"SNU-" + String(bookId || "").toUpperCase(),
+          lesson:String(lessonNo == null ? "" : lessonNo),
+          testType
+        });
+        return Object.assign({testType}, data || {ok:false,error:"empty_response",found:false,bestScore:0,status:"NONE"});
+      }catch(e){
+        return {ok:false,error:(e && e.message) ? e.message : "request_failed",found:false,bestScore:0,status:"NONE",testType};
+      }
+    }
+
+    async function getLessonMastery(bookId, lessonNo){
+      const [vocab, grammar, mixed] = await Promise.all([
+        getTestMastery(bookId, lessonNo, "vocab"),
+        getTestMastery(bookId, lessonNo, "grammar"),
+        getTestMastery(bookId, lessonNo, "mixed")
+      ]);
+      const tests = {vocab, grammar, mixed};
+      const allOk = [vocab, grammar, mixed].every(r => r && r.ok === true);
+      const passed = allOk && [vocab, grammar, mixed].every(r => r.status === "PASS" && Number(r.bestScore || 0) >= 90);
+      return {
+        ok: allOk,
+        error: [vocab, grammar, mixed].find(r => !r || r.ok !== true)?.error || "",
+        status: passed ? "PASS" : "RETRY",
+        tests
+      };
+    }
+
+    function scoreOf(result, type){
+      return Number(result && result.tests && result.tests[type] && result.tests[type].bestScore || 0);
+    }
+
+    function lessonScoreText(result){
+      return `${tr("vocabLabel")} ${scoreOf(result,"vocab")}% · ${tr("grammarLabel")} ${scoreOf(result,"grammar")}% · ${tr("mixedLabel")} ${scoreOf(result,"mixed")}%`;
     }
 
     const brandLink = document.getElementById("brandLink");
@@ -372,6 +545,21 @@
       helpEl.classList.remove("hidden");
     }
 
+    function showAuthRequired(result){
+      PICKED = null;
+      bookWrap.classList.add("hidden");
+      lessonWrap.classList.add("hidden");
+      subtitleEl.textContent = "🔐 " + tr("authRequired");
+      helpEl.textContent = tr("authHelp");
+      helpEl.classList.remove("hidden");
+      statusEl.textContent = tr("authStatus");
+      const error = result && result.error ? String(result.error) : "expired_or_invalid";
+      showErr(tr("authHelp") + "\n" + error);
+      brandLink.href = "../index.html";
+      btnHome.href = "../index.html";
+      btnHome.textContent = tr("authBack");
+    }
+
     function renderBooks(){
       bookGrid.innerHTML = "";
       if(!MANIFEST || !Array.isArray(MANIFEST.books)) return;
@@ -394,43 +582,156 @@
       });
     }
 
-    function renderLessons(){
+    async function renderLessons(){
       if(!PICKED) return;
 
       pickedBook.textContent = (PICKED.id || "").toUpperCase();
       pickedSub.textContent = PICKED.subtitle || "";
 
-      lessonGrid.innerHTML = "";
       const lessons = Array.isArray(PICKED.lessons) ? PICKED.lessons : [];
+      const pickedNow = PICKED;
 
-      lessons.forEach(ls=>{
-        const btn = document.createElement("button");
-        btn.type = "button";
-        btn.className = "lessonBtn";
-        btn.textContent = (ls.label || (ls.no ? (ls.no + "과") : "레슨"));
-
-        btn.addEventListener("click", ()=>{
-          const u = new URL("./lesson.html", location.href);
-
-          // data 경로는 manifest 값 그대로 넣되, URL에 맞게 자동 인코딩
-          // (lesson.html 쪽에서 new URL(data, location.href)로 처리 가능)
-          u.searchParams.set("data", ls.data);
-
-          // name/klass/token/lang 전달
-          const p = new URLSearchParams(passthroughQS());
-          p.forEach((v,k)=>{
-            if(k !== "data") u.searchParams.set(k, v);
-          });
-
-          location.href = u.toString();
-        });
-
-        lessonGrid.appendChild(btn);
-      });
-
+      lessonGrid.innerHTML = "";
       bookWrap.classList.add("hidden");
       lessonWrap.classList.remove("hidden");
       helpEl.classList.add("hidden");
+      statusEl.textContent = tr("masteryChecking");
+      clearErr();
+
+      // 조회 중에는 레슨 버튼을 잠시 비활성화한다.
+      lessons.forEach(ls=>{
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lessonBtn locked";
+        btn.disabled = true;
+        btn.innerHTML = `<span class="lessonBtnInner"><span>${ls.label || (ls.no ? (ls.no + "과") : "레슨")}</span><span class="lessonState">${tr("masteryChecking")}</span></span>`;
+        lessonGrid.appendChild(btn);
+      });
+
+      const accessProfile = await getLearningAccess(pickedNow.id);
+      if(PICKED !== pickedNow) return;
+      const isDeveloper = !!(accessProfile && accessProfile.ok === true && accessProfile.isDeveloper === true);
+
+      // 교사가 지정한 시작 과를 실제 교재의 과 번호에 맞춰 해석한다.
+      // 예: 1B는 9과부터 시작하므로 startLesson=1이면 자동으로 첫 과(9과)로 보정한다.
+      let teacherStartIndex = -1;
+      let teacherStartLesson = 0;
+      const hasTeacherStart = !!(
+        !isDeveloper &&
+        accessProfile && accessProfile.ok === true &&
+        accessProfile.found === true && accessProfile.enabled === true &&
+        Number(accessProfile.startLesson || 0) > 0
+      );
+      if(hasTeacherStart && lessons.length){
+        const requested = Number(accessProfile.startLesson || 0);
+        let idx = lessons.findIndex(ls => Number(ls.no) === requested);
+        if(idx < 0){
+          idx = lessons.findIndex(ls => Number(ls.no) >= requested);
+          if(idx < 0) idx = lessons.length - 1;
+        }
+        teacherStartIndex = idx;
+        teacherStartLesson = Number(lessons[idx] && lessons[idx].no || 0);
+      }
+
+      const results = await Promise.all(lessons.map(ls=>getLessonMastery(pickedNow.id, ls.no)));
+      if(PICKED !== pickedNow) return;
+
+      const authError = results.find(r=>!r || r.ok !== true);
+      if(authError){
+        const msg = authError && authError.error === "missing_token" ? tr("needLogin") : tr("masteryError");
+        showErr(msg + (authError && authError.error ? "\n" + authError.error : ""));
+      }
+
+      lessonGrid.innerHTML = "";
+      lessons.forEach((ls, idx)=>{
+        const current = results[idx] || {ok:false,found:false,bestScore:0,status:"NONE"};
+        const previous = idx > 0 ? (results[idx-1] || {ok:false,found:false,bestScore:0,status:"NONE"}) : null;
+        const isFirst = idx === 0;
+        const teacherOverrideActive = teacherStartIndex >= 0;
+        const teacherRecognized = teacherOverrideActive && idx < teacherStartIndex;
+        const teacherStartHere = teacherOverrideActive && idx === teacherStartIndex;
+
+        // 교사 지정 시작점이 있으면 그 과까지는 기존 진도로 인정한다.
+        // 시작 과 이후부터는 시작 과~직전 과의 세 시험이 모두 PASS여야 순차적으로 열린다.
+        let requiredChainPassed = true;
+        let blockingIndex = -1;
+        if(teacherOverrideActive && idx > teacherStartIndex){
+          for(let j = teacherStartIndex; j < idx; j++){
+            const r = results[j];
+            if(!r || r.ok !== true || r.status !== "PASS") {
+              requiredChainPassed = false;
+              blockingIndex = j;
+              break;
+            }
+          }
+        }
+
+        const unlocked = isDeveloper
+          || (teacherOverrideActive ? (idx <= teacherStartIndex || requiredChainPassed)
+                                    : (isFirst || (previous && previous.ok === true && previous.status === "PASS")));
+
+        const btn = document.createElement("button");
+        btn.type = "button";
+        btn.className = "lessonBtn";
+        const label = ls.label || (ls.no ? (ls.no + "과") : "레슨");
+
+        let stateText = "";
+        if(unlocked){
+          btn.disabled = false;
+          if(isDeveloper){
+            btn.classList.add("ready");
+            stateText = `🛠️ ${tr("developerAccess")} · ${lessonScoreText(current)}`;
+          }else if(teacherRecognized){
+            btn.classList.add("passed");
+            stateText = `✅ ${tr("teacherRecognized")}`;
+          }else if(current.ok === true && current.status === "PASS"){
+            btn.classList.add("passed");
+            stateText = `✅ ${tr("pass")} · ${lessonScoreText(current)}`;
+          }else if(teacherStartHere){
+            btn.classList.add("ready");
+            stateText = `▶ ${tr("teacherStart")} · ${lessonScoreText(current)}`;
+          }else{
+            btn.classList.add("ready");
+            const baseState = isFirst ? tr("firstOpen") : tr("ready");
+            stateText = `${baseState} · ${lessonScoreText(current)}`;
+          }
+
+          btn.addEventListener("click", ()=>{
+            const u = new URL("./lesson.html", location.href);
+            u.searchParams.set("data", ls.data);
+
+            const p = new URLSearchParams(passthroughQS());
+            p.forEach((v,k)=>{
+              if(k !== "data") u.searchParams.set(k, v);
+            });
+
+            location.href = u.toString();
+          });
+        }else{
+          btn.disabled = true;
+          btn.classList.add("locked");
+          const blockIdx = teacherOverrideActive && blockingIndex >= 0 ? blockingIndex : (idx - 1);
+          const blockLesson = blockIdx >= 0 ? lessons[blockIdx] : null;
+          const blockResult = blockIdx >= 0 ? results[blockIdx] : null;
+          const prevLabel = blockLesson ? (blockLesson.label || blockLesson.no || "") : "";
+          if(blockResult && blockResult.ok === true){
+            stateText = `🔒 ${prevLabel} · ${lessonScoreText(blockResult)} · 모두 90% 필요`;
+          }else{
+            stateText = `🔒 ${tr("locked")}`;
+          }
+        }
+
+        btn.innerHTML = `<span class="lessonBtnInner"><span>${label}</span><span class="lessonState">${stateText}</span></span>`;
+        lessonGrid.appendChild(btn);
+      });
+
+      if(isDeveloper){
+        statusEl.textContent = tr("developerAccess");
+      }else if(teacherStartIndex >= 0){
+        statusEl.textContent = `${tr("teacherOverride")} · ${teacherStartLesson}${getLang()==="MN" ? "-р хичээл" : "과"}`;
+      }else{
+        statusEl.textContent = tr("masteryRule");
+      }
     }
 
     btnReset.addEventListener("click", backToBooks);
@@ -456,6 +757,12 @@
       clearErr();
       applyTop();
       statusEl.textContent = tr("loading");
+
+      const auth = await validateSession();
+      if(!auth || auth.ok !== true){
+        showAuthRequired(auth || {ok:false,error:"empty_response"});
+        return;
+      }
 
       try{
         const url = new URL("../data/snu/manifest.json", location.href).toString();

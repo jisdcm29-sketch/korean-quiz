@@ -31,6 +31,7 @@
     .answerCard{border:1px solid var(--line);border-radius:16px;padding:14px 15px;background:rgba(11,16,32,.78);line-height:1.72}.answerCard.translation{border-color:rgba(52,211,153,.40);background:linear-gradient(135deg,rgba(52,211,153,.11),rgba(11,16,32,.90))}.answerLabel{font-size:12px;font-weight:950;letter-spacing:.2px;color:var(--muted);margin-bottom:5px}.mnSentence{font-size:22px;font-weight:850;line-height:1.55;overflow-wrap:anywhere}.analysisText{font-size:16px;white-space:pre-wrap;overflow-wrap:anywhere}.structure{font-family:ui-monospace,SFMono-Regular,Menlo,Monaco,Consolas,"Noto Sans KR",monospace;font-size:15px}
     .navRow{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:18px}.navRow .next{justify-self:end;min-width:145px;background:linear-gradient(135deg,rgba(96,165,250,.22),rgba(11,16,32,.96));border-color:rgba(96,165,250,.55)}.navRow .prev{justify-self:start;min-width:120px}.counter{color:var(--muted);font-size:13px;font-weight:900;white-space:nowrap}
     .notice{margin-top:16px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);border-radius:16px;padding:16px;line-height:1.65}.err{margin-top:16px;border:1px solid rgba(248,113,113,.45);background:rgba(248,113,113,.09);border-radius:16px;padding:16px;white-space:pre-wrap;line-height:1.6}.complete{text-align:center;padding:26px 12px}.completeIcon{font-size:46px}.completeTitle{font-size:26px;font-weight:950;margin:8px 0}.completeBtns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
+    .lockedBox{text-align:center;padding:28px 16px;border:1px solid var(--line);background:rgba(11,16,32,.78);border-radius:18px}.lockedIcon{font-size:42px}.lockedTitle{font-size:24px;font-weight:950;margin:8px 0 12px}.lockedRule{line-height:1.7}.lockedScores{margin-top:8px;color:var(--muted)}
     @media(max-width:760px){.pill{display:none}.topbar{padding:8px 10px}.brand{font-size:14px}.right{gap:6px}.btn{min-height:44px;padding:9px 11px;border-radius:13px}.btnBack{min-width:46px}.btnLang{min-width:52px}.container{padding:10px}.card{padding:14px;border-radius:18px}.h1{font-size:24px}.studyBox{padding:15px;border-radius:17px}.koSentence{font-size:25px}.mnSentence{font-size:20px}.analysisText{font-size:15px}.navRow{grid-template-columns:1fr 1fr}.counter{grid-column:1/-1;grid-row:1;text-align:center}.navRow .prev{grid-column:1;grid-row:2;width:100%}.navRow .next{grid-column:2;grid-row:2;width:100%;min-width:0}.btnCheck{width:100%}}
     @media(max-width:480px){.topbar{padding:7px 8px}.brand{font-size:13px;gap:7px}.dot{width:8px;height:8px}.right{gap:5px}.btn{min-height:44px;padding:8px 9px}.btnBack{min-width:44px}.btnLang{min-width:48px}.container{padding:7px}.card{padding:10px;border-radius:16px}.h1{font-size:21px;line-height:1.28}.muted{font-size:13px;line-height:1.55}.studyBox{padding:11px;border-radius:15px}.sectionBadge{font-size:12px;padding:6px 9px}.questionNo{margin-top:14px}.koSentence{font-size:22px;line-height:1.48;margin-top:8px}.practiceHint{font-size:13px}.checkRow{margin-top:16px}.mnSentence{font-size:18px}.analysisText{font-size:14px;line-height:1.65}.answerCard{padding:12px}.navRow{gap:8px}.navRow .prev,.navRow .next{font-size:14px}.completeTitle{font-size:22px}}
   </style>
@@ -142,6 +143,198 @@
       return `<div class="answerCard ${cls}"><div class="answerLabel">${esc(label)}</div><div class="${cls==='translation'?'mnSentence':cls==='structure'?'analysisText structure':'analysisText'}">${esc(text)}</div></div>`;
     }
 
+    const ACCESS_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+
+    function sendAccessJsonp(payload){
+      return new Promise((resolve,reject)=>{
+        const cb=`kq_reading_access_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+        const script=document.createElement('script');
+        const query=new URLSearchParams({...payload,callback:cb});
+        const cleanup=()=>{try{delete window[cb]}catch(e){} if(script.parentNode)script.parentNode.removeChild(script)};
+        const wait=setTimeout(()=>{cleanup();reject(new Error('access_check_timeout'))},8000);
+        window[cb]=(result)=>{clearTimeout(wait);cleanup();resolve(result)};
+        script.onerror=()=>{clearTimeout(wait);cleanup();reject(new Error('access_check_error'))};
+        script.src=`${ACCESS_SCRIPT_URL}?${query.toString()}`;
+        document.head.appendChild(script);
+      });
+    }
+
+    function firstLessonNoForLevel(levelRaw){
+      const level=String(levelRaw||'').toUpperCase();
+      const firstByLevel={"1A":1,"1B":9,"2A":1,"2B":10,"3A":1,"3B":10,"4A":1,"4B":10};
+      return firstByLevel[level]||1;
+    }
+
+    function inferReadingLevel(d,path){
+      const candidates=[
+        d&&d.level,
+        d&&d.course,
+        d&&d.title_kr,
+        d&&d.title_mn,
+        path,
+        params.get('data'),
+        params.get('lessonData')
+      ];
+      for(const raw of candidates){
+        const m=String(raw||'').toUpperCase().match(/(?:^|[^0-9A-Z])(1A|1B|2A|2B|3A|3B|4A|4B)(?:[^0-9A-Z]|$)/);
+        if(m)return m[1];
+      }
+      return '';
+    }
+
+    function lessonSelectionUrl(){
+      const p=new URLSearchParams();
+      ['name','klass','token','lang'].forEach(k=>{const v=params.get(k);if(v)p.set(k,v)});
+      return `./index.html?${p.toString()}`;
+    }
+
+    function extractLessonNoFromPath(value){
+      const m=String(value||'').match(/lesson(\d{1,2})\.json(?:$|[?#])/i);
+      return m?parseInt(m[1],10):NaN;
+    }
+
+    function extractSnuLevelFromPath(value){
+      const m=String(value||'').toUpperCase().match(/(?:^|\/)SNU\/(1A|1B|2A|2B|3A|3B|4A|4B)(?:\/|$)/);
+      return m?m[1]:'';
+    }
+
+    function validateReadingRouteConsistency(){
+      const rawLesson=params.get('lesson');
+      const dataPath=params.get('data');
+      const lessonDataPath=params.get('lessonData');
+      const lessonNo=parseInt(String(rawLesson||'').replace(/[^0-9]/g,''),10);
+      const readingLessonNo=extractLessonNoFromPath(dataPath);
+      const lessonDataNo=extractLessonNoFromPath(lessonDataPath);
+      const readingLevel=extractSnuLevelFromPath(dataPath);
+      const lessonDataLevel=extractSnuLevelFromPath(lessonDataPath);
+
+      if(!rawLesson||!dataPath||!lessonDataPath){
+        return {ok:false,error:'route_param_missing',lessonNo,readingLessonNo,lessonDataNo};
+      }
+      if(!Number.isFinite(lessonNo)||!Number.isFinite(readingLessonNo)||!Number.isFinite(lessonDataNo)){
+        return {ok:false,error:'route_lesson_invalid',lessonNo,readingLessonNo,lessonDataNo};
+      }
+      if(!/\/reading\/lesson\d{1,2}\.json(?:$|[?#])/i.test(String(dataPath))){
+        return {ok:false,error:'reading_data_path_invalid',lessonNo,readingLessonNo,lessonDataNo};
+      }
+      if(/\/reading\//i.test(String(lessonDataPath))||!/\/lesson\d{1,2}\.json(?:$|[?#])/i.test(String(lessonDataPath))){
+        return {ok:false,error:'lesson_data_path_invalid',lessonNo,readingLessonNo,lessonDataNo};
+      }
+      if(lessonNo!==readingLessonNo||lessonNo!==lessonDataNo){
+        return {ok:false,error:'lesson_route_mismatch',lessonNo,readingLessonNo,lessonDataNo};
+      }
+      if(!readingLevel||!lessonDataLevel||readingLevel!==lessonDataLevel){
+        return {ok:false,error:'level_route_mismatch',lessonNo,readingLessonNo,lessonDataNo,readingLevel,lessonDataLevel};
+      }
+      return {ok:true,lessonNo,level:readingLevel,dataPath,lessonDataPath};
+    }
+
+    function renderReadingRouteInvalid(route){
+      $('studyArea').classList.add('hidden');
+      $('notice').classList.remove('hidden');
+      $('err').classList.add('hidden');
+      const isMn=getLang()==='MN';
+      $('status').textContent=isMn?'Буруу хандалт':'잘못된 접근';
+      $('subtitle').textContent=isMn?'Хичээлийн хаягийн мэдээлэл хоорондоо тохирохгүй байна.':'읽기 연습의 과 정보가 서로 일치하지 않습니다.';
+      const title=isMn?'Хаягийн мэдээлэл буруу байна':'잘못된 접근입니다';
+      const rule=isMn
+        ?'Хичээлийн дугаар болон өгөгдлийн хаягийг өөрчилж нэвтрэх боломжгүй. Хичээл сонгох дэлгэцээс дахин орно уу.'
+        :'주소의 lesson, data, lessonData가 모두 같은 과를 가리켜야 합니다. 과 선택 화면에서 다시 들어가 주세요.';
+      $('notice').innerHTML=`<div class="lockedBox"><div class="lockedIcon">⚠️</div><div class="lockedTitle">${title}</div><div class="lockedRule">${rule}</div><button class="btn btnBack" id="routeBack" type="button" style="margin-top:18px;min-width:190px">${isMn?'← Хичээл сонголт руу буцах':'← 과 선택으로 돌아가기'}</button></div>`;
+      const b=$('routeBack'); if(b)b.onclick=()=>{location.href=lessonSelectionUrl()};
+    }
+
+    async function verifyReadingLessonUnlocked(d,path){
+      const level=inferReadingLevel(d,path);
+      const lessonNo=parseInt(String((d&&d.lesson)||params.get('lesson')||'').replace(/[^0-9]/g,''),10);
+      if(!level||!Number.isFinite(lessonNo))return {allowed:false,error:'lesson_meta_invalid',level,lessonNo};
+      const firstLesson=firstLessonNoForLevel(level);
+      const token=params.get('token')||'';
+      const name=params.get('name')||'';
+      if(!token){
+        return {allowed:false,error:'missing_token',authRequired:true,level,lessonNo,firstLesson};
+      }
+      try{
+        const accessProfile=await sendAccessJsonp({action:'learning_start',token,name,book:`SNU-${level}`});
+        if(!accessProfile||accessProfile.ok!==true){
+          return {allowed:false,error:(accessProfile&&accessProfile.error)||'auth_check_failed',authRequired:true,level,lessonNo,firstLesson};
+        }
+        if(accessProfile.isDeveloper===true){
+          return {allowed:true,level,lessonNo,firstLesson,isDeveloper:true};
+        }
+        let teacherStartLesson=0;
+        if(accessProfile&&accessProfile.ok===true&&accessProfile.found===true&&accessProfile.enabled===true){
+          const requested=Number(accessProfile.startLesson||0);
+          if(Number.isFinite(requested)&&requested>0)teacherStartLesson=Math.max(firstLesson,Math.floor(requested));
+        }
+        if(teacherStartLesson>0&&lessonNo<=teacherStartLesson){
+          return {allowed:true,level,lessonNo,firstLesson,teacherStartLesson,teacherOverride:true};
+        }
+        if(lessonNo===firstLesson)return {allowed:true,level,lessonNo,firstLesson,isFirst:true};
+
+        const previousLesson=lessonNo-1;
+        const testTypes=['vocab','grammar','mixed'];
+        const responses=await Promise.all(testTypes.map(testType=>sendAccessJsonp({
+          action:'mastery_status',token,name,book:`SNU-${level}`,lesson:String(previousLesson),testType
+        })));
+        const tests={};
+        testTypes.forEach((type,i)=>{tests[type]=responses[i]||{}});
+        const allOk=testTypes.every(type=>tests[type]&&tests[type].ok===true);
+        const allowed=allOk&&testTypes.every(type=>tests[type].status==='PASS'&&Number(tests[type].bestScore||0)>=90);
+        const firstError=testTypes.map(type=>tests[type]).find(r=>!r||r.ok!==true);
+        const authError=firstError&&['expired_or_invalid','missing_token','invalid_token','unauthorized'].includes(String(firstError.error||''));
+        if(authError){
+          return {allowed:false,error:firstError.error,authRequired:true,level,lessonNo,firstLesson};
+        }
+        return {
+          allowed,level,lessonNo,previousLesson,
+          previousScores:{vocab:Number(tests.vocab.bestScore||0),grammar:Number(tests.grammar.bestScore||0),mixed:Number(tests.mixed.bestScore||0)},
+          passScore:90,error:firstError?(firstError.error||'status_check_failed'):''
+        };
+      }catch(err){
+        return {allowed:false,error:(err&&err.message)||'status_check_failed',level,lessonNo,previousLesson:lessonNo-1,previousScores:{vocab:0,grammar:0,mixed:0},passScore:90};
+      }
+    }
+
+    function renderReadingAuthRequired(access,d){
+      $('studyArea').classList.add('hidden');
+      $('notice').classList.remove('hidden');
+      $('err').classList.add('hidden');
+      const isMn=getLang()==='MN';
+      const title=isMn?'Нэвтрэх шаардлагатай':'로그인이 필요합니다';
+      const rule=isMn
+        ?'Унших дасгалыг ашиглахын тулд хүчинтэй нэвтрэх эрхээр дахин нэвтэрнэ үү.'
+        :'읽기 연습을 이용하려면 정상 인증으로 다시 로그인해야 합니다.';
+      const detail=access&&access.error?`<div class="muted small" style="margin-top:10px">${esc(access.error)}</div>`:'';
+      $('status').textContent=isMn?'Нэвтрэх':'인증 필요';
+      $('subtitle').textContent=isMn?'Унших дасгалд нэвтрэхийн тулд дахин нэвтэрнэ үү.':'읽기 연습은 로그인 후 이용할 수 있습니다.';
+      $('notice').innerHTML=`<div class="lockedBox"><div class="lockedIcon">🔐</div><div class="lockedTitle">${title}</div><div class="lockedRule">${rule}</div>${detail}<button class="btn btnBack" id="authBack" type="button" style="margin-top:18px;min-width:190px">${isMn?'← Нэвтрэх дэлгэц рүү буцах':'← 로그인 화면으로 돌아가기'}</button></div>`;
+      const b=$('authBack'); if(b)b.onclick=()=>{location.href='../index.html'};
+      const langBtn=$('btnLang'); if(langBtn)langBtn.disabled=true;
+    }
+
+    function renderReadingLocked(access,d){
+      $('studyArea').classList.add('hidden');
+      $('notice').classList.remove('hidden');
+      $('err').classList.add('hidden');
+      const prev=Number(access&&access.previousLesson||0);
+      const scores=(access&&access.previousScores)||{vocab:0,grammar:0,mixed:0};
+      const passScore=Number(access&&access.passScore||90);
+      const isMn=getLang()==='MN';
+      const title=isMn?'Дараагийн хичээл түгжээтэй байна':'다음 과는 아직 잠겨 있습니다';
+      const rule=prev>0
+        ?(isMn?`${prev}-р хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр ${passScore}%-иас дээш байвал энэ хичээл нээгдэнэ.`:`${prev}과의 어휘·문법·종합 테스트가 모두 ${passScore}% 이상이어야 이 과가 열립니다.`)
+        :(isMn?'Нэвтрэх эрхийг шалгаж чадсангүй.':'학습 접근 권한을 확인할 수 없습니다.');
+      const scoreLine=isMn
+        ?`Үг ${Number(scores.vocab||0)}% · Дүрэм ${Number(scores.grammar||0)}% · Нэгдсэн ${Number(scores.mixed||0)}%`
+        :`어휘 ${Number(scores.vocab||0)}% · 문법 ${Number(scores.grammar||0)}% · 종합 ${Number(scores.mixed||0)}%`;
+      const detail=access&&access.error?`<div class="muted small" style="margin-top:8px">${esc(access.error)}</div>`:'';
+      $('status').textContent=isMn?'Түгжээтэй':'잠김';
+      $('subtitle').textContent=isMn?'Унших дасгалд нэвтрэх эрхгүй байна.':'읽기 연습 접근이 잠겨 있습니다.';
+      $('notice').innerHTML=`<div class="lockedBox"><div class="lockedIcon">🔒</div><div class="lockedTitle">${title}</div><div class="lockedRule">${rule}</div><div class="lockedScores">${scoreLine}</div>${detail}<button class="btn btnBack" id="lockedBack" type="button" style="margin-top:18px;min-width:190px">${isMn?'← Хичээл сонголт руу буцах':'← 과 선택으로 돌아가기'}</button></div>`;
+      const b=$('lockedBack'); if(b)b.onclick=()=>{location.href=lessonSelectionUrl()};
+    }
+
     function render(){
       const items=(DATA&&Array.isArray(DATA.items))?DATA.items:[];
       if(!items.length)return;
@@ -194,9 +387,10 @@
         localStorage.setItem('kq_lang',next);localStorage.setItem('lang',next);
         params.set('lang',next);history.replaceState(null,'',`${location.pathname}?${params.toString()}${location.hash}`);applyTop();
       };
-      const explicit=params.get('data');
-      const lessonNo=Math.max(1,Math.min(8,parseInt(params.get('lesson')||'1',10)||1));
-      const path=explicit || `../data/snu/1A/reading/lesson${String(lessonNo).padStart(2,'0')}.json`;
+      const route=validateReadingRouteConsistency();
+      if(!route.ok){renderReadingRouteInvalid(route);return;}
+      const lessonNo=route.lessonNo;
+      const path=route.dataPath;
       try{
         const res=await fetch(new URL(path,location.href),{cache:'no-store'});
         if(!res.ok){
@@ -206,8 +400,19 @@
           throw new Error('HTTP '+res.status);
         }
         DATA=await res.json();
+        const dataLessonNo=parseInt(String((DATA&&DATA.lesson)||'').replace(/[^0-9]/g,''),10);
+        const dataLevel=inferReadingLevel(DATA,path);
+        if(!Number.isFinite(dataLessonNo)||dataLessonNo!==route.lessonNo||!dataLevel||dataLevel!==route.level){
+          renderReadingRouteInvalid({ok:false,error:'loaded_data_mismatch'});return;
+        }
         document.title=getLang()==='MN'?(DATA.title_mn||DATA.title_kr||document.title):(DATA.title_kr||document.title);
         if(!Array.isArray(DATA.items)||DATA.items.length!==50)throw new Error(`문항 수 오류: ${Array.isArray(DATA.items)?DATA.items.length:0}`);
+        const access=await verifyReadingLessonUnlocked(DATA,path);
+        applyTop();
+        if(!access.allowed){
+          if(access.authRequired){renderReadingAuthRequired(access,DATA);return;}
+          renderReadingLocked(access,DATA);return;
+        }
         $('studyArea').classList.remove('hidden');$('status').textContent=tr('loaded');applyTop();
       }catch(e){
         $('status').textContent='';$('err').textContent=`${tr('loadError')}\n${e.message||e}\n${path}`;$('err').classList.remove('hidden');
