@@ -64,14 +64,308 @@
     $('studyPrev').onclick=()=>{if(studyIndex>0){studyIndex--;renderStudy()}};$('studyNext').onclick=()=>{if(studyIndex<gs.length-1){studyIndex++;renderStudy()}};
   }
   function stop(){if(timer){clearInterval(timer);timer=null}}
-  function start(){stop();const qs=(data.grammar_questions||[]).filter(q=>q.prompt&&q.correct&&Array.isArray(q.choices));state={queue:shuffle(qs),i:0,correct:0,wrong:0,timeout:0,locked:false,left:seconds,miss:[]};renderQ()}
+  function start(){stop();const qs=(data.grammar_questions||[]).filter(q=>q.prompt&&q.correct&&Array.isArray(q.choices));state={queue:shuffle(qs),i:0,correct:0,wrong:0,timeout:0,locked:false,left:seconds,miss:[],resultLogged:false};renderQ()}
   function stats(){return `<div class="stats"><div class="stat"><small>${tx('진행','Явц')}</small><b>${Math.min(state.i+1,state.queue.length)} / ${state.queue.length}</b></div><div class="stat"><small>${tx('정답','Зөв')}</small><b id="c">${state.correct}</b></div><div class="stat"><small>${tx('오답','Буруу')}</small><b id="w">${state.wrong}</b></div><div class="stat timer" id="timerBox"><small>${tx('남은 시간','Үлдсэн хугацаа')}</small><b><span id="left">${state.left}</span>${tx('초',' сек')}</b></div></div>`}
   function update(){if($('c'))$('c').textContent=state.correct;if($('w'))$('w').textContent=state.wrong;if($('left'))$('left').textContent=state.left;if($('timerBox'))$('timerBox').classList.toggle('urgent',state.left<=5)}
-  function finish(){stop();const total=state.queue.length,pct=total?Math.round(state.correct/total*100):0;$('quiz').innerHTML=`<div class="qbox summary"><div>${tx('문법 연습 완료','Дүрмийн дасгал дууслаа')}</div><div class="score">${pct}%</div><div>${tx('정답','Зөв')} <b>${state.correct}</b> · ${tx('오답','Буруу')} <b>${state.wrong}</b> · ${tx('시간 초과','Хугацаа хэтэрсэн')} <b>${state.timeout}</b></div>${state.miss.length?`<div class="wrongList"><h3>${tx('틀린 문제와 정답','Алдсан асуулт ба зөв хариулт')}</h3>${state.miss.map((m,i)=>`<div class="wrongItem"><b>${i+1}. ${esc(m.prompt).replace(/\n/g,'<br>')}</b><br><span class="wrongMine">${tx('내 답','Миний хариулт')}: <b>${m.timed?tx('시간 초과','Хугацаа хэтэрсэн'):esc(m.selected||'')}</b></span><br><span class="wrongCorrect">${tx('정답','Зөв хариулт')}: <b>${esc(m.correct)}</b></span></div>`).join('')}</div>`:`<div class="wrongList"><h3>${tx('🎉 모두 맞았습니다.','🎉 Бүгд зөв байна.')}</h3></div>`}</div>`}
+
+  const RESULT_LOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+  const RESULT_LOG_DEVICE_KEY = "kq_deviceId_v1";
+
+  function resultLogIdentity(){
+    return {
+      name: params.get('name') || '',
+      klass: params.get('klass') || '',
+      token: params.get('token') || '',
+      deviceId: localStorage.getItem(RESULT_LOG_DEVICE_KEY) || '',
+      lang: (params.get('lang') || lang().toLowerCase())
+    };
+  }
+
+  function sendResultJsonp(payload){
+    return new Promise((resolve,reject)=>{
+      const cb=`kq_grammar_result_${Date.now()}_${Math.random().toString(36).slice(2)}`;
+      const script=document.createElement('script');
+      const query=new URLSearchParams({...payload,callback:cb});
+      const cleanup=()=>{
+        try{delete window[cb]}catch(e){}
+        if(script.parentNode)script.parentNode.removeChild(script);
+      };
+      const wait=setTimeout(()=>{cleanup();reject(new Error('result_log_timeout'))},8000);
+      window[cb]=(result)=>{clearTimeout(wait);cleanup();resolve(result)};
+      script.onerror=()=>{clearTimeout(wait);cleanup();reject(new Error('result_log_error'))};
+      script.src=`${RESULT_LOG_SCRIPT_URL}?${query.toString()}`;
+      document.head.appendChild(script);
+    });
+  }
+
+  function firstLessonNoForLevel(levelRaw){
+    const level=String(levelRaw||'').toUpperCase();
+    const firstByLevel={"1A":1,"1B":9,"2A":1,"2B":10,"3A":1,"3B":10,"4A":1,"4B":10};
+    return firstByLevel[level]||1;
+  }
+
+  function lessonSelectionUrl(){
+    const p=new URLSearchParams();
+    ['name','klass','token','lang'].forEach(k=>{const v=params.get(k);if(v)p.set(k,v)});
+    return `../snu/index.html?${p.toString()}`;
+  }
+
+  function parseGrammarDataTarget(pathRaw){
+    try{
+      const u=new URL(String(pathRaw||''),location.href);
+      const m=u.pathname.match(/\/data\/snu\/(1A|1B|2A|2B|3A|3B|4A|4B)\/lesson(\d{2})\.json$/i);
+      if(!m)return {ok:false,error:'grammar_data_path_invalid'};
+      return {ok:true,level:String(m[1]).toUpperCase(),lessonNo:parseInt(m[2],10),url:u.toString()};
+    }catch(e){
+      return {ok:false,error:'grammar_data_path_invalid'};
+    }
+  }
+
+  function renderGrammarInvalidAccess(detail){
+    stop();
+    const tabs=document.querySelector('.tabs');
+    if(tabs)tabs.style.display='none';
+    document.querySelectorAll('.panel').forEach(el=>el.classList.remove('active'));
+    const study=$('study');
+    if(study)study.classList.add('active');
+    if($('studyNav'))$('studyNav').innerHTML='';
+    const isMn=lang()==='MN';
+    $('subtitle').textContent=isMn?'Буруу хандалт':'잘못된 접근';
+    $('points').innerHTML=`<div class="qbox summary" style="margin-top:14px">
+      <div style="font-size:40px;margin-bottom:8px">⚠️</div>
+      <div style="font-size:24px;font-weight:900">${isMn?'Буруу хандалт байна':'잘못된 접근입니다'}</div>
+      <div style="margin-top:14px;line-height:1.65">${isMn?'Хичээлийн мэдээлэл ба data зам хоорондоо тохирох ёстой.':'문법 페이지의 data 경로와 실제 교재·과 정보가 서로 일치해야 합니다.'}</div>
+      ${detail?`<div class="muted" style="margin-top:8px;font-size:12px">${esc(detail)}</div>`:''}
+      <button class="btn back" id="invalidBack" style="margin-top:18px">${isMn?'← Хичээл сонголт руу буцах':'← 과 선택으로 돌아가기'}</button>
+    </div>`;
+    const btn=$('invalidBack');
+    if(btn)btn.onclick=()=>location.href=lessonSelectionUrl();
+  }
+
+  async function verifyGrammarLessonUnlocked(d){
+    const level=String((d&&d.level)||'').toUpperCase();
+    const lessonRaw=String((d&&d.lesson)||'');
+    const lessonNo=parseInt(lessonRaw.replace(/[^0-9]/g,''),10);
+    if(!level||!Number.isFinite(lessonNo)){
+      return {allowed:false,error:'lesson_meta_invalid',level,lessonNo:lessonRaw};
+    }
+
+    const firstLesson=firstLessonNoForLevel(level);
+    const id=resultLogIdentity();
+    if(!id.token){
+      // 문법 페이지도 첫 과를 포함해 모든 과에서 정상 로그인 토큰을 요구한다.
+      return {allowed:false,error:'missing_token',authRequired:true,level,lessonNo,firstLesson};
+    }
+
+    try{
+      // learning_start 응답으로 토큰 유효성을 먼저 확인한다.
+      const accessProfile=await sendResultJsonp({
+        action:'learning_start',
+        token:id.token,
+        name:id.name,
+        book:`SNU-${level}`
+      });
+
+      if(!accessProfile||accessProfile.ok!==true){
+        return {
+          allowed:false,
+          error:(accessProfile&&accessProfile.error)||'auth_check_failed',
+          authRequired:true,
+          level,
+          lessonNo,
+          firstLesson
+        };
+      }
+
+      if(accessProfile.isDeveloper===true){
+        return {allowed:true,level,lessonNo,firstLesson,isDeveloper:true,role:'developer'};
+      }
+
+      let teacherStartLesson=0;
+      if(accessProfile&&accessProfile.ok===true&&accessProfile.found===true&&accessProfile.enabled===true){
+        const requested=Number(accessProfile.startLesson||0);
+        if(Number.isFinite(requested)&&requested>0){
+          teacherStartLesson=Math.max(firstLesson,Math.floor(requested));
+        }
+      }
+
+      // 교사 지정 시작점까지는 기존 진도로 인정한다.
+      if(teacherStartLesson>0&&lessonNo<=teacherStartLesson){
+        return {allowed:true,level,lessonNo,firstLesson,teacherStartLesson,teacherOverride:true,role:'student'};
+      }
+
+      if(lessonNo===firstLesson){
+        return {allowed:true,level,lessonNo,firstLesson,isFirst:true};
+      }
+
+      const previousLesson=lessonNo-1;
+      const testTypes=['vocab','grammar','mixed'];
+      const responses=await Promise.all(testTypes.map(testType=>sendResultJsonp({
+        action:'mastery_status',
+        token:id.token,
+        name:id.name,
+        book:`SNU-${level}`,
+        lesson:String(previousLesson),
+        testType
+      })));
+
+      const tests={};
+      testTypes.forEach((type,i)=>{tests[type]=responses[i]||{}});
+      const allOk=testTypes.every(type=>tests[type]&&tests[type].ok===true);
+      const allowed=allOk&&testTypes.every(type=>tests[type].status==='PASS'&&Number(tests[type].bestScore||0)>=90);
+      const firstError=testTypes.map(type=>tests[type]).find(r=>!r||r.ok!==true);
+      const firstErrorText=firstError?String(firstError.error||'status_check_failed'):'';
+      const authRequired=firstErrorText==='expired_or_invalid'||firstErrorText==='missing_token'||firstErrorText==='auth_check_failed';
+
+      return {
+        allowed,
+        level,
+        lessonNo,
+        previousLesson,
+        previousScores:{
+          vocab:Number(tests.vocab.bestScore||0),
+          grammar:Number(tests.grammar.bestScore||0),
+          mixed:Number(tests.mixed.bestScore||0)
+        },
+        passScore:90,
+        status:allowed?'PASS':'RETRY',
+        error:firstErrorText,
+        authRequired
+      };
+    }catch(err){
+      return {
+        allowed:false,
+        error:(err&&err.message)?err.message:'status_check_failed',
+        level,
+        lessonNo,
+        previousLesson:lessonNo-1,
+        previousScores:{vocab:0,grammar:0,mixed:0},
+        passScore:90,
+        status:'NONE'
+      };
+    }
+  }
+
+  function renderGrammarLocked(access,d){
+    stop();
+    const tabs=document.querySelector('.tabs');
+    if(tabs)tabs.style.display='none';
+    document.querySelectorAll('.panel').forEach(el=>el.classList.remove('active'));
+    const study=$('study');
+    if(study)study.classList.add('active');
+    if($('studyNav'))$('studyNav').innerHTML='';
+
+    const prev=Number(access&&access.previousLesson||0);
+    const scores=(access&&access.previousScores)||{vocab:0,grammar:0,mixed:0};
+    const passScore=Number(access&&access.passScore||90);
+    const err=String(access&&access.error||'');
+    const isMn=lang()==='MN';
+
+    if(access&&access.authRequired){
+      const title=isMn?'Нэвтрэх шаардлагатай':'로그인이 필요합니다';
+      const rule=isMn
+        ? 'Дүрмийн хичээлийг ашиглахын тулд хүчинтэй нэвтрэх эрхээр дахин нэвтэрнэ үү.'
+        : '문법 학습을 이용하려면 정상 인증으로 다시 로그인해야 합니다.';
+      const detail=err?`<div class="muted" style="margin-top:8px;font-size:12px">${esc(err)}</div>`:'';
+      $('subtitle').textContent=isMn?'Нэвтрэх':'인증 필요';
+      $('points').innerHTML=`<div class="qbox summary" style="margin-top:14px">
+        <div style="font-size:40px;margin-bottom:8px">🔐</div>
+        <div style="font-size:24px;font-weight:900">${title}</div>
+        <div style="margin-top:14px;line-height:1.65">${rule}</div>
+        ${detail}
+        <button class="btn back" id="authBack" style="margin-top:18px">${isMn?'← Нэвтрэх дэлгэц рүү буцах':'← 로그인 화면으로 돌아가기'}</button>
+      </div>`;
+      const authBtn=$('authBack');
+      if(authBtn)authBtn.onclick=()=>{location.href='../index.html'};
+      const langBtn=$('lang');
+      if(langBtn)langBtn.disabled=true;
+      return;
+    }
+
+    const title=isMn?'Дараагийн хичээл түгжээтэй байна':'다음 과는 아직 잠겨 있습니다';
+    const rule=prev>0
+      ? (isMn
+          ? `${prev}-р хичээлийн үг, дүрэм, нэгдсэн шалгалт тус бүр ${passScore}%-иас дээш байвал энэ хичээл нээгдэнэ.`
+          : `${prev}과의 어휘·문법·종합 테스트가 모두 ${passScore}% 이상이어야 이 과가 열립니다.`)
+      : (isMn?'Нэвтрэх эрхийг шалгаж чадсангүй.':'학습 접근 권한을 확인할 수 없습니다.');
+    const scoreLine=isMn
+      ? `Үг ${Number(scores.vocab||0)}% · Дүрэм ${Number(scores.grammar||0)}% · Нэгдсэн ${Number(scores.mixed||0)}%`
+      : `어휘 ${Number(scores.vocab||0)}% · 문법 ${Number(scores.grammar||0)}% · 종합 ${Number(scores.mixed||0)}%`;
+    const detail=err?`<div class="muted" style="margin-top:8px;font-size:12px">${esc(err)}</div>`:'';
+    $('subtitle').textContent=isMn?'Түгжээтэй':'잠김';
+    $('points').innerHTML=`<div class="qbox summary" style="margin-top:14px">
+      <div style="font-size:40px;margin-bottom:8px">🔒</div>
+      <div style="font-size:24px;font-weight:900">${title}</div>
+      <div style="margin-top:14px;line-height:1.65">${rule}</div>
+      <div class="muted" style="margin-top:8px">${scoreLine}</div>
+      ${detail}
+      <button class="btn back" id="lockedBack" style="margin-top:18px">${isMn?'← Хичээл сонголт руу буцах':'← 과 선택으로 돌아가기'}</button>
+    </div>`;
+    const btn=$('lockedBack');
+    if(btn)btn.onclick=()=>{location.href=lessonSelectionUrl()};
+  }
+
+  function setRecordStatus(message,isError){
+    const el=$('recordStatus');
+    if(!el)return;
+    el.textContent=message;
+    el.style.color=isError?'#fecaca':'#9fb0ca';
+  }
+
+  async function logGrammarResult(score,correct,total,timeoutCount){
+    const id=resultLogIdentity();
+    if(!id.token||!id.name||!data){
+      setRecordStatus(tx('기록 저장 실패: 로그인 정보가 없습니다.','Бичлэг хадгалж чадсангүй: нэвтрэх мэдээлэл алга.'),true);
+      return {ok:false,error:'missing_identity'};
+    }
+    const level=String(data.level||'');
+    const lesson=String(data.lesson||'');
+    try{
+      const result=await sendResultJsonp({
+        action:'log',
+        token:id.token,
+        deviceId:id.deviceId,
+        name:id.name,
+        klass:id.klass,
+        book:`SNU-${level}`,
+        lesson:lesson,
+        score:String(score),
+        attempts:'1',
+        testType:'grammar',
+        correct:String(correct),
+        total:String(total),
+        timeout:String(timeoutCount||0),
+        ua:(navigator.userAgent||'').slice(0,300),
+        lang:id.lang
+      });
+      if(result&&result.ok!==false){
+        setRecordStatus(tx('학습 기록이 저장되었습니다.','Сургалтын бүртгэл хадгалагдлаа.'),false);
+        return result;
+      }
+      const code=(result&&result.error)?String(result.error):'server_rejected';
+      setRecordStatus(tx(`기록 저장 실패: ${code}`,`Бичлэг хадгалж чадсангүй: ${code}`),true);
+      console.log('grammar result log rejected:',result);
+      return result||{ok:false,error:code};
+    }catch(err){
+      setRecordStatus(tx('기록 저장 실패: 네트워크 오류','Бичлэг хадгалж чадсангүй: сүлжээний алдаа'),true);
+      console.log('grammar result log failed:',err);
+      return {ok:false,error:'network_error'};
+    }
+  }
+
+  function finish(){
+    stop();
+    const total=state.queue.length,pct=total?Math.round(state.correct/total*100):0;
+    $('quiz').innerHTML=`<div class="qbox summary"><div>${tx('문법 연습 완료','Дүрмийн дасгал дууслаа')}</div><div class="score">${pct}%</div><div>${tx('정답','Зөв')} <b>${state.correct}</b> · ${tx('오답','Буруу')} <b>${state.wrong}</b> · ${tx('시간 초과','Хугацаа хэтэрсэн')} <b>${state.timeout}</b></div><div id="recordStatus" class="muted" style="margin-top:10px">${tx('학습 기록 저장 중...','Сургалтын бүртгэлийг хадгалж байна...')}</div>${state.miss.length?`<div class="wrongList"><h3>${tx('틀린 문제와 정답','Алдсан асуулт ба зөв хариулт')}</h3>${state.miss.map((m,i)=>`<div class="wrongItem"><b>${i+1}. ${esc(m.prompt).replace(/\n/g,'<br>')}</b><br><span class="wrongMine">${tx('내 답','Миний хариулт')}: <b>${m.timed?tx('시간 초과','Хугацаа хэтэрсэн'):esc(m.selected||'')}</b></span><br><span class="wrongCorrect">${tx('정답','Зөв хариулт')}: <b>${esc(m.correct)}</b></span></div>`).join('')}</div>`:`<div class="wrongList"><h3>${tx('🎉 모두 맞았습니다.','🎉 Бүгд зөв байна.')}</h3></div>`}</div>`;
+    if(!state.resultLogged){
+      state.resultLogged=true;
+      setTimeout(()=>logGrammarResult(pct,state.correct,total,state.timeout),0);
+    }
+  }
   function next(){setTimeout(()=>{state.i++;renderQ()},650)}
   function renderQ(){stop();if(!state.queue.length){$('quiz').innerHTML=`<p class="muted">${tx('문법 문제가 없습니다.','Дүрмийн асуулт алга.')}</p>`;return}if(state.i>=state.queue.length){finish();return}state.locked=false;state.left=seconds;const q=state.queue[state.i],choices=shuffle([...new Set(q.choices.concat(q.correct))]);$('quiz').innerHTML=stats()+`<div class="qbox"><div class="prompt">${formatPrompt(q.prompt)}</div><div class="choices">${choices.map(c=>`<button class="choice" data-v="${encodeURIComponent(c)}">${esc(c)}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(decodeURIComponent(b.dataset.v),b,q));update();timer=setInterval(()=>{if(state.locked)return;state.left--;update();if(state.left<=0)answer(null,null,q,true)},1000)}
   function answer(v,btn,q,timed=false){if(state.locked)return;state.locked=true;stop();const ok=v===q.correct;if(ok)state.correct++;else{state.wrong++;if(timed)state.timeout++;state.miss.push({prompt:q.prompt,correct:q.correct,selected:v||'',timed})}document.querySelectorAll('.choice').forEach(b=>{b.disabled=true;const val=decodeURIComponent(b.dataset.v);if(val===q.correct)b.classList.add('correct');else if(b===btn)b.classList.add('wrong')});const f=$('feedback');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=`<b>${ok?tx('정답!','Зөв!'):timed?tx('시간 초과','Хугацаа дууслаа'):tx('오답','Буруу')}</b> · ${q.correct}`;update();next()}
-  async function init(){applyText();$('back').onclick=()=>location.href=lessonUrl();$('lang').onclick=()=>{params.set('lang',lang()==='KR'?'MN':'KR');localStorage.setItem('kq_lang',params.get('lang'));location.search=params.toString()};document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.panel));$('time10').onclick=()=>{seconds=10;$('time10').classList.add('active');$('time15').classList.remove('active');if(state)start()};$('time15').onclick=()=>{seconds=15;$('time15').classList.add('active');$('time10').classList.remove('active');if(state)start()};$('restart').onclick=start;const path=params.get('data');if(!path){$('subtitle').textContent='data 경로가 없습니다.';return}try{const res=await fetch(new URL(path,location.href),{cache:'no-store'});if(!res.ok)throw Error(res.status);data=await res.json();$('title').textContent=`${data.level||''} ${parseInt(data.lesson)||''}과 · ${tx('문법','Дүрэм')}`;$('subtitle').textContent=data.title_mn||'';$('brand').textContent=`Grammar · SNU ${data.level||''}`;renderStudy()}catch(e){$('subtitle').textContent='불러오기 오류: '+e.message}}
+  async function init(){applyText();$('back').onclick=()=>location.href=lessonUrl();$('lang').onclick=()=>{params.set('lang',lang()==='KR'?'MN':'KR');localStorage.setItem('kq_lang',params.get('lang'));location.search=params.toString()};document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.panel));$('time10').onclick=()=>{seconds=10;$('time10').classList.add('active');$('time15').classList.remove('active');if(state)start()};$('time15').onclick=()=>{seconds=15;$('time15').classList.add('active');$('time10').classList.remove('active');if(state)start()};$('restart').onclick=start;const path=params.get('data');if(!path){$('subtitle').textContent='data 경로가 없습니다.';return}const target=parseGrammarDataTarget(path);if(!target.ok){renderGrammarInvalidAccess(target.error);return}try{const res=await fetch(target.url,{cache:'no-store'});if(!res.ok)throw Error(res.status);data=await res.json();const actualLevel=String((data&&data.level)||(data&&data.meta&&data.meta.level)||'').toUpperCase();const actualLesson=parseInt(String((data&&data.lesson)||(data&&data.meta&&data.meta.lesson)||'').replace(/[^0-9]/g,''),10);if(actualLevel!==target.level||actualLesson!==target.lessonNo){renderGrammarInvalidAccess(`URL=${target.level}-${target.lessonNo}, DATA=${actualLevel||'?'}-${Number.isFinite(actualLesson)?actualLesson:'?'}`);return}$('title').textContent=`${data.level||''} ${parseInt(data.lesson)||''}과 · ${tx('문법','Дүрэм')}`;$('subtitle').textContent=data.title_mn||'';$('brand').textContent=`Grammar · SNU ${data.level||''}`;const access=await verifyGrammarLessonUnlocked(data);if(!access.allowed){renderGrammarLocked(access,data);return}renderStudy()}catch(e){$('subtitle').textContent='불러오기 오류: '+e.message}}
   init();
 </script>
 </body></html>
