@@ -250,7 +250,12 @@
       topik2: "TOPIK 2",
       pillName: "이름",
       pillKlass: "인증",
-      footer: "인증 정보는 학습 페이지로 안전하게 전달됩니다."
+      footer: "인증 정보는 학습 페이지로 안전하게 전달됩니다.",
+      checkingAuth: "로그인 상태를 확인하고 있습니다…",
+      accessBlockedTitle: "로그인이 필요합니다",
+      accessBlockedMsg: "주소의 인증 정보가 현재 로그인 정보와 일치하지 않거나 인증이 만료되었습니다.",
+      accessBlockedDetail: "정상 인증으로 다시 로그인해 주세요.",
+      backToLogin: "로그인 화면으로 돌아가기"
     },
     mn: {
       topHint: "Хэл",
@@ -279,7 +284,12 @@
       topik2: "TOPIK 2",
       pillName: "Нэр",
       pillKlass: "Баталгаажуулалт",
-      footer: "Баталгаажуулалтын мэдээлэл хичээлийн хуудсанд дамжина."
+      footer: "Баталгаажуулалтын мэдээлэл хичээлийн хуудсанд дамжина.",
+      checkingAuth: "Нэвтрэх эрхийг шалгаж байна…",
+      accessBlockedTitle: "Нэвтрэх шаардлагатай",
+      accessBlockedMsg: "Хаягийн баталгаажуулалтын мэдээлэл одоогийн нэвтрэлттэй таарахгүй эсвэл хугацаа дууссан байна.",
+      accessBlockedDetail: "Хүчинтэй эрхээр дахин нэвтэрнэ үү.",
+      backToLogin: "Нэвтрэх дэлгэц рүү буцах"
     }
   };
 
@@ -405,6 +415,71 @@
     return (str||"").replace(/[&<>"']/g, (m) => ({
       "&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"
     }[m]));
+  }
+
+  // ===== 루트 페이지 인증/URL 세션 일치 검사 =====
+  function getUrlAuthState(){
+    const p = new URLSearchParams(location.search);
+    const keys = ["name", "klass", "token"];
+    const present = keys.filter(k => p.has(k));
+    if (!present.length) return { hasAuthParams:false, complete:false, values:null };
+
+    const values = {
+      name: safeTrim(p.get("name")),
+      klass: safeTrim(p.get("klass")),
+      token: safeTrim(p.get("token"))
+    };
+    const complete = keys.every(k => p.has(k) && values[k]);
+    return { hasAuthParams:true, complete, values };
+  }
+
+  async function validateSessionServer(session){
+    if (!session || !session.token) return { ok:false, error:"missing_session" };
+    try{
+      const result = await jsonp(SCRIPT_URL, {
+        action: "validate",
+        token: session.token,
+        deviceId: getDeviceId(),
+        name: session.name
+      }, 8000);
+      return (result && result.ok) ? { ok:true } : { ok:false, error:(result && result.error) || "invalid_session" };
+    }catch(e){
+      return { ok:false, error:"validation_network_error" };
+    }
+  }
+
+  function renderCheckingAuth(){
+    $app.innerHTML = `
+      ${renderTopBar()}
+      <div class="hdr">
+        <p class="brand">${escapeHtml(t("appTitle"))}</p>
+        <p class="sub">${escapeHtml(t("checkingAuth"))}</p>
+      </div>
+      <div class="content" style="padding-top:4px;padding-bottom:24px">
+        <div class="pill" style="width:100%">${escapeHtml(t("checkingAuth"))}</div>
+      </div>
+    `;
+    bindTopBar(renderCheckingAuth);
+  }
+
+  function renderAccessBlocked(detail){
+    clearSession();
+    $app.innerHTML = `
+      ${renderTopBar()}
+      <div class="hdr">
+        <p class="brand">🔐 ${escapeHtml(t("accessBlockedTitle"))}</p>
+        <p class="sub">${escapeHtml(t("accessBlockedMsg"))}</p>
+      </div>
+      <div class="content">
+        <div class="err" style="display:block">${escapeHtml(detail || t("accessBlockedDetail"))}</div>
+        <button class="btn btnPrimary" id="backToLogin" style="margin-top:14px">${escapeHtml(t("backToLogin"))}</button>
+      </div>
+    `;
+    bindTopBar(() => renderAccessBlocked(detail));
+    document.getElementById("backToLogin").addEventListener("click", () => {
+      history.replaceState(null, "", location.pathname);
+      renderLogin();
+    });
   }
 
   // ===== 기록 전송 (로그 + 세션) =====
@@ -764,15 +839,54 @@
   }, 10_000);
 
   // ===== Boot =====
-  document.documentElement.lang = getLang();
-  const s = readSession();
-  if (s && !isExpired(s)){
+  async function boot(){
+    document.documentElement.lang = getLang();
+
+    const session = readSession();
+    const urlAuth = getUrlAuthState();
+
+    // URL에 인증 관련 값이 하나라도 있으면 name/klass/token 세 값이 모두 있어야 합니다.
+    if (urlAuth.hasAuthParams){
+      if (!urlAuth.complete){
+        return renderAccessBlocked("incomplete_auth_params");
+      }
+      if (!session){
+        return renderAccessBlocked("missing_local_session");
+      }
+      if (isExpired(session)){
+        return renderAccessBlocked("local_session_expired");
+      }
+
+      // 주소의 인증정보를 일부만 바꾸어 기존 localStorage 세션을 재사용하는 것을 차단합니다.
+      const sameIdentity =
+        urlAuth.values.token === String(session.token || "") &&
+        urlAuth.values.name === String(session.name || "") &&
+        urlAuth.values.klass === String(session.klass || "");
+      if (!sameIdentity){
+        return renderAccessBlocked("url_session_mismatch");
+      }
+    }
+
+    if (!session){
+      clearSession();
+      return renderLogin();
+    }
+    if (isExpired(session)){
+      clearSession();
+      return renderLogin();
+    }
+
+    renderCheckingAuth();
+    const validation = await validateSessionServer(session);
+    if (!validation.ok){
+      return renderAccessBlocked(validation.error || "expired_or_invalid");
+    }
+
     resetInactivity();
     renderDashboard();
-  }else{
-    clearSession();
-    renderLogin();
   }
+
+  boot();
 })();
 </script>
 </body>
