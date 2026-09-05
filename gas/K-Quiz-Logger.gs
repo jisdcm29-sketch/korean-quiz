@@ -560,6 +560,58 @@ function getDeveloperAccess_(ss, phone) {
   return decided === true;
 }
 
+const SNU_CURRICULUM_BOOKS = [
+  "SNU-1A", "SNU-1B", "SNU-2A", "SNU-2B",
+  "SNU-3A", "SNU-3B", "SNU-4A", "SNU-4B"
+];
+
+function getSnuBookRank_(book) {
+  const normalized = normalizeTestBook_(book);
+  return SNU_CURRICULUM_BOOKS.indexOf(normalized);
+}
+
+// 학생의 전체 서울대 과정 기준 시작점을 찾는다.
+// 학습시작점 시트에서 같은 학생의 활성 행이 여러 개라면 가장 아래 행을 우선한다.
+function getLearningCurriculumStartPoint_(ss, phone) {
+  const sh = getLearningStartSheet_(ss);
+  if (sh.getLastRow() < 2) {
+    return { found: false, startLesson: 0, enabled: false };
+  }
+
+  const targetPhone = normalizePhone_(phone);
+  if (!targetPhone) {
+    return { found: false, startLesson: 0, enabled: false };
+  }
+
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 7).getValues();
+  let matched = null;
+
+  for (let i = 0; i < rows.length; i++) {
+    const rowPhone = normalizePhone_(rows[i][0]);
+    const rowBook = normalizeTestBook_(rows[i][2]);
+    const enabled = isEnabled_(rows[i][4]);
+    const startLesson = Number(String(rows[i][3] == null ? "" : rows[i][3]).trim());
+
+    if (rowPhone !== targetPhone || !enabled) continue;
+    if (getSnuBookRank_(rowBook) < 0) continue;
+    if (!Number.isFinite(startLesson) || startLesson <= 0) continue;
+
+    matched = {
+      found: true,
+      phone: rowPhone,
+      name: String(rows[i][1] == null ? "" : rows[i][1]).trim(),
+      book: rowBook,
+      startLesson: Math.floor(startLesson),
+      enabled: true,
+      note: String(rows[i][5] == null ? "" : rows[i][5]).trim(),
+      updatedAt: rows[i][6] || "",
+      row: i + 2
+    };
+  }
+
+  return matched || { found: false, startLesson: 0, enabled: false };
+}
+
 function getLearningStartPoint_(ss, phone, book) {
   const sh = getLearningStartSheet_(ss);
   if (sh.getLastRow() < 2) {
@@ -716,18 +768,45 @@ function doGet(e) {
     if (!result.ok) return jsonpOutput_(callback, result);
 
     const phone = result.phone || (result.payload && result.payload.phone) || "";
-    const start = getLearningStartPoint_(ss, phone, p.book || "");
+    const requestedBook = normalizeTestBook_(p.book || "");
+    const start = getLearningStartPoint_(ss, phone, requestedBook);
+    const curriculumStart = getLearningCurriculumStartPoint_(ss, phone);
     const developer = getDeveloperAccess_(ss, phone);
+
+    const requestedRank = getSnuBookRank_(requestedBook);
+    const curriculumStartBook = curriculumStart.found ? normalizeTestBook_(curriculumStart.book) : "";
+    const curriculumStartRank = getSnuBookRank_(curriculumStartBook);
+    let bookRelation = "none";
+    if (requestedRank >= 0 && curriculumStartRank >= 0) {
+      if (requestedRank < curriculumStartRank) bookRelation = "lower";
+      else if (requestedRank === curriculumStartRank) bookRelation = "same";
+      else bookRelation = "higher";
+    }
+
     return jsonpOutput_(callback, {
       ok: true,
       phone: normalizePhone_(phone),
       name: result.studentName || (result.payload && result.payload.name) || "",
-      book: String(p.book || ""),
+      book: requestedBook,
+
+      // 기존 교재별 조회 필드: 이전 클라이언트와의 호환을 유지한다.
       found: !!start.found,
       startLesson: start.found ? start.startLesson : 0,
       enabled: !!start.enabled,
       note: start.note || "",
       source: start.found ? "teacher_override" : "none",
+
+      // 전체 서울대 과정 기준 시작점.
+      curriculumFound: !!curriculumStart.found,
+      curriculumStartBook: curriculumStartBook,
+      curriculumStartLesson: curriculumStart.found ? curriculumStart.startLesson : 0,
+      curriculumEnabled: !!curriculumStart.enabled,
+      curriculumNote: curriculumStart.note || "",
+      bookRelation: bookRelation,
+      lowerBookAccess: bookRelation === "lower",
+      sameStartBook: bookRelation === "same",
+      higherBook: bookRelation === "higher",
+
       isDeveloper: developer,
       developerAccess: developer,
       role: developer ? "developer" : "student"
