@@ -289,6 +289,7 @@
         teacherRecognized: "교사 인정 · 기존 진도",
         teacherStart: "교사 지정 시작 과",
         teacherOverride: "교사 지정 시작점 적용",
+        lowerCourseAccess: "교사 인정 · 이전 과정 전체 접근",
         teacherStartInvalid: "교사 지정 시작 과를 현재 교재 범위에 맞게 조정했습니다."
       },
       MN: {
@@ -320,6 +321,7 @@
         teacherRecognized: "Багш зөвшөөрсөн · өмнөх ахиц",
         teacherStart: "Багшийн заасан эхлэх хичээл",
         teacherOverride: "Багшийн эхлэх цэг хэрэгжиж байна",
+        lowerCourseAccess: "Багш зөвшөөрсөн · өмнөх шат бүхэлдээ нээлттэй",
         teacherStartInvalid: "Багшийн заасан эхлэх хичээлийг энэ номын хүрээнд тохирууллаа."
       }
     };
@@ -611,13 +613,20 @@
       const accessProfile = await getLearningAccess(pickedNow.id);
       if(PICKED !== pickedNow) return;
       const isDeveloper = !!(accessProfile && accessProfile.ok === true && accessProfile.isDeveloper === true);
+      // 전체 서울대 과정에서 교사 지정 시작 교재보다 낮은 교재는 이미 이수한 과정으로 인정한다.
+      // 예: 시작점이 SNU-2A이면 SNU-1A, SNU-1B의 모든 과를 열어 준다.
+      const lowerBookAccess = !!(
+        !isDeveloper &&
+        accessProfile && accessProfile.ok === true &&
+        accessProfile.lowerBookAccess === true
+      );
 
       // 교사가 지정한 시작 과를 실제 교재의 과 번호에 맞춰 해석한다.
       // 예: 1B는 9과부터 시작하므로 startLesson=1이면 자동으로 첫 과(9과)로 보정한다.
       let teacherStartIndex = -1;
       let teacherStartLesson = 0;
       const hasTeacherStart = !!(
-        !isDeveloper &&
+        !isDeveloper && !lowerBookAccess &&
         accessProfile && accessProfile.ok === true &&
         accessProfile.found === true && accessProfile.enabled === true &&
         Number(accessProfile.startLesson || 0) > 0
@@ -633,10 +642,13 @@
         teacherStartLesson = Number(lessons[idx] && lessons[idx].no || 0);
       }
 
-      const results = await Promise.all(lessons.map(ls=>getLessonMastery(pickedNow.id, ls.no)));
+      // 이전 과정 전체 인정 상태에서는 점수 조회가 필요 없다. learning_start 호출 자체로 인증도 확인되었다.
+      const results = lowerBookAccess
+        ? lessons.map(()=>({ok:true,status:"RECOGNIZED",tests:{vocab:{bestScore:0},grammar:{bestScore:0},mixed:{bestScore:0}}}))
+        : await Promise.all(lessons.map(ls=>getLessonMastery(pickedNow.id, ls.no)));
       if(PICKED !== pickedNow) return;
 
-      const authError = results.find(r=>!r || r.ok !== true);
+      const authError = lowerBookAccess ? null : results.find(r=>!r || r.ok !== true);
       if(authError){
         const msg = authError && authError.error === "missing_token" ? tr("needLogin") : tr("masteryError");
         showErr(msg + (authError && authError.error ? "\n" + authError.error : ""));
@@ -648,7 +660,7 @@
         const previous = idx > 0 ? (results[idx-1] || {ok:false,found:false,bestScore:0,status:"NONE"}) : null;
         const isFirst = idx === 0;
         const teacherOverrideActive = teacherStartIndex >= 0;
-        const teacherRecognized = teacherOverrideActive && idx < teacherStartIndex;
+        const teacherRecognized = lowerBookAccess || (teacherOverrideActive && idx < teacherStartIndex);
         const teacherStartHere = teacherOverrideActive && idx === teacherStartIndex;
 
         // 교사 지정 시작점이 있으면 그 과까지는 기존 진도로 인정한다.
@@ -667,6 +679,7 @@
         }
 
         const unlocked = isDeveloper
+          || lowerBookAccess
           || (teacherOverrideActive ? (idx <= teacherStartIndex || requiredChainPassed)
                                     : (isFirst || (previous && previous.ok === true && previous.status === "PASS")));
 
@@ -681,6 +694,9 @@
           if(isDeveloper){
             btn.classList.add("ready");
             stateText = `🛠️ ${tr("developerAccess")} · ${lessonScoreText(current)}`;
+          }else if(lowerBookAccess){
+            btn.classList.add("passed");
+            stateText = `✅ ${tr("lowerCourseAccess")}`;
           }else if(teacherRecognized){
             btn.classList.add("passed");
             stateText = `✅ ${tr("teacherRecognized")}`;
@@ -727,6 +743,8 @@
 
       if(isDeveloper){
         statusEl.textContent = tr("developerAccess");
+      }else if(lowerBookAccess){
+        statusEl.textContent = tr("lowerCourseAccess");
       }else if(teacherStartIndex >= 0){
         statusEl.textContent = `${tr("teacherOverride")} · ${teacherStartLesson}${getLang()==="MN" ? "-р хичээл" : "과"}`;
       }else{

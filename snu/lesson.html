@@ -714,6 +714,11 @@
           return {allowed:true,level,lessonNo,firstLesson,isDeveloper:true,role:"developer"};
         }
 
+        // 교사 지정 시작 교재보다 낮은 교재는 이전 이수 과정으로 인정하여 모든 과 접근을 허용한다.
+        if(accessProfile.lowerBookAccess === true){
+          return {allowed:true,level,lessonNo,firstLesson,lowerBookAccess:true,teacherOverride:true,role:"student"};
+        }
+
         // 교사가 지정한 시작 과가 있으면 그 과까지는 기존 진도로 인정한다.
         // 예: startLesson=3 -> 1, 2, 3과는 바로 접근 가능하고 4과부터 3과의 3개 시험 통과를 요구한다.
         let teacherStartLesson = 0;

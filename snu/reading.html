@@ -262,6 +262,10 @@
         if(accessProfile.isDeveloper===true){
           return {allowed:true,level,lessonNo,firstLesson,isDeveloper:true};
         }
+        // 교사 지정 시작 교재보다 낮은 교재는 이전 이수 과정으로 인정하여 읽기 전체 접근을 허용한다.
+        if(accessProfile.lowerBookAccess===true){
+          return {allowed:true,level,lessonNo,firstLesson,lowerBookAccess:true,teacherOverride:true};
+        }
         let teacherStartLesson=0;
         if(accessProfile&&accessProfile.ok===true&&accessProfile.found===true&&accessProfile.enabled===true){
           const requested=Number(accessProfile.startLesson||0);
