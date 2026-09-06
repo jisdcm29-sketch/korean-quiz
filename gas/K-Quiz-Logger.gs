@@ -653,6 +653,464 @@ function getLearningStartPoint_(ss, phone, book) {
   return matched || { found: false, startLesson: 0, enabled: false };
 }
 
+
+
+// -----------------------------------------------------------------------------
+// 학생 전체 진도 현황
+// -----------------------------------------------------------------------------
+const STUDENT_PROGRESS_SHEET_NAME = "진도현황";
+const STUDENT_PROGRESS_HEADERS = [
+  "전화번호", "학생이름", "사용여부", "반",
+  "최초접속", "최근접속",
+  "시작교재", "시작과",
+  "현재교재", "현재과",
+  "어휘최고", "문법최고", "종합최고",
+  "현재상태", "다음단계",
+  "TOPIK연어", "TOPIK문법",
+  "최근활동", "최근시험", "최근점수", "총응시"
+];
+
+const SNU_BOOK_LESSON_RANGES = {
+  "SNU-1A": [1, 8],
+  "SNU-1B": [9, 16],
+  "SNU-2A": [1, 9],
+  "SNU-2B": [10, 18],
+  "SNU-3A": [1, 9],
+  "SNU-3B": [10, 18],
+  "SNU-4A": [1, 9],
+  "SNU-4B": [10, 18]
+};
+
+function getStudentProgressSheet_(ss) {
+  const sh = ss.getSheetByName(STUDENT_PROGRESS_SHEET_NAME) || ss.insertSheet(STUDENT_PROGRESS_SHEET_NAME);
+  const needsHeader = sh.getLastRow() === 0 || !String(sh.getRange(1, 1).getValue() || "").trim();
+
+  if (needsHeader) {
+    sh.getRange(1, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues([STUDENT_PROGRESS_HEADERS]);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, STUDENT_PROGRESS_HEADERS.length).setFontWeight("bold");
+    sh.getRange("A:A").setNumberFormat("@");
+    sh.getRange("E:F").setNumberFormat("yyyy-MM-dd HH:mm");
+    sh.getRange("R:R").setNumberFormat("yyyy-MM-dd HH:mm");
+    sh.getRange("O:O").setWrap(true);
+    sh.autoResizeColumns(1, STUDENT_PROGRESS_HEADERS.length);
+  } else {
+    sh.setFrozenRows(1);
+  }
+
+  return sh;
+}
+
+function getAuthStudentInfo_(ss, phone) {
+  const sh = ss.getSheetByName(AUTH_SHEET_NAME);
+  const target = normalizePhone_(phone);
+  if (!sh || !target || sh.getLastRow() < 2) {
+    return { found: false, phone: target, name: "", enabled: false };
+  }
+
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 3).getValues();
+  let matched = null;
+  for (let i = 0; i < rows.length; i++) {
+    if (normalizePhone_(rows[i][0]) !== target) continue;
+    matched = {
+      found: true,
+      phone: target,
+      name: String(rows[i][1] == null ? "" : rows[i][1]).trim(),
+      enabled: isEnabled_(rows[i][2])
+    };
+  }
+  return matched || { found: false, phone: target, name: "", enabled: false };
+}
+
+function progressTestKey_(book, lesson, testType) {
+  return [
+    normalizeTestBook_(book),
+    normalizeTestLesson_(lesson),
+    normalizeTestType_(testType)
+  ].join("|");
+}
+
+function dateOrNull_(value) {
+  if (value instanceof Date && !isNaN(value.getTime())) return value;
+  if (value == null || value === "") return null;
+  const d = new Date(value);
+  return isNaN(d.getTime()) ? null : d;
+}
+
+function laterDate_(a, b) {
+  const da = dateOrNull_(a);
+  const db = dateOrNull_(b);
+  if (!da) return db;
+  if (!db) return da;
+  return da.getTime() >= db.getTime() ? da : db;
+}
+
+function earlierDate_(a, b) {
+  const da = dateOrNull_(a);
+  const db = dateOrNull_(b);
+  if (!da) return db;
+  if (!db) return da;
+  return da.getTime() <= db.getTime() ? da : db;
+}
+
+function buildStudentTestStats_(ss, phone) {
+  const stats = {
+    scores: {},
+    totalAttempts: 0,
+    firstTestAt: null,
+    lastTestAt: null,
+    lastTestType: "",
+    lastTestScore: ""
+  };
+
+  const sh = ss.getSheetByName(TEST_RESULTS_SHEET_NAME);
+  const targetPhone = normalizePhone_(phone);
+  if (!sh || !targetPhone || sh.getLastRow() < 2) return stats;
+
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 16).getValues();
+  for (let i = 0; i < rows.length; i++) {
+    if (normalizePhone_(rows[i][1]) !== targetPhone) continue;
+
+    const key = progressTestKey_(rows[i][4], rows[i][5], rows[i][6]);
+    const score = Number(rows[i][7]);
+    if (Number.isFinite(score)) {
+      const prev = Number(stats.scores[key]);
+      if (!Number.isFinite(prev) || score > prev) stats.scores[key] = score;
+    }
+
+    const attempts = Number(rows[i][8]);
+    if (Number.isFinite(attempts) && attempts > 0) stats.totalAttempts += attempts;
+
+    const firstAt = dateOrNull_(rows[i][12]);
+    const lastAt = dateOrNull_(rows[i][14]) || dateOrNull_(rows[i][13]) || firstAt;
+    if (firstAt) stats.firstTestAt = earlierDate_(stats.firstTestAt, firstAt);
+
+    if (lastAt) {
+      const wasLast = stats.lastTestAt;
+      stats.lastTestAt = laterDate_(stats.lastTestAt, lastAt);
+      if (!wasLast || (stats.lastTestAt && lastAt.getTime() >= stats.lastTestAt.getTime())) {
+        stats.lastTestType = normalizeTestType_(rows[i][6]);
+        stats.lastTestScore = Number.isFinite(score) ? score : "";
+      }
+    }
+  }
+
+  return stats;
+}
+
+function getProgressScore_(stats, book, lesson, testType) {
+  const value = Number(stats && stats.scores ? stats.scores[progressTestKey_(book, lesson, testType)] : 0);
+  return Number.isFinite(value) ? value : 0;
+}
+
+function getSnuLessonRange_(book) {
+  return SNU_BOOK_LESSON_RANGES[normalizeTestBook_(book)] || null;
+}
+
+function normalizeSnuStartPosition_(book, lesson) {
+  let normalizedBook = normalizeTestBook_(book);
+  if (getSnuBookRank_(normalizedBook) < 0) normalizedBook = "SNU-1A";
+
+  const range = getSnuLessonRange_(normalizedBook) || [1, 1];
+  let n = Number(lesson);
+  if (!Number.isFinite(n)) n = range[0];
+  n = Math.floor(n);
+  if (n < range[0] || n > range[1]) n = range[0];
+
+  return { book: normalizedBook, lesson: n };
+}
+
+function getNextSnuPosition_(book, lesson) {
+  const normalizedBook = normalizeTestBook_(book);
+  const rank = getSnuBookRank_(normalizedBook);
+  const range = getSnuLessonRange_(normalizedBook);
+  if (rank < 0 || !range) return null;
+
+  const n = Number(lesson);
+  if (n < range[1]) return { book: normalizedBook, lesson: n + 1 };
+
+  if (rank + 1 >= SNU_CURRICULUM_BOOKS.length) return null;
+  const nextBook = SNU_CURRICULUM_BOOKS[rank + 1];
+  const nextRange = getSnuLessonRange_(nextBook);
+  return { book: nextBook, lesson: nextRange ? nextRange[0] : 1 };
+}
+
+function computeSnuProgress_(ss, phone, stats) {
+  const configured = getLearningCurriculumStartPoint_(ss, phone);
+  const start = normalizeSnuStartPosition_(
+    configured.found ? configured.book : "SNU-1A",
+    configured.found ? configured.startLesson : 1
+  );
+
+  let pos = { book: start.book, lesson: start.lesson };
+  for (let guard = 0; guard < 200 && pos; guard++) {
+    const vocab = getProgressScore_(stats, pos.book, pos.lesson, "vocab");
+    const grammar = getProgressScore_(stats, pos.book, pos.lesson, "grammar");
+    const mixed = getProgressScore_(stats, pos.book, pos.lesson, "mixed");
+    const allPass = vocab >= TEST_PASS_SCORE && grammar >= TEST_PASS_SCORE && mixed >= TEST_PASS_SCORE;
+
+    if (!allPass) {
+      const attempted = vocab > 0 || grammar > 0 || mixed > 0;
+      const missing = [];
+      if (vocab < TEST_PASS_SCORE) missing.push("어휘");
+      if (grammar < TEST_PASS_SCORE) missing.push("문법");
+      if (mixed < TEST_PASS_SCORE) missing.push("종합");
+
+      return {
+        startBook: start.book,
+        startLesson: start.lesson,
+        currentBook: pos.book,
+        currentLesson: pos.lesson,
+        vocabBest: vocab,
+        grammarBest: grammar,
+        mixedBest: mixed,
+        status: attempted ? "진행 중" : "시작 전",
+        nextStep: pos.book.replace(/^SNU-/, "") + " " + pos.lesson + "과 " + missing.join("·") + " 90% 필요",
+        completed: false
+      };
+    }
+
+    pos = getNextSnuPosition_(pos.book, pos.lesson);
+  }
+
+  return {
+    startBook: start.book,
+    startLesson: start.lesson,
+    currentBook: "완료",
+    currentLesson: "",
+    vocabBest: 100,
+    grammarBest: 100,
+    mixedBest: 100,
+    status: "서울대 완료",
+    nextStep: "서울대 4B까지 전체 완료",
+    completed: true
+  };
+}
+
+function computeTopikSequentialProgress_(stats, testType) {
+  let anyAttempt = false;
+  for (let stage = 1; stage <= 10; stage++) {
+    const key = progressTestKey_("TOPIK1", stage, testType);
+    if (Object.prototype.hasOwnProperty.call(stats.scores, key)) anyAttempt = true;
+    const score = getProgressScore_(stats, "TOPIK1", stage, testType);
+    if (score < TEST_PASS_SCORE) {
+      if (!anyAttempt && stage === 1) return "미시작";
+      return stage + "단계";
+    }
+  }
+  return "완료";
+}
+
+function progressTestTypeLabel_(testType) {
+  const t = normalizeTestType_(testType);
+  if (t === "vocab") return "어휘";
+  if (t === "grammar") return "문법";
+  if (t === "mixed") return "종합";
+  if (t === "collocation") return "연어";
+  return t;
+}
+
+function findStudentProgressRow_(sh, phone) {
+  const target = normalizePhone_(phone);
+  if (!target || sh.getLastRow() < 2) return -1;
+  const phones = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  for (let i = 0; i < phones.length; i++) {
+    if (normalizePhone_(phones[i][0]) === target) return i + 2;
+  }
+  return -1;
+}
+
+function updateStudentProgressSummary_(ss, identity, context) {
+  context = context || {};
+  const phone = normalizePhone_(identity && identity.phone);
+  if (!phone) return null;
+
+  const now = dateOrNull_(context.ts) || new Date();
+  const authInfo = getAuthStudentInfo_(ss, phone);
+  const name = String(
+    (authInfo && authInfo.name) ||
+    (identity && identity.studentName) ||
+    (identity && identity.name) ||
+    "학생"
+  ).trim() || "학생";
+
+  const stats = buildStudentTestStats_(ss, phone);
+  const snu = computeSnuProgress_(ss, phone, stats);
+  const topikCollocation = computeTopikSequentialProgress_(stats, "collocation");
+  const topikGrammar = computeTopikSequentialProgress_(stats, "grammar");
+
+  const sh = getStudentProgressSheet_(ss);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    let row = findStudentProgressRow_(sh, phone);
+    let existing = row > 0 ? sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).getValues()[0] : null;
+
+    let firstLoginAt = existing ? dateOrNull_(existing[4]) : null;
+    let lastLoginAt = existing ? dateOrNull_(existing[5]) : null;
+    let klass = String(context.klass || (existing ? existing[3] : "") || "").trim();
+
+    if (context.firstLoginAt) firstLoginAt = earlierDate_(firstLoginAt, context.firstLoginAt);
+    if (context.lastLoginAt) lastLoginAt = laterDate_(lastLoginAt, context.lastLoginAt);
+
+    if (context.isLogin) {
+      firstLoginAt = firstLoginAt || now;
+      lastLoginAt = laterDate_(lastLoginAt, now);
+    } else if (!firstLoginAt) {
+      firstLoginAt = dateOrNull_(stats.firstTestAt) || now;
+    }
+
+    let lastActivityAt = laterDate_(existing ? existing[17] : null, stats.lastTestAt);
+    lastActivityAt = laterDate_(lastActivityAt, now);
+
+    let lastTestType = String(existing ? existing[18] || "" : "");
+    let lastScore = existing ? existing[19] : "";
+    if (stats.lastTestType) {
+      lastTestType = progressTestTypeLabel_(stats.lastTestType);
+      lastScore = stats.lastTestScore;
+    }
+    if (context.lastTestType) lastTestType = progressTestTypeLabel_(context.lastTestType);
+    if (context.lastScore !== undefined && context.lastScore !== null && String(context.lastScore) !== "") {
+      const n = Number(context.lastScore);
+      lastScore = Number.isFinite(n) ? n : context.lastScore;
+    }
+
+    const values = [[
+      phone,
+      name,
+      authInfo.found ? (authInfo.enabled ? "TRUE" : "FALSE") : "",
+      klass,
+      firstLoginAt || "",
+      lastLoginAt || "",
+      snu.startBook,
+      snu.startLesson,
+      snu.currentBook,
+      snu.currentLesson,
+      snu.vocabBest,
+      snu.grammarBest,
+      snu.mixedBest,
+      snu.status,
+      snu.nextStep,
+      topikCollocation,
+      topikGrammar,
+      lastActivityAt || now,
+      lastTestType,
+      lastScore,
+      stats.totalAttempts
+    ]];
+
+    if (row < 0) {
+      row = sh.getLastRow() + 1;
+      sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues(values);
+    } else {
+      sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues(values);
+    }
+
+    return {
+      sheetName: sh.getName(),
+      row: row,
+      phone: phone,
+      name: name,
+      currentBook: snu.currentBook,
+      currentLesson: snu.currentLesson,
+      status: snu.status,
+      nextStep: snu.nextStep
+    };
+  } finally {
+    try { lock.releaseLock(); } catch (err) {}
+  }
+}
+
+// 기존 Sessions / TestResults를 이용해 진도현황을 한 번에 다시 만드는 관리용 함수.
+// Apps Script 편집기에서 이 함수를 직접 실행하면 이미 접속했던 학생도 즉시 반영된다.
+function rebuildStudentProgressSummary() {
+  const ss = SpreadsheetApp.getActive();
+  const progressSh = getStudentProgressSheet_(ss);
+  if (progressSh.getLastRow() > 1) {
+    progressSh.getRange(2, 1, progressSh.getLastRow() - 1, STUDENT_PROGRESS_HEADERS.length).clearContent();
+  }
+
+  const authSh = ss.getSheetByName(AUTH_SHEET_NAME);
+  if (!authSh || authSh.getLastRow() < 2) return { ok: true, count: 0 };
+
+  const authRows = authSh.getRange(2, 1, authSh.getLastRow() - 1, 3).getValues();
+  const authByPhone = {};
+  const phonesByName = {};
+  for (let i = 0; i < authRows.length; i++) {
+    const phone = normalizePhone_(authRows[i][0]);
+    const name = String(authRows[i][1] == null ? "" : authRows[i][1]).trim();
+    if (!phone) continue;
+    authByPhone[phone] = { phone: phone, name: name, enabled: isEnabled_(authRows[i][2]) };
+    if (name) {
+      if (!phonesByName[name]) phonesByName[name] = [];
+      if (phonesByName[name].indexOf(phone) < 0) phonesByName[name].push(phone);
+    }
+  }
+
+  const visited = {};
+  const sessions = ss.getSheetByName("Sessions");
+  if (sessions && sessions.getLastRow() >= 2) {
+    const rows = sessions.getRange(2, 1, sessions.getLastRow() - 1, 12).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const name = String(rows[i][1] == null ? "" : rows[i][1]).trim();
+      const matches = phonesByName[name] || [];
+      if (matches.length !== 1) continue;
+      const phone = matches[0];
+      const loginAt = dateOrNull_(rows[i][6]);
+      if (!visited[phone]) visited[phone] = { firstLoginAt: null, lastLoginAt: null, klass: "" };
+      if (loginAt) {
+        visited[phone].firstLoginAt = earlierDate_(visited[phone].firstLoginAt, loginAt);
+        visited[phone].lastLoginAt = laterDate_(visited[phone].lastLoginAt, loginAt);
+      }
+      const klass = String(rows[i][2] == null ? "" : rows[i][2]).trim();
+      if (klass) visited[phone].klass = klass;
+    }
+  }
+
+  const results = ss.getSheetByName(TEST_RESULTS_SHEET_NAME);
+  if (results && results.getLastRow() >= 2) {
+    const rows = results.getRange(2, 1, results.getLastRow() - 1, 16).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const phone = normalizePhone_(rows[i][1]);
+      if (!phone || !authByPhone[phone]) continue;
+      if (!visited[phone]) visited[phone] = { firstLoginAt: null, lastLoginAt: null, klass: "" };
+      const firstAt = dateOrNull_(rows[i][12]);
+      const lastAt = dateOrNull_(rows[i][14]) || dateOrNull_(rows[i][13]) || firstAt;
+      if (!visited[phone].firstLoginAt && firstAt) visited[phone].firstLoginAt = firstAt;
+      if (!visited[phone].lastLoginAt && lastAt) visited[phone].lastLoginAt = lastAt;
+      const klass = String(rows[i][3] == null ? "" : rows[i][3]).trim();
+      if (klass) visited[phone].klass = klass;
+    }
+  }
+
+  let count = 0;
+  for (let i = 0; i < authRows.length; i++) {
+    const phone = normalizePhone_(authRows[i][0]);
+    if (!phone || !visited[phone]) continue;
+    const info = authByPhone[phone];
+    const v = visited[phone];
+    updateStudentProgressSummary_(
+      ss,
+      { phone: phone, studentName: info ? info.name : "" },
+      {
+        ts: v.lastLoginAt || v.firstLoginAt || new Date(),
+        firstLoginAt: v.firstLoginAt,
+        lastLoginAt: v.lastLoginAt,
+        klass: v.klass,
+        isLogin: !!v.lastLoginAt
+      }
+    );
+    count++;
+  }
+
+  if (progressSh.getLastRow() > 2) {
+    progressSh.getRange(2, 1, progressSh.getLastRow() - 1, STUDENT_PROGRESS_HEADERS.length)
+      .sort([{ column: 2, ascending: true }]);
+  }
+
+  return { ok: true, count: count, sheetName: STUDENT_PROGRESS_SHEET_NAME };
+}
+
 function jsonpOutput_(callback, obj) {
   const cb = String(callback || "callback").replace(/[^\w$]/g, "") || "callback";
   return ContentService
@@ -691,10 +1149,21 @@ function doGet(e) {
     if (!auth.ok) return jsonpOutput_(callback, auth);
 
     const token = issueAuthToken_(phone, name, deviceId);
+    let progressSummary = null;
+    try {
+      progressSummary = updateStudentProgressSummary_(
+        ss,
+        { phone: auth.phone || phone, studentName: auth.studentName || name },
+        { ts: new Date(), klass: String(p.klass || ""), isLogin: true }
+      );
+    } catch (err) {
+      console.error("Progress summary login update failed", err);
+    }
     return jsonpOutput_(callback, {
       ok: true,
       token: token,
-      registeredName: auth.studentName || ""
+      registeredName: auth.studentName || "",
+      progressSummary: progressSummary
     });
   }
 
@@ -921,6 +1390,19 @@ function doGet(e) {
     }
   }
 
+  let progressSummary = null;
+  if (action === "session_start" && verifiedIdentity) {
+    try {
+      progressSummary = updateStudentProgressSummary_(
+        ss,
+        verifiedIdentity,
+        { ts: ts, klass: String(p.klass || ""), isLogin: true }
+      );
+    } catch (err) {
+      console.error("Progress summary session update failed", err);
+    }
+  }
+
   // 모든 일반 요청을 Log 시트에 기록
   sh.appendRow([
     ts,
@@ -955,6 +1437,22 @@ function doGet(e) {
         console.error("Student sheet update failed", err);
         studentResult = { ok: false, error: "student_sheet_update_failed" };
       }
+
+      try {
+        progressSummary = updateStudentProgressSummary_(
+          ss,
+          verifiedIdentity,
+          {
+            ts: ts,
+            klass: String(p.klass || ""),
+            isLogin: false,
+            lastTestType: p.testType || "",
+            lastScore: p.score
+          }
+        );
+      } catch (err) {
+        console.error("Progress summary test update failed", err);
+      }
     }
   }
 
@@ -962,6 +1460,7 @@ function doGet(e) {
     ok: true,
     ts: ts.toISOString(),
     testResult: testResult,
-    studentResult: studentResult
+    studentResult: studentResult,
+    progressSummary: progressSummary
   });
 }
