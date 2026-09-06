@@ -681,7 +681,7 @@ const SNU_BOOK_LESSON_RANGES = {
   "SNU-4B": [10, 18]
 };
 
-const STUDENT_PROGRESS_STYLE_VERSION = "2026-09-06-v3";
+const STUDENT_PROGRESS_STYLE_VERSION = "2026-09-06-v4";
 
 function studentProgressStyleKey_(ss) {
   return "student_progress_style_" + String(ss.getId() || "default");
@@ -814,7 +814,7 @@ function formatStudentProgressSheet_(sh) {
       .setRanges([statusRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(L2),L2>0,L2<90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(L2),L2>=0,L2<90)")
       .setBackground("#f4cccc")
       .setFontColor("#990000")
       .setRanges([scoreRange])
@@ -826,7 +826,7 @@ function formatStudentProgressSheet_(sh) {
       .setRanges([scoreRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(U2),U2>0,U2<90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(U2),U2>=0,U2<90)")
       .setBackground("#f4cccc")
       .setFontColor("#990000")
       .setRanges([recentScoreRange])
@@ -997,9 +997,25 @@ function buildStudentTestStats_(ss, phone) {
   return stats;
 }
 
+function hasProgressScore_(stats, book, lesson, testType) {
+  const key = progressTestKey_(book, lesson, testType);
+  return !!(
+    stats &&
+    stats.scores &&
+    Object.prototype.hasOwnProperty.call(stats.scores, key)
+  );
+}
+
 function getProgressScore_(stats, book, lesson, testType) {
   const value = Number(stats && stats.scores ? stats.scores[progressTestKey_(book, lesson, testType)] : 0);
   return Number.isFinite(value) ? value : 0;
+}
+
+// 진도현황 표시용: 미응시는 '-'로, 실제 응시 점수 0은 숫자 0으로 구분한다.
+function getProgressDisplayScore_(stats, book, lesson, testType) {
+  return hasProgressScore_(stats, book, lesson, testType)
+    ? getProgressScore_(stats, book, lesson, testType)
+    : "-";
 }
 
 function getSnuLessonRange_(book) {
@@ -1043,13 +1059,17 @@ function computeSnuProgress_(ss, phone, stats) {
 
   let pos = { book: start.book, lesson: start.lesson };
   for (let guard = 0; guard < 200 && pos; guard++) {
+    const vocabAttempted = hasProgressScore_(stats, pos.book, pos.lesson, "vocab");
+    const grammarAttempted = hasProgressScore_(stats, pos.book, pos.lesson, "grammar");
+    const mixedAttempted = hasProgressScore_(stats, pos.book, pos.lesson, "mixed");
+
     const vocab = getProgressScore_(stats, pos.book, pos.lesson, "vocab");
     const grammar = getProgressScore_(stats, pos.book, pos.lesson, "grammar");
     const mixed = getProgressScore_(stats, pos.book, pos.lesson, "mixed");
     const allPass = vocab >= TEST_PASS_SCORE && grammar >= TEST_PASS_SCORE && mixed >= TEST_PASS_SCORE;
 
     if (!allPass) {
-      const attempted = vocab > 0 || grammar > 0 || mixed > 0;
+      const attempted = vocabAttempted || grammarAttempted || mixedAttempted;
       const missing = [];
       if (vocab < TEST_PASS_SCORE) missing.push("어휘");
       if (grammar < TEST_PASS_SCORE) missing.push("문법");
@@ -1060,9 +1080,9 @@ function computeSnuProgress_(ss, phone, stats) {
         startLesson: start.lesson,
         currentBook: pos.book,
         currentLesson: pos.lesson,
-        vocabBest: vocab,
-        grammarBest: grammar,
-        mixedBest: mixed,
+        vocabBest: vocabAttempted ? vocab : "-",
+        grammarBest: grammarAttempted ? grammar : "-",
+        mixedBest: mixedAttempted ? mixed : "-",
         status: attempted ? "진행 중" : "시작 전",
         nextStep: pos.book.replace(/^SNU-/, "") + " " + pos.lesson + "과 " + missing.join("·") + " 90% 필요",
         completed: false
@@ -1172,6 +1192,9 @@ function updateStudentProgressSummary_(ss, identity, context) {
     if (context.lastScore !== undefined && context.lastScore !== null && String(context.lastScore) !== "") {
       const n = Number(context.lastScore);
       lastScore = Number.isFinite(n) ? n : context.lastScore;
+    }
+    if (!lastTestType && (lastScore === "" || lastScore === null || lastScore === undefined)) {
+      lastScore = "-";
     }
 
     const values = [[
