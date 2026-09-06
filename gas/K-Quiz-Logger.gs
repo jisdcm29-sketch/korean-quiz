@@ -660,7 +660,7 @@ function getLearningStartPoint_(ss, phone, book) {
 // -----------------------------------------------------------------------------
 const STUDENT_PROGRESS_SHEET_NAME = "진도현황";
 const STUDENT_PROGRESS_HEADERS = [
-  "전화번호", "학생이름", "사용여부", "반",
+  "순번", "전화번호", "학생이름", "사용여부", "반",
   "최초접속", "최근접속",
   "시작교재", "시작과",
   "현재교재", "현재과",
@@ -681,14 +681,45 @@ const SNU_BOOK_LESSON_RANGES = {
   "SNU-4B": [10, 18]
 };
 
-const STUDENT_PROGRESS_STYLE_VERSION = "2026-09-06-v1";
+const STUDENT_PROGRESS_STYLE_VERSION = "2026-09-06-v3";
 
 function studentProgressStyleKey_(ss) {
   return "student_progress_style_" + String(ss.getId() || "default");
 }
 
+// 기존 진도현황 형식을 새 형식(A 순번, B 전화번호, C 학생이름...)으로 자동 변환한다.
+function migrateStudentProgressSheetSchema_(sh) {
+  if (!sh || sh.getLastRow() < 1) return;
+
+  const h1 = String(sh.getRange(1, 1).getValue() || "").trim();
+  const h2 = String(sh.getRange(1, 2).getValue() || "").trim();
+  const h3 = String(sh.getRange(1, 3).getValue() || "").trim();
+
+  // STEP23A current format: A sequence, B phone, C student name.
+  if (h1 === "순번" && h2 === "전화번호" && h3 === "학생이름") return;
+
+  // STEP23 format: A phone, B student name, C sequence -> move sequence to the first column.
+  if (h1 === "전화번호" && h2 === "학생이름" && h3 === "순번") {
+    const lastRow = sh.getLastRow();
+    const width = STUDENT_PROGRESS_HEADERS.length;
+    const rows = sh.getRange(1, 1, lastRow, width).getValues();
+    const reordered = rows.map(function(row) {
+      return [row[2], row[0], row[1]].concat(row.slice(3));
+    });
+    sh.getRange(1, 1, lastRow, width).setValues(reordered);
+    return;
+  }
+
+  // STEP21/22 format: A phone, B student name, C enabled -> insert sequence at far left.
+  if (h1 === "전화번호" && h2 === "학생이름" && h3 === "사용여부") {
+    sh.insertColumnBefore(1);
+    sh.getRange(1, 1).setValue("순번");
+  }
+}
 function formatStudentProgressSheet_(sh) {
   if (!sh) return null;
+
+  migrateStudentProgressSheetSchema_(sh);
 
   const headerCount = STUDENT_PROGRESS_HEADERS.length;
   const maxRows = Math.max(sh.getMaxRows(), 2);
@@ -708,47 +739,50 @@ function formatStudentProgressSheet_(sh) {
 
   // 기본 정렬/표시 형식
   sh.getRange(1, 1, maxRows, headerCount).setVerticalAlignment("middle");
-  sh.getRange("A:A").setNumberFormat("@");
-  sh.getRange("E:F").setNumberFormat("yyyy-MM-dd HH:mm");
-  sh.getRange("R:R").setNumberFormat("yyyy-MM-dd HH:mm");
-  sh.getRange("K:M").setNumberFormat("0");
-  sh.getRange("T:T").setNumberFormat("0");
+  sh.getRange("A:A").setNumberFormat("0");
+  sh.getRange("B:B").setNumberFormat("@");
+  sh.getRange("F:G").setNumberFormat("yyyy-MM-dd HH:mm");
+  sh.getRange("S:S").setNumberFormat("yyyy-MM-dd HH:mm");
+  sh.getRange("L:N").setNumberFormat("0");
   sh.getRange("U:U").setNumberFormat("0");
-  sh.getRange("O:O").setWrap(true);
+  sh.getRange("V:V").setNumberFormat("0");
+  sh.getRange("P:P").setWrap(true);
 
   // 교사가 보기 편하도록 주요 열 너비를 고정한다.
   const widths = [
-    100, // A 전화번호
-    120, // B 학생이름
-    75,  // C 사용여부
-    70,  // D 반
-    135, // E 최초접속
-    135, // F 최근접속
-    90,  // G 시작교재
-    60,  // H 시작과
-    90,  // I 현재교재
-    60,  // J 현재과
-    75,  // K 어휘최고
-    75,  // L 문법최고
-    75,  // M 종합최고
-    90,  // N 현재상태
-    260, // O 다음단계
-    90,  // P TOPIK연어
-    90,  // Q TOPIK문법
-    135, // R 최근활동
-    90,  // S 최근시험
-    75,  // T 최근점수
-    70   // U 총응시
+    55,  // A 순번
+    100, // B 전화번호
+    120, // C 학생이름
+    75,  // D 사용여부
+    70,  // E 반
+    135, // F 최초접속
+    135, // G 최근접속
+    90,  // H 시작교재
+    60,  // I 시작과
+    90,  // J 현재교재
+    60,  // K 현재과
+    75,  // L 어휘최고
+    75,  // M 문법최고
+    75,  // N 종합최고
+    90,  // O 현재상태
+    260, // P 다음단계
+    90,  // Q TOPIK연어
+    90,  // R TOPIK문법
+    135, // S 최근활동
+    90,  // T 최근시험
+    75,  // U 최근점수
+    70   // V 총응시
   ];
   for (let c = 0; c < widths.length; c++) {
     sh.setColumnWidth(c + 1, widths[c]);
   }
 
   // 숫자/상태 열은 가운데 정렬한다.
-  sh.getRange(2, 3, Math.max(maxRows - 1, 1), 2).setHorizontalAlignment("center"); // C:D
-  sh.getRange(2, 7, Math.max(maxRows - 1, 1), 8).setHorizontalAlignment("center"); // G:N
-  sh.getRange(2, 16, Math.max(maxRows - 1, 1), 2).setHorizontalAlignment("center"); // P:Q
-  sh.getRange(2, 19, Math.max(maxRows - 1, 1), 3).setHorizontalAlignment("center"); // S:U
+  sh.getRange(2, 1, Math.max(maxRows - 1, 1), 1).setHorizontalAlignment("center"); // A 순번
+  sh.getRange(2, 4, Math.max(maxRows - 1, 1), 2).setHorizontalAlignment("center"); // D:E
+  sh.getRange(2, 8, Math.max(maxRows - 1, 1), 8).setHorizontalAlignment("center"); // H:O
+  sh.getRange(2, 17, Math.max(maxRows - 1, 1), 2).setHorizontalAlignment("center"); // Q:R
+  sh.getRange(2, 20, Math.max(maxRows - 1, 1), 3).setHorizontalAlignment("center"); // T:V
 
   // 필터는 빈 행을 포함한 시트 전체 범위에 걸어 새 학생도 자동 포함되게 한다.
   const existingFilter = sh.getFilter();
@@ -756,9 +790,9 @@ function formatStudentProgressSheet_(sh) {
   sh.getRange(1, 1, maxRows, headerCount).createFilter();
 
   // 상태와 점수는 조건부 서식으로 빠르게 확인할 수 있게 한다.
-  const statusRange = sh.getRange(2, 14, Math.max(maxRows - 1, 1), 1); // N
-  const scoreRange = sh.getRange(2, 11, Math.max(maxRows - 1, 1), 3); // K:M
-  const recentScoreRange = sh.getRange(2, 20, Math.max(maxRows - 1, 1), 1); // T
+  const statusRange = sh.getRange(2, 15, Math.max(maxRows - 1, 1), 1); // O
+  const scoreRange = sh.getRange(2, 12, Math.max(maxRows - 1, 1), 3); // L:N
+  const recentScoreRange = sh.getRange(2, 21, Math.max(maxRows - 1, 1), 1); // U
 
   const rules = [
     SpreadsheetApp.newConditionalFormatRule()
@@ -780,25 +814,25 @@ function formatStudentProgressSheet_(sh) {
       .setRanges([statusRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(K2),K2>0,K2<90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(L2),L2>0,L2<90)")
       .setBackground("#f4cccc")
       .setFontColor("#990000")
       .setRanges([scoreRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(K2),K2>=90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(L2),L2>=90)")
       .setBackground("#d9ead3")
       .setFontColor("#274e13")
       .setRanges([scoreRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(T2),T2>0,T2<90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(U2),U2>0,U2<90)")
       .setBackground("#f4cccc")
       .setFontColor("#990000")
       .setRanges([recentScoreRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(T2),T2>=90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(U2),U2>=90)")
       .setBackground("#d9ead3")
       .setFontColor("#274e13")
       .setRanges([recentScoreRange])
@@ -818,13 +852,27 @@ function ensureStudentProgressStyle_(ss, sh) {
   }
 }
 
+// 최근접속(G열)이 가장 최근인 학생을 위로 올리고, 현재 표시 순서대로 순번(A열)을 다시 매긴다.
 function sortStudentProgressRows_(sh) {
-  if (!sh || sh.getLastRow() <= 2) return;
-  sh.getRange(2, 1, sh.getLastRow() - 1, STUDENT_PROGRESS_HEADERS.length)
-    .sort([{ column: 2, ascending: true }]);
+  if (!sh) return;
+
+  const dataCount = Math.max(sh.getLastRow() - 1, 0);
+  if (dataCount <= 0) return;
+
+  if (dataCount > 1) {
+    sh.getRange(2, 1, dataCount, STUDENT_PROGRESS_HEADERS.length)
+      .sort([
+        { column: 7, ascending: false }, // G 최근접속: 최근 학생 우선
+        { column: 3, ascending: true }   // 동률이면 학생이름
+      ]);
+  }
+
+  const seq = [];
+  for (let i = 0; i < dataCount; i++) seq.push([i + 1]);
+  sh.getRange(2, 1, dataCount, 1).setValues(seq);
 }
 
-// Apps Script 편집기에서 직접 실행해 기존 진도현황 시트의 서식만 다시 적용할 수 있다.
+// Apps Script 편집기에서 직접 실행해 기존 진도현황 시트의 서식/최근접속순 정렬을 다시 적용할 수 있다.
 function formatStudentProgressSheet() {
   const ss = SpreadsheetApp.getActive();
   const sh = ss.getSheetByName(STUDENT_PROGRESS_SHEET_NAME) || ss.insertSheet(STUDENT_PROGRESS_SHEET_NAME);
@@ -839,8 +887,11 @@ function formatStudentProgressSheet() {
 
 function getStudentProgressSheet_(ss) {
   const sh = ss.getSheetByName(STUDENT_PROGRESS_SHEET_NAME) || ss.insertSheet(STUDENT_PROGRESS_SHEET_NAME);
-  const needsHeader = sh.getLastRow() === 0 || !String(sh.getRange(1, 1).getValue() || "").trim();
 
+  // 기존 시트가 있으면 순번을 가장 앞 열로 자동 이동/삽입한다.
+  migrateStudentProgressSheetSchema_(sh);
+
+  const needsHeader = sh.getLastRow() === 0 || !String(sh.getRange(1, 1).getValue() || "").trim();
   if (needsHeader) {
     sh.getRange(1, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues([STUDENT_PROGRESS_HEADERS]);
   }
@@ -1061,7 +1112,7 @@ function progressTestTypeLabel_(testType) {
 function findStudentProgressRow_(sh, phone) {
   const target = normalizePhone_(phone);
   if (!target || sh.getLastRow() < 2) return -1;
-  const phones = sh.getRange(2, 1, sh.getLastRow() - 1, 1).getValues();
+  const phones = sh.getRange(2, 2, sh.getLastRow() - 1, 1).getValues();
   for (let i = 0; i < phones.length; i++) {
     if (normalizePhone_(phones[i][0]) === target) return i + 2;
   }
@@ -1094,9 +1145,9 @@ function updateStudentProgressSummary_(ss, identity, context) {
     let row = findStudentProgressRow_(sh, phone);
     let existing = row > 0 ? sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).getValues()[0] : null;
 
-    let firstLoginAt = existing ? dateOrNull_(existing[4]) : null;
-    let lastLoginAt = existing ? dateOrNull_(existing[5]) : null;
-    let klass = String(context.klass || (existing ? existing[3] : "") || "").trim();
+    let firstLoginAt = existing ? dateOrNull_(existing[5]) : null;
+    let lastLoginAt = existing ? dateOrNull_(existing[6]) : null;
+    let klass = String(context.klass || (existing ? existing[4] : "") || "").trim();
 
     if (context.firstLoginAt) firstLoginAt = earlierDate_(firstLoginAt, context.firstLoginAt);
     if (context.lastLoginAt) lastLoginAt = laterDate_(lastLoginAt, context.lastLoginAt);
@@ -1108,11 +1159,11 @@ function updateStudentProgressSummary_(ss, identity, context) {
       firstLoginAt = dateOrNull_(stats.firstTestAt) || now;
     }
 
-    let lastActivityAt = laterDate_(existing ? existing[17] : null, stats.lastTestAt);
+    let lastActivityAt = laterDate_(existing ? existing[18] : null, stats.lastTestAt);
     lastActivityAt = laterDate_(lastActivityAt, now);
 
-    let lastTestType = String(existing ? existing[18] || "" : "");
-    let lastScore = existing ? existing[19] : "";
+    let lastTestType = String(existing ? existing[19] || "" : "");
+    let lastScore = existing ? existing[20] : "";
     if (stats.lastTestType) {
       lastTestType = progressTestTypeLabel_(stats.lastTestType);
       lastScore = stats.lastTestScore;
@@ -1124,6 +1175,7 @@ function updateStudentProgressSummary_(ss, identity, context) {
     }
 
     const values = [[
+      "", // 순번은 최근접속 정렬 후 자동으로 다시 매긴다.
       phone,
       name,
       authInfo.found ? (authInfo.enabled ? "TRUE" : "FALSE") : "",
@@ -1154,7 +1206,7 @@ function updateStudentProgressSummary_(ss, identity, context) {
       sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues(values);
     }
 
-    // 학생이 추가/갱신될 때마다 이름 기준 정렬을 유지한다.
+    // 학생이 추가/갱신될 때마다 최근접속 기준 정렬과 순번을 유지한다.
     sortStudentProgressRows_(sh);
     row = findStudentProgressRow_(sh, phone);
 
@@ -1255,7 +1307,7 @@ function rebuildStudentProgressSummary() {
     count++;
   }
 
-  // 전체 재구성 후에도 서식과 학생이름 정렬을 한 번 더 확정한다.
+  // 전체 재구성 후에도 서식, 최근접속 정렬, 순번을 한 번 더 확정한다.
   formatStudentProgressSheet_(progressSh);
   PropertiesService.getScriptProperties().setProperty(
     studentProgressStyleKey_(ss),
