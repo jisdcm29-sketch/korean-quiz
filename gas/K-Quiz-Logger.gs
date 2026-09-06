@@ -661,7 +661,7 @@ function getLearningStartPoint_(ss, phone, book) {
 const STUDENT_PROGRESS_SHEET_NAME = "진도현황";
 const STUDENT_PROGRESS_HEADERS = [
   "순번", "전화번호", "학생이름", "사용여부", "반",
-  "최초접속", "최근접속",
+  "최초접속", "최근접속", "접속경과",
   "시작교재", "시작과",
   "현재교재", "현재과", "통과현황",
   "어휘최고", "문법최고", "종합최고",
@@ -681,13 +681,13 @@ const SNU_BOOK_LESSON_RANGES = {
   "SNU-4B": [10, 18]
 };
 
-const STUDENT_PROGRESS_STYLE_VERSION = "2026-09-06-v5";
+const STUDENT_PROGRESS_STYLE_VERSION = "2026-09-06-v6";
 
 function studentProgressStyleKey_(ss) {
   return "student_progress_style_" + String(ss.getId() || "default");
 }
 
-// 기존 진도현황 형식을 최신 형식(A 순번 ... L 통과현황 ...)으로 자동 변환한다.
+// 기존 진도현황 형식을 최신 형식(A 순번 ... H 접속경과 ... M 통과현황 ...)으로 자동 변환한다.
 function migrateStudentProgressSheetSchema_(sh) {
   if (!sh || sh.getLastRow() < 1) return;
 
@@ -710,14 +710,22 @@ function migrateStudentProgressSheetSchema_(sh) {
     sh.getRange(1, 1).setValue("순번");
   }
 
-  // STEP24까지는 L열이 어휘최고였다. STEP25부터 L열에 통과현황을 추가한다.
+  // STEP26: 최근접속 바로 다음 H열에 '접속경과'를 추가한다.
   h1 = String(sh.getRange(1, 1).getValue() || "").trim();
   h2 = String(sh.getRange(1, 2).getValue() || "").trim();
   h3 = String(sh.getRange(1, 3).getValue() || "").trim();
-  const h12 = String(sh.getRange(1, 12).getValue() || "").trim();
-  if (h1 === "순번" && h2 === "전화번호" && h3 === "학생이름" && h12 !== "통과현황") {
-    sh.insertColumnBefore(12);
-    sh.getRange(1, 12).setValue("통과현황");
+  const h7 = String(sh.getRange(1, 7).getValue() || "").trim();
+  const h8 = String(sh.getRange(1, 8).getValue() || "").trim();
+  if (h1 === "순번" && h2 === "전화번호" && h3 === "학생이름" && h7 === "최근접속" && h8 !== "접속경과") {
+    sh.insertColumnAfter(7);
+    sh.getRange(1, 8).setValue("접속경과");
+  }
+
+  // STEP25 이전 형식에는 통과현황이 없었다. STEP26에서는 M열에 위치한다.
+  const h13 = String(sh.getRange(1, 13).getValue() || "").trim();
+  if (h1 === "순번" && h2 === "전화번호" && h3 === "학생이름" && h13 !== "통과현황") {
+    sh.insertColumnBefore(13);
+    sh.getRange(1, 13).setValue("통과현황");
   }
 }
 function formatStudentProgressSheet_(sh) {
@@ -746,11 +754,11 @@ function formatStudentProgressSheet_(sh) {
   sh.getRange("A:A").setNumberFormat("0");
   sh.getRange("B:B").setNumberFormat("@");
   sh.getRange("F:G").setNumberFormat("yyyy-MM-dd HH:mm");
-  sh.getRange("T:T").setNumberFormat("yyyy-MM-dd HH:mm");
-  sh.getRange("M:O").setNumberFormat("0");
-  sh.getRange("V:V").setNumberFormat("0");
+  sh.getRange("U:U").setNumberFormat("yyyy-MM-dd HH:mm");
+  sh.getRange("N:P").setNumberFormat("0");
   sh.getRange("W:W").setNumberFormat("0");
-  sh.getRange("Q:Q").setWrap(true);
+  sh.getRange("X:X").setNumberFormat("0");
+  sh.getRange("R:R").setWrap(true);
 
   // 교사가 보기 편하도록 주요 열 너비를 고정한다.
   const widths = [
@@ -761,22 +769,23 @@ function formatStudentProgressSheet_(sh) {
     70,  // E 반
     135, // F 최초접속
     135, // G 최근접속
-    90,  // H 시작교재
-    60,  // I 시작과
-    90,  // J 현재교재
-    60,  // K 현재과
-    75,  // L 통과현황
-    75,  // M 어휘최고
-    75,  // N 문법최고
-    75,  // O 종합최고
-    90,  // P 현재상태
-    260, // Q 다음단계
-    90,  // R TOPIK연어
-    90,  // S TOPIK문법
-    135, // T 최근활동
-    90,  // U 최근시험
-    75,  // V 최근점수
-    70   // W 총응시
+    85,  // H 접속경과
+    90,  // I 시작교재
+    60,  // J 시작과
+    90,  // K 현재교재
+    60,  // L 현재과
+    75,  // M 통과현황
+    75,  // N 어휘최고
+    75,  // O 문법최고
+    75,  // P 종합최고
+    90,  // Q 현재상태
+    260, // R 다음단계
+    90,  // S TOPIK연어
+    90,  // T TOPIK문법
+    135, // U 최근활동
+    90,  // V 최근시험
+    75,  // W 최근점수
+    70   // X 총응시
   ];
   for (let c = 0; c < widths.length; c++) {
     sh.setColumnWidth(c + 1, widths[c]);
@@ -785,9 +794,9 @@ function formatStudentProgressSheet_(sh) {
   // 숫자/상태 열은 가운데 정렬한다.
   sh.getRange(2, 1, Math.max(maxRows - 1, 1), 1).setHorizontalAlignment("center"); // A 순번
   sh.getRange(2, 4, Math.max(maxRows - 1, 1), 2).setHorizontalAlignment("center"); // D:E
-  sh.getRange(2, 8, Math.max(maxRows - 1, 1), 9).setHorizontalAlignment("center"); // H:P
-  sh.getRange(2, 18, Math.max(maxRows - 1, 1), 2).setHorizontalAlignment("center"); // R:S
-  sh.getRange(2, 21, Math.max(maxRows - 1, 1), 3).setHorizontalAlignment("center"); // U:W
+  sh.getRange(2, 8, Math.max(maxRows - 1, 1), 10).setHorizontalAlignment("center"); // H:Q
+  sh.getRange(2, 19, Math.max(maxRows - 1, 1), 2).setHorizontalAlignment("center"); // S:T
+  sh.getRange(2, 22, Math.max(maxRows - 1, 1), 3).setHorizontalAlignment("center"); // V:X
 
   // 필터는 빈 행을 포함한 시트 전체 범위에 걸어 새 학생도 자동 포함되게 한다.
   const existingFilter = sh.getFilter();
@@ -795,12 +804,37 @@ function formatStudentProgressSheet_(sh) {
   sh.getRange(1, 1, maxRows, headerCount).createFilter();
 
   // 상태와 점수, 현재 과 통과현황은 조건부 서식으로 빠르게 확인할 수 있게 한다.
-  const passRange = sh.getRange(2, 12, Math.max(maxRows - 1, 1), 1); // L 통과현황
-  const statusRange = sh.getRange(2, 16, Math.max(maxRows - 1, 1), 1); // P 현재상태
-  const scoreRange = sh.getRange(2, 13, Math.max(maxRows - 1, 1), 3); // M:O
-  const recentScoreRange = sh.getRange(2, 22, Math.max(maxRows - 1, 1), 1); // V
+  const elapsedRange = sh.getRange(2, 8, Math.max(maxRows - 1, 1), 1); // H 접속경과
+  const passRange = sh.getRange(2, 13, Math.max(maxRows - 1, 1), 1); // M 통과현황
+  const statusRange = sh.getRange(2, 17, Math.max(maxRows - 1, 1), 1); // Q 현재상태
+  const scoreRange = sh.getRange(2, 14, Math.max(maxRows - 1, 1), 3); // N:P
+  const recentScoreRange = sh.getRange(2, 23, Math.max(maxRows - 1, 1), 1); // W
 
   const rules = [
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenTextEqualTo("오늘")
+      .setBackground("#d9ead3")
+      .setFontColor("#274e13")
+      .setRanges([elapsedRange])
+      .build(),
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied('=AND($G2<>"",TODAY()-INT($G2)>=1,TODAY()-INT($G2)<3)')
+      .setBackground("#d9eaf7")
+      .setFontColor("#134f5c")
+      .setRanges([elapsedRange])
+      .build(),
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied('=AND($G2<>"",TODAY()-INT($G2)>=3,TODAY()-INT($G2)<7)')
+      .setBackground("#fff2cc")
+      .setFontColor("#7f6000")
+      .setRanges([elapsedRange])
+      .build(),
+    SpreadsheetApp.newConditionalFormatRule()
+      .whenFormulaSatisfied('=AND($G2<>"",TODAY()-INT($G2)>=7)')
+      .setBackground("#f4cccc")
+      .setFontColor("#990000")
+      .setRanges([elapsedRange])
+      .build(),
     SpreadsheetApp.newConditionalFormatRule()
       .whenTextEqualTo("3/3")
       .setBackground("#d9ead3")
@@ -844,25 +878,25 @@ function formatStudentProgressSheet_(sh) {
       .setRanges([statusRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(M2),M2>=0,M2<90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(N2),N2>=0,N2<90)")
       .setBackground("#f4cccc")
       .setFontColor("#990000")
       .setRanges([scoreRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(M2),M2>=90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(N2),N2>=90)")
       .setBackground("#d9ead3")
       .setFontColor("#274e13")
       .setRanges([scoreRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(V2),V2>=0,V2<90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(W2),W2>=0,W2<90)")
       .setBackground("#f4cccc")
       .setFontColor("#990000")
       .setRanges([recentScoreRange])
       .build(),
     SpreadsheetApp.newConditionalFormatRule()
-      .whenFormulaSatisfied("=AND(ISNUMBER(V2),V2>=90)")
+      .whenFormulaSatisfied("=AND(ISNUMBER(W2),W2>=90)")
       .setBackground("#d9ead3")
       .setFontColor("#274e13")
       .setRanges([recentScoreRange])
@@ -880,6 +914,22 @@ function ensureStudentProgressStyle_(ss, sh) {
     formatStudentProgressSheet_(sh);
     props.setProperty(key, STUDENT_PROGRESS_STYLE_VERSION);
   }
+}
+
+// 최근접속(G열)을 기준으로 H열에 경과일을 자동 계산한다. TODAY()를 사용하므로 날짜가 바뀌면 표시도 자동 갱신된다.
+function refreshStudentProgressElapsed_(sh) {
+  if (!sh) return;
+  const dataCount = Math.max(sh.getLastRow() - 1, 0);
+  if (dataCount <= 0) return;
+
+  const formulas = [];
+  for (let i = 0; i < dataCount; i++) {
+    const row = i + 2;
+    formulas.push([
+      '=IF(G' + row + '="","-",IF(TODAY()<=INT(G' + row + '),"오늘",(TODAY()-INT(G' + row + '))&"일 전"))'
+    ]);
+  }
+  sh.getRange(2, 8, dataCount, 1).setFormulas(formulas);
 }
 
 // 최근접속(G열)이 가장 최근인 학생을 위로 올리고, 현재 표시 순서대로 순번(A열)을 다시 매긴다.
@@ -900,6 +950,7 @@ function sortStudentProgressRows_(sh) {
   const seq = [];
   for (let i = 0; i < dataCount; i++) seq.push([i + 1]);
   sh.getRange(2, 1, dataCount, 1).setValues(seq);
+  refreshStudentProgressElapsed_(sh);
 }
 
 // Apps Script 편집기에서 직접 실행해 기존 진도현황 시트의 서식/최근접속순 정렬을 다시 적용할 수 있다.
@@ -918,7 +969,7 @@ function formatStudentProgressSheet() {
 function getStudentProgressSheet_(ss) {
   const sh = ss.getSheetByName(STUDENT_PROGRESS_SHEET_NAME) || ss.insertSheet(STUDENT_PROGRESS_SHEET_NAME);
 
-  // 기존 시트가 있으면 순번을 가장 앞 열로 자동 이동/삽입한다.
+  // 기존 시트가 있으면 순번/접속경과/통과현황 열을 최신 구조로 자동 맞춘다.
   migrateStudentProgressSheetSchema_(sh);
 
   const needsHeader = sh.getLastRow() === 0 || !String(sh.getRange(1, 1).getValue() || "").trim();
@@ -1214,11 +1265,11 @@ function updateStudentProgressSummary_(ss, identity, context) {
       firstLoginAt = dateOrNull_(stats.firstTestAt) || now;
     }
 
-    let lastActivityAt = laterDate_(existing ? existing[19] : null, stats.lastTestAt);
+    let lastActivityAt = laterDate_(existing ? existing[20] : null, stats.lastTestAt);
     lastActivityAt = laterDate_(lastActivityAt, now);
 
-    let lastTestType = String(existing ? existing[20] || "" : "");
-    let lastScore = existing ? existing[21] : "";
+    let lastTestType = String(existing ? existing[21] || "" : "");
+    let lastScore = existing ? existing[22] : "";
     if (stats.lastTestType) {
       lastTestType = progressTestTypeLabel_(stats.lastTestType);
       lastScore = stats.lastTestScore;
@@ -1240,6 +1291,7 @@ function updateStudentProgressSummary_(ss, identity, context) {
       klass,
       firstLoginAt || "",
       lastLoginAt || "",
+      "", // H 접속경과는 최근접속 기준 수식으로 자동 계산한다.
       snu.startBook,
       snu.startLesson,
       snu.currentBook,
@@ -1366,7 +1418,7 @@ function rebuildStudentProgressSummary() {
     count++;
   }
 
-  // 전체 재구성 후에도 서식, 최근접속 정렬, 순번을 한 번 더 확정한다.
+  // 전체 재구성 후에도 서식, 최근접속 정렬, 순번, 접속경과를 한 번 더 확정한다.
   formatStudentProgressSheet_(progressSh);
   PropertiesService.getScriptProperties().setProperty(
     studentProgressStyleKey_(ss),
