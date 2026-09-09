@@ -103,6 +103,132 @@ function validateAuthToken_(ss, token, deviceId, name) {
 const TEST_RESULTS_SHEET_NAME = "TestResults";
 const TEST_PASS_SCORE = 90;
 
+// STEP29-4: 학생별 시험 통계를 Script Cache에 보관해 TestResults 전체 스캔을 반복하지 않는다.
+// CacheService는 만료/축출될 수 있으므로 캐시가 없으면 기존 시트를 읽어 자동 복구한다.
+const STUDENT_TEST_STATS_CACHE_VERSION = "2026-09-10-v1";
+const STUDENT_TEST_STATS_CACHE_TTL_SEC = 60 * 60 * 6;
+const TEST_RESULT_ROW_CACHE_TTL_SEC = 60 * 60 * 6;
+
+function shortSpreadsheetCacheId_(ss) {
+  const id = String((ss && ss.getId && ss.getId()) || "default");
+  return id.slice(-16);
+}
+
+function studentTestStatsCacheKey_(ss, phone) {
+  return [
+    "s29_stats",
+    STUDENT_TEST_STATS_CACHE_VERSION,
+    shortSpreadsheetCacheId_(ss),
+    normalizePhone_(phone)
+  ].join("_");
+}
+
+function testResultRowCacheKey_(ss, dateKey, phone, book, lesson, testType) {
+  return [
+    "s29_row",
+    shortSpreadsheetCacheId_(ss),
+    String(dateKey || "").replace(/[^0-9]/g, ""),
+    normalizePhone_(phone),
+    normalizeTestBook_(book),
+    normalizeTestLesson_(lesson),
+    normalizeTestType_(testType)
+  ].join("_");
+}
+
+function emptyStudentTestStats_() {
+  return {
+    scores: {},
+    attemptsByKey: {},
+    totalAttempts: 0,
+    firstTestAt: null,
+    lastTestAt: null,
+    lastTestType: "",
+    lastTestScore: ""
+  };
+}
+
+function serializeStudentTestStats_(stats) {
+  stats = stats || emptyStudentTestStats_();
+  return JSON.stringify({
+    scores: stats.scores || {},
+    attemptsByKey: stats.attemptsByKey || {},
+    totalAttempts: Number(stats.totalAttempts) || 0,
+    firstTestAt: dateOrNull_(stats.firstTestAt) ? dateOrNull_(stats.firstTestAt).getTime() : null,
+    lastTestAt: dateOrNull_(stats.lastTestAt) ? dateOrNull_(stats.lastTestAt).getTime() : null,
+    lastTestType: String(stats.lastTestType || ""),
+    lastTestScore: stats.lastTestScore === "" || stats.lastTestScore == null ? "" : Number(stats.lastTestScore)
+  });
+}
+
+function deserializeStudentTestStats_(raw) {
+  if (!raw) return null;
+  try {
+    const parsed = JSON.parse(raw);
+    const stats = emptyStudentTestStats_();
+    stats.scores = parsed && parsed.scores && typeof parsed.scores === "object" ? parsed.scores : {};
+    stats.attemptsByKey = parsed && parsed.attemptsByKey && typeof parsed.attemptsByKey === "object" ? parsed.attemptsByKey : {};
+    stats.totalAttempts = Number(parsed && parsed.totalAttempts) || 0;
+    stats.firstTestAt = parsed && parsed.firstTestAt ? new Date(Number(parsed.firstTestAt)) : null;
+    stats.lastTestAt = parsed && parsed.lastTestAt ? new Date(Number(parsed.lastTestAt)) : null;
+    stats.lastTestType = String((parsed && parsed.lastTestType) || "");
+    const lastScore = parsed ? parsed.lastTestScore : "";
+    stats.lastTestScore = lastScore === "" || lastScore == null ? "" : Number(lastScore);
+    return stats;
+  } catch (err) {
+    return null;
+  }
+}
+
+function getCachedStudentTestStats_(ss, phone) {
+  const targetPhone = normalizePhone_(phone);
+  if (!targetPhone) return null;
+  try {
+    return deserializeStudentTestStats_(
+      CacheService.getScriptCache().get(studentTestStatsCacheKey_(ss, targetPhone))
+    );
+  } catch (err) {
+    return null;
+  }
+}
+
+function putCachedStudentTestStats_(ss, phone, stats) {
+  const targetPhone = normalizePhone_(phone);
+  if (!targetPhone || !stats) return;
+  try {
+    CacheService.getScriptCache().put(
+      studentTestStatsCacheKey_(ss, targetPhone),
+      serializeStudentTestStats_(stats),
+      STUDENT_TEST_STATS_CACHE_TTL_SEC
+    );
+  } catch (err) {
+    // 캐시는 성능 보조 기능이므로 실패해도 기존 시트 기반 동작은 계속한다.
+  }
+}
+
+function cacheTestResultRow_(ss, dateKey, phone, book, lesson, testType, sheetRow) {
+  const row = Number(sheetRow);
+  if (!Number.isFinite(row) || row < 2) return;
+  try {
+    CacheService.getScriptCache().put(
+      testResultRowCacheKey_(ss, dateKey, phone, book, lesson, testType),
+      String(Math.floor(row)),
+      TEST_RESULT_ROW_CACHE_TTL_SEC
+    );
+  } catch (err) {}
+}
+
+function getCachedTestResultRow_(ss, dateKey, phone, book, lesson, testType) {
+  try {
+    const raw = CacheService.getScriptCache().get(
+      testResultRowCacheKey_(ss, dateKey, phone, book, lesson, testType)
+    );
+    const row = Number(raw);
+    return Number.isFinite(row) && row >= 2 ? Math.floor(row) : -1;
+  } catch (err) {
+    return -1;
+  }
+}
+
 function testResultDateKey_(ss, dateValue) {
   const tz = ss.getSpreadsheetTimeZone() || Session.getScriptTimeZone() || "Asia/Ulaanbaatar";
   return Utilities.formatDate(dateValue, tz, "yyyy-MM-dd");
@@ -196,51 +322,105 @@ function updateTestResultBest_(ss, p, verifiedIdentity, ts) {
   lock.waitLock(10000);
   try {
     const sh = getTestResultsSheet_(ss);
-    const lastRow = sh.getLastRow();
-    const rows = lastRow > 1 ? sh.getRange(2, 1, lastRow - 1, 16).getValues() : [];
-    const shownRows = lastRow > 1 ? sh.getRange(2, 1, lastRow - 1, 16).getDisplayValues() : [];
-    const matches = [];
+    let lastRow = sh.getLastRow();
+    let matches = [];
+    let allRows = null;
+    let shownRows = null;
 
-    for (let i = 0; i < rows.length; i++) {
-      const rowDate = normalizeTestDateKey_(ss, rows[i][0], shownRows[i][0]);
-      const rowKey = makeTestResultKey_(
-        rowDate,
-        rows[i][1],
-        rows[i][4],
-        rows[i][5],
-        rows[i][6]
+    // 같은 학생이 같은 시험을 다시 보는 경우가 많으므로, 먼저 캐시된 정확한 행 하나만 읽는다.
+    // 캐시가 맞으면 TestResults 전체를 전혀 읽지 않는다.
+    const cachedRow = getCachedTestResultRow_(ss, dateKey, phone, book, lesson, testType);
+    if (cachedRow >= 2 && cachedRow <= lastRow) {
+      const cachedValues = sh.getRange(cachedRow, 1, 1, 16).getValues()[0];
+      const cachedKey = makeTestResultKey_(
+        normalizeTestDateKey_(ss, cachedValues[0], ""),
+        cachedValues[1],
+        cachedValues[4],
+        cachedValues[5],
+        cachedValues[6]
       );
-      if (rowKey === wantedKey) matches.push(i);
+      if (cachedKey === wantedKey) {
+        matches.push({ sheetRow: cachedRow, row: cachedValues });
+      }
     }
 
+    // 첫 응시/캐시 만료/행 이동 시에만 기존 방식으로 전체를 한 번 읽어 정확한 행을 찾는다.
+    if (matches.length === 0 && lastRow > 1) {
+      allRows = sh.getRange(2, 1, lastRow - 1, 16).getValues();
+      shownRows = sh.getRange(2, 1, lastRow - 1, 16).getDisplayValues();
+      for (let i = 0; i < allRows.length; i++) {
+        const rowDate = normalizeTestDateKey_(ss, allRows[i][0], shownRows[i][0]);
+        const rowKey = makeTestResultKey_(
+          rowDate,
+          allRows[i][1],
+          allRows[i][4],
+          allRows[i][5],
+          allRows[i][6]
+        );
+        if (rowKey === wantedKey) {
+          matches.push({ sheetRow: i + 2, row: allRows[i] });
+        }
+      }
+    }
+
+    let bestScore;
+    let attemptsToday;
+    let bestCorrect;
+    let bestTotal;
+    let bestTimeout;
+    let firstAt;
+    let bestAt;
+    let targetSheetRow;
+    let mergedDuplicates = 0;
+    let isNewBest = true;
+
     if (matches.length === 0) {
+      bestScore = score;
+      attemptsToday = 1;
+      bestCorrect = correct;
+      bestTotal = total;
+      bestTimeout = timeout;
+      firstAt = ts;
+      bestAt = ts;
       const status = score >= TEST_PASS_SCORE ? "PASS" : "RETRY";
       sh.appendRow([
         dateKey, phone, registeredName, klass, book, lesson, testType,
-        score, 1, correct, total, timeout,
-        ts, ts, ts, status
+        bestScore, attemptsToday, bestCorrect, bestTotal, bestTimeout,
+        firstAt, bestAt, ts, status
       ]);
+      targetSheetRow = sh.getLastRow();
+      cacheTestResultRow_(ss, dateKey, phone, book, lesson, testType, targetSheetRow);
+
+      // 전체 rows를 이미 읽었다면 그 메모리 데이터로 학생 통계 캐시를 즉시 만든다.
+      let stats = getCachedStudentTestStats_(ss, phone);
+      if (!stats && allRows) stats = buildStudentTestStatsFromRows_(allRows, phone);
+      if (stats) {
+        applyCurrentTestAttemptToStats_(stats, book, lesson, testType, bestScore, ts);
+        putCachedStudentTestStats_(ss, phone, stats);
+      }
+
       return {
-        bestScore: score,
-        attemptsToday: 1,
+        bestScore: bestScore,
+        attemptsToday: attemptsToday,
         status: status,
         updated: true,
-        mergedDuplicates: 0
+        mergedDuplicates: 0,
+        optimizedRowLookup: cachedRow >= 2
       };
     }
 
     // 기존 중복 행이 있더라도 한 행으로 자동 병합한다.
-    let attemptsToday = 0;
-    let bestScore = -Infinity;
-    let bestCorrect = "";
-    let bestTotal = "";
-    let bestTimeout = "";
-    let firstAt = null;
-    let bestAt = null;
+    attemptsToday = 0;
+    bestScore = -Infinity;
+    bestCorrect = "";
+    bestTotal = "";
+    bestTimeout = "";
+    firstAt = null;
+    bestAt = null;
     let lastAt = null;
 
     for (let j = 0; j < matches.length; j++) {
-      const row = rows[matches[j]];
+      const row = matches[j].row;
       const rowAttempts = Number(row[8]);
       attemptsToday += Number.isFinite(rowAttempts) && rowAttempts > 0 ? rowAttempts : 1;
 
@@ -262,7 +442,7 @@ function updateTestResultBest_(ss, p, verifiedIdentity, ts) {
     }
 
     attemptsToday += 1;
-    const isNewBest = !Number.isFinite(bestScore) || score > bestScore;
+    isNewBest = !Number.isFinite(bestScore) || score > bestScore;
     if (isNewBest) {
       bestScore = score;
       bestCorrect = correct;
@@ -276,7 +456,7 @@ function updateTestResultBest_(ss, p, verifiedIdentity, ts) {
     lastAt = ts;
 
     const status = bestScore >= TEST_PASS_SCORE ? "PASS" : "RETRY";
-    const targetSheetRow = matches[0] + 2;
+    targetSheetRow = matches[0].sheetRow;
     sh.getRange(targetSheetRow, 1, 1, 16).setValues([[
       dateKey,
       phone,
@@ -296,9 +476,21 @@ function updateTestResultBest_(ss, p, verifiedIdentity, ts) {
       status
     ]]);
 
-    // 첫 번째 행만 남기고 같은 키의 중복 행은 아래에서부터 삭제한다.
+    // 전체 검색을 한 경우에만 발견된 과거 중복 행을 정리한다.
     for (let j = matches.length - 1; j >= 1; j--) {
-      sh.deleteRow(matches[j] + 2);
+      sh.deleteRow(matches[j].sheetRow);
+      mergedDuplicates++;
+    }
+
+    cacheTestResultRow_(ss, dateKey, phone, book, lesson, testType, targetSheetRow);
+
+    // 학생 통계 캐시도 현재 시도 1회만 증분 반영한다.
+    // 캐시가 없지만 이번 요청에서 allRows를 읽었다면 그 데이터를 재사용해 두 번째 전체 스캔을 없앤다.
+    let stats = getCachedStudentTestStats_(ss, phone);
+    if (!stats && allRows) stats = buildStudentTestStatsFromRows_(allRows, phone);
+    if (stats) {
+      applyCurrentTestAttemptToStats_(stats, book, lesson, testType, bestScore, ts);
+      putCachedStudentTestStats_(ss, phone, stats);
     }
 
     return {
@@ -306,7 +498,8 @@ function updateTestResultBest_(ss, p, verifiedIdentity, ts) {
       attemptsToday: attemptsToday,
       status: status,
       updated: isNewBest,
-      mergedDuplicates: Math.max(0, matches.length - 1)
+      mergedDuplicates: mergedDuplicates,
+      optimizedRowLookup: matches.length === 1 && allRows === null
     };
   } finally {
     try { lock.releaseLock(); } catch (err) {}
@@ -447,19 +640,34 @@ function getTestStatus_(ss, phone, book, lesson, testType, now) {
   const dateKey = testResultDateKey_(ss, now || new Date());
   const wantedKey = makeTestResultKey_(dateKey, phone, book, lesson, testType);
   const lastRow = sh.getLastRow();
-  const rows = sh.getRange(2, 1, lastRow - 1, 16).getValues();
-  const shownRows = sh.getRange(2, 1, lastRow - 1, 16).getDisplayValues();
 
-  for (let i = 0; i < rows.length; i++) {
-    const rowDate = normalizeTestDateKey_(ss, rows[i][0], shownRows[i][0]);
+  // STEP29-4: 반복 조회는 캐시된 한 행만 확인한다.
+  const cachedRow = getCachedTestResultRow_(ss, dateKey, phone, book, lesson, testType);
+  if (cachedRow >= 2 && cachedRow <= lastRow) {
+    const row = sh.getRange(cachedRow, 1, 1, 16).getValues()[0];
     const rowKey = makeTestResultKey_(
-      rowDate,
-      rows[i][1],
-      rows[i][4],
-      rows[i][5],
-      rows[i][6]
+      normalizeTestDateKey_(ss, row[0], ""),
+      row[1], row[4], row[5], row[6]
     );
     if (rowKey === wantedKey) {
+      const bestScore = Number(row[7]);
+      const attemptsToday = Number(row[8]);
+      return {
+        found: true,
+        bestScore: Number.isFinite(bestScore) ? bestScore : 0,
+        attemptsToday: Number.isFinite(attemptsToday) ? attemptsToday : 0,
+        status: String(row[15] || ((Number.isFinite(bestScore) && bestScore >= TEST_PASS_SCORE) ? "PASS" : "RETRY"))
+      };
+    }
+  }
+
+  const rows = sh.getRange(2, 1, lastRow - 1, 16).getValues();
+  const shownRows = sh.getRange(2, 1, lastRow - 1, 16).getDisplayValues();
+  for (let i = 0; i < rows.length; i++) {
+    const rowDate = normalizeTestDateKey_(ss, rows[i][0], shownRows[i][0]);
+    const rowKey = makeTestResultKey_(rowDate, rows[i][1], rows[i][4], rows[i][5], rows[i][6]);
+    if (rowKey === wantedKey) {
+      cacheTestResultRow_(ss, dateKey, phone, book, lesson, testType, i + 2);
       const bestScore = Number(rows[i][7]);
       const attemptsToday = Number(rows[i][8]);
       return {
@@ -475,38 +683,15 @@ function getTestStatus_(ss, phone, book, lesson, testType, now) {
 }
 
 function getTestMasteryStatus_(ss, phone, book, lesson, testType) {
-  const sh = ss.getSheetByName(TEST_RESULTS_SHEET_NAME);
-  if (!sh || sh.getLastRow() < 2) {
-    return { found: false, bestScore: 0, attemptsTotal: 0, status: "NONE" };
-  }
-
-  const targetPhone = normalizePhone_(phone);
-  const targetBook = normalizeTestBook_(book);
-  const targetLesson = normalizeTestLesson_(lesson);
-  const targetType = normalizeTestType_(testType);
-  const lastRow = sh.getLastRow();
-  const rows = sh.getRange(2, 1, lastRow - 1, 16).getValues();
-
-  let found = false;
-  let bestScore = 0;
-  let attemptsTotal = 0;
-
-  for (let i = 0; i < rows.length; i++) {
-    if (normalizePhone_(rows[i][1]) !== targetPhone) continue;
-    if (normalizeTestBook_(rows[i][4]) !== targetBook) continue;
-    if (normalizeTestLesson_(rows[i][5]) !== targetLesson) continue;
-    if (normalizeTestType_(rows[i][6]) !== targetType) continue;
-
-    found = true;
-    const rowScore = Number(rows[i][7]);
-    const rowAttempts = Number(rows[i][8]);
-    if (Number.isFinite(rowScore) && rowScore > bestScore) bestScore = rowScore;
-    if (Number.isFinite(rowAttempts) && rowAttempts > 0) attemptsTotal += rowAttempts;
-  }
-
+  // STEP29-4: 누적 최고점은 학생별 캐시된 통계 한 번으로 처리한다.
+  const stats = buildStudentTestStats_(ss, phone);
+  const key = progressTestKey_(book, lesson, testType);
+  const found = hasProgressScore_(stats, book, lesson, testType);
+  const bestScore = found ? getProgressScore_(stats, book, lesson, testType) : 0;
+  const attemptsTotal = Number(stats && stats.attemptsByKey ? stats.attemptsByKey[key] : 0) || 0;
   return {
     found: found,
-    bestScore: found ? bestScore : 0,
+    bestScore: bestScore,
     attemptsTotal: attemptsTotal,
     status: found ? (bestScore >= TEST_PASS_SCORE ? "PASS" : "RETRY") : "NONE"
   };
@@ -1190,50 +1375,92 @@ function earlierDate_(a, b) {
   return da.getTime() <= db.getTime() ? da : db;
 }
 
-function buildStudentTestStats_(ss, phone) {
-  const stats = {
-    scores: {},
-    totalAttempts: 0,
-    firstTestAt: null,
-    lastTestAt: null,
-    lastTestType: "",
-    lastTestScore: ""
-  };
+function accumulateStudentTestStatsRow_(stats, row) {
+  stats = stats || emptyStudentTestStats_();
+  if (!row) return stats;
 
-  const sh = ss.getSheetByName(TEST_RESULTS_SHEET_NAME);
-  const targetPhone = normalizePhone_(phone);
-  if (!sh || !targetPhone || sh.getLastRow() < 2) return stats;
+  const key = progressTestKey_(row[4], row[5], row[6]);
+  const score = Number(row[7]);
+  if (Number.isFinite(score)) {
+    const prev = Number(stats.scores[key]);
+    if (!Number.isFinite(prev) || score > prev) stats.scores[key] = score;
+  }
 
-  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 16).getValues();
-  for (let i = 0; i < rows.length; i++) {
-    if (normalizePhone_(rows[i][1]) !== targetPhone) continue;
+  const attempts = Number(row[8]);
+  if (Number.isFinite(attempts) && attempts > 0) {
+    stats.totalAttempts += attempts;
+    stats.attemptsByKey[key] = (Number(stats.attemptsByKey[key]) || 0) + attempts;
+  }
 
-    const key = progressTestKey_(rows[i][4], rows[i][5], rows[i][6]);
-    const score = Number(rows[i][7]);
-    if (Number.isFinite(score)) {
-      const prev = Number(stats.scores[key]);
-      if (!Number.isFinite(prev) || score > prev) stats.scores[key] = score;
-    }
+  const firstAt = dateOrNull_(row[12]);
+  const lastAt = dateOrNull_(row[14]) || dateOrNull_(row[13]) || firstAt;
+  if (firstAt) stats.firstTestAt = earlierDate_(stats.firstTestAt, firstAt);
 
-    const attempts = Number(rows[i][8]);
-    if (Number.isFinite(attempts) && attempts > 0) stats.totalAttempts += attempts;
-
-    const firstAt = dateOrNull_(rows[i][12]);
-    const lastAt = dateOrNull_(rows[i][14]) || dateOrNull_(rows[i][13]) || firstAt;
-    if (firstAt) stats.firstTestAt = earlierDate_(stats.firstTestAt, firstAt);
-
-    if (lastAt) {
-      const wasLast = stats.lastTestAt;
-      stats.lastTestAt = laterDate_(stats.lastTestAt, lastAt);
-      if (!wasLast || (stats.lastTestAt && lastAt.getTime() >= stats.lastTestAt.getTime())) {
-        stats.lastTestType = normalizeTestType_(rows[i][6]);
-        stats.lastTestScore = Number.isFinite(score) ? score : "";
-      }
+  if (lastAt) {
+    const previousLast = dateOrNull_(stats.lastTestAt);
+    if (!previousLast || lastAt.getTime() >= previousLast.getTime()) {
+      stats.lastTestAt = lastAt;
+      stats.lastTestType = normalizeTestType_(row[6]);
+      stats.lastTestScore = Number.isFinite(score) ? score : "";
     }
   }
 
   return stats;
 }
+
+function buildStudentTestStatsFromRows_(rows, phone) {
+  const stats = emptyStudentTestStats_();
+  const targetPhone = normalizePhone_(phone);
+  if (!targetPhone || !rows) return stats;
+
+  for (let i = 0; i < rows.length; i++) {
+    if (normalizePhone_(rows[i][1]) !== targetPhone) continue;
+    accumulateStudentTestStatsRow_(stats, rows[i]);
+  }
+  return stats;
+}
+
+function applyCurrentTestAttemptToStats_(stats, book, lesson, testType, bestScore, ts) {
+  stats = stats || emptyStudentTestStats_();
+  const key = progressTestKey_(book, lesson, testType);
+  const n = Number(bestScore);
+  const previous = Number(stats.scores[key]);
+  if (Number.isFinite(n) && (!Number.isFinite(previous) || n > previous)) {
+    stats.scores[key] = n;
+  }
+
+  stats.totalAttempts = (Number(stats.totalAttempts) || 0) + 1;
+  stats.attemptsByKey[key] = (Number(stats.attemptsByKey[key]) || 0) + 1;
+  const when = dateOrNull_(ts) || new Date();
+  if (!stats.firstTestAt) stats.firstTestAt = when;
+  stats.lastTestAt = when;
+  stats.lastTestType = normalizeTestType_(testType);
+  stats.lastTestScore = Number.isFinite(n) ? n : "";
+  return stats;
+}
+
+function buildStudentTestStats_(ss, phone, forceRefresh) {
+  const targetPhone = normalizePhone_(phone);
+  if (!targetPhone) return emptyStudentTestStats_();
+
+  if (!forceRefresh) {
+    const cached = getCachedStudentTestStats_(ss, targetPhone);
+    if (cached) return cached;
+  }
+
+  const sh = ss.getSheetByName(TEST_RESULTS_SHEET_NAME);
+  if (!sh || sh.getLastRow() < 2) {
+    const empty = emptyStudentTestStats_();
+    putCachedStudentTestStats_(ss, targetPhone, empty);
+    return empty;
+  }
+
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 16).getValues();
+  const stats = buildStudentTestStatsFromRows_(rows, targetPhone);
+  putCachedStudentTestStats_(ss, targetPhone, stats);
+  return stats;
+}
+
 
 function hasProgressScore_(stats, book, lesson, testType) {
   const key = progressTestKey_(book, lesson, testType);
@@ -1644,7 +1871,7 @@ function updateStudentProgressSummary_(ss, identity, context) {
     };
   }
 
-  const stats = buildStudentTestStats_(ss, phone);
+  const stats = context.preloadedStats || buildStudentTestStats_(ss, phone, !!context.forceStatsRefresh);
   const snu = computeSnuProgress_(ss, phone, stats);
   const topikCollocation = computeTopikSequentialProgress_(stats, "collocation");
   const topikGrammar = computeTopikSequentialProgress_(stats, "grammar");
@@ -1778,6 +2005,7 @@ function rebuildStudentProgressSummary() {
   }
 
   const visited = {};
+  const statsByPhone = {};
   const sessions = ss.getSheetByName("Sessions");
   if (sessions && sessions.getLastRow() >= 2) {
     const rows = sessions.getRange(2, 1, sessions.getLastRow() - 1, 12).getValues();
@@ -1804,6 +2032,8 @@ function rebuildStudentProgressSummary() {
       const phone = normalizePhone_(rows[i][1]);
       if (!phone || !authByPhone[phone]) continue;
       if (!visited[phone]) visited[phone] = { firstLoginAt: null, lastLoginAt: null, klass: "" };
+      if (!statsByPhone[phone]) statsByPhone[phone] = emptyStudentTestStats_();
+      accumulateStudentTestStatsRow_(statsByPhone[phone], rows[i]);
       const firstAt = dateOrNull_(rows[i][12]);
       const lastAt = dateOrNull_(rows[i][14]) || dateOrNull_(rows[i][13]) || firstAt;
       if (!visited[phone].firstLoginAt && firstAt) visited[phone].firstLoginAt = firstAt;
@@ -1828,9 +2058,11 @@ function rebuildStudentProgressSummary() {
         lastLoginAt: v.lastLoginAt,
         klass: v.klass,
         isLogin: !!v.lastLoginAt,
-        skipDashboardRefresh: true
+        skipDashboardRefresh: true,
+        preloadedStats: statsByPhone[phone] || emptyStudentTestStats_()
       }
     );
+    if (statsByPhone[phone]) putCachedStudentTestStats_(ss, phone, statsByPhone[phone]);
     if (updated && !updated.skipped) count++;
   }
 
