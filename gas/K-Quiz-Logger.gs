@@ -513,6 +513,163 @@ function getTestMasteryStatus_(ss, phone, book, lesson, testType) {
 }
 
 
+// STEP29-2: 서울대 교재 선택 화면용 일괄 진도 조회.
+// 기존에는 과마다 vocab/grammar/mixed를 각각 mastery_status로 요청해서
+// 1A는 최대 24회, 2A는 최대 27회의 GAS 요청과 TestResults 반복 읽기가 발생했다.
+// 아래 함수들은 TestResults를 한 번만 읽은 stats를 재사용해 교재 전체 상태를 만든다.
+function masteryStatusFromStats_(stats, book, lesson, testType) {
+  const found = hasProgressScore_(stats, book, lesson, testType);
+  const bestScore = found ? getProgressScore_(stats, book, lesson, testType) : 0;
+  return {
+    found: found,
+    bestScore: bestScore,
+    status: found ? (bestScore >= TEST_PASS_SCORE ? "PASS" : "RETRY") : "NONE"
+  };
+}
+
+function lessonMasteryFromStats_(stats, book, lesson) {
+  const vocab = masteryStatusFromStats_(stats, book, lesson, "vocab");
+  const grammar = masteryStatusFromStats_(stats, book, lesson, "grammar");
+  const mixed = masteryStatusFromStats_(stats, book, lesson, "mixed");
+  const passed = [vocab, grammar, mixed].every(function(item) {
+    return item.status === "PASS" && Number(item.bestScore || 0) >= TEST_PASS_SCORE;
+  });
+  return {
+    ok: true,
+    status: passed ? "PASS" : "RETRY",
+    tests: { vocab: vocab, grammar: grammar, mixed: mixed }
+  };
+}
+
+function getLearningAccessProfileFast_(ss, phone, requestedBook) {
+  const sh = getLearningStartSheet_(ss);
+  const targetPhone = normalizePhone_(phone);
+  const targetBook = normalizeTestBook_(requestedBook);
+  let start = null;
+  let curriculumStart = null;
+  let developerDecision = null;
+
+  if (targetPhone && sh.getLastRow() >= 2) {
+    const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 8).getValues();
+    for (let i = 0; i < rows.length; i++) {
+      const rowPhone = normalizePhone_(rows[i][0]);
+      if (rowPhone !== targetPhone) continue;
+
+      const rawDeveloper = rows[i][7];
+      if (rawDeveloper !== "" && rawDeveloper != null) {
+        developerDecision = isEnabled_(rawDeveloper);
+      }
+
+      const rowBook = normalizeTestBook_(rows[i][2]);
+      const enabled = isEnabled_(rows[i][4]);
+      const startLesson = Number(String(rows[i][3] == null ? "" : rows[i][3]).trim());
+      if (!enabled || getSnuBookRank_(rowBook) < 0 || !Number.isFinite(startLesson) || startLesson <= 0) continue;
+
+      const candidate = {
+        found: true,
+        phone: rowPhone,
+        name: String(rows[i][1] == null ? "" : rows[i][1]).trim(),
+        book: rowBook,
+        startLesson: Math.floor(startLesson),
+        enabled: true,
+        note: String(rows[i][5] == null ? "" : rows[i][5]).trim(),
+        updatedAt: rows[i][6] || "",
+        row: i + 2
+      };
+
+      // 기존 함수와 동일하게 같은 학생의 활성 시작점이 여러 줄이면 마지막 행을 우선한다.
+      curriculumStart = candidate;
+      if (rowBook === targetBook) start = candidate;
+    }
+  }
+
+  const developer = developerDecision === true;
+  const requestedRank = getSnuBookRank_(targetBook);
+  const curriculumStartBook = curriculumStart ? normalizeTestBook_(curriculumStart.book) : "";
+  const curriculumStartRank = getSnuBookRank_(curriculumStartBook);
+  let bookRelation = "none";
+  if (requestedRank >= 0 && curriculumStartRank >= 0) {
+    if (requestedRank < curriculumStartRank) bookRelation = "lower";
+    else if (requestedRank === curriculumStartRank) bookRelation = "same";
+    else bookRelation = "higher";
+  }
+
+  return {
+    found: !!start,
+    startLesson: start ? start.startLesson : 0,
+    enabled: !!(start && start.enabled),
+    note: start ? start.note || "" : "",
+    source: start ? "teacher_override" : "none",
+    curriculumFound: !!curriculumStart,
+    curriculumStartBook: curriculumStartBook,
+    curriculumStartLesson: curriculumStart ? curriculumStart.startLesson : 0,
+    curriculumEnabled: !!(curriculumStart && curriculumStart.enabled),
+    curriculumNote: curriculumStart ? curriculumStart.note || "" : "",
+    bookRelation: bookRelation,
+    lowerBookAccess: bookRelation === "lower",
+    sameStartBook: bookRelation === "same",
+    higherBook: bookRelation === "higher",
+    isDeveloper: developer,
+    developerAccess: developer,
+    role: developer ? "developer" : "student"
+  };
+}
+
+function getSnuBookStatusSnapshot_(ss, phone, requestedBook) {
+  const book = normalizeTestBook_(requestedBook);
+  const rank = getSnuBookRank_(book);
+  const range = getSnuLessonRange_(book);
+  if (rank < 0 || !range) return { ok: false, error: "invalid_book" };
+
+  const access = getLearningAccessProfileFast_(ss, phone, book);
+  const lessons = {};
+  let previousGate = null;
+
+  // 시작점보다 낮은 복습 교재는 원래 전체 접근 허용이므로 TestResults를 읽을 필요조차 없다.
+  if (access.lowerBookAccess === true && access.isDeveloper !== true) {
+    for (let lesson = range[0]; lesson <= range[1]; lesson++) {
+      lessons[String(lesson)] = {
+        ok: true,
+        status: "RECOGNIZED",
+        tests: {
+          vocab: { found: false, bestScore: 0, status: "NONE" },
+          grammar: { found: false, bestScore: 0, status: "NONE" },
+          mixed: { found: false, bestScore: 0, status: "NONE" }
+        }
+      };
+    }
+  } else {
+    // 가장 큰 비용이었던 TestResults 전체 읽기를 이 요청에서 단 한 번 수행한다.
+    const stats = buildStudentTestStats_(ss, phone);
+    for (let lesson = range[0]; lesson <= range[1]; lesson++) {
+      lessons[String(lesson)] = lessonMasteryFromStats_(stats, book, lesson);
+    }
+
+    if (rank > 0) {
+      const previousBook = SNU_CURRICULUM_BOOKS[rank - 1];
+      const previousRange = getSnuLessonRange_(previousBook);
+      if (previousRange) {
+        const previousLesson = previousRange[1];
+        previousGate = {
+          book: previousBook,
+          lesson: previousLesson,
+          mastery: lessonMasteryFromStats_(stats, previousBook, previousLesson)
+        };
+      }
+    }
+  }
+
+  return Object.assign({
+    ok: true,
+    scope: "book_snapshot",
+    book: book,
+    passScore: TEST_PASS_SCORE,
+    lessons: lessons,
+    previousGate: previousGate
+  }, access);
+}
+
+
 const LEARNING_START_SHEET_NAME = "학습시작점";
 const LEARNING_START_HEADERS = [
   "phone", "name", "book", "startLesson", "enabled", "note", "updatedAt", "developerAccess"
@@ -1277,6 +1434,170 @@ function removeExcludedStudentProgressRows_(ss) {
   return rowsToDelete.length;
 }
 
+// STEP29-3: 로그인만 발생했을 때는 시험 전체(TestResults)를 다시 읽지 않는다.
+// 기존 진도행의 최근접속/최근활동만 갱신하고, 시작점이 바뀌었거나 첫 접속인 경우에만
+// 기존의 전체 진도 계산으로 안전하게 되돌아간다.
+function updateStudentProgressDashboardLoginFields_(ss, name, currentBook, lastLoginAt) {
+  const b = normalizeTestBook_(currentBook);
+  const targetSheetName = b === "SNU-1A"
+    ? STUDENT_PROGRESS_DASHBOARD_1A
+    : ((b === "SNU-1B" || b === "SNU-2A") ? STUDENT_PROGRESS_DASHBOARD_1B2A : "");
+  if (!targetSheetName) return { ok: true, skipped: true, reason: "book_not_dashboard_target" };
+
+  const sh = ss.getSheetByName(targetSheetName);
+  if (!sh || sh.getLastRow() < 4) return { ok: true, skipped: true, reason: "dashboard_missing" };
+
+  const count = Math.max(sh.getLastRow() - 3, 0);
+  if (count <= 0) return { ok: true, skipped: true, reason: "dashboard_empty" };
+
+  const targetName = String(name || "").trim();
+  const values = sh.getRange(4, 1, count, 2).getValues();
+  let updated = 0;
+  for (let i = 0; i < values.length; i++) {
+    const rowName = String(values[i][0] == null ? "" : values[i][0]).trim();
+    const rowBook = normalizeTestBook_(values[i][1]);
+    if (rowName !== targetName || rowBook !== b) continue;
+
+    const row = i + 4;
+    sh.getRange(row, 7).setValue(lastLoginAt).setNumberFormat("yyyy-MM-dd HH:mm");
+    sh.getRange(row, 8).setFormula(
+      '=IF(G' + row + '="","-",IF(TODAY()<=INT(G' + row + '),"오늘",(TODAY()-INT(G' + row + '))&"일 전"))'
+    );
+    updated++;
+  }
+
+  return { ok: true, updated: updated };
+}
+
+function updateStudentProgressLoginOnly_(ss, identity, context) {
+  context = context || {};
+  const phone = normalizePhone_(identity && identity.phone);
+  if (!phone) return null;
+
+  const now = dateOrNull_(context.ts) || new Date();
+  const name = String(
+    (identity && identity.studentName) ||
+    (identity && identity.name) ||
+    "학생"
+  ).trim() || "학생";
+
+  const developerPhoneMap = getStudentProgressDeveloperPhoneMap_(ss);
+  if (isStudentProgressExcluded_(phone, name, developerPhoneMap)) {
+    const progressSh = ss.getSheetByName(STUDENT_PROGRESS_SHEET_NAME);
+    let removed = false;
+    if (progressSh) {
+      const lock = LockService.getScriptLock();
+      lock.waitLock(10000);
+      try {
+        const excludedRow = findStudentProgressRow_(progressSh, phone);
+        if (excludedRow > 0) {
+          progressSh.deleteRow(excludedRow);
+          sortStudentProgressRows_(progressSh);
+          removed = true;
+        }
+      } finally {
+        try { lock.releaseLock(); } catch (err) {}
+      }
+    }
+    if (removed) {
+      try { refreshStudentProgressDashboards_(ss); } catch (err) {
+        console.error("Student progress dashboard exclusion refresh failed", err);
+      }
+    }
+    return {
+      sheetName: STUDENT_PROGRESS_SHEET_NAME,
+      phone: phone,
+      name: name,
+      skipped: true,
+      reason: "excluded_developer"
+    };
+  }
+
+  const sh = getStudentProgressSheet_(ss);
+  let row = findStudentProgressRow_(sh, phone);
+
+  // 첫 접속 학생은 기존 전체 계산을 한 번 수행해 현재 진도를 정확하게 만든다.
+  if (row < 0) {
+    return updateStudentProgressSummary_(ss, identity, {
+      ts: now,
+      klass: String(context.klass || ""),
+      isLogin: true,
+      skipDashboardRefresh: false
+    });
+  }
+
+  let existing = sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).getValues()[0];
+
+  // 교사가 학습시작점을 바꿨다면 로그인 시에도 진도현황이 즉시 따라가야 하므로
+  // 이 경우에만 전체 진도 계산으로 되돌아간다.
+  const configured = getLearningCurriculumStartPoint_(ss, phone);
+  const configuredStart = normalizeSnuStartPosition_(
+    configured.found ? configured.book : "SNU-1A",
+    configured.found ? configured.startLesson : 1
+  );
+  const existingStartBook = normalizeTestBook_(existing[8]);
+  const existingStartLesson = Number(existing[9]);
+  if (
+    existingStartBook !== configuredStart.book ||
+    !Number.isFinite(existingStartLesson) ||
+    existingStartLesson !== configuredStart.lesson
+  ) {
+    return updateStudentProgressSummary_(ss, identity, {
+      ts: now,
+      klass: String(context.klass || ""),
+      isLogin: true,
+      skipDashboardRefresh: false
+    });
+  }
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(10000);
+  try {
+    // 정렬 등으로 행 위치가 바뀌었을 수 있으므로 잠금 후 다시 찾는다.
+    row = findStudentProgressRow_(sh, phone);
+    if (row < 0) {
+      // 아주 드문 동시 수정 상황. 잠금을 해제한 뒤 전체 계산하도록 표식만 반환한다.
+      return { fallbackRequired: true };
+    }
+
+    existing = sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).getValues()[0];
+    const klass = String(context.klass || existing[4] || "").trim();
+    const firstLoginAt = dateOrNull_(existing[5]) || now;
+
+    existing[2] = name;        // C 학생이름
+    existing[3] = "TRUE";     // D 사용여부: 인증을 통과한 요청이므로 TRUE
+    existing[4] = klass;       // E 반
+    existing[5] = firstLoginAt;// F 최초접속
+    existing[6] = now;         // G 최근접속
+    existing[20] = now;        // U 최근활동
+
+    sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues([existing]);
+    sortStudentProgressRows_(sh);
+    row = findStudentProgressRow_(sh, phone);
+  } finally {
+    try { lock.releaseLock(); } catch (err) {}
+  }
+
+  // 전체 그래프 재작성 대신, 그래프 시트의 최근접속/접속경과 두 칸만 갱신한다.
+  try {
+    updateStudentProgressDashboardLoginFields_(ss, name, existing[10], now);
+  } catch (err) {
+    console.error("Student progress dashboard login-only update failed", err);
+  }
+
+  return {
+    sheetName: sh.getName(),
+    row: row,
+    phone: phone,
+    name: name,
+    currentBook: existing[10],
+    currentLesson: existing[11],
+    status: existing[16],
+    nextStep: existing[17],
+    lightweight: true
+  };
+}
+
 function updateStudentProgressSummary_(ss, identity, context) {
   context = context || {};
   const phone = normalizePhone_(identity && identity.phone);
@@ -1534,6 +1855,7 @@ function rebuildStudentProgressSummary() {
 
 // -----------------------------------------------------------------------------
 // STEP27 FIX2 - 학생 진도 그래프 대시보드
+// STEP29-3: 로그인 시 전체 대시보드 재작성 대신 최근접속 두 칸만 경량 갱신
 // -----------------------------------------------------------------------------
 // 수정사항:
 // 1) Google Sheets에서 빈 대형 차트가 나타나는 문제를 피하기 위해 EmbeddedChart를 사용하지 않는다.
@@ -1560,32 +1882,52 @@ const MANAGEMENT_SHEET_FRONT_ORDER = [
 function ensureManagementSheetsAtFront_(ss) {
   if (!ss) return { ok: false, sheets: [] };
 
+  // STEP29-3: 이미 원하는 위치라면 setActiveSheet/moveActiveSheet를 전혀 호출하지 않는다.
+  // 로그인/시험이 많아질수록 불필요한 시트 이동 작업이 누적되는 것을 막는다.
+  let position = 1;
+  let needsMove = false;
+  for (let i = 0; i < MANAGEMENT_SHEET_FRONT_ORDER.length; i++) {
+    const sh = ss.getSheetByName(MANAGEMENT_SHEET_FRONT_ORDER[i]);
+    if (!sh) continue;
+    if (sh.getIndex() !== position) {
+      needsMove = true;
+      break;
+    }
+    position++;
+  }
+
+  if (!needsMove) {
+    return { ok: true, sheets: [], skipped: true, reason: "already_in_front" };
+  }
+
   let originalActive = null;
   try { originalActive = ss.getActiveSheet(); } catch (err) {}
 
   const moved = [];
-  let position = 1;
+  position = 1;
   for (let i = 0; i < MANAGEMENT_SHEET_FRONT_ORDER.length; i++) {
     const name = MANAGEMENT_SHEET_FRONT_ORDER[i];
     const sh = ss.getSheetByName(name);
     if (!sh) continue;
 
     try {
-      ss.setActiveSheet(sh);
-      ss.moveActiveSheet(position);
-      moved.push(name);
+      if (sh.getIndex() !== position) {
+        ss.setActiveSheet(sh);
+        ss.moveActiveSheet(position);
+        moved.push(name);
+      }
       position++;
     } catch (err) {
       console.error("Management sheet reorder failed: " + name, err);
     }
   }
 
-  // 사용자가 보고 있던 시트는 가능한 경우 다시 활성화한다.
-  if (originalActive) {
+  // 실제로 이동한 경우에만 사용자가 보고 있던 시트를 복원한다.
+  if (originalActive && moved.length > 0) {
     try { ss.setActiveSheet(originalActive); } catch (err) {}
   }
 
-  return { ok: true, sheets: moved };
+  return { ok: true, sheets: moved, skipped: moved.length === 0 };
 }
 
 // Apps Script 편집기에서 한 번 직접 실행하면 현재 시트 순서를 즉시 정리할 수 있다.
@@ -1899,6 +2241,26 @@ function jsonpOutput_(callback, obj) {
     .setMimeType(ContentService.MimeType.JAVASCRIPT);
 }
 
+// STEP29-3: Sessions 전체 12개 열을 매 로그인마다 읽지 않고 A열의 sessionId만 찾는다.
+function findSessionRowById_(sess, sessionId) {
+  const target = String(sessionId || "").trim();
+  if (!sess || !target || sess.getLastRow() < 2) return -1;
+  try {
+    const found = sess.getRange(2, 1, sess.getLastRow() - 1, 1)
+      .createTextFinder(target)
+      .matchEntireCell(true)
+      .findNext();
+    return found ? found.getRow() : -1;
+  } catch (err) {
+    console.error("Session id lookup failed", err);
+    return -1;
+  }
+}
+
+function sessionStartCacheKey_(sessionId) {
+  return "session_started_" + String(sessionId || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 180);
+}
+
 function doGet(e) {
   const p = (e && e.parameter) ? e.parameter : {};
   const ss = SpreadsheetApp.getActive();
@@ -1929,22 +2291,17 @@ function doGet(e) {
     const auth = checkAuthorizedPhone_(ss, phone);
     if (!auth.ok) return jsonpOutput_(callback, auth);
 
+    // STEP29-1: 인증 요청은 전화번호 확인 + 토큰 발급까지만 처리한다.
+    // 기존에는 여기서 전체 TestResults를 다시 읽고 진도현황/그래프까지 갱신한 뒤,
+    // 곧바로 이어지는 session_start에서도 같은 진도 갱신을 다시 실행했다.
+    // 로그인 체감 속도와 동시 접속 부하를 줄이기 위해 진도 갱신은 session_start 한 번으로만 수행한다.
     const token = issueAuthToken_(phone, name, deviceId);
-    let progressSummary = null;
-    try {
-      progressSummary = updateStudentProgressSummary_(
-        ss,
-        { phone: auth.phone || phone, studentName: auth.studentName || name },
-        { ts: new Date(), klass: String(p.klass || ""), isLogin: true }
-      );
-    } catch (err) {
-      console.error("Progress summary login update failed", err);
-    }
     return jsonpOutput_(callback, {
       ok: true,
       token: token,
       registeredName: auth.studentName || "",
-      progressSummary: progressSummary
+      progressSummary: null,
+      progressDeferred: true
     });
   }
 
@@ -2011,6 +2368,21 @@ function doGet(e) {
     });
   }
 
+
+  // STEP29-2: 서울대 한 교재의 전체 과 진도 + 시작점 + 개발자 권한을 한 번에 조회한다.
+  // snu/index.html의 교재 선택 화면 전용이며 기존 mastery_status/learning_start API는 호환성을 위해 유지한다.
+  if (action === "snu_book_status") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+
+    const phone = result.phone || (result.payload && result.payload.phone) || "";
+    const snapshot = getSnuBookStatusSnapshot_(ss, phone, p.book || "");
+    if (!snapshot.ok) return jsonpOutput_(callback, snapshot);
+
+    snapshot.phone = normalizePhone_(phone);
+    snapshot.name = result.studentName || (result.payload && result.payload.name) || "";
+    return jsonpOutput_(callback, snapshot);
+  }
 
   // 6) 교사가 지정한 학생별/교재별 시작 과 조회
   if (action === "learning_start") {
@@ -2102,36 +2474,38 @@ function doGet(e) {
     const lock = LockService.getScriptLock();
     lock.tryLock(5000);
     try {
-      const lastRow = sess.getLastRow();
-      const values = lastRow ? sess.getRange(1, 1, lastRow, 12).getValues() : [];
-      let rowIndex = -1;
+      if (action === "session_start") {
+        const cache = CacheService.getScriptCache();
+        const cacheKey = sessionStartCacheKey_(sessionId);
+        const recentlyStarted = cacheKey ? cache.get(cacheKey) : null;
 
-      for (let i = 1; i < values.length; i++) {
-        if (String(values[i][0]) === sessionId) {
-          rowIndex = i + 1;
-          break;
+        // 재시도 요청이면 같은 세션을 중복 추가하지 않는다.
+        // 캐시가 비어 있어도 A열만 TextFinder로 확인하므로 Sessions 전체 12열을 읽지 않는다.
+        if (!recentlyStarted) {
+          const rowIndex = findSessionRowById_(sess, sessionId);
+          if (rowIndex === -1) {
+            const loginAt = p.loginAt ? new Date(p.loginAt) : ts;
+            sess.appendRow([
+              sessionId,
+              p.name || "",
+              p.klass || "",
+              p.token || "",
+              p.deviceId || "",
+              p.lang || "",
+              loginAt,
+              "",
+              "",
+              "login",
+              p.ua || "",
+              ts
+            ]);
+          }
+          if (cacheKey) cache.put(cacheKey, "1", 21600); // 6시간
         }
       }
 
-      if (action === "session_start" && rowIndex === -1) {
-        const loginAt = p.loginAt ? new Date(p.loginAt) : ts;
-        sess.appendRow([
-          sessionId,
-          p.name || "",
-          p.klass || "",
-          p.token || "",
-          p.deviceId || "",
-          p.lang || "",
-          loginAt,
-          "",
-          "",
-          "login",
-          p.ua || "",
-          ts
-        ]);
-      }
-
       if (action === "session_end") {
+        const rowIndex = findSessionRowById_(sess, sessionId);
         const loginAt = p.loginAt ? new Date(p.loginAt) : ts;
         const logoutAt = p.logoutAt ? new Date(p.logoutAt) : ts;
         const durSec = Math.max(0, Math.round((logoutAt.getTime() - loginAt.getTime()) / 1000));
@@ -2153,17 +2527,20 @@ function doGet(e) {
             ts
           ]);
         } else {
-          sess.getRange(rowIndex, 2).setValue(p.name || "");
-          sess.getRange(rowIndex, 3).setValue(p.klass || "");
-          sess.getRange(rowIndex, 4).setValue(p.token || "");
-          sess.getRange(rowIndex, 5).setValue(p.deviceId || "");
-          sess.getRange(rowIndex, 6).setValue(p.lang || "");
-          sess.getRange(rowIndex, 7).setValue(loginAt);
-          sess.getRange(rowIndex, 8).setValue(logoutAt);
-          sess.getRange(rowIndex, 9).setValue(durSec);
-          sess.getRange(rowIndex, 10).setValue(reason);
-          sess.getRange(rowIndex, 11).setValue(p.ua || "");
-          sess.getRange(rowIndex, 12).setValue(ts);
+          // 11개 셀을 하나씩 쓰지 않고 B:L을 한 번에 갱신한다.
+          sess.getRange(rowIndex, 2, 1, 11).setValues([[
+            p.name || "",
+            p.klass || "",
+            p.token || "",
+            p.deviceId || "",
+            p.lang || "",
+            loginAt,
+            logoutAt,
+            durSec,
+            reason,
+            p.ua || "",
+            ts
+          ]]);
         }
       }
     } finally {
@@ -2174,13 +2551,22 @@ function doGet(e) {
   let progressSummary = null;
   if (action === "session_start" && verifiedIdentity) {
     try {
-      progressSummary = updateStudentProgressSummary_(
+      progressSummary = updateStudentProgressLoginOnly_(
         ss,
         verifiedIdentity,
         { ts: ts, klass: String(p.klass || ""), isLogin: true }
       );
+
+      // 극히 드문 동시 수정으로 행을 다시 찾지 못한 경우에만 전체 계산으로 복구한다.
+      if (progressSummary && progressSummary.fallbackRequired) {
+        progressSummary = updateStudentProgressSummary_(
+          ss,
+          verifiedIdentity,
+          { ts: ts, klass: String(p.klass || ""), isLogin: true }
+        );
+      }
     } catch (err) {
-      console.error("Progress summary session update failed", err);
+      console.error("Progress summary lightweight session update failed", err);
     }
   }
 
