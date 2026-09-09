@@ -502,7 +502,7 @@
 
   async function sendSessionStart(session){
     const payload = {
-      action: "session_start",
+      action: "session_start_fast",
       sessionId: session.sessionId,
       loginAt: session.loginAt,
       token: session.token,
@@ -658,16 +658,28 @@
       $btn.disabled = true;
 
       let auth;
+      const authPayload = {
+        action: "auth",
+        phone,
+        name,
+        deviceId: getDeviceId()
+      };
+
+      // STEP29-1 FIX1: Google Apps Script가 콜드 스타트/일시적 지연으로
+      // 8초 안에 응답하지 못해 정상 학생이 인증 오류로 보이는 현상을 완화한다.
+      // 첫 요청은 빠르게 기다리고, timeout/network error일 때만 한 번 자동 재시도한다.
       try{
-        auth = await jsonp(SCRIPT_URL, {
-          action: "auth",
-          phone,
-          name,
-          deviceId: getDeviceId()
-        }, 8000);
-      }catch(e){
-        $btn.disabled = false;
-        return showErr(t("authError"));
+        auth = await jsonp(SCRIPT_URL, authPayload, 10000);
+      }catch(firstErr){
+        console.warn("Auth first attempt delayed/failed; retrying once.", firstErr);
+        try{
+          await new Promise(resolve => setTimeout(resolve, 700));
+          auth = await jsonp(SCRIPT_URL, authPayload, 18000);
+        }catch(secondErr){
+          console.warn("Auth retry failed.", secondErr);
+          $btn.disabled = false;
+          return showErr(t("authError"));
+        }
       }
 
       if (!auth || !auth.ok || !auth.token){
@@ -692,16 +704,16 @@
       };
       writeSession(session);
 
-      // STEP29-1: 인증 성공 직후 프로그램 선택 화면을 먼저 보여준다.
-      // 세션 기록/로그/진도현황 갱신은 화면 표시를 막지 않고 뒤에서 순서대로 처리한다.
+      // STEP29-6: 인증 성공 직후 프로그램 선택 화면을 먼저 보여주는 동작은 유지한다.
+      // 세션 시작 + LOGIN 로그 + 최근접속 갱신은 session_start_fast 한 번의 GAS 요청으로 묶어
+      // 기존 두 번의 백그라운드 요청을 한 번으로 줄인다.
       renderDashboard();
 
       setTimeout(() => {
         (async () => {
           const sessionOk = await sendSessionStart(session);
-          const logOk = await sendLoginLog(session);
-          if (!sessionOk || !logOk) {
-            console.warn("Background login record was not fully completed.", { sessionOk, logOk });
+          if (!sessionOk) {
+            console.warn("Background session/login record was not fully completed.", { sessionOk });
           }
         })();
       }, 0);
