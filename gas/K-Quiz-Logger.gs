@@ -109,6 +109,13 @@ const STUDENT_TEST_STATS_CACHE_VERSION = "2026-09-10-v1";
 const STUDENT_TEST_STATS_CACHE_TTL_SEC = 60 * 60 * 6;
 const TEST_RESULT_ROW_CACHE_TTL_SEC = 60 * 60 * 6;
 
+// STEP29-5: 학생별 개별 결과 시트도 같은 시험 재응시 때 전체 행을 매번 찾지 않는다.
+// 전화번호 -> 학생 시트명, 날짜/교재/과/유형 -> 정확한 행 번호를 캐시에 보관한다.
+// 캐시는 성능 보조용이며 만료/축출/수동 시트 변경 시 기존 검색 방식으로 자동 복구한다.
+const STUDENT_RESULT_SHEET_CACHE_VERSION = "2026-09-10-v1";
+const STUDENT_RESULT_SHEET_CACHE_TTL_SEC = 60 * 60 * 6;
+const STUDENT_RESULT_ROW_CACHE_TTL_SEC = 60 * 60 * 6;
+
 function shortSpreadsheetCacheId_(ss) {
   const id = String((ss && ss.getId && ss.getId()) || "default");
   return id.slice(-16);
@@ -221,6 +228,76 @@ function getCachedTestResultRow_(ss, dateKey, phone, book, lesson, testType) {
   try {
     const raw = CacheService.getScriptCache().get(
       testResultRowCacheKey_(ss, dateKey, phone, book, lesson, testType)
+    );
+    const row = Number(raw);
+    return Number.isFinite(row) && row >= 2 ? Math.floor(row) : -1;
+  } catch (err) {
+    return -1;
+  }
+}
+
+function studentResultSheetCacheKey_(ss, phone) {
+  return [
+    "s29_student_sheet",
+    STUDENT_RESULT_SHEET_CACHE_VERSION,
+    shortSpreadsheetCacheId_(ss),
+    normalizePhone_(phone)
+  ].join("_");
+}
+
+function studentResultRowCacheKey_(ss, phone, dateKey, book, lesson, testType) {
+  return [
+    "s29_student_row",
+    shortSpreadsheetCacheId_(ss),
+    normalizePhone_(phone),
+    String(dateKey || "").replace(/[^0-9]/g, ""),
+    normalizeTestBook_(book),
+    normalizeTestLesson_(lesson),
+    normalizeTestType_(testType)
+  ].join("_");
+}
+
+function cacheStudentResultSheetName_(ss, phone, sheetName) {
+  const targetPhone = normalizePhone_(phone);
+  const name = String(sheetName || "").trim();
+  if (!targetPhone || !name) return;
+  try {
+    CacheService.getScriptCache().put(
+      studentResultSheetCacheKey_(ss, targetPhone),
+      name,
+      STUDENT_RESULT_SHEET_CACHE_TTL_SEC
+    );
+  } catch (err) {}
+}
+
+function getCachedStudentResultSheet_(ss, phone) {
+  const targetPhone = normalizePhone_(phone);
+  if (!targetPhone) return null;
+  try {
+    const name = CacheService.getScriptCache().get(studentResultSheetCacheKey_(ss, targetPhone));
+    if (!name) return null;
+    return ss.getSheetByName(name) || null;
+  } catch (err) {
+    return null;
+  }
+}
+
+function cacheStudentResultRow_(ss, phone, dateKey, book, lesson, testType, sheetRow) {
+  const row = Number(sheetRow);
+  if (!Number.isFinite(row) || row < 2) return;
+  try {
+    CacheService.getScriptCache().put(
+      studentResultRowCacheKey_(ss, phone, dateKey, book, lesson, testType),
+      String(Math.floor(row)),
+      STUDENT_RESULT_ROW_CACHE_TTL_SEC
+    );
+  } catch (err) {}
+}
+
+function getCachedStudentResultRow_(ss, phone, dateKey, book, lesson, testType) {
+  try {
+    const raw = CacheService.getScriptCache().get(
+      studentResultRowCacheKey_(ss, phone, dateKey, book, lesson, testType)
     );
     const row = Number(raw);
     return Number.isFinite(row) && row >= 2 ? Math.floor(row) : -1;
@@ -524,6 +601,12 @@ function getStudentResultSheet_(ss, studentName, phone) {
   ];
 
   const normalizedPhone = normalizePhone_(phone);
+
+  // STEP29-5: 같은 학생의 반복 응시는 캐시된 시트명을 먼저 사용한다.
+  // 수동으로 시트를 이름 변경/삭제했으면 캐시된 이름이 열리지 않으므로 기존 탐색으로 자동 복구한다.
+  const cachedSheet = getCachedStudentResultSheet_(ss, normalizedPhone);
+  if (cachedSheet) return cachedSheet;
+
   const base = sanitizeStudentSheetBase_(studentName);
   let sheetName = base;
   let sh = ss.getSheetByName(sheetName);
@@ -541,12 +624,13 @@ function getStudentResultSheet_(ss, studentName, phone) {
   if (!sh) sh = ss.insertSheet(sheetName);
 
   if (sh.getLastRow() === 0) {
-    sh.appendRow(headers);
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]);
     sh.setFrozenRows(1);
     sh.getRange(1, 1, 1, headers.length).setFontWeight("bold");
     sh.autoResizeColumns(1, headers.length);
   }
 
+  cacheStudentResultSheetName_(ss, normalizedPhone, sh.getName());
   return sh;
 }
 
@@ -569,32 +653,52 @@ function updateStudentResultSheet_(ss, p, verifiedIdentity, ts, testResult) {
   const testType = normalizeTestType_(p.testType);
   const attemptsToday = Number(testResult.attemptsToday) || 1;
   const status = String(testResult.status || (bestScore >= TEST_PASS_SCORE ? "PASS" : "RETRY"));
+  const wantedKey = [
+    dateKey,
+    normalizeTestBook_(book),
+    normalizeTestLesson_(lesson),
+    testType
+  ].join("|");
 
   const sh = getStudentResultSheet_(ss, studentName, phone);
   const lock = LockService.getScriptLock();
   lock.waitLock(10000);
   try {
     const lastRow = sh.getLastRow();
-    const rows = lastRow > 1 ? sh.getRange(2, 1, lastRow - 1, 10).getValues() : [];
-    const shownRows = lastRow > 1 ? sh.getRange(2, 1, lastRow - 1, 10).getDisplayValues() : [];
-    const wantedKey = [
-      dateKey,
-      normalizeTestBook_(book),
-      normalizeTestLesson_(lesson),
-      testType
-    ].join("|");
-
     let targetRow = -1;
-    for (let i = 0; i < rows.length; i++) {
+    let optimizedRowLookup = false;
+
+    // 같은 학생이 같은 날 같은 시험을 재응시하면 캐시된 한 행만 읽는다.
+    const cachedRow = getCachedStudentResultRow_(ss, phone, dateKey, book, lesson, testType);
+    if (cachedRow >= 2 && cachedRow <= lastRow) {
+      const row = sh.getRange(cachedRow, 1, 1, 10).getValues()[0];
       const rowKey = [
-        normalizeTestDateKey_(ss, rows[i][0], shownRows[i][0]),
-        normalizeTestBook_(rows[i][3]),
-        normalizeTestLesson_(rows[i][4]),
-        normalizeTestType_(rows[i][5])
+        normalizeTestDateKey_(ss, row[0], ""),
+        normalizeTestBook_(row[3]),
+        normalizeTestLesson_(row[4]),
+        normalizeTestType_(row[5])
       ].join("|");
-      if (rowKey === wantedKey) {
-        targetRow = i + 2;
-        break;
+      if (rowKey === wantedKey && normalizePhone_(row[1]) === phone) {
+        targetRow = cachedRow;
+        optimizedRowLookup = true;
+      }
+    }
+
+    // 첫 응시, 캐시 만료, 행 이동 때에만 학생 시트 전체를 한 번 검색한다.
+    if (targetRow === -1 && lastRow > 1) {
+      const rows = sh.getRange(2, 1, lastRow - 1, 10).getValues();
+      const shownRows = sh.getRange(2, 1, lastRow - 1, 10).getDisplayValues();
+      for (let i = 0; i < rows.length; i++) {
+        const rowKey = [
+          normalizeTestDateKey_(ss, rows[i][0], shownRows[i][0]),
+          normalizeTestBook_(rows[i][3]),
+          normalizeTestLesson_(rows[i][4]),
+          normalizeTestType_(rows[i][5])
+        ].join("|");
+        if (rowKey === wantedKey && normalizePhone_(rows[i][1]) === phone) {
+          targetRow = i + 2;
+          break;
+        }
       }
     }
 
@@ -612,18 +716,22 @@ function updateStudentResultSheet_(ss, p, verifiedIdentity, ts, testResult) {
     ]];
 
     if (targetRow === -1) {
-      sh.getRange(sh.getLastRow() + 1, 1, 1, 10).setValues(rowValues);
-      targetRow = sh.getLastRow();
+      targetRow = sh.getLastRow() + 1;
+      sh.getRange(targetRow, 1, 1, 10).setValues(rowValues);
     } else {
       sh.getRange(targetRow, 1, 1, 10).setValues(rowValues);
     }
+
+    cacheStudentResultSheetName_(ss, phone, sh.getName());
+    cacheStudentResultRow_(ss, phone, dateKey, book, lesson, testType, targetRow);
 
     return {
       sheetName: sh.getName(),
       row: targetRow,
       bestScore: bestScore,
       attemptsToday: attemptsToday,
-      status: status
+      status: status,
+      optimizedRowLookup: optimizedRowLookup
     };
   } finally {
     try { lock.releaseLock(); } catch (err) {}
