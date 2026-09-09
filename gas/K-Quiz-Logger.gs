@@ -2050,6 +2050,17 @@ function updateStudentProgressSummary_(ss, identity, context) {
       stats.totalAttempts
     ]];
 
+    // STEP29-6: 시험 결과가 들어올 때마다 진도현황 전체를 정렬하고 그래프 두 시트를
+    // 통째로 다시 쓰지 않는다. 최근접속 정렬 기준은 시험으로 바뀌지 않으므로,
+    // 로그인/신규 학생/이름 변경 때만 정렬한다. 그래프도 실제 진행 위치가 바뀐 경우만 갱신한다.
+    const wasNewProgressRow = row < 0;
+    const previousName = existing ? String(existing[2] == null ? "" : existing[2]).trim() : "";
+    const previousEnabled = existing ? isEnabled_(existing[3]) : false;
+    const previousBook = existing ? normalizeTestBook_(existing[10]) : "";
+    const previousLesson = existing ? String(existing[11] == null ? "" : existing[11]).trim() : "";
+    const previousPassSummary = existing ? String(existing[12] == null ? "" : existing[12]).trim() : "";
+    const nextEnabled = !!(authInfo.found && authInfo.enabled);
+
     if (row < 0) {
       row = sh.getLastRow() + 1;
       sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues(values);
@@ -2057,15 +2068,34 @@ function updateStudentProgressSummary_(ss, identity, context) {
       sh.getRange(row, 1, 1, STUDENT_PROGRESS_HEADERS.length).setValues(values);
     }
 
-    // 학생이 추가/갱신될 때마다 최근접속 기준 정렬과 순번을 유지한다.
-    sortStudentProgressRows_(sh);
-    row = findStudentProgressRow_(sh, phone);
+    const needsProgressSort = !!context.isLogin || wasNewProgressRow || previousName !== name;
+    if (needsProgressSort) {
+      sortStudentProgressRows_(sh);
+      row = findStudentProgressRow_(sh, phone);
+    } else {
+      // STEP29-6 FIX1: 시험 결과 갱신은 최근접속 순서를 바꾸지 않으므로 전체 정렬을 생략한다.
+      // 다만 위의 setValues()가 H열(접속경과)의 기존 수식을 빈칸으로 덮어쓰므로,
+      // 해당 학생의 H셀 하나만 즉시 복원한다. 전체 시트 재정렬/재수식은 하지 않는다.
+      sh.getRange(row, 8).setFormula(
+        '=IF(G' + row + '=\"\",\"-\",IF(TODAY()<=INT(G' + row + '),\"오늘\",(TODAY()-INT(G' + row + '))&\"일 전\"))'
+      );
+    }
 
-    // STEP27: 대시보드가 만들어진 뒤에는 로그인/시험 결과가 바뀔 때 자동으로 갱신한다.
-    // 전체 재구성(rebuild) 중에는 학생마다 반복 갱신하지 않고 마지막에 한 번만 갱신한다.
-    if (!context.skipDashboardRefresh) {
+    const dashboardProgressChanged =
+      wasNewProgressRow ||
+      previousName !== name ||
+      previousEnabled !== nextEnabled ||
+      previousBook !== normalizeTestBook_(snu.currentBook) ||
+      previousLesson !== String(snu.currentLesson == null ? "" : snu.currentLesson).trim() ||
+      previousPassSummary !== String(snu.passSummary == null ? "" : snu.passSummary).trim();
+
+    // 점수만 바뀌고 현재 과/통과현황이 그대로라면 진행그래프의 값도 그대로이므로
+    // 두 그래프 시트 전체를 다시 쓰지 않는다. 90점 통과 등으로 실제 진도가 변할 때만 갱신한다.
+    let dashboardRefreshed = false;
+    if (!context.skipDashboardRefresh && (dashboardProgressChanged || context.forceDashboardRefresh)) {
       try {
         refreshStudentProgressDashboards_(ss);
+        dashboardRefreshed = true;
       } catch (err) {
         console.error("Student progress dashboard refresh failed", err);
       }
@@ -2079,7 +2109,9 @@ function updateStudentProgressSummary_(ss, identity, context) {
       currentBook: snu.currentBook,
       currentLesson: snu.currentLesson,
       status: snu.status,
-      nextStep: snu.nextStep
+      nextStep: snu.nextStep,
+      dashboardRefreshed: dashboardRefreshed,
+      optimizedWrites: true
     };
   } finally {
     try { lock.releaseLock(); } catch (err) {}
@@ -2601,6 +2633,83 @@ function sessionStartCacheKey_(sessionId) {
   return "session_started_" + String(sessionId || "").replace(/[^A-Za-z0-9_-]/g, "").slice(0, 180);
 }
 
+// STEP29-6: 새 프런트엔드는 세션 시작과 LOGIN 로그를 한 번의 GAS 요청으로 처리한다.
+// 기존 session_start API는 그대로 남겨 이전 GitHub 페이지와도 호환된다.
+const FAST_SESSION_START_ACTION = "session_start_fast";
+
+function isSessionStartAction_(action) {
+  const a = String(action || "").trim().toLowerCase();
+  return a === "session_start" || a === FAST_SESSION_START_ACTION;
+}
+
+function makeGeneralLogRow_(ts, p, overrides) {
+  overrides = overrides || {};
+  function pick_(key, fallback) {
+    return Object.prototype.hasOwnProperty.call(overrides, key) ? overrides[key] : fallback;
+  }
+  const extraObject = Object.prototype.hasOwnProperty.call(overrides, "extraObject")
+    ? overrides.extraObject
+    : p;
+  return [
+    ts,
+    pick_("action", p.action || ""),
+    pick_("name", p.name || ""),
+    pick_("klass", p.klass || ""),
+    pick_("token", p.token || ""),
+    pick_("deviceId", p.deviceId || ""),
+    pick_("book", p.book || ""),
+    pick_("lesson", p.lesson || ""),
+    pick_("score", p.score || ""),
+    pick_("attempts", p.attempts || ""),
+    pick_("ua", p.ua || ""),
+    pick_("lang", p.lang || ""),
+    JSON.stringify(extraObject || {})
+  ];
+}
+
+function appendGeneralLogRows_(sh, rows) {
+  if (!sh || !rows || rows.length === 0) return 0;
+  const startRow = sh.getLastRow() + 1;
+  sh.getRange(startRow, 1, rows.length, 13).setValues(rows);
+  return rows.length;
+}
+
+function makeFastLoginLogRows_(ts, p) {
+  const sessionExtra = Object.assign({}, p, { action: "session_start" });
+  const loginExtra = {
+    action: "log",
+    token: p.token || "",
+    deviceId: p.deviceId || "",
+    klass: p.klass || "",
+    name: p.name || "",
+    book: "LOGIN",
+    lesson: "index",
+    score: 0,
+    attempts: 0,
+    ua: p.ua || "",
+    lang: p.lang || ""
+  };
+  return [
+    makeGeneralLogRow_(ts, p, {
+      action: "session_start",
+      book: "",
+      lesson: "",
+      score: "",
+      attempts: "",
+      extraObject: sessionExtra
+    }),
+    makeGeneralLogRow_(ts, p, {
+      action: "log",
+      book: "LOGIN",
+      lesson: "index",
+      // 기존 sendLoginLog도 p.score || "" 처리로 Log 시트에는 빈칸이 기록되었다.
+      score: "",
+      attempts: "",
+      extraObject: loginExtra
+    })
+  ];
+}
+
 function doGet(e) {
   const p = (e && e.parameter) ? e.parameter : {};
   const ss = SpreadsheetApp.getActive();
@@ -2776,7 +2885,9 @@ function doGet(e) {
   }
 
   // 7) 인증이 필요한 기록 요청 보호
-  if (action === "log" || action === "session_start") {
+  const isSessionStart = isSessionStartAction_(action);
+  const isFastSessionStart = action === FAST_SESSION_START_ACTION;
+  if (action === "log" || isSessionStart) {
     const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
     if (!result.ok) return jsonpOutput_(callback, result);
     verifiedIdentity = {
@@ -2794,38 +2905,40 @@ function doGet(e) {
   const sess = ss.getSheetByName(sessName) || ss.insertSheet(sessName);
 
   if (sh.getLastRow() === 0) {
-    sh.appendRow([
+    sh.getRange(1, 1, 1, 13).setValues([[
       "ts","action","name","klass","token","deviceId","book","lesson",
       "score","attempts","ua","lang","extra"
-    ]);
+    ]]);
   }
 
   if (sess.getLastRow() === 0) {
-    sess.appendRow([
+    sess.getRange(1, 1, 1, 12).setValues([[
       "sessionId","name","klass","token","deviceId","lang",
       "loginAt","logoutAt","durationSec","reason","ua","updatedAt"
-    ]);
+    ]]);
   }
 
   const ts = new Date();
   const sessionId = String(p.sessionId || "");
+  let sessionStartWasNew = null;
 
-  if ((action === "session_start" || action === "session_end") && sessionId) {
+  if ((isSessionStart || action === "session_end") && sessionId) {
     const lock = LockService.getScriptLock();
     lock.tryLock(5000);
     try {
-      if (action === "session_start") {
+      if (isSessionStart) {
         const cache = CacheService.getScriptCache();
         const cacheKey = sessionStartCacheKey_(sessionId);
         const recentlyStarted = cacheKey ? cache.get(cacheKey) : null;
 
-        // 재시도 요청이면 같은 세션을 중복 추가하지 않는다.
+        // 재시도 요청이면 같은 세션/로그/진도 갱신을 중복 처리하지 않는다.
         // 캐시가 비어 있어도 A열만 TextFinder로 확인하므로 Sessions 전체 12열을 읽지 않는다.
         if (!recentlyStarted) {
           const rowIndex = findSessionRowById_(sess, sessionId);
           if (rowIndex === -1) {
             const loginAt = p.loginAt ? new Date(p.loginAt) : ts;
-            sess.appendRow([
+            const targetRow = sess.getLastRow() + 1;
+            sess.getRange(targetRow, 1, 1, 12).setValues([[
               sessionId,
               p.name || "",
               p.klass || "",
@@ -2838,9 +2951,14 @@ function doGet(e) {
               "login",
               p.ua || "",
               ts
-            ]);
+            ]]);
+            sessionStartWasNew = true;
+          } else {
+            sessionStartWasNew = false;
           }
           if (cacheKey) cache.put(cacheKey, "1", 21600); // 6시간
+        } else {
+          sessionStartWasNew = false;
         }
       }
 
@@ -2852,7 +2970,8 @@ function doGet(e) {
         const reason = String(p.reason || "logout");
 
         if (rowIndex === -1) {
-          sess.appendRow([
+          const targetRow = sess.getLastRow() + 1;
+          sess.getRange(targetRow, 1, 1, 12).setValues([[
             sessionId,
             p.name || "",
             p.klass || "",
@@ -2865,7 +2984,7 @@ function doGet(e) {
             reason,
             p.ua || "",
             ts
-          ]);
+          ]]);
         } else {
           // 11개 셀을 하나씩 쓰지 않고 B:L을 한 번에 갱신한다.
           sess.getRange(rowIndex, 2, 1, 11).setValues([[
@@ -2889,7 +3008,7 @@ function doGet(e) {
   }
 
   let progressSummary = null;
-  if (action === "session_start" && verifiedIdentity) {
+  if (isSessionStart && verifiedIdentity && sessionStartWasNew !== false) {
     try {
       progressSummary = updateStudentProgressLoginOnly_(
         ss,
@@ -2910,22 +3029,16 @@ function doGet(e) {
     }
   }
 
-  // 모든 일반 요청을 Log 시트에 기록
-  sh.appendRow([
-    ts,
-    p.action || "",
-    p.name || "",
-    p.klass || "",
-    p.token || "",
-    p.deviceId || "",
-    p.book || "",
-    p.lesson || "",
-    p.score || "",
-    p.attempts || "",
-    p.ua || "",
-    p.lang || "",
-    JSON.stringify(p)
-  ]);
+  // STEP29-6: 새 로그인 경로는 session_start + LOGIN 두 로그를 한 번의 setValues로 기록한다.
+  // 같은 sessionId 재시도는 Sessions뿐 아니라 Log/진도 갱신도 중복 저장하지 않는다.
+  let logRowsWritten = 0;
+  if (isFastSessionStart) {
+    if (sessionStartWasNew !== false) {
+      logRowsWritten = appendGeneralLogRows_(sh, makeFastLoginLogRows_(ts, p));
+    }
+  } else if (!(action === "session_start" && sessionStartWasNew === false)) {
+    logRowsWritten = appendGeneralLogRows_(sh, [makeGeneralLogRow_(ts, p)]);
+  }
 
   let testResult = null;
   let studentResult = null;
@@ -2968,6 +3081,8 @@ function doGet(e) {
     ts: ts.toISOString(),
     testResult: testResult,
     studentResult: studentResult,
-    progressSummary: progressSummary
+    progressSummary: progressSummary,
+    logRowsWritten: logRowsWritten,
+    fastSessionStart: isFastSessionStart
   });
 }
