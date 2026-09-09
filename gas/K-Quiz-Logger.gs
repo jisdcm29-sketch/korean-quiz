@@ -1533,22 +1533,20 @@ function rebuildStudentProgressSummary() {
 
 
 // -----------------------------------------------------------------------------
-// STEP27 FIX1 - 학생 진도 그래프 대시보드
+// STEP27 FIX2 - 학생 진도 그래프 대시보드
 // -----------------------------------------------------------------------------
 // 수정사항:
-// 1) 차트용 원본 데이터를 X:Y 보조영역에 연속 범위로 기록한 뒤 차트를 만들어
-//    빈 차트가 나타나는 문제를 방지한다.
-// 2) 차트는 학생 데이터가 먼저 기록된 다음 실제 학생 수만큼의 범위를 사용해 생성한다.
-// 3) 통과현황은 getDisplayValues()를 사용해 1/3, 2/3 등이 날짜 객체로 읽히는 문제를 막는다.
-// 4) 유정태 및 developerAccess=TRUE 계정은 진도현황/그래프에서 제외한다.
+// 1) Google Sheets에서 빈 대형 차트가 나타나는 문제를 피하기 위해 EmbeddedChart를 사용하지 않는다.
+// 2) 각 학생 행에 SPARKLINE 가로 막대를 직접 표시해 이름과 진도를 한눈에 비교한다.
+// 3) 진행률 숫자와 막대그래프를 함께 표시하고, 로그인/시험 시 자동 갱신을 유지한다.
+// 4) 유정태 및 developerAccess=TRUE 계정은 진도현황/그래프에서 계속 제외한다.
 
 const STUDENT_PROGRESS_DASHBOARD_1A = "1A 진도그래프";
 const STUDENT_PROGRESS_DASHBOARD_1B2A = "1B-2A 진도그래프";
 const STUDENT_PROGRESS_DASHBOARD_MAX_STUDENTS = 200;
 const STUDENT_PROGRESS_DASHBOARD_HEADERS = [
-  "학생이름", "현재교재", "현재과", "통과현황", "진행률(%)", "최근접속", "접속경과"
+  "학생이름", "현재교재", "현재과", "통과현황", "진행률(%)", "진행그래프", "최근접속", "접속경과"
 ];
-const STUDENT_PROGRESS_CHART_DATA_COL = 24; // X:Y - 차트 전용 보조 데이터
 
 function parseStudentProgressPassCount_(value) {
   const m = String(value == null ? "" : value).trim().match(/^(\d+)\s*\/\s*3$/);
@@ -1644,17 +1642,24 @@ function collectStudentProgressDashboardRows_(ss) {
   return result;
 }
 
+function removeStudentProgressDashboardCharts_(sh) {
+  if (!sh) return;
+  const charts = sh.getCharts();
+  for (let i = 0; i < charts.length; i++) sh.removeChart(charts[i]);
+}
+
 function formatStudentProgressDashboardSheet_(sh, title, note) {
   if (!sh) return;
 
-  // setup 함수를 다시 실행해도 같은 두 시트를 안전하게 새로 구성한다.
-  sh.getRange("A1:G2").breakApart();
-  sh.clear();
-  const charts = sh.getCharts();
-  for (let i = 0; i < charts.length; i++) sh.removeChart(charts[i]);
+  // FIX1에서 생성된 빈 대형 차트가 남아 있으면 먼저 제거한다.
+  removeStudentProgressDashboardCharts_(sh);
 
-  if (sh.getMaxColumns() < 25) {
-    sh.insertColumnsAfter(sh.getMaxColumns(), 25 - sh.getMaxColumns());
+  // setup 함수를 다시 실행해도 같은 두 시트를 안전하게 새로 구성한다.
+  sh.getRange("A1:H2").breakApart();
+  sh.clear();
+
+  if (sh.getMaxColumns() < 8) {
+    sh.insertColumnsAfter(sh.getMaxColumns(), 8 - sh.getMaxColumns());
   }
   if (sh.getMaxRows() < STUDENT_PROGRESS_DASHBOARD_MAX_STUDENTS + 3) {
     sh.insertRowsAfter(
@@ -1663,7 +1668,7 @@ function formatStudentProgressDashboardSheet_(sh, title, note) {
     );
   }
 
-  sh.getRange("A1:G1").merge();
+  sh.getRange("A1:H1").merge();
   sh.getRange("A1")
     .setValue(title)
     .setFontSize(16)
@@ -1674,7 +1679,7 @@ function formatStudentProgressDashboardSheet_(sh, title, note) {
     .setVerticalAlignment("middle");
   sh.setRowHeight(1, 38);
 
-  sh.getRange("A2:G2").merge();
+  sh.getRange("A2:H2").merge();
   sh.getRange("A2")
     .setValue(note)
     .setFontColor("#555555")
@@ -1684,7 +1689,7 @@ function formatStudentProgressDashboardSheet_(sh, title, note) {
     .setVerticalAlignment("middle");
   sh.setRowHeight(2, 46);
 
-  sh.getRange("A3:G3")
+  sh.getRange("A3:H3")
     .setValues([STUDENT_PROGRESS_DASHBOARD_HEADERS])
     .setFontWeight("bold")
     .setFontColor("#ffffff")
@@ -1694,91 +1699,53 @@ function formatStudentProgressDashboardSheet_(sh, title, note) {
   sh.setRowHeight(3, 30);
   sh.setFrozenRows(3);
 
-  const widths = [130, 95, 70, 85, 90, 145, 90];
+  const widths = [130, 95, 70, 85, 90, 280, 145, 90];
   for (let c = 0; c < widths.length; c++) sh.setColumnWidth(c + 1, widths[c]);
 
   const dataRows = STUDENT_PROGRESS_DASHBOARD_MAX_STUDENTS;
-  sh.getRange(4, 1, dataRows, 7).setVerticalAlignment("middle");
+  sh.getRange(4, 1, dataRows, 8).setVerticalAlignment("middle");
   sh.getRange(4, 2, dataRows, 4).setHorizontalAlignment("center");
-  sh.getRange(4, 7, dataRows, 1).setHorizontalAlignment("center");
+  sh.getRange(4, 8, dataRows, 1).setHorizontalAlignment("center");
   sh.getRange(4, 4, dataRows, 1).setNumberFormat("@");
   sh.getRange(4, 5, dataRows, 1).setNumberFormat('0.0"%"');
-  sh.getRange(4, 6, dataRows, 1).setNumberFormat("yyyy-MM-dd HH:mm");
-
-  // X:Y는 차트 전용 보조 데이터. 화면 오른쪽 멀리 두어 일반 관리 화면을 방해하지 않는다.
-  sh.getRange(3, STUDENT_PROGRESS_CHART_DATA_COL, dataRows + 1, 2).clearContent();
-  sh.getRange(3, STUDENT_PROGRESS_CHART_DATA_COL, 1, 2)
-    .setValues([["학생이름", "진행률"]]);
-  sh.getRange(4, STUDENT_PROGRESS_CHART_DATA_COL + 1, dataRows, 1).setNumberFormat("0.0");
-  sh.setColumnWidth(STUDENT_PROGRESS_CHART_DATA_COL, 20);
-  sh.setColumnWidth(STUDENT_PROGRESS_CHART_DATA_COL + 1, 20);
+  sh.getRange(4, 7, dataRows, 1).setNumberFormat("yyyy-MM-dd HH:mm");
 
   const existingFilter = sh.getFilter();
   if (existingFilter) existingFilter.remove();
-  sh.getRange(3, 1, dataRows + 1, 7).createFilter();
+  sh.getRange(3, 1, dataRows + 1, 8).createFilter();
 }
 
-function writeStudentProgressDashboardRows_(sh, rows) {
+function studentProgressSparklineFormula_(row, color) {
+  const safeColor = String(color || "#4f81bd").replace(/"/g, "");
+  return '=IF(E' + row + '="","",SPARKLINE(E' + row + ',{"charttype","bar";"max",100;"color1","' + safeColor + '"}))';
+}
+
+function writeStudentProgressDashboardRows_(sh, rows, barColor) {
   if (!sh) return 0;
   const maxRows = STUDENT_PROGRESS_DASHBOARD_MAX_STUDENTS;
-  sh.getRange(4, 1, maxRows, 7).clearContent();
-  sh.getRange(4, STUDENT_PROGRESS_CHART_DATA_COL, maxRows, 2).clearContent();
+  sh.getRange(4, 1, maxRows, 8).clearContent();
 
   if (!rows || rows.length === 0) {
     sh.getRange("A4").setValue("현재 해당 과정 학생이 없습니다.").setFontColor("#777777");
     return 0;
   }
 
-  sh.getRange(4, 1, rows.length, 7).setValues(rows);
-  sh.getRange(4, 4, rows.length, 1).setNumberFormat("@");
-  sh.getRange(4, 5, rows.length, 1).setNumberFormat('0.0"%"');
-  sh.getRange(4, 6, rows.length, 1).setNumberFormat("yyyy-MM-dd HH:mm");
-
-  // 차트는 반드시 연속된 두 열(X:Y)을 원본으로 사용한다.
-  const chartRows = rows.map(function(row) {
-    return [String(row[0] || ""), Number(row[4]) || 0];
+  const values = rows.map(function(row) {
+    return [row[0], row[1], row[2], row[3], row[4], "", row[5], row[6]];
   });
-  sh.getRange(4, STUDENT_PROGRESS_CHART_DATA_COL, chartRows.length, 2).setValues(chartRows);
+  sh.getRange(4, 1, values.length, 8).setValues(values);
+  sh.getRange(4, 4, values.length, 1).setNumberFormat("@");
+  sh.getRange(4, 5, values.length, 1).setNumberFormat('0.0"%"');
+  sh.getRange(4, 7, values.length, 1).setNumberFormat("yyyy-MM-dd HH:mm");
+
+  const formulas = [];
+  for (let i = 0; i < values.length; i++) {
+    const sheetRow = i + 4;
+    formulas.push([studentProgressSparklineFormula_(sheetRow, barColor)]);
+    sh.setRowHeight(sheetRow, 28);
+  }
+  sh.getRange(4, 6, formulas.length, 1).setFormulas(formulas);
   return rows.length;
-}
-
-function rebuildStudentProgressBarChart_(sh, title, rowCount) {
-  if (!sh) return null;
-
-  const charts = sh.getCharts();
-  for (let i = 0; i < charts.length; i++) sh.removeChart(charts[i]);
-  if (!rowCount || rowCount <= 0) return null;
-
-  const lastSourceRow = 3 + rowCount;
-  const source = sh.getRange(
-    3,
-    STUDENT_PROGRESS_CHART_DATA_COL,
-    rowCount + 1,
-    2
-  );
-  const chartHeight = Math.max(420, Math.min(820, 120 + rowCount * 30));
-
-  const chart = sh.newChart()
-    .setChartType(Charts.ChartType.BAR)
-    .addRange(source)
-    .setNumHeaders(1)
-    .setPosition(4, 9, 0, 0)
-    .setOption("title", title)
-    .setOption("legend", { position: "none" })
-    .setOption("hAxis", {
-      title: "진행률 (%)",
-      viewWindow: { min: 0, max: 100 },
-      ticks: [0, 20, 40, 60, 80, 100]
-    })
-    .setOption("vAxis", { textStyle: { fontSize: 11 } })
-    .setOption("chartArea", { left: 150, top: 55, width: "68%", height: "78%" })
-    .setOption("bar", { groupWidth: "68%" })
-    .setOption("width", 900)
-    .setOption("height", chartHeight)
-    .build();
-
-  sh.insertChart(chart);
-  return { rowCount: rowCount, lastSourceRow: lastSourceRow };
 }
 
 function setupStudentProgressDashboard1A_(ss) {
@@ -1788,7 +1755,7 @@ function setupStudentProgressDashboard1A_(ss) {
   formatStudentProgressDashboardSheet_(
     sh,
     "서울대 1A 학생 진도현황",
-    "현재교재가 SNU-1A이고 사용여부가 TRUE인 학생을 표시합니다. 진행률은 1A 1과 시작=0%, 8과 3/3=100% 기준이며 현재 과의 어휘·문법·종합 통과현황도 반영합니다. 개발자 계정은 제외됩니다."
+    "현재교재가 SNU-1A이고 사용여부가 TRUE인 학생을 표시합니다. 진행률은 1A 1과 시작=0%, 8과 3/3=100% 기준이며 현재 과의 어휘·문법·종합 통과현황도 반영합니다. 이름 옆 진행그래프는 학생별 현재 진행률을 막대로 표시하며 개발자 계정은 제외됩니다."
   );
   sh.setTabColor("#4f81bd");
   return sh;
@@ -1801,14 +1768,13 @@ function setupStudentProgressDashboard1B2A_(ss) {
   formatStudentProgressDashboardSheet_(
     sh,
     "서울대 1B · 2A 학생 진도현황",
-    "현재교재가 SNU-1B 또는 SNU-2A이고 사용여부가 TRUE인 학생을 한 시트에 표시합니다. 통합 진행률은 1B 9과 시작=0%, 2A 1과 시작≈47.1%, 2A 9과 3/3=100% 기준이며 개발자 계정은 제외됩니다."
+    "현재교재가 SNU-1B 또는 SNU-2A이고 사용여부가 TRUE인 학생을 한 시트에 표시합니다. 통합 진행률은 1B 9과 시작=0%, 2A 1과 시작≈47.1%, 2A 9과 3/3=100% 기준입니다. 이름 옆 진행그래프는 학생별 현재 진행률을 막대로 표시하며 개발자 계정은 제외됩니다."
   );
   sh.setTabColor("#70ad47");
   return sh;
 }
 
-// 현재 진도현황으로 표와 그래프를 함께 갱신한다.
-// 차트를 데이터 입력 이후 다시 만들기 때문에 학생 수가 늘거나 줄어도 범위가 정확히 맞는다.
+// 현재 진도현황으로 표와 학생별 막대그래프를 함께 갱신한다.
 function refreshStudentProgressDashboards_(ss) {
   const sh1 = ss.getSheetByName(STUDENT_PROGRESS_DASHBOARD_1A);
   const sh2 = ss.getSheetByName(STUDENT_PROGRESS_DASHBOARD_1B2A);
@@ -1820,23 +1786,24 @@ function refreshStudentProgressDashboards_(ss) {
   let oneACount = 0;
   let oneBTwoACount = 0;
   if (sh1) {
-    oneACount = writeStudentProgressDashboardRows_(sh1, rows.oneA);
-    rebuildStudentProgressBarChart_(sh1, "서울대 1A 학생별 현재 진행률", oneACount);
+    removeStudentProgressDashboardCharts_(sh1);
+    oneACount = writeStudentProgressDashboardRows_(sh1, rows.oneA, "#4f81bd");
   }
   if (sh2) {
-    oneBTwoACount = writeStudentProgressDashboardRows_(sh2, rows.oneBTwoA);
-    rebuildStudentProgressBarChart_(sh2, "서울대 1B · 2A 학생별 현재 진행률", oneBTwoACount);
+    removeStudentProgressDashboardCharts_(sh2);
+    oneBTwoACount = writeStudentProgressDashboardRows_(sh2, rows.oneBTwoA, "#70ad47");
   }
 
   return {
     ok: true,
     oneACount: oneACount,
-    oneBTwoACount: oneBTwoACount
+    oneBTwoACount: oneBTwoACount,
+    graphType: "sparkline_bar"
   };
 }
 
 // Apps Script 편집기에서 실행한다.
-// 기존 두 그래프 시트를 새로 구성하고 개발자 행을 진도현황에서 제거한 뒤 그래프까지 다시 만든다.
+// 기존 두 그래프 시트를 다시 구성하고 FIX1의 빈 차트를 제거한 뒤 학생별 막대그래프를 만든다.
 function setupStudentProgressDashboards() {
   const ss = SpreadsheetApp.getActive();
   const progressSh = ss.getSheetByName(STUDENT_PROGRESS_SHEET_NAME);
