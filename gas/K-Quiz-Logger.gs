@@ -1543,6 +1543,64 @@ function rebuildStudentProgressSummary() {
 
 const STUDENT_PROGRESS_DASHBOARD_1A = "1A 진도그래프";
 const STUDENT_PROGRESS_DASHBOARD_1B2A = "1B-2A 진도그래프";
+
+// -----------------------------------------------------------------------------
+// STEP28 - 관리용 핵심 시트를 항상 시트 탭 맨 앞에 유지
+// -----------------------------------------------------------------------------
+// Google Sheets에는 시트 탭 자체를 영구적으로 "고정(pin)"하는 기능이 없으므로,
+// 아래 4개 관리 시트를 항상 1~4번째 위치로 자동 재배치한다.
+// 순서: 인증목록 -> 진도현황 -> 1A 진도그래프 -> 1B-2A 진도그래프
+const MANAGEMENT_SHEET_FRONT_ORDER = [
+  AUTH_SHEET_NAME,
+  STUDENT_PROGRESS_SHEET_NAME,
+  STUDENT_PROGRESS_DASHBOARD_1A,
+  STUDENT_PROGRESS_DASHBOARD_1B2A
+];
+
+function ensureManagementSheetsAtFront_(ss) {
+  if (!ss) return { ok: false, sheets: [] };
+
+  let originalActive = null;
+  try { originalActive = ss.getActiveSheet(); } catch (err) {}
+
+  const moved = [];
+  let position = 1;
+  for (let i = 0; i < MANAGEMENT_SHEET_FRONT_ORDER.length; i++) {
+    const name = MANAGEMENT_SHEET_FRONT_ORDER[i];
+    const sh = ss.getSheetByName(name);
+    if (!sh) continue;
+
+    try {
+      ss.setActiveSheet(sh);
+      ss.moveActiveSheet(position);
+      moved.push(name);
+      position++;
+    } catch (err) {
+      console.error("Management sheet reorder failed: " + name, err);
+    }
+  }
+
+  // 사용자가 보고 있던 시트는 가능한 경우 다시 활성화한다.
+  if (originalActive) {
+    try { ss.setActiveSheet(originalActive); } catch (err) {}
+  }
+
+  return { ok: true, sheets: moved };
+}
+
+// Apps Script 편집기에서 한 번 직접 실행하면 현재 시트 순서를 즉시 정리할 수 있다.
+function arrangeManagementSheetsAtFront() {
+  return ensureManagementSheetsAtFront_(SpreadsheetApp.getActive());
+}
+
+// 스프레드시트를 열 때에도 관리 시트가 맨 앞 순서로 복원된다.
+function onOpen(e) {
+  try {
+    ensureManagementSheetsAtFront_(SpreadsheetApp.getActive());
+  } catch (err) {
+    console.error("Management sheet onOpen reorder failed", err);
+  }
+}
 const STUDENT_PROGRESS_DASHBOARD_MAX_STUDENTS = 200;
 const STUDENT_PROGRESS_DASHBOARD_HEADERS = [
   "학생이름", "현재교재", "현재과", "통과현황", "진행률(%)", "진행그래프", "최근접속", "접속경과"
@@ -1778,7 +1836,10 @@ function setupStudentProgressDashboard1B2A_(ss) {
 function refreshStudentProgressDashboards_(ss) {
   const sh1 = ss.getSheetByName(STUDENT_PROGRESS_DASHBOARD_1A);
   const sh2 = ss.getSheetByName(STUDENT_PROGRESS_DASHBOARD_1B2A);
-  if (!sh1 && !sh2) return { ok: true, skipped: true, reason: "dashboard_not_created" };
+  if (!sh1 && !sh2) {
+    ensureManagementSheetsAtFront_(ss);
+    return { ok: true, skipped: true, reason: "dashboard_not_created" };
+  }
 
   removeExcludedStudentProgressRows_(ss);
   const rows = collectStudentProgressDashboardRows_(ss);
@@ -1794,11 +1855,15 @@ function refreshStudentProgressDashboards_(ss) {
     oneBTwoACount = writeStudentProgressDashboardRows_(sh2, rows.oneBTwoA, "#70ad47");
   }
 
+  // 로그인/시험으로 진도와 그래프가 갱신될 때마다 핵심 관리 시트 순서도 자동 복원한다.
+  const sheetOrder = ensureManagementSheetsAtFront_(ss);
+
   return {
     ok: true,
     oneACount: oneACount,
     oneBTwoACount: oneBTwoACount,
-    graphType: "sparkline_bar"
+    graphType: "sparkline_bar",
+    sheetOrder: sheetOrder
   };
 }
 
@@ -1815,13 +1880,15 @@ function setupStudentProgressDashboards() {
   setupStudentProgressDashboard1A_(ss);
   setupStudentProgressDashboard1B2A_(ss);
   const refreshed = refreshStudentProgressDashboards_(ss);
+  const sheetOrder = ensureManagementSheetsAtFront_(ss);
 
   return {
     ok: true,
     sourceSheet: STUDENT_PROGRESS_SHEET_NAME,
     dashboardSheets: [STUDENT_PROGRESS_DASHBOARD_1A, STUDENT_PROGRESS_DASHBOARD_1B2A],
     excludedRemoved: excludedRemoved,
-    counts: refreshed
+    counts: refreshed,
+    sheetOrder: sheetOrder
   };
 }
 
