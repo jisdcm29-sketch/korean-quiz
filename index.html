@@ -692,11 +692,19 @@
       };
       writeSession(session);
 
-      await sendSessionStart(session);
-      const ok = await sendLoginLog(session);
-      showOk(ok ? t("loginOk") : t("loginOkNoLog"));
+      // STEP29-1: 인증 성공 직후 프로그램 선택 화면을 먼저 보여준다.
+      // 세션 기록/로그/진도현황 갱신은 화면 표시를 막지 않고 뒤에서 순서대로 처리한다.
+      renderDashboard();
 
-      setTimeout(() => renderDashboard(), 350);
+      setTimeout(() => {
+        (async () => {
+          const sessionOk = await sendSessionStart(session);
+          const logOk = await sendLoginLog(session);
+          if (!sessionOk || !logOk) {
+            console.warn("Background login record was not fully completed.", { sessionOk, logOk });
+          }
+        })();
+      }, 0);
     }
 
     $btn.addEventListener("click", doLogin);
