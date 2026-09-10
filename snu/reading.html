@@ -32,7 +32,10 @@
     .navRow{display:grid;grid-template-columns:1fr auto 1fr;gap:10px;align-items:center;margin-top:18px}.navRow .next{justify-self:end;min-width:145px;background:linear-gradient(135deg,rgba(96,165,250,.22),rgba(11,16,32,.96));border-color:rgba(96,165,250,.55)}.navRow .prev{justify-self:start;min-width:120px}.counter{color:var(--muted);font-size:13px;font-weight:900;white-space:nowrap}
     .notice{margin-top:16px;border:1px solid rgba(251,191,36,.35);background:rgba(251,191,36,.08);border-radius:16px;padding:16px;line-height:1.65}.err{margin-top:16px;border:1px solid rgba(248,113,113,.45);background:rgba(248,113,113,.09);border-radius:16px;padding:16px;white-space:pre-wrap;line-height:1.6}.complete{text-align:center;padding:26px 12px}.completeIcon{font-size:46px}.completeTitle{font-size:26px;font-weight:950;margin:8px 0}.completeBtns{display:flex;justify-content:center;gap:10px;flex-wrap:wrap;margin-top:18px}
     .lockedBox{text-align:center;padding:28px 16px;border:1px solid var(--line);background:rgba(11,16,32,.78);border-radius:18px}.lockedIcon{font-size:42px}.lockedTitle{font-size:24px;font-weight:950;margin:8px 0 12px}.lockedRule{line-height:1.7}.lockedScores{margin-top:8px;color:var(--muted)}
+    /* STEP30-4: 개발자용 읽기 콘텐츠 직접 편집 */
+    .readingEditorControls,.readingItemEditorBar{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.readingEditorControls{margin-top:14px}.readingEditorControls[hidden]{display:none}.readingItemEditorBar{margin-bottom:10px}.editorBadge{font-size:12px;color:#fde68a;border:1px solid #7c5d16;background:#2d230d;border-radius:999px;padding:5px 9px;font-weight:850}.editedMark{font-size:12px;color:#86efac;font-weight:850}.editModeBtn,.editReadingBtn{padding:8px 12px;border:1px solid var(--amber);background:#302715;color:#fde68a;border-radius:11px;cursor:pointer;font-weight:900}.editModeBtn.active{background:#644b0e;color:#fff}.readingEditorModal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72)}.readingEditorModal[hidden]{display:none}.readingEditorDialog{width:min(780px,100%);max-height:92vh;overflow:auto;background:#111a2a;border:1px solid #4b5d78;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:18px}.readingEditorDialog h2{margin:0 0 4px;color:#fde68a}.readingEditorMeta{color:var(--muted);font-size:13px;margin-bottom:14px}.readingEditorField{display:block;margin-top:12px;font-weight:850}.readingEditorField input,.readingEditorField textarea{width:100%;margin-top:6px;border:1px solid #3b4b66;background:#08111f;color:#fff;border-radius:11px;padding:11px 12px;font:inherit}.readingEditorField textarea{min-height:82px;resize:vertical;line-height:1.5}.readingEditorGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.readingEditorHelp{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}.readingEditorActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}.readingEditorActions button{padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:#101829;color:#fff;cursor:pointer;font-weight:900}.readingEditorActions .save{border-color:#22c55e;background:#123725}.readingEditorActions .restore{border-color:#ef4444;background:#3a151b}.readingEditorActions button:disabled{opacity:.55;cursor:wait}.readingEditorMessage{min-height:20px;margin-top:10px;font-size:13px}.readingEditorMessage.ok{color:#86efac}.readingEditorMessage.bad{color:#fecaca}
     @media(max-width:760px){.pill{display:none}.topbar{padding:8px 10px}.brand{font-size:14px}.right{gap:6px}.btn{min-height:44px;padding:9px 11px;border-radius:13px}.btnBack{min-width:46px}.btnLang{min-width:52px}.container{padding:10px}.card{padding:14px;border-radius:18px}.h1{font-size:24px}.studyBox{padding:15px;border-radius:17px}.koSentence{font-size:25px}.mnSentence{font-size:20px}.analysisText{font-size:15px}.navRow{grid-template-columns:1fr 1fr}.counter{grid-column:1/-1;grid-row:1;text-align:center}.navRow .prev{grid-column:1;grid-row:2;width:100%}.navRow .next{grid-column:2;grid-row:2;width:100%;min-width:0}.btnCheck{width:100%}}
+    @media(max-width:620px){.readingEditorGrid{grid-template-columns:1fr}.readingEditorControls{justify-content:space-between}}
     @media(max-width:480px){.topbar{padding:7px 8px}.brand{font-size:13px;gap:7px}.dot{width:8px;height:8px}.right{gap:5px}.btn{min-height:44px;padding:8px 9px}.btnBack{min-width:44px}.btnLang{min-width:48px}.container{padding:7px}.card{padding:10px;border-radius:16px}.h1{font-size:21px;line-height:1.28}.muted{font-size:13px;line-height:1.55}.studyBox{padding:11px;border-radius:15px}.sectionBadge{font-size:12px;padding:6px 9px}.questionNo{margin-top:14px}.koSentence{font-size:22px;line-height:1.48;margin-top:8px}.practiceHint{font-size:13px}.checkRow{margin-top:16px}.mnSentence{font-size:18px}.analysisText{font-size:14px;line-height:1.65}.answerCard{padding:12px}.navRow{gap:8px}.navRow .prev,.navRow .next{font-size:14px}.completeTitle{font-size:22px}}
   </style>
 </head>
@@ -59,6 +62,11 @@
       </div>
 
       <div id="studyArea" class="hidden">
+        <div class="readingEditorControls" id="readingEditorControls" hidden>
+          <span class="editorBadge">개발자 콘텐츠 편집</span>
+          <span class="editedMark" id="readingOverrideCount"></span>
+          <button class="editModeBtn" id="toggleReadingEditMode" type="button">수정 모드 OFF</button>
+        </div>
         <div class="progressMeta"><span id="progressText">1 / 50</span><span id="progressPercent">2%</span></div>
         <div class="progressTrack"><div class="progressFill" id="progressFill"></div></div>
         <div class="studyBox" id="studyBox"></div>
@@ -95,6 +103,12 @@
     const levelNo=Math.max(1,parseInt(params.get('level')||'1',10)||1);
     const level=String(levelNo).padStart(2,'0');
     let DATA=null,index=0,revealed=false;
+    let READING_EDITOR_CAN_EDIT=false;
+    let READING_EDIT_MODE=false;
+    let CURRENT_EDIT_READING=null;
+    const ORIGINAL_READING=new Map();
+    const ACTIVE_READING_OVERRIDES=new Map();
+    const RESULT_LOG_DEVICE_KEY="kq_deviceId_v1";
 
     function getLang(){
       const q=(params.get('lang')||'').toUpperCase();
@@ -157,6 +171,71 @@
         script.src=`${ACCESS_SCRIPT_URL}?${query.toString()}`;
         document.head.appendChild(script);
       });
+    }
+
+
+    function cloneReadingContent(value){return JSON.parse(JSON.stringify(value));}
+    function readingIdentity(){return {name:params.get('name')||'',token:params.get('token')||'',deviceId:localStorage.getItem(RESULT_LOG_DEVICE_KEY)||''};}
+    function readingItemId(item,i){
+      if(item&&item.__contentReadingId)return String(item.__contentReadingId);
+      const raw=String(item&&item.id!=null?item.id:'').trim();const id=`r_${raw||String(Number(i)+1).padStart(3,'0')}`;
+      if(item)item.__contentReadingId=id;return id;
+    }
+    function prepareReadingContentIds(d){
+      ORIGINAL_READING.clear();(d&&Array.isArray(d.items)?d.items:[]).forEach((item,i)=>{const id=readingItemId(item,i);ORIGINAL_READING.set(id,cloneReadingContent(item));});
+    }
+    function readingScope(d,path){
+      const lv=inferReadingLevel(d,path)||'';const lessonNo=parseInt(String(d&&d.lesson||params.get('lesson')||'').replace(/[^0-9]/g,''),10)||0;
+      return {area:'snu',book:`SNU-${lv}`,lesson:String(lessonNo),section:'reading'};
+    }
+    function findReadingItem(itemId){const id=String(itemId||'');return (DATA&&Array.isArray(DATA.items)?DATA.items:[]).find(item=>String(item&&item.__contentReadingId||'')===id)||null;}
+    function applyReadingPayload(target,payload){
+      if(!target||!payload||typeof payload!=='object')return;
+      ['section_kr','section_mn','ko','mn','structure'].forEach(key=>{if(Object.prototype.hasOwnProperty.call(payload,key))target[key]=String(payload[key]==null?'':payload[key]);});
+      if(Array.isArray(payload.analysis_rows))target.analysis_rows=payload.analysis_rows.map(row=>({ko:String(row&&row.ko||''),mn:String(row&&row.mn||'')})).filter(row=>row.ko||row.mn);
+      if(Array.isArray(payload.grammar_mn))target.grammar_mn=payload.grammar_mn.map(v=>String(v||'').trim()).filter(Boolean);
+      if(Array.isArray(payload.vocab_mn))target.vocab_mn=payload.vocab_mn.map(v=>String(v||'').trim()).filter(Boolean);
+    }
+    function updateReadingEditorControls(){
+      const controls=$('readingEditorControls'),toggle=$('toggleReadingEditMode'),count=$('readingOverrideCount');if(!controls)return;
+      controls.hidden=!READING_EDITOR_CAN_EDIT;if(toggle){toggle.textContent=READING_EDIT_MODE?'수정 모드 ON':'수정 모드 OFF';toggle.classList.toggle('active',READING_EDIT_MODE);}if(count)count.textContent=ACTIVE_READING_OVERRIDES.size?`수정본 ${ACTIVE_READING_OVERRIDES.size}개 적용 중`:'';
+    }
+    async function loadReadingContentEditorState(d,path){
+      const identity=readingIdentity(),scope=readingScope(d,path);READING_EDITOR_CAN_EDIT=false;ACTIVE_READING_OVERRIDES.clear();
+      if(!identity.token||!scope.lesson){updateReadingEditorControls();return;}
+      try{
+        const result=await sendAccessJsonp({action:'content_overrides',token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section});
+        if(result&&result.ok===true){READING_EDITOR_CAN_EDIT=result.canEdit===true;(Array.isArray(result.items)?result.items:[]).forEach(entry=>{const itemId=String(entry&&entry.itemId||'');const item=findReadingItem(itemId);if(!item||!entry.payload)return;ACTIVE_READING_OVERRIDES.set(itemId,cloneReadingContent(entry.payload));applyReadingPayload(item,entry.payload);});}
+      }catch(err){console.log('reading content overrides load failed:',err);}finally{updateReadingEditorControls();}
+    }
+    function linesToArray(value){return String(value||'').split(/\r?\n/).map(v=>v.trim()).filter(Boolean);}
+    function analysisRowsToText(rows){return (Array.isArray(rows)?rows:[]).map(row=>`${String(row&&row.ko||'')} => ${String(row&&row.mn||'')}`).join('\n');}
+    function parseAnalysisRows(value){return linesToArray(value).map(line=>{const m=line.split(/\s*(?:=>|→)\s*/,2);return {ko:String(m[0]||'').trim(),mn:String(m[1]||'').trim()};}).filter(row=>row.ko||row.mn);}
+    function ensureReadingEditorModal(){
+      let modal=$('readingEditorModal');if(modal)return modal;modal=document.createElement('div');modal.id='readingEditorModal';modal.className='readingEditorModal';modal.hidden=true;
+      modal.innerHTML=`<div class="readingEditorDialog" role="dialog" aria-modal="true" aria-labelledby="readingEditorTitle"><h2 id="readingEditorTitle">읽기 문항 수정</h2><div class="readingEditorMeta" id="readingEditorMeta"></div><div class="readingEditorGrid"><label class="readingEditorField">구역명(한국어)<input id="readingSectionKr" type="text"></label><label class="readingEditorField">구역명(몽골어)<input id="readingSectionMn" type="text"></label></div><label class="readingEditorField">한국어 문장<textarea id="readingKo"></textarea></label><label class="readingEditorField">몽골어 번역<textarea id="readingMn"></textarea></label><label class="readingEditorField">문장 구조<textarea id="readingStructure"></textarea></label><label class="readingEditorField">문장 분석 <span class="readingEditorHelp">한 줄에 ‘한국어 => 몽골어’</span><textarea id="readingAnalysis"></textarea></label><label class="readingEditorField">문법 설명 <span class="readingEditorHelp">한 줄에 한 항목</span><textarea id="readingGrammarMn"></textarea></label><label class="readingEditorField">어휘·표현 <span class="readingEditorHelp">한 줄에 한 항목</span><textarea id="readingVocabMn"></textarea></label><div class="readingEditorHelp">저장하면 원본 JSON은 보존되고 Google Sheet 수정본이 즉시 적용됩니다. 다음 접속부터 모든 학생에게 같은 수정본이 표시됩니다.</div><div class="readingEditorMessage" id="readingEditorMessage"></div><div class="readingEditorActions"><button id="readingEditorRestore" class="restore" type="button">원본으로 복원</button><button id="readingEditorCancel" type="button">취소</button><button id="readingEditorSave" class="save" type="button">저장</button></div></div>`;
+      document.body.appendChild(modal);$('readingEditorCancel').onclick=closeReadingEditor;$('readingEditorSave').onclick=saveReadingEditor;$('readingEditorRestore').onclick=restoreReadingEditor;modal.addEventListener('click',e=>{if(e.target===modal)closeReadingEditor();});return modal;
+    }
+    function setReadingEditorMessage(message,bad){const el=$('readingEditorMessage');if(!el)return;el.textContent=message||'';el.className=`readingEditorMessage ${message?(bad?'bad':'ok'):''}`;}
+    function setReadingEditorBusy(busy){['readingEditorSave','readingEditorRestore','readingEditorCancel'].forEach(id=>{const el=$(id);if(el)el.disabled=!!busy;});}
+    function openReadingEditor(item){
+      if(!READING_EDITOR_CAN_EDIT||!READING_EDIT_MODE||!item)return;CURRENT_EDIT_READING=item;const modal=ensureReadingEditorModal(),itemId=String(item.__contentReadingId||''),scope=readingScope(DATA,params.get('data'));
+      $('readingEditorMeta').textContent=`${scope.book.replace(/^SNU-/,'')} ${scope.lesson}과 · ${itemId}${ACTIVE_READING_OVERRIDES.has(itemId)?' · 수정본 사용 중':''}`;
+      $('readingSectionKr').value=String(item.section_kr||item.section||'');$('readingSectionMn').value=String(item.section_mn||'');$('readingKo').value=String(item.ko||'');$('readingMn').value=String(item.mn||'');$('readingStructure').value=String(item.structure||'');$('readingAnalysis').value=analysisRowsToText(item.analysis_rows);$('readingGrammarMn').value=(Array.isArray(item.grammar_mn)?item.grammar_mn:[]).join('\n');$('readingVocabMn').value=(Array.isArray(item.vocab_mn)?item.vocab_mn:[]).join('\n');
+      $('readingEditorRestore').style.display=ACTIVE_READING_OVERRIDES.has(itemId)?'inline-block':'none';setReadingEditorBusy(false);setReadingEditorMessage('',false);modal.hidden=false;setTimeout(()=>$('readingKo').focus(),0);
+    }
+    function closeReadingEditor(){const modal=$('readingEditorModal');if(modal)modal.hidden=true;CURRENT_EDIT_READING=null;}
+    function readingEditorPayload(){
+      const payload={section_kr:String($('readingSectionKr').value||'').trim(),section_mn:String($('readingSectionMn').value||'').trim(),ko:String($('readingKo').value||'').trim(),mn:String($('readingMn').value||'').trim(),structure:String($('readingStructure').value||'').trim(),analysis_rows:parseAnalysisRows($('readingAnalysis').value),grammar_mn:linesToArray($('readingGrammarMn').value),vocab_mn:linesToArray($('readingVocabMn').value)};
+      if(!payload.ko)return {ok:false,error:'한국어 문장을 입력하세요.'};if(!payload.mn)return {ok:false,error:'몽골어 번역을 입력하세요.'};return {ok:true,payload};
+    }
+    async function saveReadingEditor(){
+      const item=CURRENT_EDIT_READING;if(!item)return;const form=readingEditorPayload();if(!form.ok){setReadingEditorMessage(form.error,true);return;}const identity=readingIdentity(),scope=readingScope(DATA,params.get('data')),itemId=String(item.__contentReadingId||'');setReadingEditorBusy(true);setReadingEditorMessage('저장 중...',false);
+      try{const result=await sendAccessJsonp({action:'content_override_save',token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId,payload:JSON.stringify(form.payload)});if(!result||result.ok!==true)throw new Error(String(result&&result.error||'save_failed'));ACTIVE_READING_OVERRIDES.set(itemId,cloneReadingContent(form.payload));applyReadingPayload(item,form.payload);setReadingEditorMessage('저장되었습니다. 다음 접속에서도 수정본이 사용됩니다.',false);setTimeout(()=>{closeReadingEditor();render();},300);}catch(err){setReadingEditorBusy(false);setReadingEditorMessage(`저장 실패: ${err&&err.message?err.message:'network_error'}`,true);}
+    }
+    async function restoreReadingEditor(){
+      const item=CURRENT_EDIT_READING;if(!item)return;const itemId=String(item.__contentReadingId||'');if(!confirm('이 읽기 문항의 수정본을 해제하고 원본 JSON으로 복원할까요?'))return;const identity=readingIdentity(),scope=readingScope(DATA,params.get('data'));setReadingEditorBusy(true);setReadingEditorMessage('원본으로 복원 중...',false);
+      try{const result=await sendAccessJsonp({action:'content_override_restore',token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId});if(!result||result.ok!==true)throw new Error(String(result&&result.error||'restore_failed'));ACTIVE_READING_OVERRIDES.delete(itemId);const original=ORIGINAL_READING.get(itemId);if(original)applyReadingPayload(item,original);setReadingEditorMessage('원본으로 복원되었습니다.',false);setTimeout(()=>{closeReadingEditor();render();},300);}catch(err){setReadingEditorBusy(false);setReadingEditorMessage(`복원 실패: ${err&&err.message?err.message:'network_error'}`,true);}
     }
 
     function firstLessonNoForLevel(levelRaw){
@@ -374,7 +453,11 @@
       const bullets=(arr)=>Array.isArray(arr)&&arr.length?arr.map(x=>`• ${esc(x)}`).join('<br>'):'';
       const analysis=Array.isArray(item.analysis_rows)&&item.analysis_rows.length
         ?item.analysis_rows.map(x=>`• <b>${esc(x.ko)}</b> → ${esc(x.mn)}`).join('<br>'):'';
+      const readingItemIdValue=String(item.__contentReadingId||'');
+      const readingEdited=ACTIVE_READING_OVERRIDES.has(readingItemIdValue);
+      const readingEditorBar=(READING_EDITOR_CAN_EDIT&&READING_EDIT_MODE)?`<div class="readingItemEditorBar"><span class="editorBadge">개발자 편집</span>${readingEdited?'<span class="editedMark">● 수정본 적용됨</span>':''}<button class="editReadingBtn" id="editCurrentReading" type="button">✏ 현재 읽기 수정</button></div>`:'';
       $('studyBox').innerHTML=`
+        ${readingEditorBar}
         ${(item.section_mn||item.section)?`<div class="sectionBadge">${esc(item.section_mn||item.section)}</div>`:''}
         <div class="questionNo">Солонгос өгүүлбэр ${esc(item.id??n)}</div>
         <div class="koSentence">${esc(item.ko)}</div>
@@ -388,6 +471,7 @@
         </div>
         <div class="navRow"><button class="btn prev" id="btnPrev" type="button" ${index===0?'disabled':''}>← Өмнөх</button>
         <span class="counter">${n} / ${total}</span><button class="btn next" id="btnNext" type="button">${n===total?'Дуусгах ✓':'Дараах →'}</button></div>`;
+      const editReading=$('editCurrentReading');if(editReading)editReading.onclick=()=>openReadingEditor(item);
       $('btnCheck').onclick=()=>{revealed=!revealed;render()};
       $('btnPrev').onclick=()=>{if(index>0){index--;revealed=false;render();scrollStudyTop()}};
       $('btnNext').onclick=()=>{if(index<items.length-1){index++;revealed=false;render();scrollStudyTop()}else showComplete(items.length)};
@@ -411,6 +495,7 @@
       applyTop();
       $('status').textContent=tr('loading');
       $('btnBack').onclick=()=>{location.href=levelIndexUrl()};
+      const editToggle=$('toggleReadingEditMode');if(editToggle)editToggle.onclick=()=>{if(!READING_EDITOR_CAN_EDIT)return;READING_EDIT_MODE=!READING_EDIT_MODE;updateReadingEditorControls();render();};
       $('btnLang').onclick=()=>{
         const next=getLang()==='KR'?'MN':'KR';
         localStorage.setItem('kq_lang',next);localStorage.setItem('lang',next);
@@ -436,12 +521,14 @@
         }
         document.title=getLang()==='MN'?(DATA.title_mn||DATA.title_kr||document.title):(DATA.title_kr||document.title);
         if(!Array.isArray(DATA.items)||DATA.items.length!==50)throw new Error(`문항 수 오류: ${Array.isArray(DATA.items)?DATA.items.length:0}`);
+        prepareReadingContentIds(DATA);
         const access=await verifyReadingLessonUnlocked(DATA,path);
         applyTop();
         if(!access.allowed){
           if(access.authRequired){renderReadingAuthRequired(access,DATA);return;}
           renderReadingLocked(access,DATA);return;
         }
+        await loadReadingContentEditorState(DATA,path);
         $('studyArea').classList.remove('hidden');$('status').textContent=tr('loaded');applyTop();
       }catch(e){
         $('status').textContent='';$('err').textContent=`${tr('loadError')}\n${e.message||e}\n${path}`;$('err').classList.remove('hidden');

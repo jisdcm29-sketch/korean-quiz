@@ -289,7 +289,7 @@
       </div>
 
       <div class="contentEditorControls" id="contentEditorControls" hidden>
-        <span class="editorBadge">개발자 어휘 편집</span>
+        <span class="editorBadge">개발자 콘텐츠 편집</span>
         <span class="editedMark" id="vocabOverrideCount"></span>
         <button class="editModeBtn" id="toggleVocabEditMode" type="button">수정 모드 OFF</button>
       </div>
@@ -467,6 +467,9 @@
     let CURRENT_EDIT_VOCAB = null;
     const ORIGINAL_VOCAB = new Map();
     const ACTIVE_VOCAB_OVERRIDES = new Map();
+    let CURRENT_EDIT_MIXED = null;
+    const ORIGINAL_MIXED = new Map();
+    const ACTIVE_MIXED_OVERRIDES = new Map();
 
     function applyTexts(){
       document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
@@ -773,6 +776,140 @@
         "4A":[1,9], "4B":[10,18]
       };
       return ranges[level] || null;
+    }
+
+
+    // STEP30-4: 종합 테스트 문항 직접 편집
+    function mixedContentScope(d){
+      const base=vocabContentScope(d);
+      return {area:base.area,book:base.book,lesson:base.lesson,section:"mixed"};
+    }
+    function mixedContentItemId(item,index,prefix){
+      if(item&&item.__contentMixedId)return String(item.__contentMixedId);
+      const raw=String(item&&item.id||"").trim();
+      const id=`${prefix}_${raw||String(Number(index)+1).padStart(3,"0")}`;
+      if(item)item.__contentMixedId=id;
+      return id;
+    }
+    function prepareMixedContentIds(d){
+      ORIGINAL_MIXED.clear();
+      (d&&Array.isArray(d.grammar_questions)?d.grammar_questions:[]).forEach((item,index)=>{
+        const id=mixedContentItemId(item,index,"grammar");
+        if(item)item.__contentMixedSource="grammar_questions";
+        ORIGINAL_MIXED.set(id,clonePlainContent(item));
+      });
+      (d&&Array.isArray(d.mixed_questions)?d.mixed_questions:[]).forEach((item,index)=>{
+        const id=mixedContentItemId(item,index,"integrated");
+        if(item)item.__contentMixedSource="mixed_questions";
+        ORIGINAL_MIXED.set(id,clonePlainContent(item));
+      });
+    }
+    function findMixedItemById(itemId){
+      const id=String(itemId||"");
+      const banks=[...(LESSON&&Array.isArray(LESSON.grammar_questions)?LESSON.grammar_questions:[]),...(LESSON&&Array.isArray(LESSON.mixed_questions)?LESSON.mixed_questions:[])];
+      return banks.find(item=>String(item&&item.__contentMixedId||"")===id)||null;
+    }
+    function applyMixedPayload(target,payload){
+      if(!target||!payload||typeof payload!=="object")return;
+      if(Object.prototype.hasOwnProperty.call(payload,"prompt"))target.prompt=String(payload.prompt==null?"":payload.prompt);
+      if(Object.prototype.hasOwnProperty.call(payload,"choices")&&Array.isArray(payload.choices))target.choices=payload.choices.map(v=>String(v==null?"":v)).filter(Boolean);
+      if(Object.prototype.hasOwnProperty.call(payload,"correct"))target.correct=String(payload.correct==null?"":payload.correct);
+    }
+    function applyMixedPayloadEverywhere(itemId,payload){
+      const source=findMixedItemById(itemId);if(source)applyMixedPayload(source,payload);
+      if(CURRENT_EDIT_MIXED&&String(CURRENT_EDIT_MIXED.__contentMixedId||"")===String(itemId||""))applyMixedPayload(CURRENT_EDIT_MIXED,payload);
+    }
+    async function loadMixedContentEditorState(d){
+      const identity=resultLogIdentity(),scope=mixedContentScope(d);
+      ACTIVE_MIXED_OVERRIDES.clear();
+      if(!identity.token||!scope.lesson)return;
+      try{
+        const result=await sendResultJsonp({action:"content_overrides",token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section});
+        if(result&&result.ok===true){
+          if(result.canEdit===true)CONTENT_EDITOR_CAN_EDIT=true;
+          (Array.isArray(result.items)?result.items:[]).forEach(entry=>{
+            const itemId=String(entry&&entry.itemId||"");
+            const item=findMixedItemById(itemId);
+            if(!item||!entry.payload)return;
+            ACTIVE_MIXED_OVERRIDES.set(itemId,clonePlainContent(entry.payload));
+            applyMixedPayload(item,entry.payload);
+          });
+        }
+      }catch(err){console.log("mixed content overrides load failed:",err);}
+      finally{updateContentEditorControls();}
+    }
+    function ensureMixedEditorModal(){
+      let modal=document.getElementById("mixedEditorModal");if(modal)return modal;
+      modal=document.createElement("div");modal.id="mixedEditorModal";modal.className="vocabEditorModal";modal.hidden=true;
+      modal.innerHTML=`<div class="vocabEditorDialog" role="dialog" aria-modal="true" aria-labelledby="mixedEditorTitle"><h2 id="mixedEditorTitle">종합 테스트 문항 수정</h2><div class="vocabEditorMeta" id="mixedEditorMeta"></div><label class="vocabEditorField">문제<textarea id="mixedEditorPrompt"></textarea></label><div class="vocabEditorHelp">선택지는 최대 4개입니다. 정답은 아래 선택지 중 하나와 정확히 같아야 합니다.</div><div class="vocabEditorGrid"><label class="vocabEditorField">선택지 1<input id="mixedChoice1" type="text"></label><label class="vocabEditorField">선택지 2<input id="mixedChoice2" type="text"></label><label class="vocabEditorField">선택지 3<input id="mixedChoice3" type="text"></label><label class="vocabEditorField">선택지 4<input id="mixedChoice4" type="text"></label></div><label class="vocabEditorField">정답<select id="mixedEditorCorrect" style="width:100%;margin-top:6px;border:1px solid #3b4b66;background:#08111f;color:#fff;border-radius:11px;padding:11px 12px;font:inherit"></select></label><div class="vocabEditorHelp">저장하면 Google Sheet에 영구 저장되고 이후 모든 학생의 종합 테스트에서 수정본이 사용됩니다. 저장 후 현재 종합 테스트는 새 문항 구성으로 다시 시작합니다.</div><div class="vocabEditorMessage" id="mixedEditorMessage"></div><div class="vocabEditorActions"><button id="mixedEditorRestore" class="restore" type="button">원본으로 복원</button><button id="mixedEditorCancel" type="button">취소</button><button id="mixedEditorSave" class="save" type="button">저장</button></div></div>`;
+      document.body.appendChild(modal);
+      document.getElementById("mixedEditorCancel").onclick=closeMixedEditor;
+      document.getElementById("mixedEditorSave").onclick=saveMixedEditor;
+      document.getElementById("mixedEditorRestore").onclick=restoreMixedEditor;
+      [1,2,3,4].forEach(n=>document.getElementById(`mixedChoice${n}`).addEventListener("input",refreshMixedCorrectOptions));
+      modal.addEventListener("click",e=>{if(e.target===modal)closeMixedEditor();});
+      return modal;
+    }
+    function setMixedEditorMessage(message,bad){const el=document.getElementById("mixedEditorMessage");if(!el)return;el.textContent=message||"";el.className=`vocabEditorMessage ${message?(bad?"bad":"ok"):""}`;}
+    function setMixedEditorBusy(busy){["mixedEditorSave","mixedEditorRestore","mixedEditorCancel"].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!busy;});}
+    function refreshMixedCorrectOptions(preferred){
+      const sel=document.getElementById("mixedEditorCorrect");if(!sel)return;
+      const current=preferred!==undefined?String(preferred||""):String(sel.value||"");
+      const choices=[1,2,3,4].map(n=>String(document.getElementById(`mixedChoice${n}`)?.value||"").trim()).filter(Boolean);
+      sel.innerHTML=choices.map(c=>`<option value="${escapeQuestionHtml(c)}">${escapeQuestionHtml(c)}</option>`).join("");
+      if(choices.includes(current))sel.value=current;
+    }
+    function openMixedEditor(item){
+      if(!CONTENT_EDITOR_CAN_EDIT||!VOCAB_EDIT_MODE||!item)return;
+      stopMixedTimer();CURRENT_EDIT_MIXED=item;const modal=ensureMixedEditorModal(),itemId=String(item.__contentMixedId||""),scope=mixedContentScope(LESSON);
+      document.getElementById("mixedEditorMeta").textContent=`${scope.book.replace(/^SNU-/,"")} ${scope.lesson}과 · ${itemId}${ACTIVE_MIXED_OVERRIDES.has(itemId)?" · 수정본 사용 중":""}`;
+      document.getElementById("mixedEditorPrompt").value=String(item.prompt||"");
+      const choices=Array.isArray(item.choices)?item.choices:[];
+      [1,2,3,4].forEach((n,i)=>{document.getElementById(`mixedChoice${n}`).value=String(choices[i]||"");});
+      refreshMixedCorrectOptions(String(item.correct||""));
+      const restore=document.getElementById("mixedEditorRestore");if(restore)restore.style.display=ACTIVE_MIXED_OVERRIDES.has(itemId)?"inline-block":"none";
+      setMixedEditorBusy(false);setMixedEditorMessage("",false);modal.hidden=false;setTimeout(()=>document.getElementById("mixedEditorPrompt").focus(),0);
+    }
+    function closeMixedEditor(){const modal=document.getElementById("mixedEditorModal");if(modal)modal.hidden=true;CURRENT_EDIT_MIXED=null;}
+    function mixedEditorPayloadFromForm(){
+      const prompt=String(document.getElementById("mixedEditorPrompt").value||"").trim();
+      const choices=[1,2,3,4].map(n=>String(document.getElementById(`mixedChoice${n}`).value||"").trim()).filter(Boolean);
+      const correct=String(document.getElementById("mixedEditorCorrect").value||"").trim();
+      if(!prompt)return {ok:false,error:"문제 문장을 입력하세요."};
+      if(choices.length<2)return {ok:false,error:"선택지를 2개 이상 입력하세요."};
+      if(new Set(choices).size!==choices.length)return {ok:false,error:"선택지는 서로 달라야 합니다."};
+      if(!correct||!choices.includes(correct))return {ok:false,error:"정답을 선택하세요."};
+      return {ok:true,payload:{prompt,choices,correct}};
+    }
+    async function saveMixedEditor(){
+      const item=CURRENT_EDIT_MIXED;if(!item)return;const form=mixedEditorPayloadFromForm();if(!form.ok){setMixedEditorMessage(form.error,true);return;}
+      const identity=resultLogIdentity(),scope=mixedContentScope(LESSON),itemId=String(item.__contentMixedId||"");setMixedEditorBusy(true);setMixedEditorMessage("저장 중...",false);
+      try{
+        const result=await sendResultJsonp({action:"content_override_save",token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId,payload:JSON.stringify(form.payload)});
+        if(!result||result.ok!==true)throw new Error(String(result&&result.error||"save_failed"));
+        ACTIVE_MIXED_OVERRIDES.set(itemId,clonePlainContent(form.payload));applyMixedPayloadEverywhere(itemId,form.payload);setMixedEditorMessage("저장되었습니다. 다음 접속에서도 수정본이 사용됩니다.",false);
+        setTimeout(()=>{closeMixedEditor();if(LESSON)renderMixed(LESSON);},300);
+      }catch(err){setMixedEditorBusy(false);setMixedEditorMessage(`저장 실패: ${err&&err.message?err.message:"network_error"}`,true);}
+    }
+    async function restoreMixedEditor(){
+      const item=CURRENT_EDIT_MIXED;if(!item)return;const itemId=String(item.__contentMixedId||"");if(!confirm("이 문항의 수정본을 해제하고 원본 JSON으로 복원할까요?"))return;
+      const identity=resultLogIdentity(),scope=mixedContentScope(LESSON);setMixedEditorBusy(true);setMixedEditorMessage("원본으로 복원 중...",false);
+      try{
+        const result=await sendResultJsonp({action:"content_override_restore",token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId});
+        if(!result||result.ok!==true)throw new Error(String(result&&result.error||"restore_failed"));
+        ACTIVE_MIXED_OVERRIDES.delete(itemId);const original=ORIGINAL_MIXED.get(itemId);if(original)applyMixedPayloadEverywhere(itemId,original);setMixedEditorMessage("원본으로 복원되었습니다.",false);
+        setTimeout(()=>{closeMixedEditor();if(LESSON)renderMixed(LESSON);},300);
+      }catch(err){setMixedEditorBusy(false);setMixedEditorMessage(`복원 실패: ${err&&err.message?err.message:"network_error"}`,true);}
+    }
+    function mixedEditorBar(raw){
+      if(!CONTENT_EDITOR_CAN_EDIT||!VOCAB_EDIT_MODE||!raw)return "";
+      if(raw.category==="vocab"&&raw.__sourceVocabId){
+        const modified=ACTIVE_VOCAB_OVERRIDES.has(String(raw.__sourceVocabId));
+        return `<div class="vocabQuizEditorBar"><span class="editorBadge">개발자 편집</span>${modified?'<span class="editedMark">● 수정본 적용됨</span>':''}<button class="editVocabBtn" id="editCurrentMixedSource" type="button">✏ 현재 어휘 수정</button></div>`;
+      }
+      const itemId=String(raw.__contentMixedId||"");if(!itemId)return "";
+      const modified=ACTIVE_MIXED_OVERRIDES.has(itemId);
+      return `<div class="vocabQuizEditorBar"><span class="editorBadge">개발자 편집</span>${modified?'<span class="editedMark">● 수정본 적용됨</span>':''}<button class="editVocabBtn" id="editCurrentMixedQuestion" type="button">✏ 현재 문항 수정</button></div>`;
     }
 
     function parseLessonDataTarget(pathRaw){
@@ -1264,7 +1401,7 @@
         .map(v=>mode==="KO2MN"?(v.mn||""):(v.ko||""))
         .filter(x=>x&&x!==correct);
       const distractors=shuffle(Array.from(new Set(answers))).slice(0,3);
-      return {category:"vocab",prompt,correct,choices:shuffle([correct,...distractors])};
+      return {category:"vocab",prompt,correct,choices:shuffle([correct,...distractors]),__sourceVocabId:String(item&&item.__contentId||"")};
     }
 
     const MIXED_DUP_GROUPS_3A={
@@ -1444,7 +1581,9 @@
       if(!s||!s.queue.length){div.innerHTML=`<div class='muted'>${tr("cant")}</div>`;return;}
       if(s.index>=s.queue.length){finishMixed();return;}
       s.locked=false;s.remaining=MIXED_SECONDS;const raw=s.queue[s.index];const q={prompt:raw.prompt,correct:raw.correct,choices:shuffle(Array.from(new Set([raw.correct,...raw.choices])).filter(Boolean))};
-      div.innerHTML=mixedStats(s.queue.length);const holder=document.createElement("div");div.appendChild(holder);
+      div.innerHTML=mixedStats(s.queue.length)+mixedEditorBar(raw);const holder=document.createElement("div");div.appendChild(holder);
+      const editMixed=document.getElementById("editCurrentMixedQuestion");if(editMixed)editMixed.onclick=()=>openMixedEditor(raw);
+      const editMixedVocab=document.getElementById("editCurrentMixedSource");if(editMixedVocab)editMixedVocab.onclick=()=>{const item=findVocabItemById(raw.__sourceVocabId);if(item)openVocabEditor(item);};
       renderQuestionInto(holder,q,(ok,btn,wrap)=>{if(s.locked)return;s.locked=true;stopMixedTimer();const cat=s.category[raw.category]||s.category.integrated;cat.t++;if(ok){s.correct++;cat.c++;}else{s.wrong++;s.miss.push({category:raw.category||"integrated",prompt:q.prompt,selected:btn?btn.textContent:"",correct:q.correct,reason:"wrong"});}[...wrap.querySelectorAll("button")].forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});if(!ok)btn.classList.add("wrongChoice");updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},650)});
       updateMixed();MIXED_TIMER=setInterval(()=>{if(s.locked)return;s.remaining--;updateMixed();if(s.remaining<=0){s.locked=true;stopMixedTimer();s.wrong++;s.timeout++;s.miss.push({category:raw.category||"integrated",prompt:q.prompt,selected:"",correct:q.correct,reason:"timeout"});const cat=s.category[raw.category]||s.category.integrated;cat.t++;holder.querySelectorAll("button.choice").forEach(b=>{b.disabled=true;if(b.textContent===q.correct)b.classList.add("correctChoice")});const result=holder.querySelector(".result");if(result){result.style.display="";result.classList.add("bad");result.innerHTML=`<b>${tr("timeout")}</b> <span class="muted small">${tr("answer")}: ${q.correct}</span>`;}updateMixed();setTimeout(()=>{s.index++;renderCurrentMixed(d)},700)}},1000);
     }
@@ -1524,7 +1663,7 @@
       document.getElementById("toggleVocabEditMode").addEventListener("click", ()=>{
         if(!CONTENT_EDITOR_CAN_EDIT)return;
         VOCAB_EDIT_MODE=!VOCAB_EDIT_MODE;updateContentEditorControls();
-        if(LESSON){renderVocab(LESSON);if(document.getElementById("panel-quiz").classList.contains("active")&&QUIZ_STATE)renderCurrentQuizQuestion(LESSON);}
+        if(LESSON){renderVocab(LESSON);if(document.getElementById("panel-quiz").classList.contains("active")&&QUIZ_STATE)renderCurrentQuizQuestion(LESSON);if(document.getElementById("panel-mixed").classList.contains("active")&&MIXED_STATE)renderCurrentMixed(LESSON);}
       });
 
       document.getElementById("tab-reading").addEventListener("click", ()=>{
@@ -1620,7 +1759,8 @@
 
         LESSON = d;
         prepareVocabContentIds(d);
-        CONTENT_EDITOR_LOAD_PROMISE = loadVocabContentEditorState(d);
+        prepareMixedContentIds(d);
+        CONTENT_EDITOR_LOAD_PROMISE = Promise.all([loadVocabContentEditorState(d),loadMixedContentEditorState(d)]);
         const lesson = lessonRaw;
         const lessonLabel = makeLessonLabel(lesson);
         const tmn = d.title_mn || (d.meta && d.meta.title_mn) || "";
