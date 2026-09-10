@@ -365,6 +365,25 @@
       .descBox{grid-template-columns: 1fr 1fr;}
       .synAntBox{grid-template-columns: 1fr 1fr;}
     }
+
+
+    /* STEP30-6: TOPIK II developer content editor */
+    .contentEditorControls,.itemEditorBar{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}
+    .contentEditorControls{margin:10px 0 2px}.contentEditorControls[hidden]{display:none}
+    .itemEditorBar{margin:0 0 10px}
+    .editorBadge{font-size:12px;color:#fde68a;border:1px solid #7c5d16;background:#2d230d;border-radius:999px;padding:5px 9px;font-weight:850}
+    .editModeBtn,.editItemBtn{padding:8px 12px;border:1px solid #d6a726;background:#302715;color:#fde68a;border-radius:11px;cursor:pointer;font-weight:900}
+    .editModeBtn.active{background:#644b0e;color:#fff}.editedMark{font-size:12px;color:#86efac;font-weight:850}
+    .editorModal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72)}
+    .editorModal[hidden]{display:none}.editorDialog{width:min(820px,100%);max-height:92vh;overflow:auto;background:#111a2a;border:1px solid #4b5d78;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:18px}
+    .editorDialog h2{margin:0 0 4px;color:#fde68a}.editorMeta{color:var(--muted);font-size:13px;margin-bottom:14px}
+    .editorField{display:block;margin-top:12px;font-weight:850}.editorField input,.editorField textarea{width:100%;margin-top:6px;border:1px solid #3b4b66;background:#08111f;color:#fff;border-radius:11px;padding:11px 12px;font:inherit}
+    .editorField textarea{min-height:76px;resize:vertical;line-height:1.45}.editorGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .editorHelp{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.editorActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+    .editorActions button{padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.16);background:#101829;color:#fff;cursor:pointer;font-weight:900}
+    .editorActions .save{border-color:#22c55e;background:#123725}.editorActions .restore{border-color:#ef4444;background:#3a151b}.editorActions button:disabled{opacity:.55;cursor:wait}
+    .editorMessage{min-height:20px;margin-top:10px;font-size:13px}.editorMessage.ok{color:#86efac}.editorMessage.bad{color:#fecaca}
+    @media(max-width:620px){.editorGrid{grid-template-columns:1fr}}
   </style>
 </head>
 
@@ -583,9 +602,56 @@
   const state = {
     file: normalizeFileParam(),
     data: null,
+    originalData: null,
     idx: 0,
     startedAt: Date.now()
   };
+
+  // STEP30-6: TOPIK II 어휘/문법 공통 콘텐츠 편집 상태
+  let CONTENT_CAN_EDIT = false;
+  let CONTENT_EDIT_MODE = false;
+  const CONTENT_OVERRIDES = new Map();
+  let CURRENT_EDITOR_KIND = "";
+  let CURRENT_EDITOR_INDEX = -1;
+
+  function editableDeckKind_(){
+    const f = String(state.file || "");
+    if (/\/data\/topik2\/vocab\//i.test(f)) return "vocab";
+    if (/\/data\/topik2\/grammar\//i.test(f)) return "grammar";
+    return "";
+  }
+  function deckLessonKey_(){
+    try{
+      const u = new URL(state.file, location.href);
+      const name = (u.pathname.split("/").pop() || "deck").replace(/\.json$/i, "");
+      return name || "deck";
+    }catch(_){ return "deck"; }
+  }
+  function contentScope_(){
+    const kind = editableDeckKind_();
+    return {area:"TOPIK2", book:kind.toUpperCase(), lesson:deckLessonKey_(), section:"flashcards"};
+  }
+  function contentIdentity_(){
+    return {token:qs("token")||"", deviceId:getDeviceId(), name:qs("name")||""};
+  }
+  function itemId_(item, index){
+    const raw = item && (item.id ?? item.no);
+    if (raw !== undefined && raw !== null && String(raw).trim() !== "") return String(raw);
+    return "item_" + String(Number(index)+1).padStart(3,"0");
+  }
+  function deepClone_(v){ return JSON.parse(JSON.stringify(v == null ? {} : v)); }
+  function applyKnown_(target, payload, keys){
+    if (!target || !payload) return;
+    keys.forEach(k=>{ if (Object.prototype.hasOwnProperty.call(payload,k)) target[k]=deepClone_(payload[k]); });
+  }
+  function currentItem_(){
+    const items = state.data && Array.isArray(state.data.items) ? state.data.items : [];
+    return items[state.idx] || null;
+  }
+  function currentOriginalItem_(index){
+    const items = state.originalData && Array.isArray(state.originalData.items) ? state.originalData.items : [];
+    return items[index] ? deepClone_(items[index]) : null;
+  }
 
   function showError(msg){
     const $err = document.getElementById("err");
@@ -629,7 +695,14 @@
           </div>
         </div>
 
+        <div class="contentEditorControls" id="contentEditorControls" hidden>
+          <span class="editorBadge">개발자 콘텐츠 편집</span>
+          <span class="editedMark" id="contentEditCount"></span>
+          <button class="editModeBtn" id="toggleContentEditMode" type="button">수정 모드 OFF</button>
+        </div>
+
         <div class="cardBox">
+          <div class="itemEditorBar" id="itemEditorBar"></div>
           <div class="wordRow">
             <div class="koWord" id="koWord">…</div>
             <div class="mnWordInline" id="mnWordInline"></div>
@@ -694,9 +767,158 @@
     });
   }
 
+  function ensureEditorModal_(){
+    let m=document.getElementById("contentEditorModal");
+    if(m) return m;
+    m=document.createElement("div");
+    m.id="contentEditorModal";
+    m.className="editorModal";
+    m.hidden=true;
+    document.body.appendChild(m);
+    return m;
+  }
+  function setEditorBusy_(busy){
+    ["editorSave","editorRestore","editorCancel"].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!busy;});
+  }
+  function setEditorMessage_(msg,bad){
+    const el=document.getElementById("editorMessage"); if(!el)return;
+    el.textContent=msg||""; el.className="editorMessage "+(msg?(bad?"bad":"ok"):"");
+  }
+  function closeEditor_(){
+    const m=document.getElementById("contentEditorModal"); if(m)m.hidden=true;
+    CURRENT_EDITOR_KIND=""; CURRENT_EDITOR_INDEX=-1;
+  }
+  function editorButtons_(modified){
+    return `<div class="editorMessage" id="editorMessage"></div><div class="editorActions"><button id="editorRestore" class="restore" type="button" style="${modified?"":"display:none"}">원본으로 복원</button><button id="editorCancel" type="button">취소</button><button id="editorSave" class="save" type="button">저장</button></div>`;
+  }
+  function normalizedCardForEditor_(item){
+    const fixed=fixPair(safe(item&&item.ko).trim(),safe(item&&item.mn).trim());
+    const exFixed=splitExample(item&&item.ex_ko,item&&item.ex_mn);
+    const koDesc=splitDescAndExample(exFixed.ex_ko), mnDesc=splitDescAndExample(exFixed.ex_mn);
+    return {
+      ko:fixed.ko||"", mn:fixed.mn||"",
+      desc_ko:koDesc.desc||"", desc_mn:mnDesc.desc||"",
+      ex_ko:koDesc.ex||"", ex_mn:mnDesc.ex||"",
+      syn_ko:stripLabelPrefix(item&&item.syn_ko||""),
+      ant_ko:stripLabelPrefix(item&&item.ant_ko||"")
+    };
+  }
+  function openCardEditor_(index){
+    if(!CONTENT_CAN_EDIT||!CONTENT_EDIT_MODE)return;
+    const items=state.data&&Array.isArray(state.data.items)?state.data.items:[];
+    const item=items[index]; if(!item)return;
+    CURRENT_EDITOR_KIND="item"; CURRENT_EDITOR_INDEX=index;
+    const id=itemId_(item,index), data=normalizedCardForEditor_(item), keyDeck=isKeyVocabDeck(state.file), m=ensureEditorModal_();
+    const kindLabel=editableDeckKind_()==="grammar"?"문법":"어휘";
+    m.innerHTML=`<div class="editorDialog"><h2>TOPIK II ${kindLabel} 카드 수정</h2><div class="editorMeta">${deckLessonKey_()} · ${id}</div><div class="editorGrid"><label class="editorField">한국어<textarea id="edKo"></textarea></label><label class="editorField">몽골어<textarea id="edMn"></textarea></label></div>${keyDeck?`<div class="editorGrid"><label class="editorField">유의어<textarea id="edSyn"></textarea></label><label class="editorField">반의어<textarea id="edAnt"></textarea></label></div>`:`<div class="editorGrid"><label class="editorField">설명 (한국어)<textarea id="edDescKo"></textarea></label><label class="editorField">설명 (몽골어)<textarea id="edDescMn"></textarea></label></div>`}<div class="editorGrid"><label class="editorField">예문 (한국어)<textarea id="edExKo"></textarea></label><label class="editorField">예문 (몽골어)<textarea id="edExMn"></textarea></label></div><div class="editorHelp">저장하면 Google Sheet의 콘텐츠수정에 영구 저장되어 이후 모든 학생에게 수정본이 적용됩니다.</div>${editorButtons_(CONTENT_OVERRIDES.has(id))}</div>`;
+    document.getElementById("edKo").value=data.ko; document.getElementById("edMn").value=data.mn;
+    if(keyDeck){document.getElementById("edSyn").value=data.syn_ko;document.getElementById("edAnt").value=data.ant_ko;}
+    else{document.getElementById("edDescKo").value=data.desc_ko;document.getElementById("edDescMn").value=data.desc_mn;}
+    document.getElementById("edExKo").value=data.ex_ko; document.getElementById("edExMn").value=data.ex_mn;
+    document.getElementById("editorCancel").onclick=closeEditor_;
+    document.getElementById("editorSave").onclick=saveCurrentEditor_;
+    document.getElementById("editorRestore").onclick=restoreCurrentEditor_;
+    m.hidden=false;
+  }
+  function openDeckEditor_(){
+    if(!CONTENT_CAN_EDIT||!CONTENT_EDIT_MODE||!state.data)return;
+    CURRENT_EDITOR_KIND="deck"; CURRENT_EDITOR_INDEX=-1;
+    const m=ensureEditorModal_();
+    m.innerHTML=`<div class="editorDialog"><h2>TOPIK II 카드 묶음 제목 수정</h2><div class="editorMeta">${deckLessonKey_()}</div><label class="editorField">기본 제목<input id="edTitle" type="text"></label><div class="editorGrid"><label class="editorField">한국어 제목<input id="edTitleKr" type="text"></label><label class="editorField">몽골어 제목<input id="edTitleMn" type="text"></label></div><div class="editorHelp">현재 화면 상단의 카드 묶음 제목을 수정합니다.</div>${editorButtons_(CONTENT_OVERRIDES.has("__deck__"))}</div>`;
+    document.getElementById("edTitle").value=state.data.title||"";
+    document.getElementById("edTitleKr").value=state.data.title_kr||"";
+    document.getElementById("edTitleMn").value=state.data.title_mn||"";
+    document.getElementById("editorCancel").onclick=closeEditor_;
+    document.getElementById("editorSave").onclick=saveCurrentEditor_;
+    document.getElementById("editorRestore").onclick=restoreCurrentEditor_;
+    m.hidden=false;
+  }
+  async function saveCurrentEditor_(){
+    if(!CURRENT_EDITOR_KIND)return;
+    const scope=contentScope_(), id=contentIdentity_();
+    let itemId="", payload={};
+    if(CURRENT_EDITOR_KIND==="deck"){
+      itemId="__deck__";
+      payload={title:String(document.getElementById("edTitle").value||"").trim(),title_kr:String(document.getElementById("edTitleKr").value||"").trim(),title_mn:String(document.getElementById("edTitleMn").value||"").trim()};
+      if(!payload.title&&!payload.title_kr&&!payload.title_mn){setEditorMessage_("제목을 하나 이상 입력해 주세요.",true);return;}
+    }else{
+      const items=state.data&&Array.isArray(state.data.items)?state.data.items:[], item=items[CURRENT_EDITOR_INDEX]; if(!item)return;
+      itemId=itemId_(item,CURRENT_EDITOR_INDEX);
+      const ko=String(document.getElementById("edKo").value||"").trim(), mn=String(document.getElementById("edMn").value||"").trim();
+      if(!ko||!mn){setEditorMessage_("한국어와 몽골어를 모두 입력해 주세요.",true);return;}
+      const exKo=String(document.getElementById("edExKo").value||"").trim(), exMn=String(document.getElementById("edExMn").value||"").trim();
+      if(isKeyVocabDeck(state.file)){
+        payload={ko,mn,syn_ko:String(document.getElementById("edSyn").value||"").trim(),ant_ko:String(document.getElementById("edAnt").value||"").trim(),ex_ko:exKo,ex_mn:exMn};
+      }else{
+        const dko=String(document.getElementById("edDescKo").value||"").trim(), dmn=String(document.getElementById("edDescMn").value||"").trim();
+        payload={ko,mn,ex_ko:[dko,exKo].filter(Boolean).join("\n"),ex_mn:[dmn,exMn].filter(Boolean).join("\n")};
+      }
+    }
+    setEditorBusy_(true);
+    try{
+      const r=await jsonp(SCRIPT_URL,{action:"content_override_save",token:id.token,deviceId:id.deviceId,name:id.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId,payload:JSON.stringify(payload)},10000);
+      if(!r||r.ok!==true)throw new Error(String(r&&r.error||"save_failed"));
+      CONTENT_OVERRIDES.set(itemId,deepClone_(payload));
+      if(CURRENT_EDITOR_KIND==="deck") applyKnown_(state.data,payload,["title","title_kr","title_mn"]);
+      else applyKnown_(state.data.items[CURRENT_EDITOR_INDEX],payload,["ko","mn","ex_ko","ex_mn","syn_ko","ant_ko"]);
+      updateContentEditorControls_(); renderCard();
+      setEditorMessage_("저장되었습니다.",false); setTimeout(closeEditor_,260);
+    }catch(e){setEditorBusy_(false);setEditorMessage_("저장 실패: "+(e&&e.message?e.message:e),true);}
+  }
+  async function restoreCurrentEditor_(){
+    if(!CURRENT_EDITOR_KIND)return;
+    let itemId=CURRENT_EDITOR_KIND==="deck"?"__deck__":itemId_(currentItem_(),CURRENT_EDITOR_INDEX);
+    const scope=contentScope_(), id=contentIdentity_(); setEditorBusy_(true);
+    try{
+      const r=await jsonp(SCRIPT_URL,{action:"content_override_restore",token:id.token,deviceId:id.deviceId,name:id.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId},10000);
+      if(!r||r.ok!==true)throw new Error(String(r&&r.error||"restore_failed"));
+      CONTENT_OVERRIDES.delete(itemId);
+      if(CURRENT_EDITOR_KIND==="deck"){
+        ["title","title_kr","title_mn"].forEach(k=>{if(state.originalData&&Object.prototype.hasOwnProperty.call(state.originalData,k))state.data[k]=deepClone_(state.originalData[k]);else delete state.data[k];});
+      }else{
+        const original=currentOriginalItem_(CURRENT_EDITOR_INDEX); if(original) state.data.items[CURRENT_EDITOR_INDEX]=original;
+      }
+      updateContentEditorControls_(); renderCard();
+      setEditorMessage_("원본으로 복원했습니다.",false); setTimeout(closeEditor_,260);
+    }catch(e){setEditorBusy_(false);setEditorMessage_("복원 실패: "+(e&&e.message?e.message:e),true);}
+  }
+  function applyContentOverrides_(){
+    if(!state.data)return;
+    const deck=CONTENT_OVERRIDES.get("__deck__"); if(deck)applyKnown_(state.data,deck,["title","title_kr","title_mn"]);
+    const items=Array.isArray(state.data.items)?state.data.items:[];
+    items.forEach((item,i)=>{const o=CONTENT_OVERRIDES.get(itemId_(item,i));if(o)applyKnown_(item,o,["ko","mn","ex_ko","ex_mn","syn_ko","ant_ko"]);});
+  }
+  async function loadContentOverrides_(){
+    const kind=editableDeckKind_(); if(!kind)return;
+    const scope=contentScope_(), id=contentIdentity_();
+    try{
+      const r=await jsonp(SCRIPT_URL,{action:"content_overrides",token:id.token,deviceId:id.deviceId,name:id.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section},10000);
+      if(!r||r.ok!==true)return;
+      CONTENT_CAN_EDIT=!!r.canEdit; CONTENT_OVERRIDES.clear();
+      (Array.isArray(r.items)?r.items:[]).forEach(x=>{if(x&&x.itemId)CONTENT_OVERRIDES.set(String(x.itemId),deepClone_(x.payload||{}));});
+    }catch(e){CONTENT_CAN_EDIT=false;}
+  }
+  function updateContentEditorControls_(){
+    const wrap=document.getElementById("contentEditorControls"), btn=document.getElementById("toggleContentEditMode"), count=document.getElementById("contentEditCount");
+    if(!wrap)return;
+    wrap.hidden=!(CONTENT_CAN_EDIT&&editableDeckKind_());
+    if(count)count.textContent=CONTENT_OVERRIDES.size?(`● 수정본 ${CONTENT_OVERRIDES.size}개`):"";
+    if(btn){btn.textContent=CONTENT_EDIT_MODE?"수정 모드 ON":"수정 모드 OFF";btn.classList.toggle("active",CONTENT_EDIT_MODE);btn.onclick=()=>{CONTENT_EDIT_MODE=!CONTENT_EDIT_MODE;updateContentEditorControls_();renderCard();};}
+  }
+  function renderItemEditorBar_(){
+    const bar=document.getElementById("itemEditorBar"); if(!bar)return;
+    if(!(CONTENT_CAN_EDIT&&CONTENT_EDIT_MODE&&editableDeckKind_())){bar.innerHTML="";return;}
+    const item=currentItem_(), itemKey=item?itemId_(item,state.idx):"";
+    bar.innerHTML=`<span class="editorBadge">개발자 편집</span>${itemKey&&CONTENT_OVERRIDES.has(itemKey)?'<span class="editedMark">● 현재 카드 수정본</span>':''}${CONTENT_OVERRIDES.has("__deck__")?'<span class="editedMark">● 제목 수정본</span>':''}<button class="editItemBtn" id="editDeckTitle" type="button">✏ 제목 수정</button><button class="editItemBtn" id="editCurrentCard" type="button">✏ 현재 카드 수정</button>`;
+    const ed=document.getElementById("editDeckTitle");if(ed)ed.onclick=openDeckEditor_;
+    const ec=document.getElementById("editCurrentCard");if(ec)ec.onclick=()=>openCardEditor_(state.idx);
+  }
+
   function renderCard(){
     const items = (state.data && Array.isArray(state.data.items)) ? state.data.items : [];
     const total = items.length;
+    updateContentEditorControls_();
+    renderItemEditorBar_();
 
     const $deckName = document.getElementById("deckName");
     const $posInfo = document.getElementById("posInfo");
@@ -836,6 +1058,7 @@
       throw new Error("JSON 형식이 다릅니다.\n{ title/title_kr/title_mn, items:[{ko,mn,ex_ko,ex_mn}] } 형태여야 합니다.");
     }
     state.data = json;
+    state.originalData = deepClone_(json);
   }
 
   async function render(keepIndex){
@@ -844,10 +1067,13 @@
 
     try{
       if (!state.data) {
-        await loadData();
+        if (editableDeckKind_()) await Promise.all([loadData(), loadContentOverrides_()]);
+        else await loadData();
+        applyContentOverrides_();
         await logEvent("start", { file: state.file });
       }
       if (!keepIndex) state.idx = 0;
+      updateContentEditorControls_();
       renderCard();
       bindNav();
     }catch(e){
