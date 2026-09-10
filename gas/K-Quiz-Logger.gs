@@ -2712,6 +2712,371 @@ function makeFastLoginLogRows_(ts, p) {
   ];
 }
 
+// ============================================================
+// STEP30-1: 개발자용 콘텐츠 편집 기반
+// - 문항/어휘 원본 파일은 그대로 두고 수정본만 Google Sheet에 저장한다.
+// - 콘텐츠 편집 권한은 developerAccess와 분리해서 관리한다.
+// - 이후 프런트엔드에서 이 API를 연결하면 코드/JSON을 직접 수정하지 않고도
+//   문항별 수정 -> 저장 -> 즉시 영구 반영이 가능하다.
+// ============================================================
+const CONTENT_EDITOR_PERMISSION_SHEET_NAME = "콘텐츠편집권한";
+const CONTENT_OVERRIDE_SHEET_NAME = "콘텐츠수정";
+const CONTENT_OVERRIDE_HISTORY_SHEET_NAME = "콘텐츠수정이력";
+const CONTENT_EDITOR_PERMISSION_HEADERS = [
+  "phone", "name", "enabled", "role", "note", "updatedAt"
+];
+const CONTENT_OVERRIDE_HEADERS = [
+  "key", "area", "book", "lesson", "section", "itemId",
+  "payloadJson", "enabled", "updatedByPhone", "updatedByName", "updatedAt"
+];
+const CONTENT_OVERRIDE_HISTORY_HEADERS = [
+  "ts", "key", "action", "area", "book", "lesson", "section", "itemId",
+  "beforeJson", "afterJson", "editorPhone", "editorName"
+];
+const CONTENT_OVERRIDE_CACHE_TTL_SEC = 60 * 5;
+const CONTENT_OVERRIDE_MAX_PAYLOAD_CHARS = 12000;
+
+function ensureSheetWithHeaders_(ss, sheetName, headers) {
+  const sh = ss.getSheetByName(sheetName) || ss.insertSheet(sheetName);
+  if (sh.getLastRow() === 0) {
+    sh.getRange(1, 1, 1, headers.length).setValues([headers]);
+  } else {
+    const current = sh.getRange(1, 1, 1, headers.length).getValues()[0];
+    let changed = false;
+    for (let i = 0; i < headers.length; i++) {
+      if (String(current[i] == null ? "" : current[i]).trim() !== headers[i]) {
+        current[i] = headers[i];
+        changed = true;
+      }
+    }
+    if (changed) sh.getRange(1, 1, 1, headers.length).setValues([current]);
+  }
+  sh.setFrozenRows(1);
+  sh.getRange(1, 1, 1, headers.length)
+    .setFontWeight("bold")
+    .setBackground("#1f4e78")
+    .setFontColor("#ffffff")
+    .setHorizontalAlignment("center");
+  return sh;
+}
+
+function getContentEditorPermissionSheet_(ss) {
+  const sh = ensureSheetWithHeaders_(
+    ss,
+    CONTENT_EDITOR_PERMISSION_SHEET_NAME,
+    CONTENT_EDITOR_PERMISSION_HEADERS
+  );
+  sh.setColumnWidth(1, 110);
+  sh.setColumnWidth(2, 120);
+  sh.setColumnWidth(3, 80);
+  sh.setColumnWidth(4, 100);
+  sh.setColumnWidth(5, 220);
+  sh.setColumnWidth(6, 150);
+  return sh;
+}
+
+function getContentOverrideSheet_(ss) {
+  const sh = ensureSheetWithHeaders_(ss, CONTENT_OVERRIDE_SHEET_NAME, CONTENT_OVERRIDE_HEADERS);
+  sh.setColumnWidth(1, 300);
+  sh.setColumnWidth(2, 110);
+  sh.setColumnWidth(3, 100);
+  sh.setColumnWidth(4, 70);
+  sh.setColumnWidth(5, 110);
+  sh.setColumnWidth(6, 100);
+  sh.setColumnWidth(7, 500);
+  sh.setColumnWidth(8, 80);
+  sh.setColumnWidth(9, 110);
+  sh.setColumnWidth(10, 120);
+  sh.setColumnWidth(11, 150);
+  return sh;
+}
+
+function getContentOverrideHistorySheet_(ss) {
+  const sh = ensureSheetWithHeaders_(
+    ss,
+    CONTENT_OVERRIDE_HISTORY_SHEET_NAME,
+    CONTENT_OVERRIDE_HISTORY_HEADERS
+  );
+  sh.setColumnWidth(1, 150);
+  sh.setColumnWidth(2, 300);
+  sh.setColumnWidth(3, 90);
+  sh.setColumnWidth(9, 450);
+  sh.setColumnWidth(10, 450);
+  sh.setColumnWidth(11, 110);
+  sh.setColumnWidth(12, 120);
+  return sh;
+}
+
+function normalizeContentPart_(value) {
+  return String(value == null ? "" : value).trim();
+}
+
+function normalizeContentKeyPart_(value) {
+  return normalizeContentPart_(value).replace(/\|/g, "／");
+}
+
+function makeContentOverrideKey_(area, book, lesson, section, itemId) {
+  return [area, book, lesson, section, itemId]
+    .map(normalizeContentKeyPart_)
+    .join("|");
+}
+
+function contentOverrideCacheKey_(ss, area, book, lesson, section) {
+  const ssId = String((ss && ss.getId && ss.getId()) || "default").slice(-16);
+  const raw = [ssId, area, book, lesson, section].map(normalizeContentKeyPart_).join("|");
+  const digest = Utilities.computeDigest(Utilities.DigestAlgorithm.MD5, raw);
+  const hex = digest.map(function(b) {
+    const n = (b + 256) % 256;
+    return ("0" + n.toString(16)).slice(-2);
+  }).join("");
+  return "content_override_scope_" + hex;
+}
+
+function invalidateContentOverrideCache_(ss, area, book, lesson, section) {
+  try {
+    CacheService.getScriptCache().remove(
+      contentOverrideCacheKey_(ss, area, book, lesson, section)
+    );
+  } catch (err) {
+    console.error("Content override cache invalidate failed", err);
+  }
+}
+
+function isContentEditor_(ss, phone) {
+  const targetPhone = normalizePhone_(phone);
+  if (!targetPhone) return false;
+
+  const sh = getContentEditorPermissionSheet_(ss);
+  if (sh.getLastRow() < 2) return false;
+
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, 3).getValues();
+  let allowed = false;
+  for (let i = 0; i < rows.length; i++) {
+    if (normalizePhone_(rows[i][0]) !== targetPhone) continue;
+    allowed = isEnabled_(rows[i][2]);
+  }
+  return allowed === true;
+}
+
+// 최초 1회 실행용. 현재 학습시작점 시트에서 developerAccess=TRUE인 계정을
+// 콘텐츠 편집 권한 시트로 복사한다. 복사 후에는 developerAccess를 FALSE로 바꾸어도
+// 콘텐츠 편집 권한은 별도로 유지된다.
+function seedContentEditorsFromDeveloperAccess_(ss) {
+  const permissionSh = getContentEditorPermissionSheet_(ss);
+  const startSh = ss.getSheetByName(LEARNING_START_SHEET_NAME);
+  if (!startSh || startSh.getLastRow() < 2) return 0;
+
+  const width = Math.max(8, startSh.getLastColumn());
+  const rows = startSh.getRange(2, 1, startSh.getLastRow() - 1, width).getValues();
+  const existing = {};
+  if (permissionSh.getLastRow() >= 2) {
+    const saved = permissionSh.getRange(2, 1, permissionSh.getLastRow() - 1, 3).getValues();
+    saved.forEach(function(row) {
+      const p = normalizePhone_(row[0]);
+      if (p) existing[p] = true;
+    });
+  }
+
+  const now = new Date();
+  const appendRows = [];
+  rows.forEach(function(row) {
+    const phone = normalizePhone_(row[0]);
+    const name = normalizeContentPart_(row[1]);
+    const developerAccess = isEnabled_(row[7]);
+    if (!phone || !developerAccess || existing[phone]) return;
+    appendRows.push([phone, name, true, "editor", "developerAccess에서 최초 등록", now]);
+    existing[phone] = true;
+  });
+
+  if (appendRows.length) {
+    permissionSh.getRange(permissionSh.getLastRow() + 1, 1, appendRows.length, 6).setValues(appendRows);
+  }
+  return appendRows.length;
+}
+
+function setupContentEditorSystem() {
+  const ss = SpreadsheetApp.getActive();
+  getContentEditorPermissionSheet_(ss);
+  getContentOverrideSheet_(ss);
+  getContentOverrideHistorySheet_(ss);
+  const seeded = seedContentEditorsFromDeveloperAccess_(ss);
+  return {
+    ok: true,
+    seededEditors: seeded,
+    sheets: [
+      CONTENT_EDITOR_PERMISSION_SHEET_NAME,
+      CONTENT_OVERRIDE_SHEET_NAME,
+      CONTENT_OVERRIDE_HISTORY_SHEET_NAME
+    ]
+  };
+}
+
+function parseContentPayload_(raw) {
+  const text = String(raw == null ? "" : raw).trim();
+  if (!text) return { ok: false, error: "missing_payload" };
+  if (text.length > CONTENT_OVERRIDE_MAX_PAYLOAD_CHARS) {
+    return { ok: false, error: "payload_too_large" };
+  }
+  try {
+    const value = JSON.parse(text);
+    if (!value || typeof value !== "object" || Array.isArray(value)) {
+      return { ok: false, error: "invalid_payload" };
+    }
+    return { ok: true, value: value, json: JSON.stringify(value) };
+  } catch (err) {
+    return { ok: false, error: "invalid_payload_json" };
+  }
+}
+
+function getContentOverridesForScope_(ss, area, book, lesson, section) {
+  area = normalizeContentPart_(area);
+  book = normalizeContentPart_(book);
+  lesson = normalizeContentPart_(lesson);
+  section = normalizeContentPart_(section);
+  if (!area || !book || !lesson || !section) return [];
+
+  const cache = CacheService.getScriptCache();
+  const cacheKey = contentOverrideCacheKey_(ss, area, book, lesson, section);
+  try {
+    const rawCached = cache.get(cacheKey);
+    if (rawCached) return JSON.parse(rawCached);
+  } catch (err) {}
+
+  const sh = getContentOverrideSheet_(ss);
+  if (sh.getLastRow() < 2) return [];
+
+  const rows = sh.getRange(2, 1, sh.getLastRow() - 1, CONTENT_OVERRIDE_HEADERS.length).getValues();
+  const out = [];
+  rows.forEach(function(row) {
+    if (!isEnabled_(row[7])) return;
+    if (normalizeContentPart_(row[1]) !== area) return;
+    if (normalizeContentPart_(row[2]) !== book) return;
+    if (normalizeContentPart_(row[3]) !== lesson) return;
+    if (normalizeContentPart_(row[4]) !== section) return;
+
+    let payload = null;
+    try { payload = JSON.parse(String(row[6] || "{}")); } catch (err) { return; }
+    out.push({
+      key: String(row[0] || ""),
+      itemId: String(row[5] || ""),
+      payload: payload,
+      updatedAt: row[10] instanceof Date ? row[10].toISOString() : String(row[10] || "")
+    });
+  });
+
+  try { cache.put(cacheKey, JSON.stringify(out), CONTENT_OVERRIDE_CACHE_TTL_SEC); } catch (err) {}
+  return out;
+}
+
+function saveContentOverride_(ss, identity, params) {
+  const phone = normalizePhone_(identity && identity.phone);
+  const editorName = normalizeContentPart_(identity && identity.studentName);
+  if (!isContentEditor_(ss, phone)) return { ok: false, error: "editor_forbidden" };
+
+  const area = normalizeContentPart_(params.area);
+  const book = normalizeContentPart_(params.book);
+  const lesson = normalizeContentPart_(params.lesson);
+  const section = normalizeContentPart_(params.section);
+  const itemId = normalizeContentPart_(params.itemId);
+  if (!area || !book || !lesson || !section || !itemId) {
+    return { ok: false, error: "missing_content_key" };
+  }
+
+  const parsed = parseContentPayload_(params.payload);
+  if (!parsed.ok) return parsed;
+
+  const key = makeContentOverrideKey_(area, book, lesson, section, itemId);
+  const sh = getContentOverrideSheet_(ss);
+  const historySh = getContentOverrideHistorySheet_(ss);
+  const now = new Date();
+  let rowIndex = -1;
+  let beforeJson = "";
+
+  if (sh.getLastRow() >= 2) {
+    const finder = sh.getRange(2, 1, sh.getLastRow() - 1, 1)
+      .createTextFinder(key)
+      .matchEntireCell(true)
+      .findNext();
+    if (finder) {
+      rowIndex = finder.getRow();
+      beforeJson = String(sh.getRange(rowIndex, 7).getValue() || "");
+    }
+  }
+
+  const row = [
+    key, area, book, lesson, section, itemId,
+    parsed.json, true, phone, editorName, now
+  ];
+
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    if (rowIndex > 0) {
+      sh.getRange(rowIndex, 1, 1, CONTENT_OVERRIDE_HEADERS.length).setValues([row]);
+    } else {
+      rowIndex = sh.getLastRow() + 1;
+      sh.getRange(rowIndex, 1, 1, CONTENT_OVERRIDE_HEADERS.length).setValues([row]);
+    }
+
+    historySh.appendRow([
+      now, key, beforeJson ? "UPDATE" : "CREATE", area, book, lesson, section, itemId,
+      beforeJson, parsed.json, phone, editorName
+    ]);
+  } finally {
+    try { lock.releaseLock(); } catch (err) {}
+  }
+
+  invalidateContentOverrideCache_(ss, area, book, lesson, section);
+  return {
+    ok: true,
+    key: key,
+    area: area,
+    book: book,
+    lesson: lesson,
+    section: section,
+    itemId: itemId,
+    payload: parsed.value,
+    updatedAt: now.toISOString()
+  };
+}
+
+function disableContentOverride_(ss, identity, params) {
+  const phone = normalizePhone_(identity && identity.phone);
+  const editorName = normalizeContentPart_(identity && identity.studentName);
+  if (!isContentEditor_(ss, phone)) return { ok: false, error: "editor_forbidden" };
+
+  const area = normalizeContentPart_(params.area);
+  const book = normalizeContentPart_(params.book);
+  const lesson = normalizeContentPart_(params.lesson);
+  const section = normalizeContentPart_(params.section);
+  const itemId = normalizeContentPart_(params.itemId);
+  if (!area || !book || !lesson || !section || !itemId) {
+    return { ok: false, error: "missing_content_key" };
+  }
+
+  const key = makeContentOverrideKey_(area, book, lesson, section, itemId);
+  const sh = getContentOverrideSheet_(ss);
+  if (sh.getLastRow() < 2) return { ok: true, restored: true, found: false };
+
+  const finder = sh.getRange(2, 1, sh.getLastRow() - 1, 1)
+    .createTextFinder(key)
+    .matchEntireCell(true)
+    .findNext();
+  if (!finder) return { ok: true, restored: true, found: false };
+
+  const rowIndex = finder.getRow();
+  const beforeJson = String(sh.getRange(rowIndex, 7).getValue() || "");
+  const now = new Date();
+  sh.getRange(rowIndex, 8, 1, 4).setValues([[false, phone, editorName, now]]);
+  getContentOverrideHistorySheet_(ss).appendRow([
+    now, key, "RESTORE_ORIGINAL", area, book, lesson, section, itemId,
+    beforeJson, "", phone, editorName
+  ]);
+  invalidateContentOverrideCache_(ss, area, book, lesson, section);
+  return { ok: true, restored: true, found: true, key: key };
+}
+
+
 function doGet(e) {
   const p = (e && e.parameter) ? e.parameter : {};
   const ss = SpreadsheetApp.getActive();
@@ -2884,6 +3249,64 @@ function doGet(e) {
       developerAccess: developer,
       role: developer ? "developer" : "student"
     });
+  }
+
+  // STEP30-1: 콘텐츠 편집 권한 확인. developerAccess와 별도 권한이다.
+  if (action === "content_editor_status") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+    const phone = result.phone || (result.payload && result.payload.phone) || "";
+    return jsonpOutput_(callback, {
+      ok: true,
+      canEdit: isContentEditor_(ss, phone),
+      phone: normalizePhone_(phone),
+      name: result.studentName || (result.payload && result.payload.name) || ""
+    });
+  }
+
+  // STEP30-1: 학생/개발자 모두 읽을 수 있는 수정본 조회.
+  // 실제 화면에서는 원본 JSON을 먼저 읽고 이 응답을 해당 itemId에 덮어 적용한다.
+  if (action === "content_overrides") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+    const phone = result.phone || (result.payload && result.payload.phone) || "";
+    const items = getContentOverridesForScope_(
+      ss, p.area || "", p.book || "", p.lesson || "", p.section || ""
+    );
+    return jsonpOutput_(callback, {
+      ok: true,
+      area: normalizeContentPart_(p.area),
+      book: normalizeContentPart_(p.book),
+      lesson: normalizeContentPart_(p.lesson),
+      section: normalizeContentPart_(p.section),
+      items: items,
+      // STEP30-2: 수정본 조회와 편집 권한 확인을 한 요청으로 처리한다.
+      // 학생은 수정본만 적용되고, 콘텐츠편집권한=TRUE인 계정만 편집 UI가 열린다.
+      canEdit: isContentEditor_(ss, phone),
+      editorName: result.studentName || (result.payload && result.payload.name) || ""
+    });
+  }
+
+  // STEP30-1: 콘텐츠 편집 권한이 있는 계정만 수정본을 영구 저장할 수 있다.
+  if (action === "content_override_save") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+    const identity = {
+      phone: result.phone || (result.payload && result.payload.phone) || "",
+      studentName: result.studentName || (result.payload && result.payload.name) || ""
+    };
+    return jsonpOutput_(callback, saveContentOverride_(ss, identity, p));
+  }
+
+  // STEP30-1: 수정본을 비활성화해 원본 JSON으로 복원한다.
+  if (action === "content_override_restore") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+    const identity = {
+      phone: result.phone || (result.payload && result.payload.phone) || "",
+      studentName: result.studentName || (result.payload && result.payload.name) || ""
+    };
+    return jsonpOutput_(callback, disableContentOverride_(ss, identity, p));
   }
 
   // 7) 인증이 필요한 기록 요청 보호
