@@ -187,6 +187,13 @@
     .summaryScore{font-size:34px;font-weight:950;color:var(--green);margin:8px 0}
     .reviewList{text-align:left;margin-top:18px;border-top:1px solid var(--line);padding-top:12px}.reviewTitle{font-size:18px;font-weight:950;margin:0 0 8px}.reviewItem{padding:12px 0;border-bottom:1px solid var(--line);line-height:1.6}.reviewPrompt{font-weight:900;white-space:pre-line}.reviewMeta{margin-top:5px;font-size:14px}.reviewMine{color:#fecaca}.reviewCorrect{color:#d1fae5}.reviewTimeout{display:inline-block;margin-left:7px;padding:2px 7px;border-radius:999px;border:1px solid rgba(248,113,113,.55);color:#fecaca;font-size:11px;font-weight:900}
 
+    /* STEP30-3: 개발자용 서울대 어휘 직접 편집 */
+    .contentEditorControls{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:10px;padding:9px 10px;border:1px solid rgba(251,191,36,.35);border-radius:14px;background:rgba(48,39,21,.48)}
+    .contentEditorControls[hidden]{display:none}.editorBadge{font-size:12px;color:#fde68a;border:1px solid #7c5d16;background:#2d230d;border-radius:999px;padding:5px 9px;font-weight:850}.editModeBtn,.editVocabBtn{padding:8px 12px;border:1px solid var(--amber);background:#302715;color:#fde68a;border-radius:11px;cursor:pointer;font-weight:900}.editModeBtn.active{background:#644b0e;color:#fff}.editedMark{font-size:12px;color:#86efac;font-weight:850}.vocabEditCell{width:150px;text-align:right;white-space:nowrap}.vocabEditedRow{background:rgba(34,197,94,.055)}
+    .vocabQuizEditorBar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:0 0 8px}.vocabQuizEditorBar[hidden]{display:none}
+    .vocabEditorModal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72)}.vocabEditorModal[hidden]{display:none}.vocabEditorDialog{width:min(720px,100%);max-height:92vh;overflow:auto;background:#111a2a;border:1px solid #4b5d78;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:18px}.vocabEditorDialog h2{margin:0 0 4px;color:#fde68a}.vocabEditorMeta{color:var(--muted);font-size:13px;margin-bottom:14px}.vocabEditorField{display:block;margin-top:12px;font-weight:850}.vocabEditorField input,.vocabEditorField textarea{width:100%;margin-top:6px;border:1px solid #3b4b66;background:#08111f;color:#fff;border-radius:11px;padding:11px 12px;font:inherit}.vocabEditorField textarea{min-height:82px;resize:vertical;line-height:1.5}.vocabEditorGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}.vocabEditorHelp{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.55}.vocabEditorActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}.vocabEditorActions button{padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:#101829;color:#fff;cursor:pointer;font-weight:900}.vocabEditorActions .save{border-color:#22c55e;background:#123725}.vocabEditorActions .restore{border-color:#ef4444;background:#3a151b}.vocabEditorActions button:disabled{opacity:.55;cursor:wait}.vocabEditorMessage{min-height:20px;margin-top:10px;font-size:13px}.vocabEditorMessage.ok{color:#86efac}.vocabEditorMessage.bad{color:#fecaca}
+    @media(max-width:620px){.vocabEditorGrid{grid-template-columns:1fr}.vocabEditCell{width:auto}.contentEditorControls{justify-content:space-between}.editVocabBtn{padding:7px 9px;font-size:13px}}
+
     .btnMode{
       background:linear-gradient(135deg,rgba(34,211,238,.18), rgba(11,16,32,.96));
       border-color:rgba(34,211,238,.52);
@@ -279,6 +286,12 @@
         <button class="tab tab-grammar" id="tab-grammar" type="button">문법</button>
         <button class="tab tab-mixed" id="tab-mixed" type="button">종합 테스트</button>
         <button class="tab tab-reading" id="tab-reading" type="button">읽기 연습</button>
+      </div>
+
+      <div class="contentEditorControls" id="contentEditorControls" hidden>
+        <span class="editorBadge">개발자 어휘 편집</span>
+        <span class="editedMark" id="vocabOverrideCount"></span>
+        <button class="editModeBtn" id="toggleVocabEditMode" type="button">수정 모드 OFF</button>
       </div>
 
       <div class="bar"></div>
@@ -447,6 +460,14 @@
     let MIXED_TIMER = null;
     let MIXED_SECONDS = 10;
 
+    let CONTENT_EDITOR_READY = false;
+    let CONTENT_EDITOR_CAN_EDIT = false;
+    let CONTENT_EDITOR_LOAD_PROMISE = null;
+    let VOCAB_EDIT_MODE = false;
+    let CURRENT_EDIT_VOCAB = null;
+    const ORIGINAL_VOCAB = new Map();
+    const ACTIVE_VOCAB_OVERRIDES = new Map();
+
     function applyTexts(){
       document.documentElement.lang = (getLang()==="MN") ? "mn" : "ko";
       document.getElementById("btnLang").textContent = getLang();
@@ -469,22 +490,31 @@
 
     function renderVocab(d){
       const vocabDiv = document.getElementById("vocab");
-
       const vocab = d.vocab || [];
+      updateContentEditorControls();
       if(vocab.length){
         let html = `<table><thead><tr>
-          <th>${tr("thKo")}</th><th>${tr("thMn")}</th>
+          <th>${tr("thKo")}</th><th>${tr("thMn")}</th>${CONTENT_EDITOR_CAN_EDIT && VOCAB_EDIT_MODE ? '<th class="vocabEditCell">수정</th>' : ''}
         </tr></thead><tbody>`;
-        vocab.forEach(v=>{
+        vocab.forEach((v,index)=>{
           const ko = v.ko || "";
           const mn = v.mn || "";
-          html += `<tr>
-            <td><b>${ko}</b></td>
-            <td>${mn || "<span class='muted'>-</span>"}</td>
+          const itemId = vocabContentItemId(v,index);
+          const modified = ACTIVE_VOCAB_OVERRIDES.has(itemId);
+          html += `<tr class="${modified?'vocabEditedRow':''}">
+            <td><b>${escapeQuestionHtml(ko)}</b>${modified?'<div class="editedMark">● 수정본 적용됨</div>':''}</td>
+            <td>${mn ? escapeQuestionHtml(mn) : "<span class='muted'>-</span>"}</td>
+            ${CONTENT_EDITOR_CAN_EDIT && VOCAB_EDIT_MODE ? `<td class="vocabEditCell"><button class="editVocabBtn" type="button" data-vocab-id="${escapeQuestionHtml(itemId)}">✏ 수정</button></td>` : ''}
           </tr>`;
         });
         html += "</tbody></table>";
         vocabDiv.innerHTML = html;
+        vocabDiv.querySelectorAll('.editVocabBtn').forEach(btn=>{
+          btn.addEventListener('click',()=>{
+            const item=findVocabItemById(btn.dataset.vocabId);
+            if(item) openVocabEditor(item);
+          });
+        });
       } else {
         vocabDiv.innerHTML = `<div class='muted'>${tr("noVocab")}</div>`;
       }
@@ -530,7 +560,7 @@
       const distractors = shuffle(uniq).slice(0, 3);
       const choices = shuffle([correct, ...distractors]);
 
-      return { prompt, correct, choices };
+      return { prompt, correct, choices, itemId:String(q.__contentId || "") };
     }
 
     function stopQuizTimer(){
@@ -606,6 +636,115 @@
         script.src = `${RESULT_LOG_SCRIPT_URL}?${query.toString()}`;
         document.head.appendChild(script);
       });
+    }
+
+    function clonePlainContent(value){return JSON.parse(JSON.stringify(value));}
+    function vocabContentItemId(item,index){
+      if(item && item.__contentId) return String(item.__contentId);
+      const id=`v${String(Number(index)+1).padStart(3,"0")}`;
+      if(item) item.__contentId=id;
+      return id;
+    }
+    function prepareVocabContentIds(d){
+      ORIGINAL_VOCAB.clear();
+      (d&&Array.isArray(d.vocab)?d.vocab:[]).forEach((item,index)=>{
+        const id=vocabContentItemId(item,index);
+        ORIGINAL_VOCAB.set(id,clonePlainContent(item));
+      });
+    }
+    function vocabContentScope(d){
+      const level=String((d&&d.meta&&d.meta.level)||(d&&d.level)||"").toUpperCase();
+      const lessonRaw=String((d&&d.meta&&d.meta.lesson)||(d&&d.lesson)||"");
+      return {area:"snu",book:`SNU-${level}`,lesson:String(parseInt(lessonRaw.replace(/[^0-9]/g,""),10)||""),section:"vocab"};
+    }
+    function applyVocabPayload(target,payload){
+      if(!target||!payload||typeof payload!=="object")return;
+      ["ko","mn","pos","example_kr","example_mn"].forEach(key=>{
+        if(Object.prototype.hasOwnProperty.call(payload,key))target[key]=String(payload[key]==null?"":payload[key]);
+      });
+    }
+    function findVocabItemById(itemId){
+      const id=String(itemId||"");
+      return (LESSON&&Array.isArray(LESSON.vocab)?LESSON.vocab:[]).find(v=>String(v&&v.__contentId||"")===id)||null;
+    }
+    function applyVocabPayloadEverywhere(itemId,payload){
+      const item=findVocabItemById(itemId);if(item)applyVocabPayload(item,payload);
+      if(CURRENT_EDIT_VOCAB&&String(CURRENT_EDIT_VOCAB.__contentId||"")===String(itemId||""))applyVocabPayload(CURRENT_EDIT_VOCAB,payload);
+    }
+    function updateContentEditorControls(){
+      const controls=document.getElementById("contentEditorControls"),toggle=document.getElementById("toggleVocabEditMode"),count=document.getElementById("vocabOverrideCount");
+      if(!controls)return;
+      controls.hidden=!CONTENT_EDITOR_CAN_EDIT;
+      if(toggle){toggle.textContent=VOCAB_EDIT_MODE?"수정 모드 ON":"수정 모드 OFF";toggle.classList.toggle("active",VOCAB_EDIT_MODE);}
+      if(count)count.textContent=ACTIVE_VOCAB_OVERRIDES.size?`수정본 ${ACTIVE_VOCAB_OVERRIDES.size}개 적용 중`:"";
+    }
+    async function loadVocabContentEditorState(d){
+      const id=resultLogIdentity(),scope=vocabContentScope(d);
+      CONTENT_EDITOR_READY=false;CONTENT_EDITOR_CAN_EDIT=false;ACTIVE_VOCAB_OVERRIDES.clear();
+      if(!id.token||!scope.lesson){CONTENT_EDITOR_READY=true;updateContentEditorControls();return;}
+      try{
+        const result=await sendResultJsonp({action:"content_overrides",token:id.token,deviceId:id.deviceId,name:id.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section});
+        if(result&&result.ok===true){
+          CONTENT_EDITOR_CAN_EDIT=result.canEdit===true;
+          (Array.isArray(result.items)?result.items:[]).forEach(entry=>{
+            const itemId=String(entry&&entry.itemId||"");if(!itemId||!entry.payload)return;
+            const item=findVocabItemById(itemId);if(!item)return;
+            ACTIVE_VOCAB_OVERRIDES.set(itemId,clonePlainContent(entry.payload));applyVocabPayload(item,entry.payload);
+          });
+        }
+      }catch(err){console.log("vocab content overrides load failed:",err);}
+      finally{CONTENT_EDITOR_READY=true;updateContentEditorControls();}
+    }
+    function ensureVocabEditorModal(){
+      let modal=document.getElementById("vocabEditorModal");if(modal)return modal;
+      modal=document.createElement("div");modal.id="vocabEditorModal";modal.className="vocabEditorModal";modal.hidden=true;
+      modal.innerHTML=`<div class="vocabEditorDialog" role="dialog" aria-modal="true" aria-labelledby="vocabEditorTitle"><h2 id="vocabEditorTitle">어휘 수정</h2><div class="vocabEditorMeta" id="vocabEditorMeta"></div><div class="vocabEditorGrid"><label class="vocabEditorField">한국어<input id="vocabEditorKo" type="text"></label><label class="vocabEditorField">몽골어<input id="vocabEditorMn" type="text"></label></div><label class="vocabEditorField">품사<input id="vocabEditorPos" type="text" placeholder="선택 입력"></label><label class="vocabEditorField">한국어 예문<textarea id="vocabEditorExampleKr" placeholder="선택 입력"></textarea></label><label class="vocabEditorField">몽골어 예문<textarea id="vocabEditorExampleMn" placeholder="선택 입력"></textarea></label><div class="vocabEditorHelp">저장하면 원본 JSON은 그대로 보존되고 Google Sheet의 수정본이 즉시 적용됩니다. 어휘 보기와 어휘 테스트에서 같은 수정본을 사용합니다. 시험 중 저장하면 수정 내용을 안전하게 반영하기 위해 테스트는 다시 시작됩니다.</div><div class="vocabEditorMessage" id="vocabEditorMessage"></div><div class="vocabEditorActions"><button id="vocabEditorRestore" class="restore" type="button">원본으로 복원</button><button id="vocabEditorCancel" type="button">취소</button><button id="vocabEditorSave" class="save" type="button">저장</button></div></div>`;
+      document.body.appendChild(modal);
+      document.getElementById("vocabEditorCancel").onclick=closeVocabEditor;document.getElementById("vocabEditorSave").onclick=saveVocabEditor;document.getElementById("vocabEditorRestore").onclick=restoreVocabEditor;
+      modal.addEventListener("click",e=>{if(e.target===modal)closeVocabEditor();});return modal;
+    }
+    function setVocabEditorMessage(message,bad){const el=document.getElementById("vocabEditorMessage");if(!el)return;el.textContent=message||"";el.className=`vocabEditorMessage ${message?(bad?"bad":"ok"):""}`;}
+    function setVocabEditorBusy(busy){["vocabEditorSave","vocabEditorRestore","vocabEditorCancel"].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!busy;});}
+    function openVocabEditor(item){
+      if(!CONTENT_EDITOR_CAN_EDIT||!VOCAB_EDIT_MODE||!item)return;
+      stopQuizTimer();stopMixedTimer();CURRENT_EDIT_VOCAB=item;const modal=ensureVocabEditorModal(),itemId=String(item.__contentId||""),scope=vocabContentScope(LESSON);
+      document.getElementById("vocabEditorMeta").textContent=`${scope.book.replace(/^SNU-/,"")} ${scope.lesson}과 · ${itemId}${ACTIVE_VOCAB_OVERRIDES.has(itemId)?" · 수정본 사용 중":""}`;
+      document.getElementById("vocabEditorKo").value=String(item.ko||"");document.getElementById("vocabEditorMn").value=String(item.mn||"");document.getElementById("vocabEditorPos").value=String(item.pos||"");document.getElementById("vocabEditorExampleKr").value=String(item.example_kr||"");document.getElementById("vocabEditorExampleMn").value=String(item.example_mn||"");
+      const restore=document.getElementById("vocabEditorRestore");if(restore)restore.style.display=ACTIVE_VOCAB_OVERRIDES.has(itemId)?"inline-block":"none";
+      setVocabEditorBusy(false);setVocabEditorMessage("",false);modal.hidden=false;setTimeout(()=>document.getElementById("vocabEditorKo").focus(),0);
+    }
+    function closeVocabEditor(){const modal=document.getElementById("vocabEditorModal");if(modal)modal.hidden=true;CURRENT_EDIT_VOCAB=null;}
+    function vocabEditorPayloadFromForm(){
+      const payload={ko:String(document.getElementById("vocabEditorKo").value||"").trim(),mn:String(document.getElementById("vocabEditorMn").value||"").trim(),pos:String(document.getElementById("vocabEditorPos").value||"").trim(),example_kr:String(document.getElementById("vocabEditorExampleKr").value||"").trim(),example_mn:String(document.getElementById("vocabEditorExampleMn").value||"").trim()};
+      if(!payload.ko)return {ok:false,error:"한국어 어휘를 입력하세요."};if(!payload.mn)return {ok:false,error:"몽골어 뜻을 입력하세요."};return {ok:true,payload};
+    }
+    function refreshAfterVocabEdit(){
+      stopQuizTimer();stopMixedTimer();QUIZ_STATE=null;MIXED_STATE=null;
+      if(LESSON){renderVocab(LESSON);if(document.getElementById("panel-quiz").classList.contains("active"))renderQuiz(LESSON);if(document.getElementById("panel-mixed").classList.contains("active"))renderMixed(LESSON);}
+    }
+    async function saveVocabEditor(){
+      const item=CURRENT_EDIT_VOCAB;if(!item)return;const form=vocabEditorPayloadFromForm();if(!form.ok){setVocabEditorMessage(form.error,true);return;}
+      const identity=resultLogIdentity(),scope=vocabContentScope(LESSON),itemId=String(item.__contentId||"");setVocabEditorBusy(true);setVocabEditorMessage("저장 중...",false);
+      try{
+        const result=await sendResultJsonp({action:"content_override_save",token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId,payload:JSON.stringify(form.payload)});
+        if(!result||result.ok!==true)throw new Error(String(result&&result.error||"save_failed"));
+        ACTIVE_VOCAB_OVERRIDES.set(itemId,clonePlainContent(form.payload));applyVocabPayloadEverywhere(itemId,form.payload);setVocabEditorMessage("저장되었습니다. 다음 접속에서도 이 수정본이 사용됩니다.",false);
+        setTimeout(()=>{const modal=document.getElementById("vocabEditorModal");if(modal)modal.hidden=true;CURRENT_EDIT_VOCAB=null;refreshAfterVocabEdit();},300);
+      }catch(err){setVocabEditorBusy(false);setVocabEditorMessage(`저장 실패: ${err&&err.message?err.message:"network_error"}`,true);}
+    }
+    async function restoreVocabEditor(){
+      const item=CURRENT_EDIT_VOCAB;if(!item)return;const itemId=String(item.__contentId||"");if(!confirm("이 어휘의 수정본을 해제하고 원본 JSON 내용으로 복원할까요?"))return;
+      const identity=resultLogIdentity(),scope=vocabContentScope(LESSON);setVocabEditorBusy(true);setVocabEditorMessage("원본으로 복원 중...",false);
+      try{
+        const result=await sendResultJsonp({action:"content_override_restore",token:identity.token,deviceId:identity.deviceId,name:identity.name,area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId});
+        if(!result||result.ok!==true)throw new Error(String(result&&result.error||"restore_failed"));
+        const original=ORIGINAL_VOCAB.get(itemId);if(original)applyVocabPayloadEverywhere(itemId,original);ACTIVE_VOCAB_OVERRIDES.delete(itemId);setVocabEditorMessage("원본으로 복원되었습니다.",false);
+        setTimeout(()=>{const modal=document.getElementById("vocabEditorModal");if(modal)modal.hidden=true;CURRENT_EDIT_VOCAB=null;refreshAfterVocabEdit();},300);
+      }catch(err){setVocabEditorBusy(false);setVocabEditorMessage(`복원 실패: ${err&&err.message?err.message:"network_error"}`,true);}
+    }
+    function currentVocabEditorMarkup(itemId){
+      if(!CONTENT_EDITOR_CAN_EDIT||!VOCAB_EDIT_MODE||!itemId)return "";const modified=ACTIVE_VOCAB_OVERRIDES.has(String(itemId));
+      return `<div class="vocabQuizEditorBar"><span class="editorBadge">개발자 편집</span>${modified?'<span class="editedMark">● 수정본 적용됨</span>':''}<button class="editVocabBtn" id="editCurrentVocab" type="button">✏ 현재 어휘 수정</button></div>`;
     }
 
     function firstLessonNoForLevel(levelRaw){
@@ -995,7 +1134,9 @@
       s.locked=false; s.remaining=QUIZ_SECONDS;
       const q=makeVocabQuestion(s.queue[s.index], usableVocab(d.vocab));
       if(!q){ quizDiv.innerHTML=`<div class='muted'>${tr("cant")}</div>`; return; }
-      quizDiv.innerHTML=renderQuizStats(s.queue.length);
+      quizDiv.innerHTML=renderQuizStats(s.queue.length)+currentVocabEditorMarkup(q.itemId);
+      const currentEditBtn=document.getElementById("editCurrentVocab");
+      if(currentEditBtn)currentEditBtn.onclick=()=>{const item=findVocabItemById(q.itemId);if(item)openVocabEditor(item);};
       const holder=document.createElement("div");
       quizDiv.appendChild(holder);
       renderQuestionInto(holder,q,(ok,btn,choicesWrap)=>{
@@ -1380,6 +1521,12 @@
       document.getElementById("tab-quiz").addEventListener("click", ()=>{setActiveTab("quiz");if(LESSON && !QUIZ_STATE) renderQuiz(LESSON);});
       document.getElementById("tab-grammar").addEventListener("click", openGrammarQuiz);
       document.getElementById("tab-mixed").addEventListener("click", ()=>setActiveTab("mixed"));
+      document.getElementById("toggleVocabEditMode").addEventListener("click", ()=>{
+        if(!CONTENT_EDITOR_CAN_EDIT)return;
+        VOCAB_EDIT_MODE=!VOCAB_EDIT_MODE;updateContentEditorControls();
+        if(LESSON){renderVocab(LESSON);if(document.getElementById("panel-quiz").classList.contains("active")&&QUIZ_STATE)renderCurrentQuizQuestion(LESSON);}
+      });
+
       document.getElementById("tab-reading").addEventListener("click", ()=>{
         if(!LESSON) return;
         const raw=String((LESSON.meta&&LESSON.meta.lesson)||LESSON.lesson||"1");
@@ -1472,6 +1619,8 @@
         }
 
         LESSON = d;
+        prepareVocabContentIds(d);
+        CONTENT_EDITOR_LOAD_PROMISE = loadVocabContentEditorState(d);
         const lesson = lessonRaw;
         const lessonLabel = makeLessonLabel(lesson);
         const tmn = d.title_mn || (d.meta && d.meta.title_mn) || "";
@@ -1485,6 +1634,7 @@
           return;
         }
 
+        if(CONTENT_EDITOR_LOAD_PROMISE)await CONTENT_EDITOR_LOAD_PROMISE;
         status.textContent = tr("loaded");
         renderVocab(d);
         renderGrammar(d);
