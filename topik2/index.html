@@ -183,6 +183,28 @@
   .tile, .tile * { color: var(--text) !important; }
   .tileTitle { color: var(--text) !important; }
   .tileMeta { color: rgba(229,231,235,.78) !important; }
+
+
+    /* STEP30-8: TOPIK II 메뉴/레벨 직접 편집 */
+    .contentEditorControls{display:flex;align-items:center;gap:8px;flex-wrap:wrap;margin:12px 0 4px;padding:10px 12px;border:1px solid rgba(251,191,36,.32);background:rgba(251,191,36,.07);border-radius:14px}
+    .contentEditorControls[hidden]{display:none}
+    .editorBadge{font-size:12px;color:#fde68a;border:1px solid #7c5d16;background:#2d230d;border-radius:999px;padding:5px 9px;font-weight:900}
+    .editedMark{font-size:12px;color:#86efac;font-weight:850}
+    .editModeBtn,.editPageBtn,.tileEditBtn{border:1px solid rgba(251,191,36,.38);background:#201a0b;color:#fde68a;border-radius:10px;padding:8px 11px;font-weight:900;cursor:pointer}
+    .editModeBtn.active{background:#5b4205;color:#fff7d6}
+    .tile{position:relative}
+    .tileEditBtn{position:absolute;right:8px;top:8px;padding:6px 9px;font-size:12px;z-index:2}
+    .editorModal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72)}
+    .editorModal[hidden]{display:none}
+    .editorDialog{width:min(880px,100%);max-height:92vh;overflow:auto;background:#111a2a;border:1px solid #4b5d78;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:18px}
+    .editorDialog h2{margin:0 0 4px;color:#fde68a}.editorMeta{color:var(--muted);font-size:13px;margin-bottom:14px}
+    .editorField{display:block;margin-top:12px;font-weight:850}.editorField input,.editorField textarea{width:100%;margin-top:6px;border:1px solid #3b4b66;background:#08111f;color:#fff;border-radius:11px;padding:11px 12px;font:inherit}
+    .editorField textarea{min-height:100px;resize:vertical;line-height:1.45}.editorGrid{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+    .editorHelp{margin-top:10px;color:var(--muted);font-size:12px;line-height:1.5}.editorActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}
+    .editorActions button{padding:10px 14px;border-radius:11px;border:1px solid rgba(255,255,255,.16);background:#101829;color:#fff;cursor:pointer;font-weight:900}
+    .editorActions .save{border-color:#22c55e;background:#123725}.editorActions .restore{border-color:#ef4444;background:#3a151b}.editorActions button:disabled{opacity:.55;cursor:wait}
+    .editorMessage{min-height:20px;margin-top:10px;font-size:13px}.editorMessage.ok{color:#86efac}.editorMessage.bad{color:#fecaca}
+    @media(max-width:620px){.editorGrid{grid-template-columns:1fr}.tileEditBtn{right:6px;top:6px}}
   </style>
 </head>
 
@@ -214,6 +236,13 @@
 
       <div class="bar"></div>
 
+      <div class="contentEditorControls" id="contentEditorControls" hidden>
+        <span class="editorBadge">개발자 메뉴 편집</span>
+        <span class="editedMark" id="contentEditCount"></span>
+        <button class="editModeBtn" id="toggleContentEditMode" type="button">수정 모드 OFF</button>
+        <button class="editPageBtn" id="editPageText" type="button">✏ 화면 문구 수정</button>
+      </div>
+
       <!-- CATEGORIES -->
       <div id="catWrap">
         <div class="grid" id="catGrid"></div>
@@ -238,6 +267,9 @@
   </main>
 
   <script>
+    const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+    const DEV_KEY = "kq_deviceId_v1";
+
     const I18N = {
       KR: {
         home:"홈",
@@ -279,6 +311,32 @@
       }
     };
 
+    function getDeviceId(){
+      let id = localStorage.getItem(DEV_KEY);
+      if(!id){
+        id = "dev_" + Math.random().toString(16).slice(2) + "_" + Date.now().toString(16);
+        localStorage.setItem(DEV_KEY, id);
+      }
+      return id;
+    }
+    function jsonp(url, params, timeoutMs=10000){
+      return new Promise((resolve,reject)=>{
+        const cb="cb_"+Math.random().toString(16).slice(2);
+        let script=null;
+        const timer=setTimeout(()=>{cleanup();reject(new Error("JSONP timeout"));},timeoutMs);
+        function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(e){}if(script&&script.parentNode)script.parentNode.removeChild(script)}
+        window[cb]=(data)=>{cleanup();resolve(data)};
+        const p=new URLSearchParams();
+        Object.keys(params||{}).forEach(k=>{if(params[k]!==undefined&&params[k]!==null)p.set(k,String(params[k]))});
+        p.set("callback",cb);
+        script=document.createElement("script");script.async=true;script.src=url+(url.includes("?")?"&":"?")+p.toString();
+        script.onerror=()=>{cleanup();reject(new Error("JSONP network error"))};
+        document.head.appendChild(script);
+      });
+    }
+    function escHtml(s){return String(s==null?"":s).replace(/[&<>"']/g,m=>({"&":"&amp;","<":"&lt;",">":"&gt;",'"':"&quot;","'":"&#39;"}[m]));}
+    function deepClone(v){return JSON.parse(JSON.stringify(v==null?{}:v));}
+
     function getLang(){
       const u = new URL(location.href);
       const q = (u.searchParams.get("lang")||"").toUpperCase();
@@ -294,11 +352,31 @@
       const L = getLang();
       return (I18N[L] && I18N[L][k]) ? I18N[L][k] : (I18N.KR[k] || k);
     }
-    function catTitle(id){
+    function catTitleBase(id){
       const L = getLang();
       const map = (I18N[L] && I18N[L].catTitleMap) ? I18N[L].catTitleMap : I18N.KR.catTitleMap;
       return map[id] || id;
     }
+    function catOverride(id){ return CONTENT_OVERRIDES.get("cat_"+id) || null; }
+    function catTitle(id){
+      const o=catOverride(id);
+      const key=getLang()==="MN"?"title_mn":"title_kr";
+      return (o&&String(o[key]||"").trim()) || catTitleBase(id);
+    }
+    function catSubtitle(cat){
+      const o=catOverride(cat.id);
+      const key=getLang()==="MN"?"subtitle_mn":"subtitle_kr";
+      return (o&&String(o[key]||"").trim()) || cat.subtitle || "";
+    }
+    function catLevels(cat){
+      const o=catOverride(cat.id);
+      const key=getLang()==="MN"?"levels_mn":"levels_kr";
+      const a=o&&Array.isArray(o[key])?o[key]:null;
+      return a&&a.length?a:(Array.isArray(cat.levels)?cat.levels:[]);
+    }
+    function pageOverride(){return CONTENT_OVERRIDES.get("__page__")||null;}
+    function pageTitle(){const o=pageOverride(),k=getLang()==="MN"?"title_mn":"title_kr";return (o&&String(o[k]||"").trim())||"TOPIK II";}
+    function pageSubtitle(){const o=pageOverride(),k=getLang()==="MN"?"subtitle_mn":"subtitle_kr";return (o&&String(o[k]||"").trim())||tr("subtitle");}
 
     function getParam(k){
       const u = new URL(location.href);
@@ -340,6 +418,10 @@
 
     let MANIFEST = null;
     let PICKED = null;
+    let CONTENT_CAN_EDIT = false;
+    let CONTENT_EDIT_MODE = false;
+    const CONTENT_OVERRIDES = new Map();
+    let CURRENT_EDITOR_ITEM = "";
 
     function showErr(msg){
       errBox.textContent = msg;
@@ -356,7 +438,8 @@
       btnHome.href = withQS("../index.html");
       btnHome.textContent = tr("home");
       btnLang.textContent = getLang();
-      subtitleEl.textContent = tr("subtitle");
+      document.getElementById("title").textContent = pageTitle();
+      subtitleEl.textContent = pageSubtitle();
       pickedLabel.textContent = tr("picked");
       btnReset.textContent = tr("reset");
 
@@ -364,6 +447,7 @@
       const token = getParam("token") || "-";
       pillName.textContent = tr("learner") + name;
       pillToken.textContent = "token: " + token;
+      updateContentEditorControls();
 
       renderCats();
       if(PICKED) renderLevels(PICKED);
@@ -388,10 +472,13 @@
         btn.className = "tile " + catClass(c.id);
         btn.innerHTML = `
           <div>
-            <div class="tileTitle">${catTitle(c.id)}</div>
-            <div class="tileMeta">${c.subtitle || ""}</div>
+            <div class="tileTitle">${escHtml(catTitle(c.id))}</div>
+            <div class="tileMeta">${escHtml(catSubtitle(c))}</div>
           </div>
+          ${CONTENT_CAN_EDIT&&CONTENT_EDIT_MODE?'<span class="tileEditBtn" role="button" tabindex="0">✏ 수정</span>':''}
         `;
+        const editBtn=btn.querySelector(".tileEditBtn");
+        if(editBtn){editBtn.addEventListener("click",(ev)=>{ev.stopPropagation();openCategoryEditor(c)});editBtn.addEventListener("keydown",(ev)=>{if(ev.key==="Enter"||ev.key===" "){ev.preventDefault();ev.stopPropagation();openCategoryEditor(c);}});}
         btn.addEventListener("click", ()=>{
           PICKED = c;
           renderLevels(c);
@@ -402,10 +489,10 @@
 
     function renderLevels(cat){
       pickedCat.textContent = catTitle(cat.id);
-      pickedSub.textContent = cat.subtitle || "";
+      pickedSub.textContent = catSubtitle(cat);
 
       levelGrid.innerHTML = "";
-      const levels = Array.isArray(cat.levels) ? cat.levels : [];
+      const levels = catLevels(cat);
       levels.forEach((lv, idx)=>{
         const a = document.createElement("a");
         a.className = "levelBtn";
@@ -421,6 +508,65 @@
 
       catWrap.classList.add("hidden");
       levelWrap.classList.remove("hidden");
+    }
+
+    function editorIdentity(){return {token:getParam("token")||"",deviceId:getDeviceId(),name:getParam("name")||""};}
+    function editorScope(){return {area:"TOPIK2",book:"MENU",lesson:"INDEX",section:"navigation"};}
+    function ensureEditorModal(){
+      let m=document.getElementById("contentEditorModal");
+      if(m)return m;
+      m=document.createElement("div");m.id="contentEditorModal";m.className="editorModal";m.hidden=true;document.body.appendChild(m);return m;
+    }
+    function editorButtons(modified){return `<div class="editorMessage" id="editorMessage"></div><div class="editorActions"><button id="editorRestore" class="restore" type="button" style="${modified?"":"display:none"}">원본으로 복원</button><button id="editorCancel" type="button">취소</button><button id="editorSave" class="save" type="button">저장</button></div>`;}
+    function setEditorBusy(busy){["editorSave","editorRestore","editorCancel"].forEach(id=>{const el=document.getElementById(id);if(el)el.disabled=!!busy;});}
+    function setEditorMessage(msg,bad){const el=document.getElementById("editorMessage");if(!el)return;el.textContent=msg||"";el.className="editorMessage "+(msg?(bad?"bad":"ok"):"");}
+    function closeEditor(){const m=document.getElementById("contentEditorModal");if(m)m.hidden=true;CURRENT_EDITOR_ITEM="";}
+    function linesToArray(v){return String(v||"").split(/\r?\n/).map(x=>x.trim()).filter(Boolean).slice(0,10);}
+    function levelsText(cat,langKey){const o=catOverride(cat.id),base=Array.isArray(cat.levels)?cat.levels:[],a=o&&Array.isArray(o[langKey])?o[langKey]:base;return a.join("\n");}
+    function openPageEditor(){
+      if(!CONTENT_CAN_EDIT||!CONTENT_EDIT_MODE)return;
+      CURRENT_EDITOR_ITEM="__page__";const o=pageOverride()||{},m=ensureEditorModal();
+      m.innerHTML=`<div class="editorDialog"><h2>TOPIK II 화면 문구 수정</h2><div class="editorMeta">메인 제목과 안내 문구</div><div class="editorGrid"><label class="editorField">제목 (한국어)<input id="edTitleKr"></label><label class="editorField">제목 (몽골어)<input id="edTitleMn"></label></div><div class="editorGrid"><label class="editorField">안내문 (한국어)<textarea id="edSubKr"></textarea></label><label class="editorField">안내문 (몽골어)<textarea id="edSubMn"></textarea></label></div><div class="editorHelp">저장하면 모든 학생의 TOPIK II 메뉴 화면에 수정본이 적용됩니다.</div>${editorButtons(CONTENT_OVERRIDES.has("__page__"))}</div>`;
+      document.getElementById("edTitleKr").value=o.title_kr||"TOPIK II";document.getElementById("edTitleMn").value=o.title_mn||"TOPIK II";
+      document.getElementById("edSubKr").value=o.subtitle_kr||I18N.KR.subtitle;document.getElementById("edSubMn").value=o.subtitle_mn||I18N.MN.subtitle;
+      document.getElementById("editorCancel").onclick=closeEditor;document.getElementById("editorSave").onclick=saveEditor;document.getElementById("editorRestore").onclick=restoreEditor;m.hidden=false;
+    }
+    function openCategoryEditor(cat){
+      if(!CONTENT_CAN_EDIT||!CONTENT_EDIT_MODE)return;
+      CURRENT_EDITOR_ITEM="cat_"+cat.id;const o=catOverride(cat.id)||{},m=ensureEditorModal();
+      m.innerHTML=`<div class="editorDialog"><h2>TOPIK II 영역/레벨 이름 수정</h2><div class="editorMeta">${escHtml(cat.id)} · 레벨 이름은 한 줄에 하나씩 최대 10개</div><div class="editorGrid"><label class="editorField">영역 이름 (한국어)<input id="edTitleKr"></label><label class="editorField">영역 이름 (몽골어)<input id="edTitleMn"></label></div><div class="editorGrid"><label class="editorField">부제 (한국어)<input id="edSubKr"></label><label class="editorField">부제 (몽골어)<input id="edSubMn"></label></div><div class="editorGrid"><label class="editorField">레벨 이름 (한국어)<textarea id="edLevelsKr"></textarea></label><label class="editorField">레벨 이름 (몽골어)<textarea id="edLevelsMn"></textarea></label></div><div class="editorHelp">읽기/듣기처럼 아직 실제 문제 데이터가 없는 영역도 메뉴 이름은 수정할 수 있습니다. 문제 자체 편집은 실제 데이터 파일이 추가된 뒤 연결합니다.</div>${editorButtons(CONTENT_OVERRIDES.has(CURRENT_EDITOR_ITEM))}</div>`;
+      document.getElementById("edTitleKr").value=o.title_kr||I18N.KR.catTitleMap[cat.id]||cat.title||cat.id;document.getElementById("edTitleMn").value=o.title_mn||I18N.MN.catTitleMap[cat.id]||cat.title||cat.id;
+      document.getElementById("edSubKr").value=o.subtitle_kr||cat.subtitle||"";document.getElementById("edSubMn").value=o.subtitle_mn||cat.subtitle||"";
+      document.getElementById("edLevelsKr").value=levelsText(cat,"levels_kr");document.getElementById("edLevelsMn").value=levelsText(cat,"levels_mn");
+      document.getElementById("editorCancel").onclick=closeEditor;document.getElementById("editorSave").onclick=saveEditor;document.getElementById("editorRestore").onclick=restoreEditor;m.hidden=false;
+    }
+    async function saveEditor(){
+      if(!CURRENT_EDITOR_ITEM)return;let payload={};
+      if(CURRENT_EDITOR_ITEM==="__page__"){
+        payload={title_kr:String(document.getElementById("edTitleKr").value||"").trim(),title_mn:String(document.getElementById("edTitleMn").value||"").trim(),subtitle_kr:String(document.getElementById("edSubKr").value||"").trim(),subtitle_mn:String(document.getElementById("edSubMn").value||"").trim()};
+      }else{
+        const kr=linesToArray(document.getElementById("edLevelsKr").value),mn=linesToArray(document.getElementById("edLevelsMn").value);
+        if(!kr.length||!mn.length){setEditorMessage("레벨 이름을 한 줄 이상 입력해 주세요.",true);return;}
+        payload={title_kr:String(document.getElementById("edTitleKr").value||"").trim(),title_mn:String(document.getElementById("edTitleMn").value||"").trim(),subtitle_kr:String(document.getElementById("edSubKr").value||"").trim(),subtitle_mn:String(document.getElementById("edSubMn").value||"").trim(),levels_kr:kr,levels_mn:mn};
+      }
+      setEditorBusy(true);try{
+        const s=editorScope(),id=editorIdentity(),r=await jsonp(SCRIPT_URL,{action:"content_override_save",token:id.token,deviceId:id.deviceId,name:id.name,area:s.area,book:s.book,lesson:s.lesson,section:s.section,itemId:CURRENT_EDITOR_ITEM,payload:JSON.stringify(payload)},10000);
+        if(!r||r.ok!==true)throw new Error(String(r&&r.error||"save_failed"));CONTENT_OVERRIDES.set(CURRENT_EDITOR_ITEM,deepClone(payload));applyTop();setEditorMessage("저장되었습니다.",false);setTimeout(closeEditor,260);
+      }catch(e){setEditorBusy(false);setEditorMessage("저장 실패: "+(e&&e.message?e.message:e),true);}
+    }
+    async function restoreEditor(){
+      if(!CURRENT_EDITOR_ITEM)return;setEditorBusy(true);try{
+        const s=editorScope(),id=editorIdentity(),r=await jsonp(SCRIPT_URL,{action:"content_override_restore",token:id.token,deviceId:id.deviceId,name:id.name,area:s.area,book:s.book,lesson:s.lesson,section:s.section,itemId:CURRENT_EDITOR_ITEM},10000);
+        if(!r||r.ok!==true)throw new Error(String(r&&r.error||"restore_failed"));CONTENT_OVERRIDES.delete(CURRENT_EDITOR_ITEM);applyTop();setEditorMessage("원본으로 복원했습니다.",false);setTimeout(closeEditor,260);
+      }catch(e){setEditorBusy(false);setEditorMessage("복원 실패: "+(e&&e.message?e.message:e),true);}
+    }
+    async function loadContentOverrides(){
+      const s=editorScope(),id=editorIdentity();try{const r=await jsonp(SCRIPT_URL,{action:"content_overrides",token:id.token,deviceId:id.deviceId,name:id.name,area:s.area,book:s.book,lesson:s.lesson,section:s.section},10000);if(!r||r.ok!==true)return;CONTENT_CAN_EDIT=!!r.canEdit;CONTENT_OVERRIDES.clear();(Array.isArray(r.items)?r.items:[]).forEach(x=>{if(x&&x.itemId)CONTENT_OVERRIDES.set(String(x.itemId),deepClone(x.payload||{}));});}catch(e){CONTENT_CAN_EDIT=false;}
+    }
+    function updateContentEditorControls(){
+      const wrap=document.getElementById("contentEditorControls"),btn=document.getElementById("toggleContentEditMode"),count=document.getElementById("contentEditCount"),pageBtn=document.getElementById("editPageText");if(!wrap)return;wrap.hidden=!CONTENT_CAN_EDIT;if(count)count.textContent=CONTENT_OVERRIDES.size?`● 수정본 ${CONTENT_OVERRIDES.size}개`:"";
+      if(btn){btn.textContent=CONTENT_EDIT_MODE?"수정 모드 ON":"수정 모드 OFF";btn.classList.toggle("active",CONTENT_EDIT_MODE);btn.onclick=()=>{CONTENT_EDIT_MODE=!CONTENT_EDIT_MODE;updateContentEditorControls();renderCats();if(PICKED)renderLevels(PICKED);};}
+      if(pageBtn){pageBtn.style.display=CONTENT_EDIT_MODE?"inline-block":"none";pageBtn.onclick=openPageEditor;}
     }
 
     btnReset.addEventListener("click", backToCats);
@@ -450,9 +596,10 @@
         const res = await fetch(url, { cache:"no-store" });
         if(!res.ok) throw new Error("HTTP " + res.status + "\n" + url);
         MANIFEST = await res.json();
+        await loadContentOverrides();
 
         statusEl.textContent = tr("loaded");
-        renderCats();
+        applyTop();
       }catch(e){
         statusEl.textContent = "오류";
         showErr(tr("manifestFail") + "\n" + (e.message || e));

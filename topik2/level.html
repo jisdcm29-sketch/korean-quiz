@@ -195,6 +195,9 @@
 
 <script>
 (() => {
+  const SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
+  const DEV_KEY = "kq_deviceId_v1";
+  const CONTENT_OVERRIDES = new Map();
   const qs = new URLSearchParams(location.search);
   const cat = (qs.get("cat") || "vocab").toLowerCase(); // vocab | grammar | writing
   const levelParam = qs.get("level");
@@ -209,6 +212,15 @@
     return m ? m[1] : "";
   }
   const REPO_BASE = getRepoBase();
+
+  function getDeviceId(){let id=localStorage.getItem(DEV_KEY);if(!id){id="dev_"+Math.random().toString(16).slice(2)+"_"+Date.now().toString(16);localStorage.setItem(DEV_KEY,id)}return id;}
+  function jsonp(url,params,timeoutMs=10000){return new Promise((resolve,reject)=>{const cb="cb_"+Math.random().toString(16).slice(2);let script=null;const timer=setTimeout(()=>{cleanup();reject(new Error("JSONP timeout"));},timeoutMs);function cleanup(){clearTimeout(timer);try{delete window[cb]}catch(e){}if(script&&script.parentNode)script.parentNode.removeChild(script)}window[cb]=d=>{cleanup();resolve(d)};const p=new URLSearchParams();Object.keys(params||{}).forEach(k=>{if(params[k]!==undefined&&params[k]!==null)p.set(k,String(params[k]))});p.set("callback",cb);script=document.createElement("script");script.async=true;script.src=url+(url.includes("?")?"&":"?")+p.toString();script.onerror=()=>{cleanup();reject(new Error("JSONP network error"))};document.head.appendChild(script);});}
+  function isMn(){return String(lang||"").toLowerCase()==="mn";}
+  function menuOverride(id){return CONTENT_OVERRIDES.get("cat_"+id)||null;}
+  function defaultCatTitle(id){const kr={vocab:"어휘",grammar:"문법",writing:"쓰기"},mn={vocab:"Үг",grammar:"Дүрэм",writing:"Бичих"};return (isMn()?mn:kr)[id]||id;}
+  function effectiveCatTitle(id){const o=menuOverride(id),k=isMn()?"title_mn":"title_kr";return (o&&String(o[k]||"").trim())||defaultCatTitle(id);}
+  function effectiveLevelLabel(id,level,defaultLabel){const o=menuOverride(id),k=isMn()?"levels_mn":"levels_kr",a=o&&Array.isArray(o[k])?o[k]:null;return (a&&a[level-1]&&String(a[level-1]).trim())||defaultLabel;}
+  async function loadMenuOverrides(){try{const r=await jsonp(SCRIPT_URL,{action:"content_overrides",token:token,deviceId:getDeviceId(),name:name,area:"TOPIK2",book:"MENU",lesson:"INDEX",section:"navigation"},10000);if(r&&r.ok===true)(Array.isArray(r.items)?r.items:[]).forEach(x=>{if(x&&x.itemId)CONTENT_OVERRIDES.set(String(x.itemId),x.payload||{});});}catch(e){}}
 
   const $ = (id) => document.getElementById(id);
 
@@ -287,7 +299,7 @@
       null;
 
     if (!table) {
-      showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
+      showError("현재 프로젝트에는 이 영역의 실제 TOPIK II 문제 데이터가 아직 연결되어 있지 않습니다.\ncat=" + cat);
       return;
     }
     const filePath = table[levelNum - 1];
@@ -303,7 +315,7 @@
     const isV = cat === "vocab";
     const isG = cat === "grammar";
     const isW = cat === "writing";
-    $("selectedText").textContent = isV ? "어휘" : (isG ? "문법" : (isW ? "쓰기" : "-"));
+    $("selectedText").textContent = (isV||isG||isW) ? effectiveCatTitle(cat) : "-";
     $("rangeText").textContent = "레벨 1~10";
     $("statusText").textContent = "로드 완료";
   }
@@ -336,8 +348,8 @@
       btn.className = "btn";
 
       const level = i + 1;
-      if (cat === "writing") btn.textContent = getWritingLabel(level);
-      else btn.textContent = "Level " + level;
+      const defaultLabel = (cat === "writing") ? getWritingLabel(level) : ("Level " + level);
+      btn.textContent = effectiveLevelLabel(cat, level, defaultLabel);
 
       if (!filePath){
         btn.classList.add("secondary");
@@ -358,13 +370,14 @@
     }
   }
 
-  setHeader();
-
-  if (cat === "vocab"){ renderButtons(vocabLevels); return; }
-  if (cat === "grammar"){ renderButtons(grammarLevels); return; }
-  if (cat === "writing"){ renderButtons(writingLevels); return; }
-
-  showError("cat 파라미터가 올바르지 않습니다. (vocab 또는 grammar 또는 writing)\n현재: " + cat);
+  (async function initMenuLabels(){
+    await loadMenuOverrides();
+    setHeader();
+    if (cat === "vocab"){ renderButtons(vocabLevels); return; }
+    if (cat === "grammar"){ renderButtons(grammarLevels); return; }
+    if (cat === "writing"){ renderButtons(writingLevels); return; }
+    showError("현재 프로젝트에는 이 영역의 실제 TOPIK II 문제 데이터가 아직 연결되어 있지 않습니다.\ncat=" + cat);
+  })();
 })();
 </script>
 </body>
