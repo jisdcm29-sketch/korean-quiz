@@ -17,6 +17,8 @@
     .quizTop{display:flex;justify-content:space-between;align-items:center;gap:10px;flex-wrap:wrap;margin:14px 0}.stats{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}.stat{padding:10px;text-align:center;border:1px solid var(--line);background:var(--box);border-radius:14px}.stat small{display:block;color:var(--muted)}.stat b{font-size:20px}.timer.urgent{border-color:var(--red);color:#fecaca}
     .qbox{padding:14px;background:var(--box);border:1px solid var(--line);border-radius:18px}.prompt{padding:16px;text-align:center;font-size:24px;font-weight:900;line-height:1.55;background:#12213a;border:1px solid #29456f;border-radius:14px}.promptDialogue{display:inline-grid;width:max-content;max-width:100%;text-align:left}.promptLine{display:block;overflow-wrap:anywhere}.promptLine.answerLine{display:flex;width:100%;align-items:baseline;white-space:nowrap}.answerBlank{display:inline-block;flex:1 1 auto;min-width:8ch;margin:0 4px 3px;border-bottom:3px solid currentColor}.choices{display:grid;grid-template-columns:1fr 1fr;gap:9px;margin-top:11px}.choice{padding:13px;min-height:54px;font-size:18px}.choice:hover{filter:brightness(1.15)}.choice:disabled{cursor:default}.choice.correct{background:#0e442d;border-color:var(--green)}.choice.wrong{background:#4b1720;border-color:var(--red)}
     .feedback{display:none;margin-top:10px;padding:11px;border-radius:12px;border:1px solid var(--line);line-height:1.55}.feedback.ok{display:block;border-color:var(--green);background:#0b3022}.feedback.bad{display:block;border-color:var(--red);background:#3a151b}.summary{text-align:center;padding:28px}.score{font-size:48px;font-weight:950;color:#93c5fd}.wrongList{text-align:left;margin-top:16px}.wrongItem{padding:10px 0;border-bottom:1px solid var(--line);line-height:1.55}.wrongMine{color:#fecaca}.wrongCorrect{color:#d1fae5}
+    .editorBar{display:flex;justify-content:flex-end;align-items:center;gap:8px;margin:0 0 10px}.editorBadge{font-size:12px;color:#fde68a;border:1px solid #7c5d16;background:#2d230d;border-radius:999px;padding:5px 9px;font-weight:850}.editQuestionBtn{padding:8px 12px;border:1px solid var(--amber);background:#302715;color:#fde68a;border-radius:11px;cursor:pointer;font-weight:900}.editedMark{font-size:12px;color:#86efac;font-weight:850}
+    .editorModal{position:fixed;inset:0;z-index:100;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72)}.editorModal[hidden]{display:none}.editorDialog{width:min(720px,100%);max-height:92vh;overflow:auto;background:#111a2a;border:1px solid #4b5d78;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:18px}.editorDialog h2{margin:0 0 4px;color:#fde68a}.editorMeta{color:var(--muted);font-size:13px;margin-bottom:14px}.editorField{display:block;margin-top:12px;font-weight:850}.editorField textarea,.editorChoiceInput{width:100%;margin-top:6px;border:1px solid #3b4b66;background:#08111f;color:#fff;border-radius:11px;padding:11px 12px;font:inherit}.editorField textarea{min-height:105px;resize:vertical;line-height:1.5}.editorChoiceRow{display:grid;grid-template-columns:34px 1fr;gap:8px;align-items:center;margin-top:8px}.editorChoiceRow input[type=radio]{width:20px;height:20px;accent-color:#22c55e}.editorHelp{margin-top:8px;color:var(--muted);font-size:12px;line-height:1.5}.editorActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}.editorActions button{padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:#101829;color:#fff;cursor:pointer;font-weight:900}.editorActions .save{border-color:#22c55e;background:#123725}.editorActions .restore{border-color:#ef4444;background:#3a151b}.editorActions button:disabled{opacity:.55;cursor:wait}.editorMessage{min-height:20px;margin-top:10px;font-size:13px}.editorMessage.ok{color:#86efac}.editorMessage.bad{color:#fecaca}
     @media(max-width:650px){.choices,.stats{grid-template-columns:1fr 1fr}.prompt{font-size:20px;padding:13px 10px}.promptDialogue{width:100%}.promptLine.answerLine{white-space:normal}.answerBlank{min-width:6ch}.stat b{font-size:17px}.studyNav{grid-template-columns:repeat(2,1fr)}.patternVisual{grid-template-columns:1fr}.point{padding:13px}.point h2{font-size:21px}}
   </style>
 </head>
@@ -34,6 +36,9 @@
 <script>
   const $=id=>document.getElementById(id), params=new URL(location.href).searchParams;
   let data=null,state=null,timer=null,seconds=15,studyIndex=0;
+  // STEP30-2: SNU 문법 문항 수정본 + 콘텐츠 편집 권한 상태
+  let contentEditorReady=false,contentEditorCanEdit=false,contentEditorLoadPromise=null,currentEditQuestion=null;
+  const originalGrammarQuestions=new Map(),activeGrammarOverrides=new Map();
   const lang=()=>((params.get('lang')||localStorage.getItem('kq_lang')||'KR').toUpperCase()==='MN'?'MN':'KR');
   const tx=(ko,mn)=>lang()==='MN'?mn:ko;
   function shuffle(a){a=a.slice();for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]]}return a}
@@ -50,7 +55,15 @@
   function pass(){const p=new URLSearchParams();['data','name','klass','token','lang'].forEach(k=>{const v=params.get(k);if(v)p.set(k,v)});return p.toString()}
   function lessonUrl(){return `../snu/lesson.html?${pass()}`}
   function applyText(){ $('lang').textContent=lang();$('studyTab').textContent=tx('문법 이해','Дүрмийн тайлбар');$('practiceTab').textContent=tx('문법 연습','Дүрмийн дасгал');$('restart').textContent=tx('다시 시작','Дахин эхлэх');$('hint').textContent=tx('모든 문제를 중복 없이 무작위 순서로 풉니다.','Бүх асуултыг давталгүй санамсаргүй дарааллаар ажиллана.'); }
-  function show(panel){document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.panel===panel));document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===panel));if(panel==='practice'&&!state)start()}
+  async function show(panel){
+    document.querySelectorAll('.tab').forEach(x=>x.classList.toggle('active',x.dataset.panel===panel));
+    document.querySelectorAll('.panel').forEach(x=>x.classList.toggle('active',x.id===panel));
+    if(panel==='practice'&&!state){
+      $('quiz').innerHTML=`<p class="muted">${tx('문항을 준비하는 중...','Асуултыг бэлтгэж байна...')}</p>`;
+      await ensureContentEditorReady();
+      if($('practice').classList.contains('active')&&!state)start();
+    }
+  }
   function splitPattern(pattern){const parts=String(pattern||'').split(/\s*\/\s*|\s*·\s*/).filter(Boolean);return parts.length>1?parts:[pattern]}
   function renderStudy(){
     const gs=data.grammar||[];
@@ -96,6 +109,167 @@
       script.src=`${RESULT_LOG_SCRIPT_URL}?${query.toString()}`;
       document.head.appendChild(script);
     });
+  }
+
+  function clonePlain(value){return JSON.parse(JSON.stringify(value));}
+  function grammarContentScope(){
+    return {
+      area:'snu',
+      book:`SNU-${String((data&&data.level)||'').toUpperCase()}`,
+      lesson:String(parseInt(String((data&&data.lesson)||'').replace(/[^0-9]/g,''),10)||''),
+      section:'grammar_questions'
+    };
+  }
+  function captureOriginalGrammarQuestions(){
+    originalGrammarQuestions.clear();
+    (data&&Array.isArray(data.grammar_questions)?data.grammar_questions:[]).forEach(q=>{
+      if(q&&q.id)originalGrammarQuestions.set(String(q.id),clonePlain(q));
+    });
+  }
+  function applyQuestionPayload(target,payload){
+    if(!target||!payload||typeof payload!=='object')return;
+    if(typeof payload.prompt==='string'&&payload.prompt.trim())target.prompt=payload.prompt;
+    if(Array.isArray(payload.choices)&&payload.choices.length===4){
+      const choices=payload.choices.map(v=>String(v==null?'':v).trim());
+      if(choices.every(Boolean)&&new Set(choices).size===4)target.choices=choices;
+    }
+    if(typeof payload.correct==='string'&&payload.correct.trim())target.correct=payload.correct.trim();
+  }
+  function applyPayloadEverywhere(itemId,payload){
+    const id=String(itemId||'');
+    (data&&Array.isArray(data.grammar_questions)?data.grammar_questions:[]).forEach(q=>{if(String(q&&q.id||'')===id)applyQuestionPayload(q,payload)});
+    if(state&&Array.isArray(state.queue))state.queue.forEach(q=>{if(String(q&&q.id||'')===id)applyQuestionPayload(q,payload)});
+    if(currentEditQuestion&&String(currentEditQuestion.id||'')===id)applyQuestionPayload(currentEditQuestion,payload);
+  }
+  async function loadContentEditorState(){
+    if(!data)return;
+    const id=resultLogIdentity(),scope=grammarContentScope();
+    contentEditorReady=false;contentEditorCanEdit=false;activeGrammarOverrides.clear();
+    if(!id.token||!scope.lesson){contentEditorReady=true;return;}
+    try{
+      const result=await sendResultJsonp({
+        action:'content_overrides',token:id.token,deviceId:id.deviceId,name:id.name,
+        area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section
+      });
+      if(result&&result.ok===true){
+        contentEditorCanEdit=result.canEdit===true;
+        (Array.isArray(result.items)?result.items:[]).forEach(item=>{
+          const itemId=String(item&&item.itemId||'');
+          if(!itemId||!item.payload)return;
+          activeGrammarOverrides.set(itemId,clonePlain(item.payload));
+          applyPayloadEverywhere(itemId,item.payload);
+        });
+      }
+    }catch(err){
+      console.log('content overrides load failed:',err);
+    }finally{
+      contentEditorReady=true;
+    }
+  }
+  function ensureContentEditorReady(){
+    if(contentEditorReady)return Promise.resolve();
+    if(!contentEditorLoadPromise)contentEditorLoadPromise=loadContentEditorState();
+    return contentEditorLoadPromise;
+  }
+  function isQuestionModified(q){return !!(q&&q.id&&activeGrammarOverrides.has(String(q.id)));}
+  function questionEditorMarkup(q){
+    if(!contentEditorCanEdit||!q||!q.id)return '';
+    return `<div class="editorBar"><span class="editorBadge">개발자 편집</span>${isQuestionModified(q)?'<span class="editedMark">● 수정본 적용됨</span>':''}<button class="editQuestionBtn" id="editCurrentQuestion" type="button">✏ 문항 수정</button></div>`;
+  }
+  function ensureEditorModal(){
+    let modal=$('editorModal');
+    if(modal)return modal;
+    modal=document.createElement('div');
+    modal.id='editorModal';modal.className='editorModal';modal.hidden=true;
+    modal.innerHTML=`<div class="editorDialog" role="dialog" aria-modal="true" aria-labelledby="editorTitle">
+      <h2 id="editorTitle">문법 문항 수정</h2>
+      <div class="editorMeta" id="editorMeta"></div>
+      <label class="editorField">문제 문장<textarea id="editorPrompt"></textarea></label>
+      <div class="editorField">선택지 <span style="color:#86efac;font-size:12px">● 왼쪽 원으로 정답을 선택</span>
+        <div id="editorChoices"></div>
+      </div>
+      <div class="editorHelp">저장하면 원본 JSON 파일은 바뀌지 않고 Google Sheet의 수정본이 즉시 적용됩니다. 이후 학생도 같은 수정본을 받습니다.</div>
+      <div class="editorMessage" id="editorMessage"></div>
+      <div class="editorActions"><button id="editorRestore" class="restore" type="button">원본으로 복원</button><button id="editorCancel" type="button">취소</button><button id="editorSave" class="save" type="button">저장</button></div>
+    </div>`;
+    document.body.appendChild(modal);
+    $('editorCancel').onclick=closeQuestionEditor;
+    $('editorSave').onclick=saveQuestionEditor;
+    $('editorRestore').onclick=restoreQuestionEditor;
+    modal.addEventListener('click',e=>{if(e.target===modal)closeQuestionEditor()});
+    return modal;
+  }
+  function setEditorMessage(message,bad){const el=$('editorMessage');if(!el)return;el.textContent=message||'';el.className='editorMessage '+(message?(bad?'bad':'ok'):'');}
+  function setEditorBusy(busy){['editorSave','editorRestore','editorCancel'].forEach(id=>{const el=$(id);if(el)el.disabled=!!busy});}
+  function openQuestionEditor(q){
+    if(!contentEditorCanEdit||!q||!q.id)return;
+    stop();currentEditQuestion=q;
+    const modal=ensureEditorModal();
+    $('editorMeta').textContent=`${String(data.level||'')} ${parseInt(data.lesson)||''}과 · ${q.id}${isQuestionModified(q)?' · 수정본 사용 중':''}`;
+    $('editorPrompt').value=String(q.prompt||'');
+    const choices=Array.isArray(q.choices)?q.choices.slice(0,4):[];
+    $('editorChoices').innerHTML=[0,1,2,3].map(i=>`<label class="editorChoiceRow"><input type="radio" name="editorCorrect" value="${i}" ${String(choices[i]||'')===String(q.correct||'')?'checked':''}><input class="editorChoiceInput" data-i="${i}" type="text"></label>`).join('');
+    document.querySelectorAll('.editorChoiceInput').forEach((input,i)=>{input.value=String(choices[i]||'')});
+    const restore=$('editorRestore');if(restore)restore.style.display=isQuestionModified(q)?'inline-block':'none';
+    setEditorBusy(false);setEditorMessage('',false);modal.hidden=false;
+    setTimeout(()=>$('editorPrompt').focus(),0);
+  }
+  function closeQuestionEditor(){
+    const modal=$('editorModal');if(modal)modal.hidden=true;
+    currentEditQuestion=null;
+    if(state&&$('practice').classList.contains('active'))renderQ();
+  }
+  function editorPayloadFromForm(){
+    const prompt=String($('editorPrompt').value||'').trim();
+    const inputs=[...document.querySelectorAll('.editorChoiceInput')];
+    const choices=inputs.map(x=>String(x.value||'').trim());
+    const radio=document.querySelector('input[name="editorCorrect"]:checked');
+    const correctIndex=radio?Number(radio.value):-1;
+    if(!prompt)return {ok:false,error:'문제 문장을 입력하세요.'};
+    if(choices.length!==4||choices.some(v=>!v))return {ok:false,error:'선택지 4개를 모두 입력하세요.'};
+    if(new Set(choices).size!==4)return {ok:false,error:'선택지는 서로 달라야 합니다.'};
+    if(correctIndex<0||correctIndex>3)return {ok:false,error:'정답을 선택하세요.'};
+    return {ok:true,payload:{prompt,choices,correct:choices[correctIndex]}};
+  }
+  async function saveQuestionEditor(){
+    const q=currentEditQuestion;if(!q)return;
+    const form=editorPayloadFromForm();if(!form.ok){setEditorMessage(form.error,true);return;}
+    const id=resultLogIdentity(),scope=grammarContentScope();
+    setEditorBusy(true);setEditorMessage('저장 중...',false);
+    try{
+      const result=await sendResultJsonp({
+        action:'content_override_save',token:id.token,deviceId:id.deviceId,name:id.name,
+        area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId:String(q.id),
+        payload:JSON.stringify(form.payload)
+      });
+      if(!result||result.ok!==true)throw new Error(String(result&&result.error||'save_failed'));
+      activeGrammarOverrides.set(String(q.id),clonePlain(form.payload));
+      applyPayloadEverywhere(String(q.id),form.payload);
+      setEditorMessage('저장되었습니다.',false);
+      setTimeout(()=>{const modal=$('editorModal');if(modal)modal.hidden=true;currentEditQuestion=null;if(state)renderQ();},250);
+    }catch(err){
+      setEditorBusy(false);setEditorMessage(`저장 실패: ${err&&err.message?err.message:'network_error'}`,true);
+    }
+  }
+  async function restoreQuestionEditor(){
+    const q=currentEditQuestion;if(!q||!q.id)return;
+    if(!confirm('이 문항의 수정본을 해제하고 원본 JSON 내용으로 복원할까요?'))return;
+    const id=resultLogIdentity(),scope=grammarContentScope();
+    setEditorBusy(true);setEditorMessage('원본으로 복원 중...',false);
+    try{
+      const result=await sendResultJsonp({
+        action:'content_override_restore',token:id.token,deviceId:id.deviceId,name:id.name,
+        area:scope.area,book:scope.book,lesson:scope.lesson,section:scope.section,itemId:String(q.id)
+      });
+      if(!result||result.ok!==true)throw new Error(String(result&&result.error||'restore_failed'));
+      const original=originalGrammarQuestions.get(String(q.id));
+      if(original)applyPayloadEverywhere(String(q.id),original);
+      activeGrammarOverrides.delete(String(q.id));
+      setEditorMessage('원본으로 복원되었습니다.',false);
+      setTimeout(()=>{const modal=$('editorModal');if(modal)modal.hidden=true;currentEditQuestion=null;if(state)renderQ();},250);
+    }catch(err){
+      setEditorBusy(false);setEditorMessage(`복원 실패: ${err&&err.message?err.message:'network_error'}`,true);
+    }
   }
 
   function firstLessonNoForLevel(levelRaw){
@@ -394,9 +568,9 @@
     }
   }
   function next(){setTimeout(()=>{state.i++;renderQ()},650)}
-  function renderQ(){stop();if(!state.queue.length){$('quiz').innerHTML=`<p class="muted">${tx('문법 문제가 없습니다.','Дүрмийн асуулт алга.')}</p>`;return}if(state.i>=state.queue.length){finish();return}state.locked=false;state.left=seconds;const q=state.queue[state.i],choices=shuffle([...new Set(q.choices.concat(q.correct))]);$('quiz').innerHTML=stats()+`<div class="qbox"><div class="prompt">${formatPrompt(q.prompt)}</div><div class="choices">${choices.map(c=>`<button class="choice" data-v="${encodeURIComponent(c)}">${esc(c)}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(decodeURIComponent(b.dataset.v),b,q));update();timer=setInterval(()=>{if(state.locked)return;state.left--;update();if(state.left<=0)answer(null,null,q,true)},1000)}
+  function renderQ(){stop();if(!state.queue.length){$('quiz').innerHTML=`<p class="muted">${tx('문법 문제가 없습니다.','Дүрмийн асуулт алга.')}</p>`;return}if(state.i>=state.queue.length){finish();return}state.locked=false;state.left=seconds;const q=state.queue[state.i],choices=shuffle([...new Set(q.choices.concat(q.correct))]);$('quiz').innerHTML=stats()+`<div class="qbox">${questionEditorMarkup(q)}<div class="prompt">${formatPrompt(q.prompt)}</div><div class="choices">${choices.map(c=>`<button class="choice" data-v="${encodeURIComponent(c)}">${esc(c)}</button>`).join('')}</div><div class="feedback" id="feedback"></div></div>`;const editBtn=$('editCurrentQuestion');if(editBtn)editBtn.onclick=()=>openQuestionEditor(q);document.querySelectorAll('.choice').forEach(b=>b.onclick=()=>answer(decodeURIComponent(b.dataset.v),b,q));update();timer=setInterval(()=>{if(state.locked)return;state.left--;update();if(state.left<=0)answer(null,null,q,true)},1000)}
   function answer(v,btn,q,timed=false){if(state.locked)return;state.locked=true;stop();const ok=v===q.correct;if(ok)state.correct++;else{state.wrong++;if(timed)state.timeout++;state.miss.push({prompt:q.prompt,correct:q.correct,selected:v||'',timed})}document.querySelectorAll('.choice').forEach(b=>{b.disabled=true;const val=decodeURIComponent(b.dataset.v);if(val===q.correct)b.classList.add('correct');else if(b===btn)b.classList.add('wrong')});const f=$('feedback');f.className='feedback '+(ok?'ok':'bad');f.innerHTML=`<b>${ok?tx('정답!','Зөв!'):timed?tx('시간 초과','Хугацаа дууслаа'):tx('오답','Буруу')}</b> · ${q.correct}`;update();next()}
-  async function init(){applyText();$('back').onclick=()=>location.href=lessonUrl();$('lang').onclick=()=>{params.set('lang',lang()==='KR'?'MN':'KR');localStorage.setItem('kq_lang',params.get('lang'));location.search=params.toString()};document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.panel));$('time10').onclick=()=>{seconds=10;$('time10').classList.add('active');$('time15').classList.remove('active');if(state)start()};$('time15').onclick=()=>{seconds=15;$('time15').classList.add('active');$('time10').classList.remove('active');if(state)start()};$('restart').onclick=start;const path=params.get('data');if(!path){$('subtitle').textContent='data 경로가 없습니다.';return}const target=parseGrammarDataTarget(path);if(!target.ok){renderGrammarInvalidAccess(target.error);return}try{const res=await fetch(target.url,{cache:'no-store'});if(!res.ok)throw Error(res.status);data=await res.json();const actualLevel=String((data&&data.level)||(data&&data.meta&&data.meta.level)||'').toUpperCase();const actualLesson=parseInt(String((data&&data.lesson)||(data&&data.meta&&data.meta.lesson)||'').replace(/[^0-9]/g,''),10);if(actualLevel!==target.level||actualLesson!==target.lessonNo){renderGrammarInvalidAccess(`URL=${target.level}-${target.lessonNo}, DATA=${actualLevel||'?'}-${Number.isFinite(actualLesson)?actualLesson:'?'}`);return}$('title').textContent=`${data.level||''} ${parseInt(data.lesson)||''}과 · ${tx('문법','Дүрэм')}`;$('subtitle').textContent=data.title_mn||'';$('brand').textContent=`Grammar · SNU ${data.level||''}`;const access=await verifyGrammarLessonUnlocked(data);if(!access.allowed){renderGrammarLocked(access,data);return}renderStudy()}catch(e){$('subtitle').textContent='불러오기 오류: '+e.message}}
+  async function init(){applyText();$('back').onclick=()=>location.href=lessonUrl();$('lang').onclick=()=>{params.set('lang',lang()==='KR'?'MN':'KR');localStorage.setItem('kq_lang',params.get('lang'));location.search=params.toString()};document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>show(t.dataset.panel));$('time10').onclick=()=>{seconds=10;$('time10').classList.add('active');$('time15').classList.remove('active');if(state)start()};$('time15').onclick=()=>{seconds=15;$('time15').classList.add('active');$('time10').classList.remove('active');if(state)start()};$('restart').onclick=start;const path=params.get('data');if(!path){$('subtitle').textContent='data 경로가 없습니다.';return}const target=parseGrammarDataTarget(path);if(!target.ok){renderGrammarInvalidAccess(target.error);return}try{const res=await fetch(target.url,{cache:'no-store'});if(!res.ok)throw Error(res.status);data=await res.json();const actualLevel=String((data&&data.level)||(data&&data.meta&&data.meta.level)||'').toUpperCase();const actualLesson=parseInt(String((data&&data.lesson)||(data&&data.meta&&data.meta.lesson)||'').replace(/[^0-9]/g,''),10);if(actualLevel!==target.level||actualLesson!==target.lessonNo){renderGrammarInvalidAccess(`URL=${target.level}-${target.lessonNo}, DATA=${actualLevel||'?'}-${Number.isFinite(actualLesson)?actualLesson:'?'}`);return}$('title').textContent=`${data.level||''} ${parseInt(data.lesson)||''}과 · ${tx('문법','Дүрэм')}`;$('subtitle').textContent=data.title_mn||'';$('brand').textContent=`Grammar · SNU ${data.level||''}`;const access=await verifyGrammarLessonUnlocked(data);if(!access.allowed){renderGrammarLocked(access,data);return}captureOriginalGrammarQuestions();contentEditorLoadPromise=loadContentEditorState();renderStudy()}catch(e){$('subtitle').textContent='불러오기 오류: '+e.message}}
   init();
 </script>
 </body></html>
