@@ -2024,7 +2024,9 @@ function updateStudentProgressSummary_(ss, identity, context) {
     }
 
     const values = [[
-      "", // 순번은 최근접속 정렬 후 자동으로 다시 매긴다.
+      existing
+        ? (Number(existing[0]) > 0 ? Number(existing[0]) : Math.max(row - 1, 1))
+        : "", // 기존 학생은 현재 순번을 보존하고, 신규 학생만 정렬 후 순번을 부여한다.
       phone,
       name,
       authInfo.found ? (authInfo.enabled ? "TRUE" : "FALSE") : "",
