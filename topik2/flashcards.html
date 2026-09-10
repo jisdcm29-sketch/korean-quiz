@@ -607,7 +607,7 @@
     startedAt: Date.now()
   };
 
-  // STEP30-6: TOPIK II 어휘/문법 공통 콘텐츠 편집 상태
+  // STEP30-7: TOPIK II 어휘/문법/쓰기 공통 콘텐츠 편집 상태
   let CONTENT_CAN_EDIT = false;
   let CONTENT_EDIT_MODE = false;
   const CONTENT_OVERRIDES = new Map();
@@ -618,7 +618,16 @@
     const f = String(state.file || "");
     if (/\/data\/topik2\/vocab\//i.test(f)) return "vocab";
     if (/\/data\/topik2\/grammar\//i.test(f)) return "grammar";
+    if (/\/data\/topik2\/writing53\//i.test(f)) return "writing53";
+    if (/\/data\/topik2\/writing51\//i.test(f)) return "writing51";
     return "";
+  }
+  function editableDeckLabel_(){
+    const kind = editableDeckKind_();
+    if (kind === "grammar") return "문법";
+    if (kind === "writing53") return "쓰기 53번";
+    if (kind === "writing51") return "쓰기 51번";
+    return "어휘";
   }
   function deckLessonKey_(){
     try{
@@ -809,7 +818,7 @@
     const item=items[index]; if(!item)return;
     CURRENT_EDITOR_KIND="item"; CURRENT_EDITOR_INDEX=index;
     const id=itemId_(item,index), data=normalizedCardForEditor_(item), keyDeck=isKeyVocabDeck(state.file), m=ensureEditorModal_();
-    const kindLabel=editableDeckKind_()==="grammar"?"문법":"어휘";
+    const kindLabel=editableDeckLabel_();
     m.innerHTML=`<div class="editorDialog"><h2>TOPIK II ${kindLabel} 카드 수정</h2><div class="editorMeta">${deckLessonKey_()} · ${id}</div><div class="editorGrid"><label class="editorField">한국어<textarea id="edKo"></textarea></label><label class="editorField">몽골어<textarea id="edMn"></textarea></label></div>${keyDeck?`<div class="editorGrid"><label class="editorField">유의어<textarea id="edSyn"></textarea></label><label class="editorField">반의어<textarea id="edAnt"></textarea></label></div>`:`<div class="editorGrid"><label class="editorField">설명 (한국어)<textarea id="edDescKo"></textarea></label><label class="editorField">설명 (몽골어)<textarea id="edDescMn"></textarea></label></div>`}<div class="editorGrid"><label class="editorField">예문 (한국어)<textarea id="edExKo"></textarea></label><label class="editorField">예문 (몽골어)<textarea id="edExMn"></textarea></label></div><div class="editorHelp">저장하면 Google Sheet의 콘텐츠수정에 영구 저장되어 이후 모든 학생에게 수정본이 적용됩니다.</div>${editorButtons_(CONTENT_OVERRIDES.has(id))}</div>`;
     document.getElementById("edKo").value=data.ko; document.getElementById("edMn").value=data.mn;
     if(keyDeck){document.getElementById("edSyn").value=data.syn_ko;document.getElementById("edAnt").value=data.ant_ko;}
@@ -1063,7 +1072,11 @@
 
   async function render(keepIndex){
     document.documentElement.lang = getLang();
-    renderShell("TOPIK II", "단어 카드 · 다음 버튼으로 넘기기");
+    const shellKind = editableDeckKind_();
+    const shellSub = (shellKind === "writing53" || shellKind === "writing51")
+      ? "쓰기 학습 카드 · 다음 버튼으로 넘기기"
+      : "단어 카드 · 다음 버튼으로 넘기기";
+    renderShell("TOPIK II", shellSub);
 
     try{
       if (!state.data) {
