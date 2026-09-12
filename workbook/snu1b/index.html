@@ -1,0 +1,58 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07101f">
+  <title>SNU 1B 평가 시험</title>
+  <style>
+    :root{--bg:#07101f;--card:#101b2e;--line:#293a58;--text:#f7fbff;--muted:#a8b7cd;--purple:#8b5cf6;--yellow:#f6b617}
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;background:linear-gradient(180deg,#06101d,#081526);color:var(--text)}
+    body{min-height:100svh}.topbar{position:sticky;top:0;z-index:10;background:rgba(4,10,20,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+    .top-inner{max-width:760px;margin:0 auto;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-weight:950;display:flex;align-items:center;gap:9px}.dot{width:9px;height:9px;border-radius:50%;background:var(--yellow)}
+    .navs{display:flex;gap:8px}.navbtn{border:1px solid #334967;background:#111d32;color:#fff;border-radius:13px;padding:10px 13px;font-weight:900;cursor:pointer}.home{border-color:rgba(248,113,113,.48)}
+    .wrap{max-width:760px;margin:0 auto;padding:14px 14px 30px}.card{background:linear-gradient(180deg,#101a2c,#0d1728);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 12px 34px rgba(0,0,0,.25)}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.test{width:100%;min-height:76px;text-align:center;border-radius:17px;border:1px solid #4d3b86;background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(20,29,50,.98));color:#fff;padding:14px;cursor:pointer}.test strong{display:block;font-size:21px}.test:hover{filter:brightness(1.07)}
+    .test.disabled{cursor:not-allowed;opacity:.52;border-color:#34445e;background:#0d1728}
+    @media(max-width:560px){.top-inner{padding:9px 10px}.brand{font-size:15px}.navbtn{padding:9px 10px;font-size:13px}.wrap{padding:12px 10px 24px}.card{padding:12px;border-radius:18px}.grid{grid-template-columns:1fr;gap:10px}.test{min-height:72px;padding:12px}.test strong{font-size:20px}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="top-inner"><div class="brand"><span class="dot"></span><span id="brandText">SNU 1B</span></div><div class="navs"><button id="backBtn" class="navbtn" type="button">← 1B</button><button id="homeBtn" class="navbtn home" type="button">홈</button></div></div></header>
+  <main class="wrap"><section class="card">
+    <div class="grid">
+      <button id="review1Btn" class="test" type="button"><strong>9-10과</strong></button>
+      <button id="review2Btn" class="test disabled" type="button" disabled><strong>11-12과</strong></button>
+      <button id="review3Btn" class="test disabled" type="button" disabled><strong>13-14과</strong></button>
+      <button id="review4Btn" class="test disabled" type="button" disabled><strong>15-16과</strong></button>
+    </div>
+  </section></main>
+<script>
+(function(){
+  'use strict';
+  const SESSION_KEY='kq_session_v1';
+  const p=new URLSearchParams(location.search);
+  function session(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');return s&&s.token?s:null}catch(_e){return null}}
+  const s=session();
+  if(!s || !s.token || !s.name){ location.replace(new URL('../../',location.href).toString()); return; }
+  const token=p.get('token')||s.token;
+  if(token!==s.token){ location.replace(new URL('../../',location.href).toString()); return; }
+  const lang=((p.get('lang')||localStorage.getItem('kq_lang')||localStorage.getItem('lang')||'KR')+'').toUpperCase()==='MN'?'MN':'KR';
+  const name=p.get('name')||s.name||''; const klass=p.get('klass')||s.klass||'';
+  if(lang==='MN'){
+    document.documentElement.lang='mn';
+    document.getElementById('brandText').textContent='SNU 1B';
+    document.getElementById('backBtn').textContent='← 1B';
+    document.getElementById('homeBtn').textContent='Нүүр';
+  }
+  function addAuth(url,extra){
+    const u=new URL(url,location.href); const vals={name,klass,token,lang,...(extra||{})};
+    Object.entries(vals).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v)!=='')u.searchParams.set(k,String(v))}); return u.toString();
+  }
+  document.getElementById('review1Btn').addEventListener('click',()=>location.href=addAuth('./review1/'));
+  document.getElementById('backBtn').addEventListener('click',()=>location.href=addAuth('../../snu/index.html',{book:'1B'}));
+  document.getElementById('homeBtn').addEventListener('click',()=>location.href=addAuth('../../index.html'));
+})();
+</script>
+</body>
+</html>
