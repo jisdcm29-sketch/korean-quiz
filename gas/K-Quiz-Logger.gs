@@ -2241,14 +2241,33 @@ const STUDENT_PROGRESS_DASHBOARD_1A = "1A 진도그래프";
 const STUDENT_PROGRESS_DASHBOARD_1B2A = "1B-2A 진도그래프";
 const WORKBOOK_EVAL_RESULTS_SHEET_NAME = "워크북평가결과";
 
+// STEP31-11: 워크북 평가 성적을 현재 교재별 대시보드로 분리한다.
+// 각 학생은 가장 높은 교재/복습 단계에서 받은 최고 점수를 기준으로 정렬한다.
+const WORKBOOK_EVAL_DASHBOARD_1A = "1A 평가그래프";
+const WORKBOOK_EVAL_DASHBOARD_1B = "1B 평가그래프";
+const WORKBOOK_EVAL_DASHBOARD_2A = "2A 평가그래프";
+const WORKBOOK_EVAL_DASHBOARD_MAX_STUDENTS = 200;
+const WORKBOOK_EVAL_DASHBOARD_HEADERS = [
+  "순위", "학생이름", "현재교재", "최종평가", "점수", "성적그래프", "응시일", "응시횟수"
+];
+const WORKBOOK_EVAL_DASHBOARD_CONFIGS = [
+  { book: "SNU-1A", sheet: WORKBOOK_EVAL_DASHBOARD_1A, title: "서울대 1A 평가 성적", color: "#4f81bd" },
+  { book: "SNU-1B", sheet: WORKBOOK_EVAL_DASHBOARD_1B, title: "서울대 1B 평가 성적", color: "#70ad47" },
+  { book: "SNU-2A", sheet: WORKBOOK_EVAL_DASHBOARD_2A, title: "서울대 2A 평가 성적", color: "#c55a11" }
+];
+
 // -----------------------------------------------------------------------------
 // STEP28 - 관리용 핵심 시트를 항상 시트 탭 맨 앞에 유지
 // -----------------------------------------------------------------------------
 // Google Sheets에는 시트 탭 자체를 영구적으로 "고정(pin)"하는 기능이 없으므로,
 // 아래 관리 시트를 항상 앞쪽에 자동 재배치한다.
-// 순서: 인증목록 -> 워크북평가결과 -> 진도현황 -> 1A 진도그래프 -> 1B-2A 진도그래프
+// 순서: 인증목록 -> 교재별 평가그래프 -> 워크북평가결과 -> 진도현황 -> 진도그래프
+// Google Sheets 탭을 실제로 pin 할 수는 없으므로 항상 이 순서로 자동 복원한다.
 const MANAGEMENT_SHEET_FRONT_ORDER = [
   AUTH_SHEET_NAME,
+  WORKBOOK_EVAL_DASHBOARD_1A,
+  WORKBOOK_EVAL_DASHBOARD_1B,
+  WORKBOOK_EVAL_DASHBOARD_2A,
   WORKBOOK_EVAL_RESULTS_SHEET_NAME,
   STUDENT_PROGRESS_SHEET_NAME,
   STUDENT_PROGRESS_DASHBOARD_1A,
@@ -2313,8 +2332,17 @@ function arrangeManagementSheetsAtFront() {
 
 // 스프레드시트를 열 때에도 관리 시트가 맨 앞 순서로 복원된다.
 function onOpen(e) {
+  const ss = SpreadsheetApp.getActive();
   try {
-    ensureManagementSheetsAtFront_(SpreadsheetApp.getActive());
+    // 교재 변경이나 수동 수정도 다음 열기 때 바로 반영되도록 평가 대시보드를 갱신한다.
+    if (ss.getSheetByName(WORKBOOK_EVAL_RESULTS_SHEET_NAME)) {
+      refreshWorkbookEvaluationDashboards_(ss);
+    }
+  } catch (err) {
+    console.error("Workbook evaluation dashboard onOpen refresh failed", err);
+  }
+  try {
+    ensureManagementSheetsAtFront_(ss);
   } catch (err) {
     console.error("Management sheet onOpen reorder failed", err);
   }
@@ -2608,6 +2636,368 @@ function setupStudentProgressDashboards() {
     counts: refreshed,
     sheetOrder: sheetOrder
   };
+}
+
+
+// -----------------------------------------------------------------------------
+// STEP31-11 - 교재별 워크북 평가 성적 대시보드
+// -----------------------------------------------------------------------------
+// 원칙
+// 1) 학생의 현재교재(진도현황 K열)를 기준으로 1A / 1B / 2A 시트에 나눈다.
+// 2) 노밍 에르덴은 이번에만 예외로 2A 평가그래프에 넣는다.
+// 3) 학생별 가장 높은 교재/복습 단계의 시험을 우선하고, 그 단계의 최고 점수를 사용한다.
+// 4) 순위는 평가 단계가 높은 순 -> 점수 높은 순 -> 최근 응시 순이다.
+// 5) 평가 미응시 학생도 해당 교재 시트에 표시하되 순위/점수는 비워 둔다.
+
+function workbookEvalNameKey_(value) {
+  return String(value == null ? "" : value)
+    .trim()
+    .toLowerCase()
+    .replace(/[\s·._-]+/g, "");
+}
+
+function isWorkbookEvalSpecial2AStudent_(name) {
+  const key = workbookEvalNameKey_(name);
+  return key === "노밍에르덴" || key === "nomingerdene";
+}
+
+function workbookEvalDashboardGroupBook_(currentBook, name) {
+  if (isWorkbookEvalSpecial2AStudent_(name)) return "SNU-2A";
+  const book = normalizeTestBook_(currentBook);
+  if (book === "SNU-1A" || book === "SNU-1B" || book === "SNU-2A") return book;
+  return "";
+}
+
+function workbookEvalBookOrder_(book) {
+  const b = normalizeTestBook_(book);
+  const order = {
+    "SNU-1A": 1, "SNU-1B": 2,
+    "SNU-2A": 3, "SNU-2B": 4,
+    "SNU-3A": 5, "SNU-3B": 6,
+    "SNU-4A": 7, "SNU-4B": 8
+  };
+  return order[b] || 0;
+}
+
+function workbookEvalReviewStage_(review) {
+  const text = String(review == null ? "" : review).trim();
+  let m = text.match(/복습\s*(\d+)/i);
+  if (m) return Math.max(0, Number(m[1]) || 0);
+  m = text.match(/review\s*(\d+)/i);
+  if (m) return Math.max(0, Number(m[1]) || 0);
+  // 예: 3-4과 / 11-12과. 복습 번호가 없을 때만 보조 기준으로 사용한다.
+  m = text.match(/(\d+)\s*[-~]\s*(\d+)\s*과/);
+  if (m) return Math.max(1, Math.floor((Number(m[1]) + 1) / 2));
+  return 0;
+}
+
+function workbookEvalStageOrder_(book, review) {
+  return workbookEvalBookOrder_(book) * 100 + workbookEvalReviewStage_(review);
+}
+
+function workbookEvalBookShort_(book) {
+  return normalizeTestBook_(book).replace(/^SNU-/, "") || String(book || "");
+}
+
+function workbookEvalDisplayLabel_(book, review) {
+  const b = workbookEvalBookShort_(book);
+  const r = String(review == null ? "" : review).trim();
+  if (!b && !r) return "";
+  if (!r) return b;
+  // 복습2(3-4과) -> 1A 3-4과 처럼 교사가 빠르게 읽을 수 있게 표시한다.
+  const m = r.match(/\(([^)]+)\)/);
+  const detail = m ? String(m[1]).trim() : r;
+  return [b, detail].filter(Boolean).join(" ");
+}
+
+function collectWorkbookEvalRoster_(ss) {
+  const progressSh = ss.getSheetByName(STUDENT_PROGRESS_SHEET_NAME);
+  const groups = { "SNU-1A": [], "SNU-1B": [], "SNU-2A": [] };
+  if (!progressSh || progressSh.getLastRow() < 2) return groups;
+
+  const rows = progressSh.getRange(
+    2, 1, progressSh.getLastRow() - 1, STUDENT_PROGRESS_HEADERS.length
+  ).getValues();
+  const developerPhoneMap = getStudentProgressDeveloperPhoneMap_(ss);
+
+  for (let i = 0; i < rows.length; i++) {
+    const row = rows[i];
+    const phone = normalizePhone_(row[1]);       // B 전화번호
+    const name = String(row[2] == null ? "" : row[2]).trim(); // C 학생이름
+    const enabled = isEnabled_(row[3]);          // D 사용여부
+    const currentBook = normalizeTestBook_(row[10]); // K 현재교재
+
+    if (!enabled || !phone || !name) continue;
+    if (isStudentProgressExcluded_(phone, name, developerPhoneMap)) continue;
+
+    const groupBook = workbookEvalDashboardGroupBook_(currentBook, name);
+    if (!groupBook || !groups[groupBook]) continue;
+
+    groups[groupBook].push({
+      phone: phone,
+      name: name,
+      currentBook: currentBook,
+      groupBook: groupBook
+    });
+  }
+
+  return groups;
+}
+
+function collectWorkbookEvalBestByStudent_(ss) {
+  const sh = ss.getSheetByName(WORKBOOK_EVAL_RESULTS_SHEET_NAME);
+  const byPhone = {};
+  if (!sh || sh.getLastRow() < 2) return byPhone;
+
+  const values = sh.getRange(2, 1, sh.getLastRow() - 1, WORKBOOK_EVAL_HEADERS.length).getValues();
+  for (let i = 0; i < values.length; i++) {
+    const row = values[i];
+    const submittedAt = dateOrNull_(row[0]);
+    const phone = normalizePhone_(row[2]);
+    const name = String(row[3] == null ? "" : row[3]).trim();
+    const book = normalizeTestBook_(row[5]);
+    const review = String(row[6] == null ? "" : row[6]).trim();
+    const score = Number(row[8]);
+
+    if (!phone || !name || !book || !review || !Number.isFinite(score)) continue;
+
+    if (!byPhone[phone]) {
+      byPhone[phone] = {
+        attempts: 0,
+        stageAttempts: {},
+        stageOrder: -1,
+        score: -1,
+        submittedAt: null,
+        book: "",
+        review: ""
+      };
+    }
+
+    const rec = byPhone[phone];
+    const stageOrder = workbookEvalStageOrder_(book, review);
+    rec.stageAttempts[String(stageOrder)] = (rec.stageAttempts[String(stageOrder)] || 0) + 1;
+    const timeMs = submittedAt ? submittedAt.getTime() : 0;
+    const recTimeMs = rec.submittedAt ? rec.submittedAt.getTime() : 0;
+
+    const better = stageOrder > rec.stageOrder ||
+      (stageOrder === rec.stageOrder && score > rec.score) ||
+      (stageOrder === rec.stageOrder && score === rec.score && timeMs > recTimeMs);
+
+    if (better) {
+      rec.stageOrder = stageOrder;
+      rec.score = Math.max(0, Math.min(100, Math.round(score)));
+      rec.submittedAt = submittedAt;
+      rec.book = book;
+      rec.review = review;
+    }
+  }
+
+  Object.keys(byPhone).forEach(function(phone) {
+    const rec = byPhone[phone];
+    rec.attempts = rec.stageAttempts[String(rec.stageOrder)] || 0;
+  });
+  return byPhone;
+}
+
+function buildWorkbookEvalDashboardRows_(ss) {
+  const roster = collectWorkbookEvalRoster_(ss);
+  const bestByPhone = collectWorkbookEvalBestByStudent_(ss);
+  const out = { "SNU-1A": [], "SNU-1B": [], "SNU-2A": [] };
+
+  Object.keys(out).forEach(function(groupBook) {
+    const students = roster[groupBook] || [];
+    for (let i = 0; i < students.length; i++) {
+      const st = students[i];
+      const best = bestByPhone[st.phone] || null;
+      out[groupBook].push({
+        name: st.name,
+        currentBook: st.currentBook,
+        stageOrder: best ? best.stageOrder : -1,
+        evalLabel: best ? workbookEvalDisplayLabel_(best.book, best.review) : "",
+        score: best ? best.score : "",
+        submittedAt: best ? best.submittedAt : null,
+        attempts: best ? best.attempts : 0
+      });
+    }
+
+    out[groupBook].sort(function(a, b) {
+      const aHas = a.stageOrder >= 0;
+      const bHas = b.stageOrder >= 0;
+      if (aHas !== bHas) return aHas ? -1 : 1;
+      if (aHas && bHas) {
+        if (b.stageOrder !== a.stageOrder) return b.stageOrder - a.stageOrder;
+        if (Number(b.score) !== Number(a.score)) return Number(b.score) - Number(a.score);
+        const bt = b.submittedAt ? b.submittedAt.getTime() : 0;
+        const at = a.submittedAt ? a.submittedAt.getTime() : 0;
+        if (bt !== at) return bt - at;
+      }
+      return String(a.name).localeCompare(String(b.name));
+    });
+
+    let rank = 0;
+    for (let i = 0; i < out[groupBook].length; i++) {
+      if (out[groupBook][i].stageOrder >= 0) {
+        rank++;
+        out[groupBook][i].rank = rank;
+      } else {
+        out[groupBook][i].rank = "";
+      }
+    }
+
+    out[groupBook] = out[groupBook].slice(0, WORKBOOK_EVAL_DASHBOARD_MAX_STUDENTS);
+  });
+
+  return out;
+}
+
+function workbookEvalDashboardNote_(book) {
+  const shortBook = workbookEvalBookShort_(book);
+  let note = "현재교재가 " + shortBook + "인 학생을 표시합니다. 학생별 가장 높은 교재/복습 단계의 최고 점수를 사용하며, 같은 단계에서는 점수가 높은 순으로 순위를 정합니다.";
+  if (book === "SNU-2A") {
+    note += " 이번에만 노밍 에르덴 학생은 현재교재가 1B여도 이 시트에 포함합니다.";
+  }
+  return note;
+}
+
+function formatWorkbookEvalDashboardSheet_(sh, config) {
+  if (!sh) return;
+
+  const filter = sh.getFilter();
+  if (filter) filter.remove();
+  sh.getRange("A1:H2").breakApart();
+  sh.clear();
+
+  if (sh.getMaxColumns() < 8) {
+    sh.insertColumnsAfter(sh.getMaxColumns(), 8 - sh.getMaxColumns());
+  }
+  if (sh.getMaxRows() < WORKBOOK_EVAL_DASHBOARD_MAX_STUDENTS + 3) {
+    sh.insertRowsAfter(
+      sh.getMaxRows(),
+      WORKBOOK_EVAL_DASHBOARD_MAX_STUDENTS + 3 - sh.getMaxRows()
+    );
+  }
+
+  sh.getRange("A1:H1").merge();
+  sh.getRange("A1")
+    .setValue(config.title)
+    .setFontSize(16)
+    .setFontWeight("bold")
+    .setFontColor("#ffffff")
+    .setBackground("#1f4e78")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sh.setRowHeight(1, 38);
+
+  sh.getRange("A2:H2").merge();
+  sh.getRange("A2")
+    .setValue(workbookEvalDashboardNote_(config.book))
+    .setFontColor("#555555")
+    .setBackground("#eef4fb")
+    .setWrap(true)
+    .setHorizontalAlignment("left")
+    .setVerticalAlignment("middle");
+  sh.setRowHeight(2, 48);
+
+  sh.getRange("A3:H3")
+    .setValues([WORKBOOK_EVAL_DASHBOARD_HEADERS])
+    .setFontWeight("bold")
+    .setFontColor("#ffffff")
+    .setBackground("#4f81bd")
+    .setHorizontalAlignment("center")
+    .setVerticalAlignment("middle");
+  sh.setRowHeight(3, 30);
+  sh.setFrozenRows(3);
+
+  const widths = [58, 135, 95, 145, 75, 280, 145, 80];
+  for (let c = 0; c < widths.length; c++) sh.setColumnWidth(c + 1, widths[c]);
+
+  const count = WORKBOOK_EVAL_DASHBOARD_MAX_STUDENTS;
+  sh.getRange(4, 1, count, 8).setVerticalAlignment("middle");
+  sh.getRange(4, 1, count, 1).setHorizontalAlignment("center");
+  sh.getRange(4, 3, count, 3).setHorizontalAlignment("center");
+  sh.getRange(4, 8, count, 1).setHorizontalAlignment("center");
+  sh.getRange(4, 5, count, 1).setNumberFormat('0"점"');
+  sh.getRange(4, 7, count, 1).setNumberFormat("yyyy-MM-dd HH:mm");
+
+  sh.getRange(3, 1, count + 1, 8).createFilter();
+}
+
+function setupWorkbookEvalDashboardSheet_(ss, config) {
+  let sh = ss.getSheetByName(config.sheet);
+  if (!sh) sh = ss.insertSheet(config.sheet);
+  formatWorkbookEvalDashboardSheet_(sh, config);
+  return sh;
+}
+
+function workbookEvalSparklineFormula_(row, color) {
+  const safeColor = String(color || "#4f81bd").replace(/"/g, "");
+  return '=IF(E' + row + '="","",SPARKLINE(E' + row + ',{"charttype","bar";"max",100;"color1","' + safeColor + '"}))';
+}
+
+function writeWorkbookEvalDashboardRows_(sh, rows, color) {
+  const maxRows = WORKBOOK_EVAL_DASHBOARD_MAX_STUDENTS;
+  sh.getRange(4, 1, maxRows, 8).clearContent();
+
+  if (!rows || rows.length === 0) {
+    sh.getRange("B4").setValue("현재 해당 교재 학생이 없습니다.").setFontColor("#777777");
+    return 0;
+  }
+
+  const values = rows.map(function(r) {
+    return [
+      r.rank,
+      r.name,
+      r.currentBook,
+      r.evalLabel,
+      r.score,
+      "",
+      r.submittedAt || "",
+      r.attempts || 0
+    ];
+  });
+  sh.getRange(4, 1, values.length, 8).setValues(values);
+  sh.getRange(4, 5, values.length, 1).setNumberFormat('0"점"');
+  sh.getRange(4, 7, values.length, 1).setNumberFormat("yyyy-MM-dd HH:mm");
+
+  const formulas = [];
+  for (let i = 0; i < values.length; i++) {
+    formulas.push([workbookEvalSparklineFormula_(i + 4, color)]);
+  }
+  sh.getRange(4, 6, formulas.length, 1).setFormulas(formulas);
+  return values.length;
+}
+
+function refreshWorkbookEvaluationDashboards_(ss) {
+  if (!ss) ss = SpreadsheetApp.getActive();
+
+  // 한 번도 만든 적이 없는 경우에도 첫 평가 제출 시 자동으로 생성한다.
+  const sheets = {};
+  for (let i = 0; i < WORKBOOK_EVAL_DASHBOARD_CONFIGS.length; i++) {
+    const cfg = WORKBOOK_EVAL_DASHBOARD_CONFIGS[i];
+    let sh = ss.getSheetByName(cfg.sheet);
+    if (!sh) sh = setupWorkbookEvalDashboardSheet_(ss, cfg);
+    sheets[cfg.book] = sh;
+  }
+
+  const data = buildWorkbookEvalDashboardRows_(ss);
+  const counts = {};
+  for (let i = 0; i < WORKBOOK_EVAL_DASHBOARD_CONFIGS.length; i++) {
+    const cfg = WORKBOOK_EVAL_DASHBOARD_CONFIGS[i];
+    counts[cfg.book] = writeWorkbookEvalDashboardRows_(
+      sheets[cfg.book], data[cfg.book] || [], cfg.color
+    );
+  }
+
+  const sheetOrder = ensureManagementSheetsAtFront_(ss);
+  return { ok: true, counts: counts, sheetOrder: sheetOrder };
+}
+
+function setupWorkbookEvaluationDashboards() {
+  const ss = SpreadsheetApp.getActive();
+  for (let i = 0; i < WORKBOOK_EVAL_DASHBOARD_CONFIGS.length; i++) {
+    setupWorkbookEvalDashboardSheet_(ss, WORKBOOK_EVAL_DASHBOARD_CONFIGS[i]);
+  }
+  return refreshWorkbookEvaluationDashboards_(ss);
 }
 
 function jsonpOutput_(callback, obj) {
@@ -3104,7 +3494,18 @@ function getWorkbookEvaluationSheet_(ss) {
 function setupWorkbookEvaluationSystem() {
   const ss = SpreadsheetApp.getActive();
   const sh = getWorkbookEvaluationSheet_(ss);
-  return { ok: true, sheet: sh.getName() };
+  for (let i = 0; i < WORKBOOK_EVAL_DASHBOARD_CONFIGS.length; i++) {
+    setupWorkbookEvalDashboardSheet_(ss, WORKBOOK_EVAL_DASHBOARD_CONFIGS[i]);
+  }
+  const dashboards = refreshWorkbookEvaluationDashboards_(ss);
+  const sheetOrder = ensureManagementSheetsAtFront_(ss);
+  return {
+    ok: true,
+    sheet: sh.getName(),
+    dashboardSheets: WORKBOOK_EVAL_DASHBOARD_CONFIGS.map(function(c) { return c.sheet; }),
+    dashboards: dashboards,
+    sheetOrder: sheetOrder
+  };
 }
 
 function saveWorkbookEvaluationResult_(ss, identity, p) {
@@ -3131,6 +3532,9 @@ function saveWorkbookEvaluationResult_(ss, identity, p) {
 
   const sh = getWorkbookEvaluationSheet_(ss);
   const lock = LockService.getScriptLock();
+  let saveResult = null;
+  let shouldRefresh = false;
+
   lock.waitLock(5000);
   try {
     if (sh.getLastRow() >= 2) {
@@ -3139,22 +3543,38 @@ function saveWorkbookEvaluationResult_(ss, identity, p) {
         .matchEntireCell(true)
         .findNext();
       if (found) {
-        return { ok: true, saved: true, duplicate: true, row: found.getRow(), sheet: sh.getName() };
+        saveResult = { ok: true, saved: true, duplicate: true, row: found.getRow(), sheet: sh.getName() };
       }
     }
 
-    const row = sh.getLastRow() + 1;
-    sh.getRange(row, 1, 1, WORKBOOK_EVAL_HEADERS.length).setValues([[
-      new Date(), attemptId, phone, studentName, klass, book, review, evalType,
-      Math.round(score), Number.isFinite(correct) ? correct : "", total,
-      Number.isFinite(unanswered) ? unanswered : "",
-      Number.isFinite(elapsedSec) ? Math.max(0, Math.round(elapsedSec)) : "",
-      timedOut, answersJson, ua
-    ]]);
-    return { ok: true, saved: true, duplicate: false, row: row, sheet: sh.getName() };
+    if (!saveResult) {
+      const row = sh.getLastRow() + 1;
+      sh.getRange(row, 1, 1, WORKBOOK_EVAL_HEADERS.length).setValues([[
+        new Date(), attemptId, phone, studentName, klass, book, review, evalType,
+        Math.round(score), Number.isFinite(correct) ? correct : "", total,
+        Number.isFinite(unanswered) ? unanswered : "",
+        Number.isFinite(elapsedSec) ? Math.max(0, Math.round(elapsedSec)) : "",
+        timedOut, answersJson, ua
+      ]]);
+      saveResult = { ok: true, saved: true, duplicate: false, row: row, sheet: sh.getName() };
+      shouldRefresh = true;
+    }
   } finally {
     try { lock.releaseLock(); } catch (err) {}
   }
+
+  // 새 결과 저장 후 교재별 순위/그래프를 자동 갱신한다.
+  if (shouldRefresh) {
+    try {
+      SpreadsheetApp.flush();
+      saveResult.dashboard = refreshWorkbookEvaluationDashboards_(ss);
+    } catch (err) {
+      console.error("Workbook evaluation dashboard refresh failed", err);
+      saveResult.dashboardError = String(err && err.message ? err.message : err);
+    }
+  }
+
+  return saveResult;
 }
 
 function doGet(e) {
