@@ -1,0 +1,67 @@
+<!doctype html>
+<html lang="ko">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
+  <meta name="theme-color" content="#07101f">
+  <title>SNU 1A 평가 시험</title>
+  <style>
+    :root{--bg:#07101f;--card:#101b2e;--line:#293a58;--text:#f7fbff;--muted:#a8b7cd;--purple:#8b5cf6;--yellow:#f6b617}
+    *{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;background:linear-gradient(180deg,#06101d,#081526);color:var(--text)}
+    body{min-height:100svh}.topbar{position:sticky;top:0;z-index:10;background:rgba(4,10,20,.94);border-bottom:1px solid var(--line);backdrop-filter:blur(12px)}
+    .top-inner{max-width:760px;margin:0 auto;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-weight:950;display:flex;align-items:center;gap:9px}.dot{width:9px;height:9px;border-radius:50%;background:var(--yellow)}
+    .navs{display:flex;gap:8px}.navbtn{border:1px solid #334967;background:#111d32;color:#fff;border-radius:13px;padding:10px 13px;font-weight:900;cursor:pointer}.home{border-color:rgba(248,113,113,.48)}
+    .wrap{max-width:760px;margin:0 auto;padding:16px 14px 36px}.card{background:linear-gradient(180deg,#101a2c,#0d1728);border:1px solid var(--line);border-radius:20px;padding:20px;box-shadow:0 12px 34px rgba(0,0,0,.25)}
+    .eyebrow{color:#d8c7ff;font-size:13px;font-weight:900}.title{font-size:28px;margin:7px 0 7px}.sub{margin:0;color:var(--muted);line-height:1.65}.student{margin-top:12px;display:inline-flex;border:1px solid #314663;border-radius:999px;padding:7px 11px;color:#c7d2e3;font-size:13px}
+    .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px;margin-top:20px}.test{width:100%;min-height:92px;text-align:left;border-radius:17px;border:1px solid #4d3b86;background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(20,29,50,.98));color:#fff;padding:16px;cursor:pointer}.test strong{display:block;font-size:20px}.test span{display:block;margin-top:7px;color:#d9d2f7;font-size:13px;line-height:1.45}.test:hover{filter:brightness(1.07)}
+    .test.disabled{cursor:not-allowed;opacity:.52;border-color:#34445e;background:#0d1728}.test.disabled span{color:#8fa0b8}.note{margin-top:17px;border:1px solid #33445f;border-radius:14px;padding:12px 13px;color:#9fb0c9;font-size:13px;line-height:1.6}
+    @media(max-width:560px){.top-inner{padding:9px 10px}.brand{font-size:14px}.navbtn{padding:9px 10px;font-size:13px}.wrap{padding:12px 10px 28px}.card{padding:17px;border-radius:18px}.title{font-size:24px}.grid{grid-template-columns:1fr;gap:10px}.test{min-height:78px}.test strong{font-size:19px}}
+  </style>
+</head>
+<body>
+  <header class="topbar"><div class="top-inner"><div class="brand"><span class="dot"></span><span id="brandText">SNU 1A · 평가 시험</span></div><div class="navs"><button id="backBtn" class="navbtn" type="button">← 1A</button><button id="homeBtn" class="navbtn home" type="button">홈</button></div></div></header>
+  <main class="wrap"><section class="card">
+    <div class="eyebrow" id="eyebrow">서울대 한국어 1A Workbook</div>
+    <h1 class="title" id="title">평가 시험</h1>
+    <p class="sub" id="sub">복습 구간별 평가 시험을 선택하세요. 평가 결과는 기존 어휘·문법·종합 진도와 분리하여 저장됩니다.</p>
+    <div id="student" class="student"></div>
+    <div class="grid">
+      <button id="review1Btn" class="test" type="button"><strong>1-2과 평가하기</strong><span>20문항 · 15분 · 자동채점 · 결과 시트 저장</span></button>
+      <button class="test disabled" type="button" disabled><strong>3-4과 평가하기</strong><span>준비 중</span></button>
+      <button class="test disabled" type="button" disabled><strong>5-6과 평가하기</strong><span>준비 중</span></button>
+      <button class="test disabled" type="button" disabled><strong>7-8과 평가하기</strong><span>준비 중</span></button>
+    </div>
+    <div class="note" id="note">평가 시험은 별도 평가 기록이며, 현재 서울대 학습 진도 잠금/해제 조건에는 영향을 주지 않습니다.</div>
+  </section></main>
+<script>
+(function(){
+  'use strict';
+  const SESSION_KEY='kq_session_v1';
+  const p=new URLSearchParams(location.search);
+  function session(){try{const s=JSON.parse(localStorage.getItem(SESSION_KEY)||'null');return s&&s.token?s:null}catch(_e){return null}}
+  const s=session();
+  if(!s || !s.token || !s.name){ location.replace(new URL('../../',location.href).toString()); return; }
+  const token=p.get('token')||s.token;
+  if(token!==s.token){ location.replace(new URL('../../',location.href).toString()); return; }
+  const lang=((p.get('lang')||localStorage.getItem('kq_lang')||localStorage.getItem('lang')||'KR')+'').toUpperCase()==='MN'?'MN':'KR';
+  const name=p.get('name')||s.name||''; const klass=p.get('klass')||s.klass||'';
+  document.getElementById('student').textContent=[name,klass].filter(Boolean).join(' · ');
+  if(lang==='MN'){
+    document.documentElement.lang='mn';
+    document.getElementById('brandText').textContent='SNU 1A · Үнэлгээний шалгалт';
+    document.getElementById('title').textContent='Үнэлгээний шалгалт';
+    document.getElementById('sub').textContent='Давтлагын хэсгийн үнэлгээний шалгалтыг сонгоно уу. Үр дүн нь үндсэн ахицаас тусдаа хадгалагдана.';
+    document.getElementById('note').textContent='Энэ үнэлгээ нь SNU хичээлийн одоогийн түгжээ/ахицын нөхцөлд нөлөөлөхгүй.';
+    document.getElementById('backBtn').textContent='← 1A'; document.getElementById('homeBtn').textContent='Нүүр';
+  }
+  function addAuth(url,extra){
+    const u=new URL(url,location.href); const vals={name,klass,token,lang,...(extra||{})};
+    Object.entries(vals).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v)!=='')u.searchParams.set(k,String(v))}); return u.toString();
+  }
+  document.getElementById('review1Btn').addEventListener('click',()=>location.href=addAuth('./review1/'));
+  document.getElementById('backBtn').addEventListener('click',()=>location.href=addAuth('../../snu/index.html',{book:'1A'}));
+  document.getElementById('homeBtn').addEventListener('click',()=>location.href=addAuth('../../index.html'));
+})();
+</script>
+</body>
+</html>
