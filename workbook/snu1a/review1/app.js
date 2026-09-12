@@ -310,20 +310,8 @@
     const elapsed = Math.max(0, Math.min(DURATION_SEC, Math.floor(((state.submittedAt || Date.now()) - state.startAt) / 1000)));
     const elapsedText = `${Math.floor(elapsed/60)}분 ${String(elapsed%60).padStart(2,'0')}초`;
 
-    const items = QUESTIONS.map((q, idx) => {
-      const selected = state.answers[idx];
-      const ok = selected === q.answer;
-      const my = selected === null ? '미응답' : `${selected+1}번 ${q.options[selected]}`;
-      const ans = `${q.answer+1}번 ${q.options[q.answer]}`;
-      return `<div class="review-item ${ok ? 'correct' : 'wrong'}">
-        <div class="review-title">${q.id}번 ${ok ? '✓ 정답' : '✕ 오답'}</div>
-        <div class="review-answer">내 답: <span class="${ok?'ok':'bad'}">${escapeHtml(my)}</span><br>정답: <span class="ok">${escapeHtml(ans)}</span></div>
-      </div>`;
-    }).join('');
-
     els.resultContent.innerHTML = `
-      <div class="score-big">${correct} / ${QUESTIONS.length}</div>
-      <div class="score-sub">${percent}점 · ${autoTimedOut ? '시간 종료로 자동 제출되었습니다.' : '시험이 제출되었습니다.'}</div>
+      <div class="score-big">${percent}점</div>
       <div class="result-grid">
         <div class="result-stat"><b>${correct}</b>정답</div>
         <div class="result-stat"><b>${wrong}</b>오답/미응답</div>
@@ -331,14 +319,10 @@
         <div class="result-stat"><b>${elapsedText}</b>응시시간</div>
       </div>
       <div class="start-actions">
-        <button type="button" class="secondary" id="toggleReviewBtn">오답/정답 보기</button>
         <button type="button" class="primary" id="retryBtn">다시 응시</button>
       </div>
-      <div id="reviewList" class="review-list hidden">${items}</div>
       <div id="resultSaveStatus" class="save-status">${state.resultSaved ? '구글 시트에 저장되었습니다.' : '시험 결과를 구글 시트에 저장하는 중입니다.'}</div>
-      <div class="footer-note">워크북 평가는 별도 결과 시트에만 저장되며 기존 어휘·문법·종합 시험 점수와 진도에는 영향을 주지 않습니다.</div>
     `;
-    $('#toggleReviewBtn').addEventListener('click', () => $('#reviewList').classList.toggle('hidden'));
     $('#retryBtn').addEventListener('click', () => {
       if(confirm('새 시험을 시작할까요? 현재 결과는 이 기기에서 지워집니다.')) resetState();
     });
