@@ -22,8 +22,8 @@
   <main class="wrap"><section class="card">
     <div class="grid">
       <button id="review1Btn" class="test" type="button"><strong>1-2과</strong></button>
-      <button class="test disabled" type="button" disabled><strong>3-4과</strong></button>
-      <button class="test disabled" type="button" disabled><strong>5-6과</strong></button>
+      <button id="review2Btn" class="test" type="button"><strong>3-4과</strong></button>
+      <button id="review3Btn" class="test" type="button"><strong>5-6과</strong></button>
       <button class="test disabled" type="button" disabled><strong>7-8과</strong></button>
     </div>
   </section></main>
@@ -50,6 +50,8 @@
     Object.entries(vals).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v)!=='')u.searchParams.set(k,String(v))}); return u.toString();
   }
   document.getElementById('review1Btn').addEventListener('click',()=>location.href=addAuth('./review1/'));
+  document.getElementById('review2Btn').addEventListener('click',()=>location.href=addAuth('./review2/'));
+  document.getElementById('review3Btn').addEventListener('click',()=>location.href=addAuth('./review3/'));
   document.getElementById('backBtn').addEventListener('click',()=>location.href=addAuth('../../snu/index.html',{book:'1A'}));
   document.getElementById('homeBtn').addEventListener('click',()=>location.href=addAuth('../../index.html'));
 })();
