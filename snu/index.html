@@ -312,7 +312,7 @@
         lowerCourseAccess: "교사 인정 · 이전 과정 전체 접근",
         teacherStartInvalid: "교사 지정 시작 과를 현재 교재 범위에 맞게 조정했습니다.",
         workbookEval: "평가 시험",
-        workbookEvalSub: "1-2과 평가하기 · 별도 결과 저장"
+        workbookEvalSub: ""
       },
       MN: {
         home: "Нүүр",
@@ -346,7 +346,7 @@
         lowerCourseAccess: "Багш зөвшөөрсөн · өмнөх шат бүхэлдээ нээлттэй",
         teacherStartInvalid: "Багшийн заасан эхлэх хичээлийг энэ номын хүрээнд тохирууллаа.",
         workbookEval: "Үнэлгээний шалгалт",
-        workbookEvalSub: "1-2-р хичээлийн үнэлгээ · тусдаа үр дүн"
+        workbookEvalSub: ""
       }
     };
 
@@ -828,7 +828,7 @@
         const evalBtn = document.createElement("button");
         evalBtn.type = "button";
         evalBtn.className = "lessonBtn workbookEval";
-        evalBtn.innerHTML = `<span class="lessonBtnInner"><span>★ ${tr("workbookEval")}</span><span class="lessonState">${tr("workbookEvalSub")}</span></span>`;
+        evalBtn.innerHTML = `<span class="lessonBtnInner"><span>★ ${tr("workbookEval")}</span></span>`;
         evalBtn.addEventListener("click", ()=>openWorkbookEvaluation("1A"));
         lessonGrid.appendChild(evalBtn);
       }
