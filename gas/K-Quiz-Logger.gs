@@ -2239,15 +2239,17 @@ function rebuildStudentProgressSummary() {
 
 const STUDENT_PROGRESS_DASHBOARD_1A = "1A 진도그래프";
 const STUDENT_PROGRESS_DASHBOARD_1B2A = "1B-2A 진도그래프";
+const WORKBOOK_EVAL_RESULTS_SHEET_NAME = "워크북평가결과";
 
 // -----------------------------------------------------------------------------
 // STEP28 - 관리용 핵심 시트를 항상 시트 탭 맨 앞에 유지
 // -----------------------------------------------------------------------------
 // Google Sheets에는 시트 탭 자체를 영구적으로 "고정(pin)"하는 기능이 없으므로,
-// 아래 4개 관리 시트를 항상 1~4번째 위치로 자동 재배치한다.
-// 순서: 인증목록 -> 진도현황 -> 1A 진도그래프 -> 1B-2A 진도그래프
+// 아래 관리 시트를 항상 앞쪽에 자동 재배치한다.
+// 순서: 인증목록 -> 워크북평가결과 -> 진도현황 -> 1A 진도그래프 -> 1B-2A 진도그래프
 const MANAGEMENT_SHEET_FRONT_ORDER = [
   AUTH_SHEET_NAME,
+  WORKBOOK_EVAL_RESULTS_SHEET_NAME,
   STUDENT_PROGRESS_SHEET_NAME,
   STUDENT_PROGRESS_DASHBOARD_1A,
   STUDENT_PROGRESS_DASHBOARD_1B2A
@@ -3077,6 +3079,84 @@ function disableContentOverride_(ss, identity, params) {
 }
 
 
+
+// STEP31-7: 워크북 복습 평가는 기존 TestResults/진도현황과 완전히 분리해 저장한다.
+const WORKBOOK_EVAL_HEADERS = [
+  "제출시각","응시ID","전화번호","학생이름","반","교재","복습","평가영역",
+  "점수(100)","정답수","전체문항","미응답","응시시간(초)","시간초과","답안JSON","userAgent"
+];
+
+function getWorkbookEvaluationSheet_(ss) {
+  let sh = ss.getSheetByName(WORKBOOK_EVAL_RESULTS_SHEET_NAME);
+  if (!sh) sh = ss.insertSheet(WORKBOOK_EVAL_RESULTS_SHEET_NAME);
+  if (sh.getLastRow() === 0) {
+    sh.getRange(1, 1, 1, WORKBOOK_EVAL_HEADERS.length).setValues([WORKBOOK_EVAL_HEADERS]);
+    sh.setFrozenRows(1);
+    sh.getRange(1, 1, 1, WORKBOOK_EVAL_HEADERS.length)
+      .setFontWeight("bold")
+      .setHorizontalAlignment("center");
+  }
+  // STEP31-8: 결과 시트를 사용자가 옮겨도 다시 관리 시트 앞쪽으로 복원한다.
+  ensureManagementSheetsAtFront_(ss);
+  return sh;
+}
+
+function setupWorkbookEvaluationSystem() {
+  const ss = SpreadsheetApp.getActive();
+  const sh = getWorkbookEvaluationSheet_(ss);
+  return { ok: true, sheet: sh.getName() };
+}
+
+function saveWorkbookEvaluationResult_(ss, identity, p) {
+  const phone = normalizePhone_(identity && identity.phone);
+  const studentName = String((identity && identity.studentName) || p.name || "").trim();
+  const attemptId = String(p.attemptId || "").trim().slice(0, 120);
+  const book = String(p.book || "").trim().slice(0, 40);
+  const review = String(p.review || "").trim().slice(0, 80);
+  const evalType = String(p.evalType || "").trim().slice(0, 60);
+  const klass = String(p.klass || "").trim().slice(0, 80);
+  const score = Number(p.score);
+  const correct = Number(p.correct);
+  const total = Number(p.total);
+  const unanswered = Number(p.unanswered);
+  const elapsedSec = Number(p.elapsedSec);
+  const timedOut = String(p.timedOut || "").trim().toUpperCase() === "TRUE";
+  const answersJson = String(p.answers || "").slice(0, 20000);
+  const ua = String(p.ua || "").slice(0, 500);
+
+  if (!phone || !studentName) return { ok: false, error: "missing_identity" };
+  if (!attemptId || !book || !review || !evalType) return { ok: false, error: "missing_workbook_fields" };
+  if (!Number.isFinite(total) || total <= 0) return { ok: false, error: "invalid_total" };
+  if (!Number.isFinite(score) || score < 0 || score > 100) return { ok: false, error: "invalid_score" };
+
+  const sh = getWorkbookEvaluationSheet_(ss);
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    if (sh.getLastRow() >= 2) {
+      const found = sh.getRange(2, 2, sh.getLastRow() - 1, 1)
+        .createTextFinder(attemptId)
+        .matchEntireCell(true)
+        .findNext();
+      if (found) {
+        return { ok: true, saved: true, duplicate: true, row: found.getRow(), sheet: sh.getName() };
+      }
+    }
+
+    const row = sh.getLastRow() + 1;
+    sh.getRange(row, 1, 1, WORKBOOK_EVAL_HEADERS.length).setValues([[
+      new Date(), attemptId, phone, studentName, klass, book, review, evalType,
+      Math.round(score), Number.isFinite(correct) ? correct : "", total,
+      Number.isFinite(unanswered) ? unanswered : "",
+      Number.isFinite(elapsedSec) ? Math.max(0, Math.round(elapsedSec)) : "",
+      timedOut, answersJson, ua
+    ]]);
+    return { ok: true, saved: true, duplicate: false, row: row, sheet: sh.getName() };
+  } finally {
+    try { lock.releaseLock(); } catch (err) {}
+  }
+}
+
 function doGet(e) {
   const p = (e && e.parameter) ? e.parameter : {};
   const ss = SpreadsheetApp.getActive();
@@ -3307,6 +3387,17 @@ function doGet(e) {
       studentName: result.studentName || (result.payload && result.payload.name) || ""
     };
     return jsonpOutput_(callback, disableContentOverride_(ss, identity, p));
+  }
+
+  // STEP31-7: 워크북 평가 결과 저장. 기존 TestResults/진도현황에는 쓰지 않는다.
+  if (action === "workbook_eval_submit") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback, result);
+    const identity = {
+      phone: result.phone || (result.payload && result.payload.phone) || "",
+      studentName: result.studentName || (result.payload && result.payload.name) || ""
+    };
+    return jsonpOutput_(callback, saveWorkbookEvaluationResult_(ss, identity, p));
   }
 
   // 7) 인증이 필요한 기록 요청 보호
