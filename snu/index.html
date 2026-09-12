@@ -160,6 +160,12 @@
       background:linear-gradient(135deg,rgba(96,165,250,.16), rgba(11,16,32,.96));
       border-color:rgba(96,165,250,.48);
     }
+    .lessonBtn.workbookEval{
+      background:linear-gradient(135deg,rgba(167,139,250,.26), rgba(76,29,149,.30), rgba(11,16,32,.96));
+      border-color:rgba(167,139,250,.72);
+      box-shadow:0 8px 24px rgba(124,58,237,.14);
+    }
+    .lessonBtn.workbookEval .lessonState{color:#ddd6fe}
     .lessonBtnInner{display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.15}
     .lessonState{font-size:11px;font-weight:800;color:var(--muted);white-space:normal}
     .lessonBtn.passed .lessonState{color:#86efac}
@@ -290,7 +296,9 @@
         teacherStart: "교사 지정 시작 과",
         teacherOverride: "교사 지정 시작점 적용",
         lowerCourseAccess: "교사 인정 · 이전 과정 전체 접근",
-        teacherStartInvalid: "교사 지정 시작 과를 현재 교재 범위에 맞게 조정했습니다."
+        teacherStartInvalid: "교사 지정 시작 과를 현재 교재 범위에 맞게 조정했습니다.",
+        workbookEval: "평가 시험",
+        workbookEvalSub: "1-2과 평가하기 · 별도 결과 저장"
       },
       MN: {
         home: "Нүүр",
@@ -322,7 +330,9 @@
         teacherStart: "Багшийн заасан эхлэх хичээл",
         teacherOverride: "Багшийн эхлэх цэг хэрэгжиж байна",
         lowerCourseAccess: "Багш зөвшөөрсөн · өмнөх шат бүхэлдээ нээлттэй",
-        teacherStartInvalid: "Багшийн заасан эхлэх хичээлийг энэ номын хүрээнд тохирууллаа."
+        teacherStartInvalid: "Багшийн заасан эхлэх хичээлийг энэ номын хүрээнд тохирууллаа.",
+        workbookEval: "Үнэлгээний шалгалт",
+        workbookEvalSub: "1-2-р хичээлийн үнэлгээ · тусдаа үр дүн"
       }
     };
 
@@ -359,6 +369,15 @@
     function withQS(url){
       const qs = passthroughQS();
       return url + (url.includes("?") ? "&" : "?") + qs;
+    }
+
+    function openWorkbookEvaluation(bookId){
+      const id = String(bookId || "").toUpperCase();
+      if(id !== "1A") return;
+      const u = new URL("../workbook/snu1a/", location.href);
+      const p = new URLSearchParams(passthroughQS());
+      p.forEach((v,k)=>u.searchParams.set(k,v));
+      location.href = u.toString();
     }
 
     const RESULT_LOG_SCRIPT_URL = "https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec";
@@ -465,40 +484,6 @@
         status: passed ? "PASS" : "RETRY",
         tests
       };
-    }
-
-
-    // STEP29-2: 교재 하나를 선택할 때 과별 상태를 24~27회 따로 요청하지 않고
-    // 시작점/개발자권한/전체 과의 세 시험 최고점을 한 번의 GAS 요청으로 받는다.
-    async function getBookStatusSnapshot(bookId){
-      const token = getParam("token");
-      if(!token) return {ok:false,error:"missing_token",lessons:{}};
-      try{
-        const data = await jsonpRequest({
-          action:"snu_book_status",
-          token,
-          name:getParam("name"),
-          book:"SNU-" + String(bookId || "").toUpperCase()
-        }, 15000);
-        if(!data || data.ok !== true || !data.lessons){
-          return Object.assign({ok:false,error:"empty_snapshot",lessons:{}}, data || {});
-        }
-        return data;
-      }catch(e){
-        return {ok:false,error:(e && e.message) ? e.message : "request_failed",lessons:{}};
-      }
-    }
-
-    function snapshotLessonMastery(snapshot, lessonNo){
-      const item = snapshot && snapshot.lessons ? snapshot.lessons[String(lessonNo)] : null;
-      if(!item || item.ok !== true){
-        return {ok:false,error:"missing_lesson_snapshot",status:"RETRY",tests:{
-          vocab:{found:false,bestScore:0,status:"NONE"},
-          grammar:{found:false,bestScore:0,status:"NONE"},
-          mixed:{found:false,bestScore:0,status:"NONE"}
-        }};
-      }
-      return item;
     }
 
     function previousBookGateInfo(bookId){
@@ -659,9 +644,8 @@
         lessonGrid.appendChild(btn);
       });
 
-      const snapshot = await getBookStatusSnapshot(pickedNow.id);
+      const accessProfile = await getLearningAccess(pickedNow.id);
       if(PICKED !== pickedNow) return;
-      const accessProfile = snapshot;
       const isDeveloper = !!(accessProfile && accessProfile.ok === true && accessProfile.isDeveloper === true);
       // 전체 서울대 과정에서 교사 지정 시작 교재보다 낮은 교재는 이미 이수한 과정으로 인정한다.
       // 예: 시작점이 SNU-2A이면 SNU-1A, SNU-1B의 모든 과를 열어 준다.
@@ -697,30 +681,28 @@
         teacherStartLesson = Number(lessons[idx] && lessons[idx].no || 0);
       }
 
-      // STEP29-2: 이전 교재 마지막 과 상태도 같은 snapshot 안에 포함되어 추가 GAS 호출이 없다.
+      // 이전 과정 전체 인정 상태에서는 점수 조회가 필요 없다. learning_start 호출 자체로 인증도 확인되었다.
       let higherGateInfo = null;
       let higherGateResult = null;
       let higherGatePassed = false;
       if(higherBook){
         higherGateInfo = previousBookGateInfo(pickedNow.id);
-        const gate = snapshot && snapshot.previousGate;
-        if(higherGateInfo && gate && gate.mastery){
-          higherGateResult = gate.mastery;
+        if(higherGateInfo){
+          higherGateResult = await getLessonMastery(higherGateInfo.id, higherGateInfo.lessonNo);
+          if(PICKED !== pickedNow) return;
           higherGatePassed = !!(higherGateResult && higherGateResult.ok === true && higherGateResult.status === "PASS");
-        }else if(higherGateInfo){
-          higherGateResult = {ok:false,error:"missing_previous_gate",status:"RETRY"};
         }
       }
 
       const results = lowerBookAccess
         ? lessons.map(()=>({ok:true,status:"RECOGNIZED",tests:{vocab:{bestScore:0},grammar:{bestScore:0},mixed:{bestScore:0}}}))
-        : lessons.map(ls=>snapshotLessonMastery(snapshot, ls.no));
+        : await Promise.all(lessons.map(ls=>getLessonMastery(pickedNow.id, ls.no)));
       if(PICKED !== pickedNow) return;
 
-      const authError = (!snapshot || snapshot.ok !== true) ? snapshot : (lowerBookAccess ? null :
+      const authError = lowerBookAccess ? null :
         ((higherBook && higherGateResult && higherGateResult.ok !== true)
           ? higherGateResult
-          : results.find(r=>!r || r.ok !== true)));
+          : results.find(r=>!r || r.ok !== true));
       if(authError){
         const msg = authError && authError.error === "missing_token" ? tr("needLogin") : tr("masteryError");
         showErr(msg + (authError && authError.error ? "\n" + authError.error : ""));
@@ -826,6 +808,17 @@
         lessonGrid.appendChild(btn);
       });
 
+      // STEP31-9: 워크북 평가는 서울대 1A 안에서만 별도 메뉴로 진입한다.
+      // 기존 어휘/문법/종합 진도 판정에는 영향을 주지 않는다.
+      if(String(pickedNow.id || "").toUpperCase() === "1A"){
+        const evalBtn = document.createElement("button");
+        evalBtn.type = "button";
+        evalBtn.className = "lessonBtn workbookEval";
+        evalBtn.innerHTML = `<span class="lessonBtnInner"><span>★ ${tr("workbookEval")}</span><span class="lessonState">${tr("workbookEvalSub")}</span></span>`;
+        evalBtn.addEventListener("click", ()=>openWorkbookEvaluation("1A"));
+        lessonGrid.appendChild(evalBtn);
+      }
+
       if(isDeveloper){
         statusEl.textContent = tr("developerAccess");
       }else if(lowerBookAccess){
@@ -877,6 +870,16 @@
 
         statusEl.textContent = tr("loaded");
         renderBooks();
+
+        // STEP31-9: 평가 시험에서 돌아올 때 1A 교재 화면으로 바로 복귀할 수 있다.
+        const requestedBook = String(getParam("book") || "").toUpperCase();
+        if(requestedBook){
+          const target = MANIFEST.books.find(b => String(b && b.id || "").toUpperCase() === requestedBook);
+          if(target){
+            PICKED = target;
+            await renderLessons();
+          }
+        }
       }catch(e){
         statusEl.textContent = "오류";
         showErr("manifest.json을 불러오지 못했습니다.\n" + (e.message || e));
