@@ -50,7 +50,7 @@
       font-weight:900;
       color:var(--text);
       background:#0b1020;
-      white-space:nowrap;
+      white-space:normal;
     }
     .btn:hover{filter:brightness(1.06)}
     .btn:active{transform:translateY(1px)}
@@ -85,9 +85,16 @@
     /* ===== Tiles ===== */
     .grid{
       display:grid;
-      grid-template-columns:repeat(2,1fr);
       gap:10px;
       margin-top:12px;
+    }
+    /* 교재 선택은 모바일에서도 2열 유지 */
+    #bookGrid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
+    }
+    /* 과/평가 목록은 휴대폰에서 2열로 유지하되, 긴 몽골어가 칸을 밀어내지 않게 한다. */
+    #lessonGrid{
+      grid-template-columns:repeat(2,minmax(0,1fr));
     }
     .tile{
       display:flex;align-items:center;justify-content:center;
@@ -129,6 +136,7 @@
     .lessonBtn{
       display:flex;align-items:center;justify-content:center;
       width:100%;
+      min-width:0;
       padding:18px 12px;
       border-radius:18px;
       border:1px solid var(--line);
@@ -141,7 +149,8 @@
       min-height:66px;
       cursor:pointer;
       -webkit-tap-highlight-color:transparent;
-      white-space:nowrap;
+      white-space:normal;
+      overflow:hidden;
     }
     .lessonBtn:hover{filter:brightness(1.06)}
     .lessonBtn:active{transform:translateY(1px)}
@@ -161,13 +170,14 @@
       border-color:rgba(96,165,250,.48);
     }
     .lessonBtn.workbookEval{
+      grid-column:1 / -1;
       background:linear-gradient(135deg,rgba(167,139,250,.26), rgba(76,29,149,.30), rgba(11,16,32,.96));
       border-color:rgba(167,139,250,.72);
       box-shadow:0 8px 24px rgba(124,58,237,.14);
     }
     .lessonBtn.workbookEval .lessonState{color:#ddd6fe}
-    .lessonBtnInner{display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.15}
-    .lessonState{font-size:11px;font-weight:800;color:var(--muted);white-space:normal}
+    .lessonBtnInner{display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.15;width:100%;min-width:0}
+    .lessonState{font-size:11px;font-weight:800;color:var(--muted);white-space:normal;overflow-wrap:anywhere;word-break:keep-all}
     .lessonBtn.passed .lessonState{color:#86efac}
     .lessonBtn.locked .lessonState{color:#cbd5e1}
 
@@ -181,7 +191,8 @@
     }
 
     @media (min-width: 700px){
-      .grid{grid-template-columns:repeat(4,1fr)}
+      #bookGrid{grid-template-columns:repeat(4,minmax(0,1fr))}
+      #lessonGrid{grid-template-columns:repeat(4,minmax(0,1fr))}
     }
 
     /* ✅ 모바일에서 버튼을 “2배 느낌”으로 더 크게 */
@@ -203,10 +214,13 @@
       .tileMeta{font-size:12px;margin-top:5px}
 
       .lessonBtn{
-        min-height:70px;
-        font-size:19px;
+        min-height:94px;
+        font-size:21px;
         padding:18px 10px;
       }
+      .lessonBtnInner{width:100%;min-width:0}
+      .lessonState{font-size:13px;line-height:1.35}
+      .lessonBtn.workbookEval{grid-column:1 / -1;min-height:96px}
     }
   </style>
 </head>
