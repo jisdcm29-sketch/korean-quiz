@@ -64,7 +64,6 @@
     palette: $('#palette'),
     closePalette: $('#closePalette'),
     resultContent: $('#resultContent'),
-    studentChip: $('#studentChip'),
     backEvalBtn: $('#backEvalBtn'),
     homeBtn: $('#homeBtn')
   };
@@ -77,11 +76,6 @@
     if (!mainSession || !mainSession.token || !mainSession.name || !mainSession.phone) {
       location.replace(new URL('../../../', location.href).toString());
       return;
-    }
-    if (student.name || student.phone) {
-      const parts = [student.name, student.klass, student.phone].filter(Boolean);
-      els.studentChip.textContent = parts.join(' · ');
-      els.studentChip.classList.remove('hidden');
     }
     bind();
     restore();
