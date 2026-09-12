@@ -2,7 +2,7 @@
   'use strict';
   const QUESTIONS = window.WORKBOOK_REVIEW_QUESTIONS || [];
   const DURATION_SEC = 15 * 60;
-  const STORAGE_KEY = 'snu1a_workbook_review1_eval_v3';
+  const STORAGE_KEY = 'snu1a_workbook_review3_eval_v1';
   const RESULT_LOG_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec';
   const SESSION_KEY = 'kq_session_v1';
   const DEVICE_KEY = 'kq_deviceId_v1';
@@ -200,16 +200,29 @@
     const answered = state.answers.filter(v => v !== null).length;
     els.answeredCount.textContent = `응답 ${answered}/${QUESTIONS.length}`;
     els.progressBar.style.width = `${((state.current + 1) / QUESTIONS.length) * 100}%`;
-    els.group.textContent = q.group || '';
+    if(q.groupHtml){
+      els.group.innerHTML = q.group || '';
+    } else {
+      els.group.textContent = q.group || '';
+    }
+    // 본문/대화에는 문항 번호를 붙이지 않는다.
+    // 문항 번호는 실제 질문(prompt) 앞에만 표시한다.
     if(q.context){
-      els.context.textContent = q.context;
+      if(q.contextHtml){
+        els.context.innerHTML = q.context;
+      } else {
+        els.context.textContent = q.context;
+      }
       els.context.classList.remove('hidden');
     } else {
       els.context.classList.add('hidden');
       els.context.textContent = '';
     }
-    // 문항 번호는 지문이 아니라 실제 질문 앞에 표시한다.
-    els.prompt.textContent = `${q.id}. ${q.prompt || ''}`;
+    if(q.promptHtml){
+      els.prompt.innerHTML = `<strong>${q.id}.</strong> ${q.prompt || ''}`;
+    } else {
+      els.prompt.textContent = `${q.id}. ${q.prompt || ''}`;
+    }
     if(q.image){
       els.image.src = q.image;
       els.image.alt = `${q.id}번 문제 그림`;
@@ -223,7 +236,8 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'option' + (state.answers[state.current] === idx ? ' selected' : '');
-      btn.innerHTML = `<span class="num">${idx + 1}</span><span>${escapeHtml(text)}</span>`;
+      const optionBody = q.optionHtml ? text : escapeHtml(text);
+      btn.innerHTML = `<span class="num">${idx + 1}</span><span>${optionBody}</span>`;
       btn.addEventListener('click', () => selectAnswer(idx));
       els.options.appendChild(btn);
     });
@@ -371,7 +385,7 @@
   }
 
   function makeAttemptId(){
-    return `wb1a_r1_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,9)}`;
+    return `wb1a_r2_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,9)}`;
   }
 
   function sendResultJsonp(payload){
@@ -418,7 +432,7 @@
         klass:student.klass,
         attemptId:state.attemptId,
         book:'SNU-1A',
-        review:'복습1(1-2과)',
+        review:'복습3(5-6과)',
         evalType:'평가하기',
         score:String(summary.percent),
         correct:String(summary.correct),

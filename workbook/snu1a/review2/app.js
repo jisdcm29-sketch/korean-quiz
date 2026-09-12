@@ -2,7 +2,7 @@
   'use strict';
   const QUESTIONS = window.WORKBOOK_REVIEW_QUESTIONS || [];
   const DURATION_SEC = 15 * 60;
-  const STORAGE_KEY = 'snu1a_workbook_review1_eval_v3';
+  const STORAGE_KEY = 'snu1a_workbook_review2_eval_v1';
   const RESULT_LOG_SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec';
   const SESSION_KEY = 'kq_session_v1';
   const DEVICE_KEY = 'kq_deviceId_v1';
@@ -223,7 +223,8 @@
       const btn = document.createElement('button');
       btn.type = 'button';
       btn.className = 'option' + (state.answers[state.current] === idx ? ' selected' : '');
-      btn.innerHTML = `<span class="num">${idx + 1}</span><span>${escapeHtml(text)}</span>`;
+      const optionBody = q.optionHtml ? text : escapeHtml(text);
+      btn.innerHTML = `<span class="num">${idx + 1}</span><span>${optionBody}</span>`;
       btn.addEventListener('click', () => selectAnswer(idx));
       els.options.appendChild(btn);
     });
@@ -371,7 +372,7 @@
   }
 
   function makeAttemptId(){
-    return `wb1a_r1_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,9)}`;
+    return `wb1a_r2_${Date.now().toString(36)}_${Math.random().toString(36).slice(2,9)}`;
   }
 
   function sendResultJsonp(payload){
@@ -418,7 +419,7 @@
         klass:student.klass,
         attemptId:state.attemptId,
         book:'SNU-1A',
-        review:'복습1(1-2과)',
+        review:'복습2(3-4과)',
         evalType:'평가하기',
         score:String(summary.percent),
         correct:String(summary.correct),
