@@ -1,0 +1,16 @@
+STEP31-9 GitHub checkpoint
+
+Upload/replace these paths:
+/index.html
+/snu/index.html
+/gas/K-Quiz-Logger.gs
+/workbook/snu1a/index.html
+/workbook/snu1a/review1/  (entire folder)
+
+This checkpoint includes:
+- Workbook assessment moved under SNU > 1A > Assessment Test
+- 1-2 assessment test
+- workbook result saving to Google Sheet
+- time-limit auto submit
+- home / assessment navigation
+- current approved images and mobile UI
