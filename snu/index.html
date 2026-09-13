@@ -176,6 +176,15 @@
       box-shadow:0 8px 24px rgba(124,58,237,.14);
     }
     .lessonBtn.workbookEval .lessonState{color:#ddd6fe}
+    /* 평가 시험 버튼은 레슨 목록과 분리해 비동기 재렌더링 중에도 사라지지 않게 유지 */
+    #workbookEvalWrap{
+      grid-template-columns:1fr;
+      margin-top:10px;
+    }
+    #workbookEvalWrap .lessonBtn.workbookEval{
+      width:100%;
+      min-height:66px;
+    }
     .lessonBtnInner{display:flex;flex-direction:column;align-items:center;gap:5px;line-height:1.15;width:100%;min-width:0}
     .lessonState{font-size:11px;font-weight:800;color:var(--muted);white-space:normal;overflow-wrap:anywhere;word-break:keep-all}
     .lessonBtn.passed .lessonState{color:#86efac}
@@ -272,6 +281,11 @@
           <button class="btn" id="btnReset" type="button">교재 다시 선택</button>
         </div>
         <div class="grid" id="lessonGrid"></div>
+        <div class="grid hidden" id="workbookEvalWrap">
+          <button class="lessonBtn workbookEval" id="workbookEvalBtn" type="button">
+            <span class="lessonBtnInner"><span>★ 평가 시험</span></span>
+          </button>
+        </div>
       </div>
 
       <div id="errBox" class="err hidden"></div>
@@ -398,26 +412,47 @@
     // 평가 시험 버튼은 진도/점수 조회와 무관하므로 네트워크 응답을 기다리지 않고 즉시 표시한다.
     function appendWorkbookEvalButton(bookId){
       const id = String(bookId || "").toUpperCase();
-      if(id !== "1A" && id !== "1B") return;
-      const old = lessonGrid.querySelector(".workbookEval");
-      if(old) old.remove();
-      const evalBtn = document.createElement("button");
-      evalBtn.type = "button";
-      evalBtn.className = "lessonBtn workbookEval";
-      evalBtn.innerHTML = `<span class="lessonBtnInner"><span>★ ${tr("workbookEval")}</span></span>`;
-      evalBtn.addEventListener("click", ()=>openWorkbookEvaluation(id));
-      lessonGrid.appendChild(evalBtn);
+      const allowed = (id === "1A" || id === "1B" || id === "2A");
+
+      // 평가 버튼은 lessonGrid 안에 동적으로 넣지 않는다.
+      // 별도 고정 영역을 사용하여 진도 조회/재렌더링/뒤로가기 중에도 사라지지 않게 한다.
+      if(!allowed){
+        workbookEvalWrap.classList.add("hidden");
+        workbookEvalBtn.dataset.book = "";
+        workbookEvalBtn.onclick = null;
+        return;
+      }
+
+      workbookEvalBtn.dataset.book = id;
+      workbookEvalBtn.innerHTML = `<span class="lessonBtnInner"><span>★ ${tr("workbookEval")}</span></span>`;
+      workbookEvalBtn.onclick = ()=>openWorkbookEvaluation(id);
+      workbookEvalWrap.classList.remove("hidden");
+    }
+
+    // URL에 book 값이 있으면 서버 응답을 기다리지 않고 교재 화면과 평가 버튼부터 즉시 복원한다.
+    function restoreRequestedBookShell(){
+      const id = String(getParam("book") || "").toUpperCase();
+      if(id !== "1A" && id !== "1B" && id !== "2A") return "";
+
+      pickedBook.textContent = id;
+      pickedSub.textContent = "";
+      bookWrap.classList.add("hidden");
+      lessonWrap.classList.remove("hidden");
+      helpEl.classList.add("hidden");
+      appendWorkbookEvalButton(id);
+      return id;
     }
 
     function openWorkbookEvaluation(bookId){
       const id = String(bookId || "").toUpperCase();
       const workbookMap = {
         "1A": "../workbook/snu1a/",
-        "1B": "../workbook/snu1b/"
+        "1B": "../workbook/snu1b/",
+        "2A": "../workbook/snu2a/"
       };
       const target = workbookMap[id];
       if(!target) return;
-      // 현재 history 항목에도 book 값을 남겨 브라우저 뒤로가기로 복귀할 때 1A/1B 화면을 즉시 복원한다.
+      // 현재 history 항목에도 book 값을 남겨 브라우저 뒤로가기로 복귀할 때 같은 교재 화면을 즉시 복원한다.
       setBookParam(id);
       const u = new URL(target, location.href);
       const p = new URLSearchParams(passthroughQS());
@@ -568,6 +603,8 @@
     const bookGrid = document.getElementById("bookGrid");
     const lessonWrap = document.getElementById("lessonWrap");
     const lessonGrid = document.getElementById("lessonGrid");
+    const workbookEvalWrap = document.getElementById("workbookEvalWrap");
+    const workbookEvalBtn = document.getElementById("workbookEvalBtn");
     const pickedLabel = document.getElementById("pickedLabel");
     const pickedBook = document.getElementById("pickedBook");
     const pickedSub = document.getElementById("pickedSub");
@@ -625,12 +662,14 @@
       lessonWrap.classList.add("hidden");
       bookWrap.classList.remove("hidden");
       helpEl.classList.remove("hidden");
+      appendWorkbookEvalButton("");
     }
 
     function showAuthRequired(result){
       PICKED = null;
       bookWrap.classList.add("hidden");
       lessonWrap.classList.add("hidden");
+      appendWorkbookEvalButton("");
       subtitleEl.textContent = "🔐 " + tr("authRequired");
       helpEl.textContent = tr("authHelp");
       helpEl.classList.remove("hidden");
@@ -691,7 +730,7 @@
         lessonGrid.appendChild(btn);
       });
 
-      // 1A/1B 평가 버튼은 점수 조회보다 먼저 즉시 표시한다.
+      // 1A/1B/2A 평가 버튼은 점수 조회보다 먼저 즉시 표시한다.
       appendWorkbookEvalButton(pickedNow.id);
 
       const accessProfile = await getLearningAccess(pickedNow.id);
@@ -898,6 +937,10 @@
       applyTop();
       statusEl.textContent = tr("loading");
 
+      // 홈/평가 화면에서 book=2A 등으로 들어온 경우 평가 버튼을 즉시 보여 준다.
+      // validateSession/manifest/진도 API가 느려도 평가 버튼은 기다리지 않는다.
+      restoreRequestedBookShell();
+
       const auth = await validateSession();
       if(!auth || auth.ok !== true){
         showAuthRequired(auth || {ok:false,error:"empty_response"});
@@ -929,20 +972,27 @@
       }
     }
 
-    // 브라우저 뒤로가기로 bfcache에서 복귀했을 때 평가 버튼이 사라지는 경우를 방지한다.
-    window.addEventListener("pageshow", (event)=>{
-      if(!event.persisted || !MANIFEST) return;
-      const requestedBook = String(getParam("book") || "").toUpperCase();
-      if(!requestedBook) return;
+    // 브라우저 뒤로가기/앞으로가기에서 bfcache 사용 여부와 관계없이 평가 버튼을 즉시 복원한다.
+    window.addEventListener("pageshow", ()=>{
+      const requestedBook = restoreRequestedBookShell();
+      if(!requestedBook || !MANIFEST) return;
+
       const target = MANIFEST.books.find(b => String(b && b.id || "").toUpperCase() === requestedBook);
       if(!target) return;
+
       PICKED = target;
-      if(!lessonWrap.classList.contains("hidden")){
-        appendWorkbookEvalButton(requestedBook);
-      }else{
-        renderLessons();
-      }
+      // 이미 해당 교재 레슨이 표시 중이면 버튼만 유지하고, 비어 있으면 레슨 상태를 다시 계산한다.
+      appendWorkbookEvalButton(requestedBook);
+      if(lessonGrid.children.length === 0) renderLessons();
     });
+
+    // 탭 복귀 시에도 평가 버튼이 보이는 상태를 보장한다.
+    document.addEventListener("visibilitychange", ()=>{
+      if(document.visibilityState !== "visible") return;
+      const id = String(getParam("book") || "").toUpperCase();
+      if(id) appendWorkbookEvalButton(id);
+    });
+
 
     loadManifest();
   </script>
