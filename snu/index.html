@@ -412,7 +412,7 @@
     // 평가 시험 버튼은 진도/점수 조회와 무관하므로 네트워크 응답을 기다리지 않고 즉시 표시한다.
     function appendWorkbookEvalButton(bookId){
       const id = String(bookId || "").toUpperCase();
-      const allowed = (id === "1A" || id === "1B" || id === "2A");
+      const allowed = (id === "1A" || id === "1B" || id === "2A" || id === "2B");
 
       // 평가 버튼은 lessonGrid 안에 동적으로 넣지 않는다.
       // 별도 고정 영역을 사용하여 진도 조회/재렌더링/뒤로가기 중에도 사라지지 않게 한다.
@@ -432,7 +432,7 @@
     // URL에 book 값이 있으면 서버 응답을 기다리지 않고 교재 화면과 평가 버튼부터 즉시 복원한다.
     function restoreRequestedBookShell(){
       const id = String(getParam("book") || "").toUpperCase();
-      if(id !== "1A" && id !== "1B" && id !== "2A") return "";
+      if(id !== "1A" && id !== "1B" && id !== "2A" && id !== "2B") return "";
 
       pickedBook.textContent = id;
       pickedSub.textContent = "";
@@ -448,7 +448,8 @@
       const workbookMap = {
         "1A": "../workbook/snu1a/",
         "1B": "../workbook/snu1b/",
-        "2A": "../workbook/snu2a/"
+        "2A": "../workbook/snu2a/",
+        "2B": "../workbook/snu2b/"
       };
       const target = workbookMap[id];
       if(!target) return;
@@ -730,7 +731,7 @@
         lessonGrid.appendChild(btn);
       });
 
-      // 1A/1B/2A 평가 버튼은 점수 조회보다 먼저 즉시 표시한다.
+      // 1A/1B/2A/2B 평가 버튼은 점수 조회보다 먼저 즉시 표시한다.
       appendWorkbookEvalButton(pickedNow.id);
 
       const accessProfile = await getLearningAccess(pickedNow.id);
