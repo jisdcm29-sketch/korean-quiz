@@ -22,7 +22,7 @@
   <main class="wrap"><section class="card">
     <div class="grid">
       <button id="review1Btn" class="test" type="button"><strong>9-10과</strong></button>
-      <button id="review2Btn" class="test disabled" type="button" disabled><strong>11-12과</strong></button>
+      <button id="review2Btn" class="test" type="button"><strong>11-12과</strong></button>
       <button id="review3Btn" class="test disabled" type="button" disabled><strong>13-14과</strong></button>
       <button id="review4Btn" class="test disabled" type="button" disabled><strong>15-16과</strong></button>
     </div>
@@ -50,6 +50,7 @@
     Object.entries(vals).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v)!=='')u.searchParams.set(k,String(v))}); return u.toString();
   }
   document.getElementById('review1Btn').addEventListener('click',()=>location.href=addAuth('./review1/'));
+  document.getElementById('review2Btn').addEventListener('click',()=>location.href=addAuth('./review2/'));
   document.getElementById('backBtn').addEventListener('click',()=>location.href=addAuth('../../snu/index.html',{book:'1B'}));
   document.getElementById('homeBtn').addEventListener('click',()=>location.href=addAuth('../../index.html'));
 })();
