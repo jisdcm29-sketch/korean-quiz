@@ -1,0 +1,76 @@
+name: Apply reviewed SNU 1B reading data
+
+on:
+  push:
+    paths:
+      - '.github/reading-1b-reviewed.ready'
+
+permissions:
+  contents: write
+
+jobs:
+  apply:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild and verify reviewed archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/reading-1b-reviewed.part* > /tmp/reading-1b-reviewed.b64
+          base64 -d /tmp/reading-1b-reviewed.b64 > /tmp/reading-1b-reviewed.zip
+          echo "1c1a941157c011a4cae69a75ea4a7444f39903e56eba30f7bd2bdd6ea3c7f1e1  /tmp/reading-1b-reviewed.zip" | sha256sum -c -
+          rm -rf /tmp/reading-1b-reviewed
+          mkdir -p /tmp/reading-1b-reviewed
+          unzip -q /tmp/reading-1b-reviewed.zip -d /tmp/reading-1b-reviewed
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('/tmp/reading-1b-reviewed/korean-quiz-main/data/snu/1B/reading')
+          expected = [f'lesson{i:02d}.json' for i in range(9,17)]
+          found = sorted(p.name for p in root.glob('lesson*.json'))
+          assert found == expected, (found, expected)
+          for name in expected:
+              data = json.loads((root/name).read_text(encoding='utf-8'))
+              assert data.get('lesson') == int(name[6:8]), (name, data.get('lesson'))
+              assert data.get('total') == 50, (name, data.get('total'))
+              items = data.get('items') or []
+              assert len(items) == 50, (name, len(items))
+              assert [x.get('id') for x in items] == list(range(1,51)), name
+              for x in items:
+                  for key in ('ko','mn','analysis_rows','grammar_mn','vocab_mn'):
+                      assert key in x and x[key] not in (None,''), (name, x.get('id'), key)
+          print('Reviewed archive validation passed for lessons 09-16.')
+          PY
+
+      - name: Apply only reading lessons 09-16
+        shell: bash
+        run: |
+          set -euo pipefail
+          src=/tmp/reading-1b-reviewed/korean-quiz-main/data/snu/1B/reading
+          for n in 09 10 11 12 13 14 15 16; do
+            cp "$src/lesson${n}.json" "data/snu/1B/reading/lesson${n}.json"
+          done
+          python - <<'PY'
+          import json, pathlib
+          root = pathlib.Path('data/snu/1B/reading')
+          for i in range(9,17):
+              p = root/f'lesson{i:02d}.json'
+              d = json.loads(p.read_text(encoding='utf-8'))
+              assert len(d['items']) == 50
+          print('Repository JSON validation passed.')
+          PY
+
+      - name: Commit reviewed files and remove temporary deploy files
+        shell: bash
+        run: |
+          set -euo pipefail
+          rm -f .github/reading-1b-reviewed.part* .github/reading-1b-reviewed.ready .github/workflows/apply-reading-1b-reviewed.yml
+          git config user.name "github-actions[bot]"
+          git config user.email "41898282+github-actions[bot]@users.noreply.github.com"
+          git add -A .github data/snu/1B/reading/lesson09.json data/snu/1B/reading/lesson10.json data/snu/1B/reading/lesson11.json data/snu/1B/reading/lesson12.json data/snu/1B/reading/lesson13.json data/snu/1B/reading/lesson14.json data/snu/1B/reading/lesson15.json data/snu/1B/reading/lesson16.json
+          git commit -m "Update SNU 1B reading lessons 9-16 with reviewed content"
+          git push
