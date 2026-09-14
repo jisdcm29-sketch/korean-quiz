@@ -1,0 +1,83 @@
+name: Deploy reviewed SNU 1A reading 2-8
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - '.github/reading-1a-2-8/**'
+      - '.github/workflows/deploy-reading-1a-2-8.yml'
+
+permissions:
+  contents: write
+
+concurrency:
+  group: deploy-reading-1a-2-8
+  cancel-in-progress: false
+
+jobs:
+  deploy:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
+
+      - name: Rebuild and validate reviewed archive
+        shell: bash
+        run: |
+          set -euo pipefail
+          cat .github/reading-1a-2-8/part-*.b64 > /tmp/reading.b64
+          base64 -d /tmp/reading.b64 > /tmp/reading.tar.gz
+          echo 'd39e542005fd5ae58161ebeed465c67cc5d7212a31d0d93827ed98cbc71fe42d  /tmp/reading.tar.gz' | sha256sum -c -
+          mkdir -p /tmp/reading
+          tar -xzf /tmp/reading.tar.gz -C /tmp/reading
+          python3 - <<'PY'
+          import json
+          from pathlib import Path
+          expected = {
+              2: '7db9f0228c8b5044afb329846387b9f62534e24a5b13d07cf90c2aea474bff34',
+              3: 'd3b388dd5dbea92793b9a0a82e2c6205c26d4b0ad1e6517496c9192a493d06b1',
+              4: 'f3a0d3feb8de1d6fd3eeba601c87a8027d60d9309516c15dd5c425c8e3343670',
+              5: '7a89167672ab471cf483d9609624f1054d013c3b250eb40ba720b62ef220e7cd',
+              6: '96eb2447db60a608336efbe159a20d0478f18b961cd05a2aecd4fca39fad9241',
+              7: '79936fe79a97721f649adba7dcdd7f9446e08005890dcdf726e2491d5a95629f',
+              8: 'e4c50295ec303a5146d4bd3d26149ce1ca155f8b004fb15704cb373726f01c6b',
+          }
+          import hashlib
+          for n, digest in expected.items():
+              p = Path('/tmp/reading') / f'lesson{n:02d}.json'
+              raw = p.read_bytes()
+              assert hashlib.sha256(raw).hexdigest() == digest, (n, 'sha256 mismatch')
+              data = json.loads(raw.decode('utf-8'))
+              assert data.get('lesson') == n
+              assert data.get('total') == 50
+              items = data.get('items')
+              assert isinstance(items, list) and len(items) == 50
+              assert [x.get('id') for x in items] == list(range(1, 51))
+              for item in items:
+                  for key in ('ko','mn','analysis_rows','grammar_mn','vocab_mn'):
+                      assert key in item, (n, item.get('id'), key)
+          print('Reviewed reading JSON validation passed for lessons 02-08.')
+          PY
+
+      - name: Replace only reading lessons 02-08
+        shell: bash
+        run: |
+          set -euo pipefail
+          for n in 02 03 04 05 06 07 08; do
+            cp "/tmp/reading/lesson${n}.json" "data/snu/1A/reading/lesson${n}.json"
+          done
+          rm -rf .github/reading-1a-2-8
+          rm -f .github/workflows/deploy-reading-1a-2-8.yml
+
+      - name: Commit verified reading files
+        shell: bash
+        run: |
+          set -euo pipefail
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add -A
+          git diff --cached --name-only
+          git diff --cached --quiet && exit 0
+          git commit -m 'Update SNU 1A reading lessons 2-8 with reviewed content'
+          git push origin HEAD:main
