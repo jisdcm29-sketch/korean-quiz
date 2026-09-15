@@ -1669,7 +1669,7 @@
       document.getElementById("tab-reading").addEventListener("click", ()=>{
         if(!LESSON) return;
         const raw=String((LESSON.meta&&LESSON.meta.lesson)||LESSON.lesson||"1");
-        const n=Math.max(1,Math.min(16,parseInt(raw,10)||1));
+        const n=Math.max(1,Math.min(18,parseInt(raw,10)||1));
         const level=String((LESSON.meta&&LESSON.meta.level)||LESSON.level||(n>=9?"1B":"1A"));
         const current=new URL(location.href);
         const p=new URLSearchParams();
