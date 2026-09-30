@@ -77,7 +77,7 @@
     const I18N={
       KR:{
         home:'홈', learner:'학습자: ', loading:'불러오는 중...', loaded:'로드 완료',
-        reading:'읽기평가', sentence:'한국어 문장', hint:'한국어 문장을 먼저 읽고 몽골어로 직접 번역해 보세요.',
+        reading:'번역 연습', sentence:'한국어 문장', hint:'한국어 문장을 먼저 읽고 몽골어로 직접 번역해 보세요.',
         check:'번역 확인', hide:'번역 숨기기', translation:'몽골어 번역', analysis:'문장 분석', vocab:'어휘·표현', grammar:'문법', structure:'문장 구조',
         prev:'이전', next:'다음', finish:'학습 완료', prepared:'아직 이 단계의 학습 데이터가 준비되지 않았습니다.',
         backLevels:'레벨 선택으로 돌아가기', completeTitle:'Level 1 학습 완료', completeBody:'50개의 한국어 문장을 모두 확인했습니다.', restart:'1단계 다시 학습',
@@ -85,7 +85,7 @@
       },
       MN:{
         home:'Нүүр', learner:'Сурагч: ', loading:'Ачаалж байна...', loaded:'Ачааллаа',
-        reading:'Унших дасгал', sentence:'Солонгос өгүүлбэр', hint:'Солонгос өгүүлбэрийг эхлээд өөрөө монгол хэл рүү орчуулж үзээрэй.',
+        reading:'Орчуулгын дасгал', sentence:'Солонгос өгүүлбэр', hint:'Солонгос өгүүлбэрийг эхлээд өөрөө монгол хэл рүү орчуулж үзээрэй.',
         check:'Орчуулгыг шалгах', hide:'Орчуулгыг нуух', translation:'Монгол орчуулга', analysis:'1. Өгүүлбэрийн задлал', grammar:'2. Дүрэм', vocab:'3. Үг, хэллэг', structure:'Өгүүлбэрийн бүтэц',
         prev:'Өмнөх', next:'Дараах', finish:'Сургалт дуусгах', prepared:'Энэ шатны сургалтын өгөгдөл хараахан бэлэн болоогүй байна.',
         backLevels:'Шат сонгох руу буцах', completeTitle:'Level 1 дууслаа', completeBody:'50 солонгос өгүүлбэрийг бүгдийг нь шалгалаа.', restart:'1-р шатыг дахин сурах',
@@ -149,7 +149,14 @@
       $('pillName').textContent=tr('learner')+(params.get('name')||'-');
       $('pillToken').textContent='token: '+(params.get('token')||'-');
       if(DATA){
-        $('title').textContent=getLang()==='MN'?(DATA.title_mn||DATA.title_kr):DATA.title_kr;
+        const isTranslationPractice=cat==='reading';
+        if(isTranslationPractice){
+          $('title').textContent=getLang()==='MN'
+            ? `TOPIK I Орчуулгын дасгал · Level ${levelNo}`
+            : `TOPIK I 번역 연습 · Level ${levelNo}`;
+        }else{
+          $('title').textContent=getLang()==='MN'?(DATA.title_mn||DATA.title_kr):DATA.title_kr;
+        }
         $('subtitle').textContent=getLang()==='MN'?(DATA.description_mn||DATA.description_kr):DATA.description_kr;
         render();
       }
@@ -230,7 +237,9 @@
         }
         DATA=await res.json();
         await loadContentOverrides_();
-        document.title=getLang()==='MN'?(DATA.title_mn||DATA.title_kr||document.title):(DATA.title_kr||document.title);
+        document.title=cat==='reading'
+          ? (getLang()==='MN' ? `TOPIK I Орчуулгын дасгал · Level ${levelNo}` : `TOPIK I 번역 연습 · Level ${levelNo}`)
+          : (getLang()==='MN'?(DATA.title_mn||DATA.title_kr||document.title):(DATA.title_kr||document.title));
         if(!Array.isArray(DATA.items)||DATA.items.length!==50)throw new Error(`문항 수 오류: ${Array.isArray(DATA.items)?DATA.items.length:0}`);
         $('studyArea').classList.remove('hidden');$('status').textContent=tr('loaded');applyTop();
       }catch(e){
