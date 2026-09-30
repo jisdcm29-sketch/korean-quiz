@@ -1,0 +1,138 @@
+{
+  "type_no": 4,
+  "type_name": "세부 내용",
+  "stage_id": "basic",
+  "stage_name": "기초",
+  "time_limit_seconds": 75,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R043-QB083-R043-001",
+      "source_round": "83",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 요리를 잘 못합니다. 그래서 음식을 보통 사 먹습니다. 오늘 저녁은 집 근처 식당에서 불고기를 먹을 겁니다.",
+      "options": [
+        "저는 요리를 자주 합니다.",
+        "집 근처에 식당이 없습니다.",
+        "저는 오늘 불고기를 먹을 겁니다.",
+        "저는 오늘 집에서 저녁을 먹습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-91-R043-QB91-R043-001",
+      "source_round": "91",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 친구와 함께 삽니다. 우리는 집에서 한국 가수의 노래를 매일 듣습니다. 금요일에는 수업이 끝나고 같이 노래방에 갑니다.",
+      "options": [
+        "친구는 저와 같이 삽니다.",
+        "저는 금요일에 수업이 없습니다.",
+        "우리는 한국 노래를 가끔 듣습니다.",
+        "친구는 금요일에 혼자 노래방에 갑니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-96-R043-QB96-R043-001",
+      "source_round": "96",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "우리 집 근처에 빵집이 하나 있습니다. 그 빵집은 케이크가 싸고 맛있습니다. 저는 케이크를 좋아해서 거기에 자주 갑니다.",
+      "options": [
+        "빵집이 집에서 멉니다.",
+        "저는 빵집에 자주 갑니다.",
+        "저는 케이크를 싫어합니다.",
+        "케이크가 비싸지만 맛있습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-97-R043-QB97-R043-001",
+      "source_round": "97",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 2년 전에 한국에 왔습니다. 한국어를 정말 열심히 공부했습니다. 그래서 지금은 한국 친구들과 한국어로 이야기합니다.",
+      "options": [
+        "저는 한국 친구가 있습니다.",
+        "저는 올해 한국에 왔습니다.",
+        "저는 지금 한국어를 못합니다.",
+        "저는 한국어 공부를 안 했습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-99-R043-QB99-R043-001",
+      "source_round": "99",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "수미 씨는 대학교에서 태권도를 가르칩니다. 태권도를 쉽고 재미있게 가르칩니다. 그래서 학생들이 수업에 많이 옵니다.",
+      "options": [
+        "이 수업은 어렵습니다.",
+        "수미 씨는 태권도를 배웁니다.",
+        "학생들은 이 수업을 좋아합니다.",
+        "수미 씨는 대학교에서 공부합니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-100-R043-QB100-R043-001",
+      "source_round": "100",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 형이 한 명 있습니다. 지금 한국에서 저와 같이 삽니다. 우리는 함께 한국어 공부도 하고 여행도 합니다.",
+      "options": [
+        "형은 한국에 없습니다.",
+        "저는 지금 혼자 삽니다.",
+        "저는 형이 두 명 있습니다.",
+        "우리는 같이 여행을 합니다."
+      ],
+      "correct_answer": 4,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-102-R043-QB-R043-001",
+      "source_round": "102",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "다음을 읽고 내용이 같은 것을 고르십시오.",
+      "passage": "저는 은행에서 일합니다. 은행에 외국인 손님이 많이 옵니다. 저는 그 손님들하고 영어로 이야기합니다.",
+      "options": [
+        "저는 영어를 할 수 없습니다.",
+        "저는 요즘 일을 하지 않습니다.",
+        "저는 은행에서 일을 하려고 합니다.",
+        "저는 은행에서 외국 사람을 많이 만납니다."
+      ],
+      "correct_answer": 4,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-103-R043-DRAFT-103-R043",
+      "source_round": "103",
+      "original_question_number": 43,
+      "type": "same_content",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 매일 아침 동네 수영장에 갑니다. 거기에서 혼자 수영을 하고 회사에 갑니다. 회사 식당에서 아침을 먹습니다.",
+      "options": [
+        "저는 저녁에 수영장에 갑니다.",
+        "저는 동네 수영장에 다닙니다.",
+        "저는 친구와 같이 수영을 합니다.",
+        "저는 집에서 아침 식사를 합니다."
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    }
+  ]
+}

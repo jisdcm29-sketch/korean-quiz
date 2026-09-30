@@ -1,0 +1,131 @@
+{
+  "type_no": 5,
+  "type_name": "중심 내용",
+  "range": "46~48",
+  "stage_id": "develop",
+  "stage_name": "발전",
+  "time_limit_seconds": 70,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R047-QB083-R047-001",
+      "source_round": "83",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "저는 바다에서 수영하는 것을 좋아합니다. 여름에는 수영을 하러 바다에 자주 갑니다. 빨리 여름이 오면 좋겠습니다.",
+      "options": [
+        "저는 여름을 제일 좋아합니다.",
+        "저는 수영을 잘하면 좋겠습니다.",
+        "저는 여름 바다에 가 보고 싶습니다.",
+        "저는 빨리 바다에서 수영하고 싶습니다."
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-91-R047-QB91-R047-001",
+      "source_round": "91",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "저는 백화점에서 모자를 하나 샀습니다. 그 모자는 가볍고 예쁩니다. 저는 요즘 밖에 나갈 때 그 모자를 자주 씁니다.",
+      "options": [
+        "저는 모자가 마음에 듭니다.",
+        "저는 예쁜 모자가 필요합니다.",
+        "저는 친구에게 모자를 줄 겁니다.",
+        "저는 백화점에서 일하면 좋겠습니다."
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-96-R047-QB96-R047-001",
+      "source_round": "96",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "제 방 에어컨은 오래되었습니다. 에어컨에서 소리도 나고 시원하지 않습니다. 이번 여름에는 새 에어컨을 사려고 합니다.",
+      "options": [
+        "저는 에어컨을 바꿀 겁니다.",
+        "저는 큰 에어컨이 좋습니다.",
+        "저는 에어컨이 싸면 좋겠습니다.",
+        "저는 에어컨을 오래 쓰고 싶습니다."
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-97-R047-QB97-R047-001",
+      "source_round": "97",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "중심 내용으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 보통 컴퓨터로 일을 많이 합니다. 그런데 제 컴퓨터가 너무 느려서 불편합니다. 새 컴퓨터를 사야 합니다.",
+      "options": [
+        "저는 새 컴퓨터가 필요합니다.",
+        "저는 제 컴퓨터가 마음에 듭니다.",
+        "저는 컴퓨터를 조금만 할 겁니다.",
+        "저는 컴퓨터를 하는 것이 좋습니다."
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-99-R047-QB99-R047-001",
+      "source_round": "99",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "우리 동아리는 다음 주말에 춤 공연을 합니다. 저는 열심히 춤 공연을 준비했습니다. 빨리 다음 주가 왔으면 좋겠습니다.",
+      "options": [
+        "저는 주말에 춤을 배울 겁니다.",
+        "저는 춤 공연을 보고 싶습니다.",
+        "저는 빨리 공연을 하고 싶습니다.",
+        "저는 춤을 배우는 것이 재미있습니다."
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-100-R047-QB100-R047-001",
+      "source_round": "100",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "제가 좋아하는 가수 유라 씨가 다음 주에 콘서트를 합니다. 저는 유라 씨의 노래를 직접 듣고 싶습니다. 그래서 이번 콘서트 표를 살 겁니다.",
+      "options": [
+        "저는 가수가 되려고 합니다.",
+        "저는 노래를 잘하면 좋겠습니다.",
+        "저는 유라 씨의 노래를 자주 듣습니다.",
+        "저는 유라 씨의 콘서트에 가고 싶습니다."
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-102-R047-QB-R047-001",
+      "source_round": "102",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "다음을 읽고 중심 내용을 고르십시오.",
+      "passage": "저는 주말마다 테니스를 칩니다. 지난주에는 비가 와서 테니스를 못 쳤습니다. 이번 주는 비가 안 오면 좋겠습니다.",
+      "options": [
+        "저는 테니스를 배우려고 합니다.",
+        "저는 테니스 보는 것을 좋아합니다.",
+        "저는 테니스를 잘 치면 좋겠습니다.",
+        "저는 이번 주말에 테니스를 치고 싶습니다."
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-103-R047-DRAFT-103-R047",
+      "source_round": "103",
+      "original_question_number": 47,
+      "type": "main_idea",
+      "question": "윗글의 중심 내용을 고르십시오.",
+      "passage": "저는 집 근처 카페에서 일하고 있습니다. 손님이 많아서 바쁘지만 재미있습니다. 사장님도 친절해서 좋습니다.",
+      "options": [
+        "저는 커피 마시는 것을 좋아합니다.",
+        "저는 카페에 손님이 많으면 좋겠습니다.",
+        "저는 이 카페에서 일하는 것이 좋습니다.",
+        "저는 이 카페 사장님을 만나고 싶습니다."
+      ],
+      "correct_answer": 3
+    }
+  ]
+}

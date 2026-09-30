@@ -1,0 +1,138 @@
+{
+  "type_no": 4,
+  "type_name": "세부 내용",
+  "stage_id": "real",
+  "stage_name": "실전",
+  "time_limit_seconds": 55,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R045-QB083-R045-001",
+      "source_round": "83",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "명동에서 약속이 있었습니다. 저는 집에서 일찍 나왔지만 차가 많아서 길이 막혔습니다. 그래서 약속 장소에 늦게 도착했습니다.",
+      "options": [
+        "저는 명동에 못 갔습니다.",
+        "길에 차가 많지 않았습니다.",
+        "저는 약속 시간에 늦었습니다.",
+        "저는 집에서 늦게 출발했습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-91-R045-QB91-R045-001",
+      "source_round": "91",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 자전거가 있지만 잘 못 탑니다. 그래서 저는 주말마다 민수 씨를 만나서 자전거를 배웁니다. 나중에 민수 씨와 자전거 여행을 하고 싶습니다.",
+      "options": [
+        "저는 자전거가 없습니다.",
+        "저는 지금 자전거를 잘 탑니다.",
+        "저는 주말에 민수 씨를 만납니다.",
+        "저는 요즘 민수 씨와 자전거 여행을 합니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-96-R045-QB96-R045-001",
+      "source_round": "96",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 그릇 모으는 것이 취미입니다. 그래서 저는 예쁜 그릇을 볼 때마다 삽니다. 지난 주말에는 백화점에서 꽃 모양 접시를 샀습니다.",
+      "options": [
+        "저는 취미가 없습니다.",
+        "저는 예쁜 그릇을 보면 삽니다.",
+        "저는 백화점에서 컵을 샀습니다.",
+        "저는 지난 주말에 밖에 안 나갔습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-97-R045-QB97-R045-001",
+      "source_round": "97",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "제 동생은 식당에서 일합니다. 어제 식당에 손님이 많이 와서 바빴습니다. 동생은 늦게 집에 와서 밤 10시에 저녁을 먹었습니다.",
+      "options": [
+        "어제 동생은 일찍 퇴근했습니다.",
+        "어제 동생은 밤 열 시에 식당에 갔습니다.",
+        "어제 동생은 식당에서 저녁을 먹었습니다.",
+        "어제 동생이 일하는 식당에 손님이 많았습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-99-R045-QB99-R045-001",
+      "source_round": "99",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 주말에 친구와 함께 빵을 만들었습니다. 우리는 초콜릿을 좋아해서 초콜릿 빵을 만들었습니다. 친구와 그 빵을 맛있게 먹었습니다.",
+      "options": [
+        "저는 초콜릿을 싫어합니다.",
+        "저는 빵을 맛있게 먹었습니다.",
+        "저는 혼자 빵을 만들었습니다.",
+        "저는 주말에 친구를 만나지 않았습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-100-R045-QB100-R045-001",
+      "source_round": "100",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "어제는 제 생일이었습니다. 수미 씨는 케이크를 선물로 주고 민수 씨는 지갑을 줬습니다. 친구들에게 축하를 받아서 행복했습니다.",
+      "options": [
+        "제 생일은 다음 주에 있습니다.",
+        "수미 씨가 저에게 지갑을 줬습니다.",
+        "저는 민수 씨에게서 선물을 받았습니다.",
+        "저는 어제 친구의 생일을 축하했습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-102-R045-QB-R045-001",
+      "source_round": "102",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "다음을 읽고 내용이 같은 것을 고르십시오.",
+      "passage": "고향에 계신 부모님이 과자를 보내 주셨습니다. 제가 좋아하는 고향 과자가 많이 있었습니다. 방 친구와 같이 과자를 먹었습니다.",
+      "options": [
+        "저는 부모님과 같이 삽니다.",
+        "저는 과자를 혼자 먹었습니다.",
+        "저는 부모님에게 과자를 받았습니다.",
+        "저는 고향의 과자를 좋아하지 않습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-103-R045-DRAFT-103-R045",
+      "source_round": "103",
+      "original_question_number": 45,
+      "type": "same_content",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 여자 친구와 자동차 회사에서 같이 일합니다. 우리는 내년에 결혼할 겁니다. 그래서 결혼 후에 같이 살 집을 찾고 있습니다.",
+      "options": [
+        "저는 자동차 회사 직원입니다.",
+        "저는 결혼하면 살 집이 있습니다.",
+        "여자 친구와 저는 회사가 다릅니다.",
+        "여자 친구와 저는 이번 달에 결혼합니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    }
+  ]
+}

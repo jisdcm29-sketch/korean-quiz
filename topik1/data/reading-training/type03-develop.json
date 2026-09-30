@@ -1,0 +1,139 @@
+{
+  "type_no": 3,
+  "type_name": "실용문 정보",
+  "range": "40~42",
+  "stage": "develop",
+  "stage_name": "발전",
+  "time_limit_seconds": 75,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R041-QB083-R041-001",
+      "source_round": "83",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "방 있음 안내문을 보고 답하십시오.",
+      "options": [
+        "방이 많습니다.",
+        "부엌이 큽니다.",
+        "화장실이 있습니다.",
+        "대학교에서 가깝습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/83_R041.png"
+    },
+    {
+      "id": "FIXED-91-R041-QB91-R041-001",
+      "source_round": "91",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "인주공원 안내 지도를 보고 답하십시오.",
+      "options": [
+        "주차장은 공원 안에 있습니다.",
+        "카페 옆에 화장실이 있습니다.",
+        "공원에 입구가 한 개 있습니다.",
+        "이곳에서 농구를 할 수 있습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/91_R041.png"
+    },
+    {
+      "id": "FIXED-96-R041-QB96-R041-001",
+      "source_round": "96",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "승차권 자료를 보고 답하십시오.",
+      "options": [
+        "두 명이 갑니다.",
+        "오전에 출발합니다.",
+        "인주에 세 시에 도착합니다.",
+        "시월 십이 일에 기차를 탑니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/96_R041.png"
+    },
+    {
+      "id": "FIXED-97-R041-QB97-R041-001",
+      "source_round": "97",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "삼만 원에 팝니다.",
+        "두 번 입었습니다.",
+        "아기 신발을 줍니다.",
+        "백화점에서 샀습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/97_R041.png"
+    },
+    {
+      "id": "FIXED-99-R041-QB99-R041-001",
+      "source_round": "99",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "경주에 갑니다.",
+        "주차장에서 만납니다.",
+        "아홉 시에 출발합니다.",
+        "주말에 여행을 갑니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/99_R041.png"
+    },
+    {
+      "id": "FIXED-100-R041-QB100-R041-001",
+      "source_round": "100",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "테니스 수업은 한 시간입니다.",
+        "오후에 테니스 수업이 있습니다.",
+        "수요일에 테니스 수업을 합니다.",
+        "인주체육관에서 테니스를 배웁니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/100_R041.png"
+    },
+    {
+      "id": "FIXED-102-R041-QB-R041-001",
+      "source_round": "102",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "다음을 읽고 맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "주말에 파티를 합니다.",
+        "유미의 생일 파티입니다.",
+        "파티는 오전에 시작합니다.",
+        "호텔 삼 층에서 파티를 합니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/R041.png"
+    },
+    {
+      "id": "FIXED-103-R041-QB103-R041-001",
+      "source_round": "103",
+      "original_question_number": 41,
+      "type": "visual_not_matching",
+      "question": "다음을 읽고 맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "우산을 줍니다.",
+        "작년에 샀습니다.",
+        "이만 원에 팝니다.",
+        "한 번 사용했습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/103_R041.png"
+    }
+  ]
+}

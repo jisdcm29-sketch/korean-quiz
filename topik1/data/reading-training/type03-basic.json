@@ -1,0 +1,139 @@
+{
+  "type_no": 3,
+  "type_name": "실용문 정보",
+  "range": "40~42",
+  "stage": "basic",
+  "stage_name": "기초",
+  "time_limit_seconds": 90,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R040-QB083-R040-001",
+      "source_round": "83",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "딸기우유 자료를 보고 답하십시오.",
+      "options": [
+        "우유입니다.",
+        "천 원입니다.",
+        "딸기 맛입니다.",
+        "팔일까지 팝니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/83_R040.png"
+    },
+    {
+      "id": "FIXED-91-R040-QB91-R040-001",
+      "source_round": "91",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "불고기 김밥 안내 자료를 보고 답하십시오.",
+      "options": [
+        "김밥입니다.",
+        "천오백 원입니다.",
+        "불고기 맛입니다.",
+        "십이월까지 팝니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/91_R040.png"
+    },
+    {
+      "id": "FIXED-96-R040-QB96-R040-001",
+      "source_round": "96",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "1,000원의 아침밥 안내 자료를 보고 답하십시오.",
+      "options": [
+        "천 원에 팝니다.",
+        "구월까지 합니다.",
+        "주말에는 못 먹습니다.",
+        "학생 식당에서 먹습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/96_R040.png"
+    },
+    {
+      "id": "FIXED-97-R040-QB97-R040-001",
+      "source_round": "97",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "시월 팔 일에 합니다.",
+        "학교 운동장에서 합니다.",
+        "수요일에 운동회를 합니다.",
+        "학생이 음료수를 준비합니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/97_R040.png"
+    },
+    {
+      "id": "FIXED-99-R040-QB99-R040-001",
+      "source_round": "99",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "주스입니다.",
+        "천오백 원입니다.",
+        "오렌지 맛입니다.",
+        "팔월까지 팝니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/99_R040.png"
+    },
+    {
+      "id": "FIXED-100-R040-QB100-R040-001",
+      "source_round": "100",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "약입니다.",
+        "사천 원입니다.",
+        "밥을 먹고 먹습니다.",
+        "하루에 세 번 먹습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/100_R040.png"
+    },
+    {
+      "id": "FIXED-102-R040-QB-R040-001",
+      "source_round": "102",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "다음을 읽고 맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "일요일은 맑습니다.",
+        "오늘은 비가 옵니다.",
+        "내일은 토요일입니다.",
+        "인주시의 날씨입니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/R040.png"
+    },
+    {
+      "id": "FIXED-103-R040-QB103-R040-001",
+      "source_round": "103",
+      "original_question_number": 40,
+      "type": "visual_not_matching",
+      "question": "다음을 읽고 맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "대전에 갑니다.",
+        "일요일 버스표입니다.",
+        "서울에서 버스를 탑니다.",
+        "오후 한 시에 출발합니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/103_R040.png"
+    }
+  ]
+}

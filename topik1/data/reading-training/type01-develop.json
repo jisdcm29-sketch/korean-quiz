@@ -1,0 +1,211 @@
+{
+  "version": 3,
+  "course": "TOPIK I 읽기",
+  "type_id": 1,
+  "type_name": "중심 화제",
+  "stage_id": "develop",
+  "stage_name": "발전",
+  "pass_score": 90,
+  "question_count": 13,
+  "time_limit_seconds": 35,
+  "difficulty_basis": "실제 TOPIK 회차 내부 문항 번호 순서에 따른 단계화",
+  "difficulty_group": "원문 32번군",
+  "source": "topik1-reading-ibt verified fixed exams",
+  "questions": [
+    {
+      "id": "FIXED-35-R032-QB35-R032-001",
+      "source_round": "35",
+      "original_question_number": 32,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "불고기를 먹습니다. 맛있습니다.",
+      "options": [
+        "쇼핑",
+        "사람",
+        "노래",
+        "음식"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-36-R032-QB36-R032-001",
+      "source_round": "36",
+      "original_question_number": 32,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "저는 회사원입니다. 자동차 회사에 다닙니다.",
+      "options": [
+        "취미",
+        "장소",
+        "주말",
+        "직업"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-37-R032-QB37-R032-001",
+      "source_round": "37",
+      "original_question_number": 32,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "아버지는 의사입니다. 어머니는 은행원입니다.",
+      "options": [
+        "고향",
+        "부모",
+        "병원",
+        "오빠"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-41-R032-QB41-R032-001",
+      "source_round": "41",
+      "original_question_number": 32,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "8월에는 수업이 없습니다. 학교에 가지 않습니다.",
+      "options": [
+        "날씨",
+        "방학",
+        "여행",
+        "약속"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-52-R032-QB52-R032-001",
+      "source_round": "52",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "비빔밥은 육천 원입니다. 냉면은 오천 원입니다.",
+      "options": [
+        "맛",
+        "값",
+        "옷",
+        "일"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-60-R032-QB60-R032-001",
+      "source_round": "60",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "과자가 천 원입니다. 조금 비쌉니다.",
+      "options": [
+        "값",
+        "옷",
+        "직업",
+        "공부"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-83-R032-QB083-R032-001",
+      "source_round": "83",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "가게에 갑니다. 모자를 삽니다.",
+      "options": [
+        "쇼핑",
+        "공부",
+        "이름",
+        "음식"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-91-R032-QB91-R032-001",
+      "source_round": "91",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "저는 열다섯 살입니다. 언니는 열일곱 살입니다.",
+      "options": [
+        "나이",
+        "날짜",
+        "이름",
+        "나라"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-96-R032-QB96-R032-001",
+      "source_round": "96",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "민수 씨는 의사입니다. 병원에서 일합니다.",
+      "options": [
+        "요일",
+        "여행",
+        "취미",
+        "직업"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-97-R032-QB97-R032-001",
+      "source_round": "97",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "불고기를 먹습니다. 아주 맛있습니다.",
+      "options": [
+        "날짜",
+        "취미",
+        "음식",
+        "가족"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-99-R032-QB99-R032-001",
+      "source_round": "99",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "시계를 봅니다. 세 시입니다.",
+      "options": [
+        "옷",
+        "맛",
+        "시간",
+        "취미"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-102-R032-QB-R032-001",
+      "source_round": "102",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "지금은 저녁입니다. 일곱 시입니다.",
+      "options": [
+        "시간",
+        "직업",
+        "운동",
+        "휴일"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-103-R032-QB-103-R032-001",
+      "source_round": "103",
+      "original_question_number": 32,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "운동화가 많습니다. 구두는 없습니다.",
+      "options": [
+        "음식",
+        "신발",
+        "주말",
+        "날짜"
+      ],
+      "correct_answer": 2
+    }
+  ]
+}

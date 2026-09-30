@@ -1,0 +1,310 @@
+{
+  "type_no": 8,
+  "type_name": "장문 독해",
+  "stage_id": "s5",
+  "stage_name": "5단계 · 독해 II",
+  "stage_name_mn": "5-р шат · Унших II",
+  "range": "67~68",
+  "time_limit_seconds": 105,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R067-QB083-R067-001",
+      "source_round": "83",
+      "original_question_number": 67,
+      "type": "common_passage_blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "봄에는 몸에 힘이 없고 자주 피곤해집니다. 그것은 낮과 밤의 (     ) 생기는 일입니다. 봄에는 낮 기온은 높지만 아침과 밤 기온은 낮습니다. 사람의 몸은 이 온도 차이를 잘 따라가지 못해서 쉽게 피곤해집니다. 이럴 때는 햇빛을 보면서 산책을 하면 좋습니다. 물을 많이 마시는 것도 도움이 됩니다.",
+      "options": [
+        "몸이 뜨거워져서",
+        "햇빛이 아주 강해서",
+        "기온이 크게 달라서",
+        "온도 차이가 작아져서"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB083-G067_068-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-83-R068-QB083-R068-001",
+      "source_round": "83",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "봄에는 몸에 힘이 없고 자주 피곤해집니다. 그것은 낮과 밤의 (     ) 생기는 일입니다. 봄에는 낮 기온은 높지만 아침과 밤 기온은 낮습니다. 사람의 몸은 이 온도 차이를 잘 따라가지 못해서 쉽게 피곤해집니다. 이럴 때는 햇빛을 보면서 산책을 하면 좋습니다. 물을 많이 마시는 것도 도움이 됩니다.",
+      "options": [
+        "봄에는 몸이 쉽게 피곤해집니다.",
+        "봄에는 아침과 낮의 기온이 비슷합니다.",
+        "봄에는 물을 많이 마시면 건강에 나쁩니다.",
+        "봄에는 밤에 산책을 하는 것이 도움이 됩니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "QB083-G067_068-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-91-R067-QB91-R067-001",
+      "source_round": "91",
+      "original_question_number": 67,
+      "type": "common_passage_blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "최근 특별한 어린이 우산이 나왔습니다. 이 우산을 펴면 위쪽에서 빛이 납니다. 그리고 손잡이의 버튼을 누르면 노랫소리가 나옵니다. 이렇게 (        ) 아이들이 좋아합니다. 보통 우산을 쓰면 아이가 잘 안 보이는데 이 우산을 쓰면 아이가 어디에 있는지 쉽게 알 수 있습니다. 또 튼튼해서 오래 쓸 수 있습니다. 그래서 다른 우산보다 좀 비싸지만 인기가 있습니다.",
+      "options": [
+        "빛과 소리가 나니까",
+        "여러 색깔로 변하니까",
+        "예쁜 그림이 있으니까",
+        "크기와 무게가 적당하니까"
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-91-R068-QB91-R068-001",
+      "source_round": "91",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "최근 특별한 어린이 우산이 나왔습니다. 이 우산을 펴면 위쪽에서 빛이 납니다. 그리고 손잡이의 버튼을 누르면 노랫소리가 나옵니다. 이렇게 빛과 소리가 나니까 아이들이 좋아합니다. 보통 우산을 쓰면 아이가 잘 안 보이는데 이 우산을 쓰면 아이가 어디에 있는지 쉽게 알 수 있습니다. 또 튼튼해서 오래 쓸 수 있습니다. 그래서 다른 우산보다 좀 비싸지만 인기가 있습니다.",
+      "options": [
+        "이 우산은 약해서 고장이 잘 납니다.",
+        "이 우산은 손잡이 쪽에서 빛이 납니다.",
+        "이 우산의 가격은 다른 우산과 비슷합니다.",
+        "이 우산을 쓰면 아이의 위치를 확인하기 쉽습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-96-R067-QB96-R067-001",
+      "source_round": "96",
+      "original_question_number": 67,
+      "type": "common_passage_blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "지하철을 갈아타는 역에서는 안내 방송과 함께 음악이 나옵니다. 예전에는 음악 없이 안내 방송만 나왔습니다. 그런데 안내 방송을 못 듣는 사람들이 많았습니다. 그래서 사람들에게 (     ) 잘 알려 주기 위해서 새소리를 함께 사용하게 되었습니다. 이후에 바이올린 음악으로 바뀌었고 지금은 한국 전통 음악을 씁니다.",
+      "options": [
+        "유명한 장소를",
+        "갈아타는 역을",
+        "출근하는 시간을",
+        "한국 전통 음악을"
+      ],
+      "correct_answer": 2,
+      "image_url": "",
+      "passage_group_id": "R96-067-068",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-96-R068-QB96-R068-001",
+      "source_round": "96",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "지하철을 갈아타는 역에서는 안내 방송과 함께 음악이 나옵니다. 예전에는 음악 없이 안내 방송만 나왔습니다. 그런데 안내 방송을 못 듣는 사람들이 많았습니다. 그래서 사람들에게 갈아타는 역을 잘 알려 주기 위해서 새소리를 함께 사용하게 되었습니다. 이후에 바이올린 음악으로 바뀌었고 지금은 한국 전통 음악을 씁니다.",
+      "options": [
+        "지금 쓰는 지하철 음악은 바이올린 음악입니다.",
+        "안내 방송을 처음 할 때부터 음악을 사용했습니다.",
+        "처음에 지하철 안내 방송에서 전통 음악이 나왔습니다.",
+        "예전에는 안내 방송을 잘 듣지 못하는 사람이 많았습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "R96-067-068",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-97-R067-QB97-R067-001",
+      "source_round": "97",
+      "original_question_number": 67,
+      "type": "common_passage_blank_choice",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "사탕 봉지로 가방을 만드는 회사가 있습니다. 이 회사는 사탕 공장에서 (   ) 모아서 가방을 만듭니다. 이 가방은 여러 색깔의 봉지로 만들어서 모양이 아주 예쁩니다. 손으로 접어서 만들지만 생각보다 아주 튼튼하고 비가 와도 젖지 않습니다. 버리는 물건으로 만든 거라서 더 특별합니다. 요즘은 유명한 배우나 가수들도 많이 사서 가지고 다닙니다.",
+      "options": [
+        "산 간식을",
+        "빌린 상자를",
+        "버리는 봉지를",
+        "만드는 사탕을"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB97-G067-068",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-97-R068-QB97-R068-001",
+      "source_round": "97",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "사탕 봉지로 가방을 만드는 회사가 있습니다. 이 회사는 사탕 공장에서 (   ) 모아서 가방을 만듭니다. 이 가방은 여러 색깔의 봉지로 만들어서 모양이 아주 예쁩니다. 손으로 접어서 만들지만 생각보다 아주 튼튼하고 비가 와도 젖지 않습니다. 버리는 물건으로 만든 거라서 더 특별합니다. 요즘은 유명한 배우나 가수들도 많이 사서 가지고 다닙니다.",
+      "options": [
+        "이 가방은 비에 잘 젖습니다.",
+        "이 가방은 손으로 만들어서 약합니다.",
+        "이 가방은 보통 한 가지 색깔로 만듭니다.",
+        "이 가방은 유명한 연예인들이 많이 삽니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "QB97-G067-068",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R067-QB99-R067-001",
+      "source_round": "99",
+      "original_question_number": 67,
+      "type": "common_passage_question",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "사람들은 아주 오래전부터 치약과 칫솔을 사용했습니다. 사람들이 처음으로 사용한 치약은 달걀 껍질이나 소금 등을 가루로 만든 것이었습니다. 이후에 꽃 가루를 넣어서 좋은 냄새가 나는 치약을 만들었습니다. 칫솔은 치약보다 훨씬 뒤에 나왔습니다. 그런데 (   ) 치약을 칫솔에 바르는 것이 불편했습니다. 그래서 칫솔에 바르기 쉽게 치약을 지금의 모양으로 바꾸었습니다.",
+      "options": [
+        "가루로 된",
+        "냄새가 좋은",
+        "모양이 예쁜",
+        "소금을 넣은"
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "QB99-G067-068",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R068-QB99-R068-001",
+      "source_round": "99",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "사람들은 아주 오래전부터 치약과 칫솔을 사용했습니다. 사람들이 처음으로 사용한 치약은 달걀 껍질이나 소금 등을 가루로 만든 것이었습니다. 이후에 꽃 가루를 넣어서 좋은 냄새가 나는 치약을 만들었습니다. 칫솔은 치약보다 훨씬 뒤에 나왔습니다. 그런데 (   ) 치약을 칫솔에 바르는 것이 불편했습니다. 그래서 칫솔에 바르기 쉽게 치약을 지금의 모양으로 바꾸었습니다.",
+      "options": [
+        "치약 때문에 칫솔의 모양이 바뀌었습니다.",
+        "치약의 좋은 냄새를 위해 소금을 넣었습니다.",
+        "사람들은 치약보다 칫솔을 먼저 사용했습니다.",
+        "처음에 만든 치약에는 달걀 껍질이 들어 있었습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "QB99-G067-068",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R067-DRAFT-100-R067",
+      "source_round": "100",
+      "original_question_number": 67,
+      "type": "common_passage_question",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "1970년 이전까지 세계 축구 대회에서는 갈색 공을 사용했습니다. 그런데 옛날 흑백텔레비전에서는 갈색 공이 잘 안 보였습니다. 그래서 텔레비전으로도 (   ) 하기 위해 갈색을 흰색으로 바꾸고 무늬도 넣었습니다. 이렇게 하니까 흑백텔레비전에서도 축구공을 잘 볼 수 있었습니다. 컬러텔레비전이 나온 후에는 다양한 디자인과 색깔의 공을 사용하게 되었습니다.",
+      "options": [
+        "공이 잘 보이게",
+        "얼굴을 쉽게 찾게",
+        "선수를 많이 알게",
+        "소리가 크게 들리게"
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "DRAFT-100-G067-068",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R068-DRAFT-100-R068",
+      "source_round": "100",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "1970년 이전까지 세계 축구 대회에서는 갈색 공을 사용했습니다. 그런데 옛날 흑백텔레비전에서는 갈색 공이 잘 안 보였습니다. 그래서 텔레비전으로도 (   ) 하기 위해 갈색을 흰색으로 바꾸고 무늬도 넣었습니다. 이렇게 하니까 흑백텔레비전에서도 축구공을 잘 볼 수 있었습니다. 컬러텔레비전이 나온 후에는 다양한 디자인과 색깔의 공을 사용하게 되었습니다.",
+      "options": [
+        "갈색 공은 흑백텔레비전에서 잘 보이지 않았습니다.",
+        "지금 쓰는 축구공은 1970년 이전과 같은 색깔입니다.",
+        "축구 대회가 처음 열렸을 때는 흰색 공을 사용했습니다.",
+        "컬러텔레비전이 나온 후 공에 무늬를 넣기 시작했습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "DRAFT-100-G067-068",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R067-QB-R067-001",
+      "source_round": "102",
+      "original_question_number": 67,
+      "type": "common_passage_question",
+      "question": "(   )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "인주도서관에는 '독서 로봇'이 있습니다. 아이들에게 책을 읽어 주는 로봇입니다. 아이들이 책을 펴서 한 장씩 보여 주면 로봇이 읽어 줍니다. 모양도 귀엽고 재미있는 목소리로 책을 읽어 줘서 한글을 모르는 아이들이 좋아합니다. 도서관을 방문한 아이는 누구나 이용할 수 있고, 인터넷으로 미리 신청하면 집에 빌려 갈 수도 있습니다. 이 로봇 덕분에 인주도서관에 (   ) 있습니다.",
+      "options": [
+        "한글 책이 줄고",
+        "새 직원이 들어오고",
+        "아이들 손님이 늘고",
+        "높은 책장이 없어지고"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB-G067_068-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R068-QB-R068-001",
+      "source_round": "102",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "인주도서관에는 '독서 로봇'이 있습니다. 아이들에게 책을 읽어 주는 로봇입니다. 아이들이 책을 펴서 한 장씩 보여 주면 로봇이 읽어 줍니다. 모양도 귀엽고 재미있는 목소리로 책을 읽어 줘서 한글을 모르는 아이들이 좋아합니다. 도서관을 방문한 아이는 누구나 이용할 수 있고, 인터넷으로 미리 신청하면 집에 빌려 갈 수도 있습니다. 이 로봇 덕분에 인주도서관에 (   ) 있습니다.",
+      "options": [
+        "이 로봇은 아이들에게 책을 골라 줍니다.",
+        "이 로봇은 한글을 몰라도 이용할 수 있습니다.",
+        "이 로봇은 모양 때문에 아이들에게 인기가 없습니다.",
+        "이 로봇을 빌리려면 도서관에 가서 신청해야 합니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "",
+      "passage_group_id": "QB-G067_068-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R067-QB103-R067-DRAFT",
+      "source_round": "103",
+      "original_question_number": 67,
+      "type": "common_passage_question",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "'뒤로 걷기'는 몸 전체를 움직일 수 있는 운동입니다. 힘든 운동을 하기 어려운 노인들도 할 수 있습니다. 하지만 걸어가는 방향을 볼 수 없어서 ( ㉠  ). 뒤로 걷기를 하기 전에 먼저 벽을 잡고 연습하는 것이 필요합니다. 뒤로 걷기를 할 때 1분 동안 천천히 걷다가 1분 동안 빨리 걷습니다. 이렇게 10분 정도 하면 좋습니다. 뒤로 걷기는 운동장같이 넓고 사람들이 적은 곳에서 하는 것이 안전합니다.",
+      "options": [
+        "넘어져도 됩니다",
+        "넘어지기 쉽습니다",
+        "넘어지지 않습니다",
+        "넘어진 적이 없습니다"
+      ],
+      "correct_answer": 2,
+      "image_url": "",
+      "passage_group_id": "QB103-G067_068-DRAFT",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R068-QB103-R068-DRAFT",
+      "source_round": "103",
+      "original_question_number": 68,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "'뒤로 걷기'는 몸 전체를 움직일 수 있는 운동입니다. 힘든 운동을 하기 어려운 노인들도 할 수 있습니다. 하지만 걸어가는 방향을 볼 수 없어서 ( ㉠  ). 뒤로 걷기를 하기 전에 먼저 벽을 잡고 연습하는 것이 필요합니다. 뒤로 걷기를 할 때 1분 동안 천천히 걷다가 1분 동안 빨리 걷습니다. 이렇게 10분 정도 하면 좋습니다. 뒤로 걷기는 운동장같이 넓고 사람들이 적은 곳에서 하는 것이 안전합니다.",
+      "options": [
+        "이 운동은 나이가 많으면 할 수 없습니다.",
+        "이 운동은 사람이 많은 곳에서 하면 안전합니다.",
+        "뒤로 걷기를 연습할 때 벽이 있는 곳이 좋습니다.",
+        "뒤로 걷기는 계속 같은 속도로 걸어야 운동이 됩니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB103-G067_068-DRAFT",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    }
+  ]
+}

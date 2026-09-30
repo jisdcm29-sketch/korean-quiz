@@ -1,0 +1,406 @@
+{
+  "version": 3,
+  "course": "TOPIK I 읽기",
+  "type_id": 2,
+  "type_name": "빈칸 채우기",
+  "stage_id": "develop",
+  "stage_name": "발전",
+  "pass_score": 90,
+  "question_count": 26,
+  "time_limit_seconds": 50,
+  "difficulty_basis": "실제 TOPIK 회차 내부 문항 번호 순서에 따른 단계화",
+  "difficulty_group": "원문 36~37번군",
+  "source": "topik1-reading-ibt verified fixed exams",
+  "questions": [
+    {
+      "id": "FIXED-35-R036-QB35-R036-001",
+      "source_round": "35",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 한국어 선생님입니다. 한국어를 (      ).",
+      "options": [
+        "줍니다",
+        "모릅니다",
+        "가르칩니다",
+        "일어납니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-35-R037-QB35-R037-001",
+      "source_round": "35",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "요즘 일이 (      ), 바쁩니다.",
+      "options": [
+        "비쌉니다",
+        "작습니다",
+        "많습니다",
+        "나쁩니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-36-R036-QB36-R036-001",
+      "source_round": "36",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "학교가 (      ). 그래서 걸어서 갑니다.",
+      "options": [
+        "작습니다",
+        "많습니다",
+        "가깝습니다",
+        "깨끗합니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-36-R037-QB36-R037-001",
+      "source_round": "36",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "영화가 끝났습니다. 극장에서 (      ).",
+      "options": [
+        "쉽니다",
+        "옵니다",
+        "지냅니다",
+        "나갑니다"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-37-R036-QB37-R036-001",
+      "source_round": "37",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "시간을 봅니다. (      )를 봅니다.",
+      "options": [
+        "휴지",
+        "시계",
+        "주소",
+        "편지"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-37-R037-QB37-R037-001",
+      "source_round": "37",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "운동을 많이 합니다. 그래서 (      ).",
+      "options": [
+        "건강합니다",
+        "깨끗합니다",
+        "따뜻합니다",
+        "친절합니다"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-41-R036-QB41-R036-001",
+      "source_round": "41",
+      "original_question_number": 36,
+      "type": "blank_vocabulary",
+      "question": "(     )에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "교실에 학생이 없습니다. 그래서 (     ).",
+      "options": [
+        "예쁩니다",
+        "작습니다",
+        "조용합니다",
+        "가깝습니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-41-R037-QB41-R037-001",
+      "source_round": "41",
+      "original_question_number": 37,
+      "type": "blank_vocabulary",
+      "question": "(     )에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "우리는 (     ) 만났습니다. 인사를 했습니다.",
+      "options": [
+        "아마",
+        "처음",
+        "아직",
+        "별로"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-52-R036-QB52-R036-001",
+      "source_round": "52",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 사과 주스를 좋아합니다. 그래서 (     ) 마십니다.",
+      "options": [
+        "자주",
+        "아마",
+        "제일",
+        "아까"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-52-R037-QB52-R037-001",
+      "source_round": "52",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "도서관입니다. 책이 아주 (     ).",
+      "options": [
+        "넓습니다",
+        "많습니다",
+        "쉽습니다",
+        "좋습니다"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-60-R036-QB60-R036-001",
+      "source_round": "60",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 의사입니다. 수진 씨(     ) 의사입니다.",
+      "options": [
+        "만",
+        "에",
+        "를",
+        "도"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-60-R037-QB60-R037-001",
+      "source_round": "60",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "우리 형은 농구 선수입니다. 키가 (     ) 큽니다.",
+      "options": [
+        "아주",
+        "아직",
+        "가끔",
+        "먼저"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-83-R036-QB083-R036-001",
+      "source_round": "83",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 선생님입니다. 학교에서 학생들을 (     ).",
+      "options": [
+        "읽습니다",
+        "입습니다",
+        "가르칩니다",
+        "물어봅니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-83-R037-QB083-R037-001",
+      "source_round": "83",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 요즘 (     ). 시간이 없습니다.",
+      "options": [
+        "작습니다",
+        "바쁩니다",
+        "무겁습니다",
+        "조용합니다"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-91-R036-QB91-R036-001",
+      "source_round": "91",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "병원이 집에서 (        ). 걸어서 갑니다.",
+      "options": [
+        "큽니다",
+        "삽니다",
+        "가깝습니다",
+        "조용합니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-91-R037-QB91-R037-001",
+      "source_round": "91",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 케이크를 (        ) 좋아합니다. 매일 먹습니다.",
+      "options": [
+        "아주",
+        "아까",
+        "먼저",
+        "어서"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-96-R036-QB96-R036-001",
+      "source_round": "96",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "오후에 약속이 있습니다. 민수 씨를 (     ).",
+      "options": [
+        "찍습니다",
+        "배웁니다",
+        "모릅니다",
+        "만납니다"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-96-R037-QB96-R037-001",
+      "source_round": "96",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "이것은 제 가방이 아닙니다. 동생(     ) 가방입니다.",
+      "options": [
+        "도",
+        "만",
+        "의",
+        "을"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-97-R036-QB97-R036-001",
+      "source_round": "97",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "책상 위에 책이 있습니다. 연필(   ) 있습니다.",
+      "options": [
+        "도",
+        "만",
+        "에",
+        "을"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-97-R037-QB97-R037-001",
+      "source_round": "97",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "수업은 아홉 시에 시작합니다. 열두 시에 (   ).",
+      "options": [
+        "입습니다",
+        "찍습니다",
+        "다닙니다",
+        "끝납니다"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-99-R036-QB99-R036-001",
+      "source_round": "99",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "노래를 좋아합니다. 그래서 자주 (   ).",
+      "options": [
+        "마십니다",
+        "만납니다",
+        "듣습니다",
+        "읽습니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-99-R037-QB99-R037-001",
+      "source_round": "99",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 선생님(   ) 전화번호를 모릅니다. 민호에게 물어봅니다.",
+      "options": [
+        "을",
+        "의",
+        "에서",
+        "으로"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-102-R036-QB-R036-001",
+      "source_round": "102",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "친구를 만났습니다. 우리는 (   ) 공부를 했습니다.",
+      "options": [
+        "가장",
+        "아직",
+        "별로",
+        "같이"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-102-R037-QB-R037-001",
+      "source_round": "102",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "방이 덥습니다. 창문(   ) 엽니다.",
+      "options": [
+        "에",
+        "의",
+        "을",
+        "이"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-103-R036-QB-103-R036-001",
+      "source_round": "103",
+      "original_question_number": 36,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "이것은 제 연필이 아닙니다. 친구(   ) 연필입니다.",
+      "options": [
+        "도",
+        "의",
+        "만",
+        "가"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-103-R037-QB-103-R037-001",
+      "source_round": "103",
+      "original_question_number": 37,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "은행이 집에서 (   ). 걸어서 갑니다.",
+      "options": [
+        "많습니다",
+        "넓습니다",
+        "가깝습니다",
+        "조용합니다"
+      ],
+      "correct_answer": 3
+    }
+  ]
+}

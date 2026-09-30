@@ -1,0 +1,406 @@
+{
+  "version": 3,
+  "course": "TOPIK I 읽기",
+  "type_id": 2,
+  "type_name": "빈칸 채우기",
+  "stage_id": "basic",
+  "stage_name": "기초",
+  "pass_score": 90,
+  "question_count": 26,
+  "time_limit_seconds": 60,
+  "difficulty_basis": "실제 TOPIK 회차 내부 문항 번호 순서에 따른 단계화",
+  "difficulty_group": "원문 34~35번군",
+  "source": "topik1-reading-ibt verified fixed exams",
+  "questions": [
+    {
+      "id": "FIXED-35-R034-QB35-R034-001",
+      "source_round": "35",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "몇 시(      ) 옵니까?",
+      "options": [
+        "가",
+        "는",
+        "를",
+        "에"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-35-R035-QB35-R035-001",
+      "source_round": "35",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "(      )에 갑니다. 우유를 삽니다.",
+      "options": [
+        "가게",
+        "교실",
+        "은행",
+        "서점"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-36-R034-QB36-R034-001",
+      "source_round": "36",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "서점에 갑니다. (      )을 삽니다.",
+      "options": [
+        "책",
+        "물",
+        "옷",
+        "빵"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-36-R035-QB36-R035-001",
+      "source_round": "36",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "한국어가 어렵습니다. 친구(      ) 물어봅니다.",
+      "options": [
+        "의",
+        "랑",
+        "에게",
+        "에서"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-37-R034-QB37-R034-001",
+      "source_round": "37",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "민수 씨는 대학생입니다. 수지 씨(      ) 대학생입니다.",
+      "options": [
+        "도",
+        "에",
+        "의",
+        "를"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-37-R035-QB37-R035-001",
+      "source_round": "37",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "방이 춥습니다. 창문을 (      ).",
+      "options": [
+        "그립니다",
+        "놓습니다",
+        "닦습니다",
+        "닫습니다"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-41-R034-QB41-R034-001",
+      "source_round": "41",
+      "original_question_number": 34,
+      "type": "blank_grammar",
+      "question": "(     )에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "이 사람은 회사원입니다. 학생(     ) 아닙니다.",
+      "options": [
+        "이",
+        "의",
+        "을",
+        "과"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-41-R035-QB41-R035-001",
+      "source_round": "41",
+      "original_question_number": 35,
+      "type": "blank_vocabulary",
+      "question": "(     )에 들어갈 가장 알맞은 것을 고르십시오.",
+      "passage": "(     )을 안 가지고 갔습니다. 지금 돈이 없습니다.",
+      "options": [
+        "안경",
+        "사진",
+        "우산",
+        "지갑"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-52-R034-QB52-R034-001",
+      "source_round": "52",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 마이클입니다. 미국(     ) 왔습니다.",
+      "options": [
+        "이",
+        "의",
+        "에서",
+        "하고"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-52-R035-QB52-R035-001",
+      "source_round": "52",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "배가 고픕니다. (     )에 갑니다.",
+      "options": [
+        "은행",
+        "식당",
+        "우체국",
+        "여행사"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-60-R034-QB60-R034-001",
+      "source_round": "60",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "주스가 없습니다. 그래서 물을 (     ).",
+      "options": [
+        "봅니다",
+        "합니다",
+        "마십니다",
+        "모릅니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-60-R035-QB60-R035-001",
+      "source_round": "60",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "비가 옵니다. 그런데 (     )이 없습니다.",
+      "options": [
+        "우산",
+        "안경",
+        "지갑",
+        "사전"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-83-R034-QB083-R034-001",
+      "source_round": "83",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "영화를 (     ). 정말 재미있습니다.",
+      "options": [
+        "봅니다",
+        "잡니다",
+        "보냅니다",
+        "마십니다"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-83-R035-QB083-R035-001",
+      "source_round": "83",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "한국 가수를 좋아합니다. 매일 한국 (     )를 듣습니다.",
+      "options": [
+        "편지",
+        "노래",
+        "전화",
+        "시계"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-91-R034-QB91-R034-001",
+      "source_round": "91",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "친구를 만납니다. (        )에서 야구를 합니다.",
+      "options": [
+        "약국",
+        "공항",
+        "도서관",
+        "운동장"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-91-R035-QB91-R035-001",
+      "source_round": "91",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "백화점에 갑니다. 바지(        ) 치마를 삽니다.",
+      "options": [
+        "도",
+        "는",
+        "하고",
+        "에게"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-96-R034-QB96-R034-001",
+      "source_round": "96",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "(     )에 갑니다. 책을 삽니다.",
+      "options": [
+        "은행",
+        "극장",
+        "서점",
+        "식당"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-96-R035-QB96-R035-001",
+      "source_round": "96",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "신발이 (     ). 발이 아픕니다.",
+      "options": [
+        "같습니다",
+        "좋습니다",
+        "작습니다",
+        "많습니다"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-97-R034-QB97-R034-001",
+      "source_round": "97",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "시장에 갑니다. 과일을 (   ).",
+      "options": [
+        "삽니다",
+        "잡니다",
+        "걷습니다",
+        "신습니다"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-97-R035-QB97-R035-001",
+      "source_round": "97",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 (   )에서 일합니다. 의사입니다.",
+      "options": [
+        "꽃집",
+        "극장",
+        "서점",
+        "병원"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-99-R034-QB99-R034-001",
+      "source_round": "99",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "(   )에 갑니다. 한국어를 배웁니다.",
+      "options": [
+        "교실",
+        "은행",
+        "우체국",
+        "운동장"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-99-R035-QB99-R035-001",
+      "source_round": "99",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "배가 (   ). 약을 먹습니다.",
+      "options": [
+        "큽니다",
+        "아픕니다",
+        "많습니다",
+        "멋있습니다"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-102-R034-QB-R034-001",
+      "source_round": "102",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 의사입니다. (   )에서 일합니다.",
+      "options": [
+        "병원",
+        "서점",
+        "미용실",
+        "우체국"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-102-R035-QB-R035-001",
+      "source_round": "102",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 일이 많습니다. 그래서 조금 (   ).",
+      "options": [
+        "작습니다",
+        "비쌉니다",
+        "무겁습니다",
+        "피곤합니다"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-103-R034-QB-103-R034-001",
+      "source_round": "103",
+      "original_question_number": 34,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "드라마를 (   ). 정말 재미있습니다.",
+      "options": [
+        "잡니다",
+        "봅니다",
+        "닫습니다",
+        "그립니다"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-103-R035-QB-103-R035-001",
+      "source_round": "103",
+      "original_question_number": 35,
+      "type": "blank_choice",
+      "question": "빈칸에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "(   )에 갑니다. 거기에서 산책을 합니다.",
+      "options": [
+        "공원",
+        "교실",
+        "빵집",
+        "약국"
+      ],
+      "correct_answer": 1
+    }
+  ]
+}

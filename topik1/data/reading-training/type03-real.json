@@ -1,0 +1,139 @@
+{
+  "type_no": 3,
+  "type_name": "실용문 정보",
+  "range": "40~42",
+  "stage": "real",
+  "stage_name": "실전",
+  "time_limit_seconds": 60,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R042-QB083-R042-001",
+      "source_round": "83",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "대화 메시지 자료를 보고 답하십시오.",
+      "options": [
+        "수미 씨는 공항에 있습니다.",
+        "수미 씨는 제주도에 있습니다.",
+        "지금 제주도는 날씨가 좋습니다.",
+        "민희 씨는 수미 씨와 같이 있습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/83_R042.png"
+    },
+    {
+      "id": "FIXED-91-R042-QB91-R042-001",
+      "source_round": "91",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "휴대전화 메시지를 보고 답하십시오.",
+      "options": [
+        "수미 씨는 오늘 바빴습니다.",
+        "수미 씨는 메시지를 보냈습니다.",
+        "수미 씨는 지금 회사에 있습니다.",
+        "수미 씨는 십 분 후에 출발할 겁니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/91_R042.png"
+    },
+    {
+      "id": "FIXED-96-R042-QB96-R042-001",
+      "source_round": "96",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "대화 메시지 자료를 보고 답하십시오.",
+      "options": [
+        "지영 씨는 바쁩니다.",
+        "수미 씨는 지영 씨를 만날 겁니다.",
+        "수미 씨는 졸업 선물을 샀습니다.",
+        "지영 씨는 선물을 사러 갈 겁니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/96_R042.png"
+    },
+    {
+      "id": "FIXED-97-R042-QB97-R042-001",
+      "source_round": "97",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "수잔 씨는 택시를 탈 겁니다.",
+        "수잔 씨는 인주공원에 갈 겁니다.",
+        "마이클 씨는 인주공원에 있습니다.",
+        "마이클 씨는 수잔 씨를 만날 겁니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/97_R042.png"
+    },
+    {
+      "id": "FIXED-99-R042-QB99-R042-001",
+      "source_round": "99",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "수지 씨가 내일 밥을 살 겁니다.",
+        "마이클 씨가 메시지를 보냈습니다.",
+        "수지 씨는 오늘 파티에 못 갑니다.",
+        "마이클 씨는 오늘 생일 파티를 합니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/99_R042.png"
+    },
+    {
+      "id": "FIXED-100-R042-QB100-R042-001",
+      "source_round": "100",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "유나는 인주역에 있습니다.",
+        "유나는 수미를 기다립니다.",
+        "두 사람은 카페에서 볼 겁니다.",
+        "수미는 백화점 일 층으로 갈 겁니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/100_R042.png"
+    },
+    {
+      "id": "FIXED-102-R042-QB-R042-001",
+      "source_round": "102",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "다음을 읽고 맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "지영 씨는 지금 집에 있습니다.",
+        "마이클 씨는 모임에 안 갔습니다.",
+        "지영 씨는 내일 학교에 갈 겁니다.",
+        "마이클 씨는 오늘 지영 씨를 만났습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/R042.png"
+    },
+    {
+      "id": "FIXED-103-R042-QB103-R042-001",
+      "source_round": "103",
+      "original_question_number": 42,
+      "type": "visual_not_matching",
+      "question": "다음을 읽고 맞지 않는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "미카 씨는 내일 학교에 갑니다.",
+        "민수 씨는 세 시에 수업이 끝납니다.",
+        "미카 씨는 고향에서 과자를 가지고 왔습니다.",
+        "민수 씨는 미카 씨를 도서관 앞에서 볼 겁니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/103_R042.png"
+    }
+  ]
+}

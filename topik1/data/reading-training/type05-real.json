@@ -1,0 +1,131 @@
+{
+  "type_no": 5,
+  "type_name": "중심 내용",
+  "range": "46~48",
+  "stage_id": "real",
+  "stage_name": "실전",
+  "time_limit_seconds": 60,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R048-QB083-R048-001",
+      "source_round": "83",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "옷장에 옷이 너무 많습니다. 그래서 옷장에서 옷을 찾기가 힘듭니다. 내일은 옷장을 정리할 겁니다.",
+      "options": [
+        "저는 옷장이 더 필요합니다.",
+        "저는 옷을 많이 찾을 겁니다.",
+        "저는 옷을 정리하려고 합니다.",
+        "저는 내일 옷을 사려고 합니다."
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-91-R048-QB91-R048-001",
+      "source_round": "91",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "저는 고등학교 졸업 후에 김 선생님을 못 만났습니다. 저는 이번 주말에 김 선생님을 만나러 갈 겁니다. 빨리 주말이 오면 좋겠습니다.",
+      "options": [
+        "저는 선생님이 될 겁니다.",
+        "저는 김 선생님이 보고 싶습니다.",
+        "저는 고등학교를 졸업해야 합니다.",
+        "저는 학교에 다니는 것이 즐겁습니다."
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-96-R048-QB96-R048-001",
+      "source_round": "96",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "우리 동네에 편의점이 생겼습니다. 거기는 넓고 좋은 물건도 많습니다. 그리고 늦은 시간에도 편하게 이용할 수 있습니다.",
+      "options": [
+        "저는 편의점이 넓으면 좋겠습니다.",
+        "저는 우리 동네 편의점에서 일할 겁니다.",
+        "저는 우리 동네 편의점이 마음에 듭니다.",
+        "저는 편의점에서 물건을 많이 사고 싶습니다."
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-97-R048-QB97-R048-001",
+      "source_round": "97",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "중심 내용으로 가장 알맞은 것을 고르십시오.",
+      "passage": "우리 집은 학교에서 멉니다. 매일 아침 버스를 타고 학교에 가야 해서 힘듭니다. 그래서 요즘 학교에서 가까운 집을 찾고 있습니다.",
+      "options": [
+        "매일 버스를 타려고 합니다.",
+        "다른 학교에 다니고 싶습니다.",
+        "아침 일찍 학교에 가야 합니다.",
+        "학교 근처로 이사하려고 합니다."
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-99-R048-QB99-R048-001",
+      "source_round": "99",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "저는 제 자동차를 오래전에 샀습니다. 그래서 새 자동차가 필요합니다. 돈도 모으고 인터넷으로 자동차를 많이 찾아봅니다.",
+      "options": [
+        "저는 운전을 잘하면 좋겠습니다.",
+        "저는 자동차 구경을 좋아합니다.",
+        "저는 제 자동차가 마음에 듭니다.",
+        "저는 자동차를 새로 사려고 합니다."
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-100-R048-QB100-R048-001",
+      "source_round": "100",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "우리 집 근처에 큰 마트가 하나 생겼습니다. 이 마트는 집에서 가까워서 편리합니다. 그리고 물건도 싸고 좋습니다.",
+      "options": [
+        "저는 마트에서 일하고 싶습니다.",
+        "저는 새로 생긴 마트가 마음에 듭니다.",
+        "저는 마트에서 물건을 사는 것이 좋습니다.",
+        "저는 집 근처에 마트가 있으면 좋겠습니다."
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-102-R048-QB-R048-001",
+      "source_round": "102",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "다음을 읽고 중심 내용을 고르십시오.",
+      "passage": "얼마 전에 운동화를 샀습니다. 이 운동화는 가볍고 아주 편합니다. 저는 매일 이 운동화를 신고 다닙니다.",
+      "options": [
+        "저는 운동화를 사려고 합니다.",
+        "저는 이 운동화를 선물할 겁니다.",
+        "저는 이 운동화가 마음에 듭니다.",
+        "저는 운동화가 많으면 좋겠습니다."
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-103-R048-DRAFT-103-R048",
+      "source_round": "103",
+      "original_question_number": 48,
+      "type": "main_idea",
+      "question": "윗글의 중심 내용을 고르십시오.",
+      "passage": "우리 언니는 태권도 선수입니다. 언니는 태권도를 잘해서 상을 많이 받았습니다. 저도 상을 받고 싶어서 학원에서 열심히 태권도를 연습합니다.",
+      "options": [
+        "저는 태권도 연습이 힘듭니다.",
+        "저는 태권도 학원에 다닐 겁니다.",
+        "저는 언니에게 태권도를 배우려고 합니다.",
+        "저는 언니처럼 태권도를 잘하고 싶습니다."
+      ],
+      "correct_answer": 4
+    }
+  ]
+}

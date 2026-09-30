@@ -1,0 +1,310 @@
+{
+  "type_no": 8,
+  "type_name": "장문 독해",
+  "stage_id": "s4",
+  "stage_name": "4단계 · 독해 I",
+  "stage_name_mn": "4-р шат · Унших I",
+  "range": "65~66",
+  "time_limit_seconds": 95,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R065-QB083-R065-001",
+      "source_round": "83",
+      "original_question_number": 65,
+      "type": "common_passage_blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "초콜릿은 달아서 사람의 기분을 좋게 합니다. 그래서 사람들이 초콜릿을 자주 먹습니다. 그런데 말을 많이 할 때나 발표를 해야 할 때는 초콜릿을 먹지 않는 것이 좋습니다. 초콜릿을 먹으면 목이 마르게 되어서 목소리가 잘 안 (     ). 그래서 가수들도 공연 전에는 초콜릿을 먹지 않습니다.",
+      "options": [
+        "나와도 됩니다",
+        "나와야 합니다",
+        "나오기로 합니다",
+        "나오기 때문입니다"
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "QB083-G065_066-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-83-R066-QB083-R066-001",
+      "source_round": "83",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "초콜릿은 달아서 사람의 기분을 좋게 합니다. 그래서 사람들이 초콜릿을 자주 먹습니다. 그런데 말을 많이 할 때나 발표를 해야 할 때는 초콜릿을 먹지 않는 것이 좋습니다. 초콜릿을 먹으면 목이 마르게 되어서 목소리가 잘 안 (     ). 그래서 가수들도 공연 전에는 초콜릿을 먹지 않습니다.",
+      "options": [
+        "초콜릿을 먹으면 기분이 좋아집니다.",
+        "목이 마를 때 초콜릿을 먹는 것이 좋습니다.",
+        "가수들은 보통 공연 전에 초콜릿을 먹습니다.",
+        "말을 많이 해야 할 때 초콜릿을 먹으면 좋습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "QB083-G065_066-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-91-R065-QB91-R065-001",
+      "source_round": "91",
+      "original_question_number": 65,
+      "type": "common_passage_blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "매월 마지막 주 수요일에 인주시청 앞에서는 ‘책을 읽읍시다!’라는 행사를 합니다. 이 행사는 (        ) 사람들에게 인기가 많습니다. 새로 나온 책을 구경할 수도 있고 자기가 읽은 책을 다른 사람에게 싸게 팔 수도 있습니다. 유명한 작가와 인사를 나누는 프로그램도 있습니다. 행사에 다녀와서 느낀 것을 홈페이지에 쓰면 선물도 받을 수 있습니다.",
+      "options": [
+        "참가비가 싸서",
+        "프로그램이 다양해서",
+        "집에서 할 수 있어서",
+        "주말에 갈 수 있어서"
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-91-R066-QB91-R066-001",
+      "source_round": "91",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "매월 마지막 주 수요일에 인주시청 앞에서는 ‘책을 읽읍시다!’라는 행사를 합니다. 이 행사는 프로그램이 다양해서 사람들에게 인기가 많습니다. 새로 나온 책을 구경할 수도 있고 자기가 읽은 책을 다른 사람에게 싸게 팔 수도 있습니다. 유명한 작가와 인사를 나누는 프로그램도 있습니다. 행사에 다녀와서 느낀 것을 홈페이지에 쓰면 선물도 받을 수 있습니다.",
+      "options": [
+        "이 행사에 있는 책은 모두 오래된 책입니다.",
+        "이 행사는 인주시청에서 한 달 동안 합니다.",
+        "이 행사에서는 유명한 작가를 만날 수 있습니다.",
+        "이 행사에 참가한 모든 사람에게는 선물을 줍니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-96-R065-QB96-R065-001",
+      "source_round": "96",
+      "original_question_number": 65,
+      "type": "common_passage_blank_choice",
+      "question": "(     )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "인주대학교 앞에 ‘라면세상’이 새로 문을 열었습니다. 그곳에 들어가면 한쪽 벽에 큰 책장이 있습니다. 그 책장에는 라면이 책처럼 정리되어 있습니다. 그래서 다양한 종류의 라면을 한 번에 보고 고를 수 있습니다. 라면을 산 후에는 그곳에서 직접 요리해서 먹을 수도 있습니다. 이렇게 다양한 (     ) 수 있어서 젊은 사람들이 이곳을 많이 찾습니다.",
+      "options": [
+        "가구를 살",
+        "수업을 들을",
+        "책을 읽어 볼",
+        "라면을 먹어 볼"
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "R96-065-066",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-96-R066-QB96-R066-001",
+      "source_round": "96",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "인주대학교 앞에 ‘라면세상’이 새로 문을 열었습니다. 그곳에 들어가면 한쪽 벽에 큰 책장이 있습니다. 그 책장에는 라면이 책처럼 정리되어 있습니다. 그래서 다양한 종류의 라면을 한 번에 보고 고를 수 있습니다. 라면을 산 후에는 그곳에서 직접 요리해서 먹을 수도 있습니다. 이렇게 다양한 라면을 먹어 볼 수 있어서 젊은 사람들이 이곳을 많이 찾습니다.",
+      "options": [
+        "이곳에서 라면을 요리할 수 있습니다.",
+        "‘라면세상’은 인주대학교 안에 있습니다.",
+        "‘라면세상’은 문을 연 지 오래되었습니다.",
+        "이곳은 젊은 사람들에게 인기가 없습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "R96-065-066",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-97-R065-QB97-R065-001",
+      "source_round": "97",
+      "original_question_number": 65,
+      "type": "common_passage_blank_choice",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "인주호텔은 20년 전에 생긴 작은 호텔입니다. 이 호텔은 해마다 방을 새로 꾸밉니다. 그래서 매년 (   ) 수 있습니다. 보통 디자이너 한 명이 하나의 방을 꾸밉니다. 방마다 그 방을 꾸민 사람의 사진과 방에 대한 설명이 있습니다. 올해는 여러 개의 방 중에서 꽃으로 꾸민 방이 제일 인기가 많습니다.",
+      "options": [
+        "같은 시기에 예약할",
+        "모르는 사람을 만날",
+        "다른 모습의 방을 볼",
+        "디자이너를 쉽게 찾을"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB97-G065-066",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-97-R066-QB97-R066-001",
+      "source_round": "97",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "인주호텔은 20년 전에 생긴 작은 호텔입니다. 이 호텔은 해마다 방을 새로 꾸밉니다. 그래서 매년 (   ) 수 있습니다. 보통 디자이너 한 명이 하나의 방을 꾸밉니다. 방마다 그 방을 꾸민 사람의 사진과 방에 대한 설명이 있습니다. 올해는 여러 개의 방 중에서 꽃으로 꾸민 방이 제일 인기가 많습니다.",
+      "options": [
+        "이 호텔은 모든 방을 꽃으로 꾸몄습니다.",
+        "이 호텔은 생긴 지 이십 년이 안 되었습니다.",
+        "이 호텔의 방을 꾸민 사람을 알 수 없습니다.",
+        "이 호텔은 일 년에 한 번 방을 새롭게 꾸밉니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "QB97-G065-066",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R065-QB99-R065-001",
+      "source_round": "99",
+      "original_question_number": 65,
+      "type": "common_passage_question",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "‘스마트 화분’은 집에서 꽃을 잘 기를 수 있게 도와주는 화분입니다. 이 화분은 여러 정보를 (   ). 꽃에 물을 줘야 하는 시간에는 물소리가 나옵니다. 또 창문을 열어야 할 때는 바람 소리가 나옵니다. 집의 온도가 높거나 햇빛이 너무 강할 때는 노래가 나옵니다. 노래가 나오면 시원한 곳으로 화분을 옮깁니다.",
+      "options": [
+        "쉽게 바꿉니다",
+        "빠르게 고릅니다",
+        "소리로 알려 줍니다",
+        "꽃으로 보내 줍니다"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB99-G065-066",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R066-QB99-R066-001",
+      "source_round": "99",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "‘스마트 화분’은 집에서 꽃을 잘 기를 수 있게 도와주는 화분입니다. 이 화분은 여러 정보를 (   ). 꽃에 물을 줘야 하는 시간에는 물소리가 나옵니다. 또 창문을 열어야 할 때는 바람 소리가 나옵니다. 집의 온도가 높거나 햇빛이 너무 강할 때는 노래가 나옵니다. 노래가 나오면 시원한 곳으로 화분을 옮깁니다.",
+      "options": [
+        "이 화분은 물과 바람이 나오는 화분입니다.",
+        "이 화분은 집에서 꽃을 기를 때 도움이 됩니다.",
+        "이 화분은 따뜻한 집에서는 사용할 수 없습니다.",
+        "이 화분에서 물소리가 나오면 화분을 옮겨야 합니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "",
+      "passage_group_id": "QB99-G065-066",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R065-DRAFT-100-R065",
+      "source_round": "100",
+      "original_question_number": 65,
+      "type": "common_passage_question",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "집으로 꽃을 보내 주는 서비스가 있습니다. 인터넷으로 신청하면 한 달에 한 번 집에서 꽃을 (   ). 그 계절에 많이 피는 꽃을 보내 주기 때문에 매달 집 분위기를 바꾸기 좋습니다. 그리고 꽃의 이름과 꽃을 오래 볼 수 있는 방법도 카드에 써서 보내 줍니다. 가격도 별로 비싸지 않아서 인기가 많습니다.",
+      "options": [
+        "받지 않습니다",
+        "받기 때문입니다",
+        "받을 수 있습니다",
+        "받은 적이 없습니다"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "DRAFT-100-G065-066",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R066-DRAFT-100-R066",
+      "source_round": "100",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "집으로 꽃을 보내 주는 서비스가 있습니다. 인터넷으로 신청하면 한 달에 한 번 집에서 꽃을 (   ). 그 계절에 많이 피는 꽃을 보내 주기 때문에 매달 집 분위기를 바꾸기 좋습니다. 그리고 꽃의 이름과 꽃을 오래 볼 수 있는 방법도 카드에 써서 보내 줍니다. 가격도 별로 비싸지 않아서 인기가 많습니다.",
+      "options": [
+        "이 서비스는 가격이 비쌉니다.",
+        "이 서비스는 전화로 신청해야 합니다.",
+        "이 서비스에서는 꽃 이름을 알려 줍니다.",
+        "이 서비스에서는 매일 집으로 꽃을 보냅니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "DRAFT-100-G065-066",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R065-QB-R065-001",
+      "source_round": "102",
+      "original_question_number": 65,
+      "type": "common_passage_question",
+      "question": "(   )에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "토끼는 혼자서 생활하는 동물입니다. 보통 산에 사는데 무서운 동물을 만날 때가 많습니다. 그럴 때 토끼가 (   ) 방법에는 여러 가지가 있습니다. 토끼는 튼튼한 다리로 빠르고 멀리 뛸 수 있습니다. 또 먼 곳에 있는 동물도 냄새로 알 수 있습니다. 귀를 움직여서 소리가 나는 위치도 정확하게 찾습니다. 그래서 무서운 동물이 오는 것을 미리 알 수 있습니다.",
+      "options": [
+        "잠을 자는",
+        "자기를 지키는",
+        "음식을 구하는",
+        "상처를 치료하는"
+      ],
+      "correct_answer": 2,
+      "image_url": "",
+      "passage_group_id": "QB-G065_066-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R066-QB-R066-001",
+      "source_round": "102",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "토끼는 혼자서 생활하는 동물입니다. 보통 산에 사는데 무서운 동물을 만날 때가 많습니다. 그럴 때 토끼가 (   ) 방법에는 여러 가지가 있습니다. 토끼는 튼튼한 다리로 빠르고 멀리 뛸 수 있습니다. 또 먼 곳에 있는 동물도 냄새로 알 수 있습니다. 귀를 움직여서 소리가 나는 위치도 정확하게 찾습니다. 그래서 무서운 동물이 오는 것을 미리 알 수 있습니다.",
+      "options": [
+        "산에 사는 토끼는 모여서 생활합니다.",
+        "토끼는 냄새가 나는 것을 잘 못 느낍니다.",
+        "토끼는 소리가 나는 위치를 정확하게 압니다.",
+        "산에 사는 토끼는 빠른 속도로 뛸 수 없습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB-G065_066-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R065-QB103-R065-DRAFT",
+      "source_round": "103",
+      "original_question_number": 65,
+      "type": "common_passage_question",
+      "question": "㉠에 들어갈 말로 가장 알맞은 것을 고르십시오.",
+      "passage": "인주시에서는 10년 전부터 매년 김치 축제를 하고 있습니다. 여기에서 인주시 김치와 여러 도시의 김치를 모두 구경하고 맛볼 수 있습니다. 또 축제에서 파는 김치는 싸고 맛있습니다. 그래서 사람들이 ( ㉠  ) 많이 옵니다. 외국인들도 많이 찾습니다. 올해 축제에서는 유명한 요리사가 김치 피자 만드는 법을 가르쳐 줍니다.",
+      "options": [
+        "김치를 사러",
+        "공연을 보러",
+        "선물을 받으러",
+        "요리사를 만나러"
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "QB103-G065_066-DRAFT",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R066-QB103-R066-DRAFT",
+      "source_round": "103",
+      "original_question_number": 66,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "인주시에서는 10년 전부터 매년 김치 축제를 하고 있습니다. 여기에서 인주시 김치와 여러 도시의 김치를 모두 구경하고 맛볼 수 있습니다. 또 축제에서 파는 김치는 싸고 맛있습니다. 그래서 사람들이 ( ㉠  ) 많이 옵니다. 외국인들도 많이 찾습니다. 올해 축제에서는 유명한 요리사가 김치 피자 만드는 법을 가르쳐 줍니다.",
+      "options": [
+        "이 축제는 올해 처음 열립니다.",
+        "이 축제는 외국인들에게 인기가 없습니다.",
+        "이 축제에서 김치 피자 만드는 방법을 알려 줍니다.",
+        "이 축제에서 다른 도시의 김치는 맛볼 수 없습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB103-G065_066-DRAFT",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    }
+  ]
+}

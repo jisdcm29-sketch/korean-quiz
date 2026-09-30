@@ -1,0 +1,318 @@
+{
+  "type_no": 8,
+  "type_name": "장문 독해",
+  "stage_id": "s1",
+  "stage_name": "1단계 · 문장 삽입",
+  "stage_name_mn": "1-р шат · Өгүүлбэр оруулах",
+  "range": "59~60",
+  "time_limit_seconds": 80,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R059-QB083-R059-001",
+      "source_round": "83",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 요즘 자전거를 타고 학교에 갑니다. (㉠) 전에는 지하철을 타고 다녔습니다. (㉡) 그때는 학교까지 삼십 분이 걸렸지만 지금은 한 시간쯤 걸립니다. (㉢) 아침에 일찍 일어나는 것은 싫지만 운동을 할 수 있어서 좋습니다. (㉣)",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "insert_sentence": "그래서 지하철을 탈 때보다 집에서 일찍 나와야 합니다.",
+      "passage_group_id": "QB083-G059_060-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-83-R060-QB083-R060-001",
+      "source_round": "83",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 요즘 자전거를 타고 학교에 갑니다. (㉠) 전에는 지하철을 타고 다녔습니다. (㉡) 그때는 학교까지 삼십 분이 걸렸지만 지금은 한 시간쯤 걸립니다. (㉢) 아침에 일찍 일어나는 것은 싫지만 운동을 할 수 있어서 좋습니다. (㉣)",
+      "options": [
+        "저는 운동하는 것을 싫어합니다.",
+        "저는 요즘 아침에 늦게 일어납니다.",
+        "저는 자전거를 타고 학교에 다닙니다.",
+        "저는 매일 한 시간 동안 지하철을 탑니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB083-G059_060-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-91-R059-QB91-R059-001",
+      "source_round": "91",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 태국 친구하고 인주 역사 박물관에 갔습니다. (㉠) 친구는 한국어를 잘 못합니다. (㉡) 그런데 그 박물관에는 외국어로 설명해 주는 서비스가 있었습니다. (㉢) 친구는 태국어 설명 서비스를 신청했습니다. (㉣) 설명이 쉽고 재미있어서 친구가 정말 좋아했습니다.",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "insert_sentence": "잠시 후에 태국 사람이 와서 태국어로 역사를 설명해 줬습니다."
+    },
+    {
+      "id": "FIXED-91-R060-QB91-R060-001",
+      "source_round": "91",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 태국 친구하고 인주 역사 박물관에 갔습니다. 친구는 한국어를 잘 못합니다. 그런데 그 박물관에는 외국어로 설명해 주는 서비스가 있었습니다. 친구는 태국어 설명 서비스를 신청했습니다. 잠시 후에 태국 사람이 와서 태국어로 역사를 설명해 줬습니다. 설명이 쉽고 재미있어서 친구가 정말 좋아했습니다.",
+      "options": [
+        "제 친구는 한국어를 잘합니다.",
+        "태국어 설명은 조금 어려웠습니다.",
+        "제 친구는 태국어로 설명을 들었습니다.",
+        "저는 외국어 설명 서비스를 신청했습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-96-R059-QB96-R059-001",
+      "source_round": "96",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 어렸을 때 성격이 조용했습니다. 사람들 앞에서 부끄러워서 말도 잘 못했습니다. (㉠) 저는 그 동아리에 들어가서 다양한 연극 공연을 했습니다. (㉡) 연극 속에서 말이 많은 사람도, 시끄러운 사람도 되어 봤습니다. (㉢) 이제 저는 성격이 많이 바뀌었습니다. (㉣) 말도 많아지고 사람들 앞에서도 부끄러워하지 않습니다.",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "insert_sentence": "어느 날 친구가 저에게 연극 동아리를 소개해 주었습니다.",
+      "passage_group_id": "R96-059-060",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-96-R060-QB96-R060-001",
+      "source_round": "96",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 어렸을 때 성격이 조용했습니다. 사람들 앞에서 부끄러워서 말도 잘 못했습니다. 어느 날 친구가 저에게 연극 동아리를 소개해 주었습니다. 저는 그 동아리에 들어가서 다양한 연극 공연을 했습니다. 연극 속에서 말이 많은 사람도, 시끄러운 사람도 되어 봤습니다. 이제 저는 성격이 많이 바뀌었습니다. 말도 많아지고 사람들 앞에서도 부끄러워하지 않습니다.",
+      "options": [
+        "저는 연극 공연을 한 적이 있습니다.",
+        "저는 동아리에 들어가지 않았습니다.",
+        "저는 어렸을 때 말이 많은 아이였습니다.",
+        "저는 어렸을 때보다 성격이 조용해졌습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "R96-059-060",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-97-R059-QB97-R059-001",
+      "source_round": "97",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 퇴근하고 집에 오면 항상 소파에 누워서 텔레비전을 봤습니다. ㉠ 텔레비전을 보다가 소파에서 늦게 잘 때가 많았습니다. ㉡ 이렇게 하니까 다음 날 회사에서 너무 피곤했습니다. ㉢ 요즘은 집에 오면 텔레비전은 조금만 보고 책을 읽습니다. ㉣ 책을 읽은 후에는 방에 들어가서 일찍 잡니다.",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "insert_sentence": "그래서 저는 지난달부터 이런 습관을 고치기 시작했습니다.",
+      "passage_group_id": "QB97-G059-060",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-97-R060-QB97-R060-001",
+      "source_round": "97",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 퇴근하고 집에 오면 항상 소파에 누워서 텔레비전을 봤습니다. ㉠ 텔레비전을 보다가 소파에서 늦게 잘 때가 많았습니다. ㉡ 이렇게 하니까 다음 날 회사에서 너무 피곤했습니다. ㉢ 요즘은 집에 오면 텔레비전은 조금만 보고 책을 읽습니다. ㉣ 책을 읽은 후에는 방에 들어가서 일찍 잡니다.",
+      "options": [
+        "요즘 저는 전보다 늦게 잡니다.",
+        "저는 전에 책을 많이 읽어서 피곤했습니다.",
+        "요즘 저는 책을 읽은 후에 텔레비전을 봅니다.",
+        "저는 전에 소파에서 잠을 잘 때가 많았습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "QB97-G059-060",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R059-QB99-R059-001",
+      "source_round": "99",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 베트남인 친구가 한 명 있습니다. 그 친구는 한국어를 잘하지만 저는 베트남어를 모릅니다. ㉠ 그래서 우리는 한국어로 이야기를 합니다. ㉡ 저는 바로 문화 센터에 가서 수업을 신청했습니다. ㉢ 열심히 배워서 친구와 베트남어로 이야기하고 싶습니다. ㉣",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 2,
+      "image_url": "",
+      "insert_sentence": "그런데 얼마 전에 문화 센터에 베트남어 수업이 생겼습니다.",
+      "passage_group_id": "QB99-G059-060",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R060-QB99-R060-001",
+      "source_round": "99",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 베트남인 친구가 한 명 있습니다. 그 친구는 한국어를 잘하지만 저는 베트남어를 모릅니다. ㉠ 그래서 우리는 한국어로 이야기를 합니다. ㉡ 저는 바로 문화 센터에 가서 수업을 신청했습니다. ㉢ 열심히 배워서 친구와 베트남어로 이야기하고 싶습니다. ㉣",
+      "options": [
+        "저는 베트남어를 잘합니다.",
+        "저는 전화로 수업을 신청했습니다.",
+        "저는 보통 친구와 한국어로 말합니다.",
+        "저는 친구에게서 베트남어를 배웠습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "passage_group_id": "QB99-G059-060",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R059-DRAFT-100-R059",
+      "source_round": "100",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "passage": "친구가 농장을 가서 친구의 강아지 ‘보리’를 며칠 돌봤습니다. ㉠ 처음 봤을 때 보리는 저를 별로 반기지 않았습니다. ㉡ 어느 날 몸이 안 좋아서 집에서 누워 있었습니다. ㉢ 그때 보리는 저를 걱정하는 것처럼 제 앞에 있어 주었습니다. ㉣ 그 후로 조금씩 보리를 좋아하게 돼서 요즘은 보리를 보러 친구 집에도 자주 갑니다.",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "insert_sentence": "그날 저는 보리가 정말 고마웠습니다.",
+      "passage_group_id": "DRAFT-100-G059-060",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R060-DRAFT-100-R060",
+      "source_round": "100",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "친구가 농장을 가서 친구의 강아지 ‘보리’를 며칠 돌봤습니다. ㉠ 처음 봤을 때 보리는 저를 별로 반기지 않았습니다. ㉡ 어느 날 몸이 안 좋아서 집에서 누워 있었습니다. ㉢ 그때 보리는 저를 걱정하는 것처럼 제 앞에 있어 주었습니다. ㉣ 그 후로 조금씩 보리를 좋아하게 돼서 요즘은 보리를 보러 친구 집에도 자주 갑니다.",
+      "options": [
+        "저는 요즘 보리를 볼 수 없습니다.",
+        "보리는 제가 키우는 강아지입니다.",
+        "친구는 보리가 많이 걱정되었습니다.",
+        "저는 처음에는 보리를 별로 안 좋아했습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "passage_group_id": "DRAFT-100-G059-060",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R059-QB-R059-001",
+      "source_round": "102",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 위치로 가장 알맞은 것을 고르십시오.",
+      "passage": "얼마 전에 제가 초등학교 때 쓴 일기장을 보았습니다. ㉠ 거기에는 제가 선생님께 칭찬을 듣고 기뻐하는 이야기가 써 있었습니다. ㉡ 일기를 보고 갑자기 선생님이 생각나서 학교로 전화를 해 봤습니다. 선생님은 아직 그 초등학교에 계셨습니다. ㉢ 선생님을 만나서 초등학교 때의 이야기를 나누었습니다. ㉣",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 3,
+      "image_url": "",
+      "insert_sentence": "반가운 마음에 저는 초등학교로 찾아갔습니다.",
+      "passage_group_id": "QB-G059_060-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R060-QB-R060-001",
+      "source_round": "102",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "얼마 전에 제가 초등학교 때 쓴 일기장을 보았습니다. ㉠ 거기에는 제가 선생님께 칭찬을 듣고 기뻐하는 이야기가 써 있었습니다. ㉡ 일기를 보고 갑자기 선생님이 생각나서 학교로 전화를 해 봤습니다. 선생님은 아직 그 초등학교에 계셨습니다. ㉢ 선생님을 만나서 초등학교 때의 이야기를 나누었습니다. ㉣",
+      "options": [
+        "저는 선생님을 만나러 갔습니다.",
+        "선생님이 저에게 전화를 하셨습니다.",
+        "선생님은 지금 다른 학교에 계십니다.",
+        "저는 초등학교 때의 일기장을 잃어버렸습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "",
+      "passage_group_id": "QB-G059_060-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R059-DRAFT-103-R059",
+      "source_round": "103",
+      "original_question_number": 59,
+      "type": "sentence_insert",
+      "question": "다음 문장이 들어갈 곳으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저에게는 오래된 시계가 하나 있습니다. ㉠ 고등학교에 입학할 때 선물로 받은 것입니다. ㉡ 그 시계는 멋있지도 않고 가격이 비싼 것도 아닙니다. ㉢ 그렇지만 저에게 정말 소중한 시계라서 지금도 항상 차고 다닙니다. ㉣ 그 시계를 보면 아버지가 생각납니다.",
+      "options": [
+        "㉠",
+        "㉡",
+        "㉢",
+        "㉣"
+      ],
+      "correct_answer": 4,
+      "image_url": "",
+      "insert_sentence": "5년 전에 돌아가신 아버지께 마지막으로 받은 물건이기 때문입니다.",
+      "passage_group_id": "DRAFT-103-G059-060",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R060-DRAFT-103-R060",
+      "source_round": "103",
+      "original_question_number": 60,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저에게는 오래된 시계가 하나 있습니다. ㉠ 고등학교에 입학할 때 선물로 받은 것입니다. ㉡ 그 시계는 멋있지도 않고 가격이 비싼 것도 아닙니다. ㉢ 그렇지만 저에게 정말 소중한 시계라서 지금도 항상 차고 다닙니다. ㉣ 그 시계를 보면 아버지가 생각납니다.",
+      "options": [
+        "그 시계는 가격이 비쌉니다.",
+        "저는 그 시계를 지금도 사용합니다.",
+        "그 시계는 고등학교 졸업 선물입니다.",
+        "저는 요즘 아버지와 그 시계 이야기를 합니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "",
+      "passage_group_id": "DRAFT-103-G059-060",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    }
+  ]
+}

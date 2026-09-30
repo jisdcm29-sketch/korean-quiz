@@ -1,0 +1,131 @@
+{
+  "type_no": 5,
+  "type_name": "중심 내용",
+  "range": "46~48",
+  "stage_id": "basic",
+  "stage_name": "기초",
+  "time_limit_seconds": 80,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R046-QB083-R046-001",
+      "source_round": "83",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "제 동생은 빵을 잘 만듭니다. 동생이 만든 빵은 아주 맛있습니다. 저도 빵 만드는 방법을 배우고 싶습니다.",
+      "options": [
+        "저는 빵집에서 일하고 싶습니다.",
+        "저는 맛있는 빵을 사고 싶습니다.",
+        "저는 동생에게 빵을 주고 싶습니다.",
+        "저는 맛있는 빵을 만들고 싶습니다."
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-91-R046-QB91-R046-001",
+      "source_round": "91",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "저는 등산을 하러 제주도에 왔습니다. 그런데 오늘 비가 와서 등산을 못 했습니다. 내일은 꼭 산에 가고 싶습니다.",
+      "options": [
+        "저는 제주도에서 등산할 겁니다.",
+        "저는 등산을 하는 것이 힘듭니다.",
+        "저는 비가 오는 날을 좋아합니다.",
+        "저는 제주도에 가서 살려고 합니다."
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-96-R046-QB96-R046-001",
+      "source_round": "96",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "저는 얼마 전에 테니스를 시작했습니다. 테니스를 치면 즐겁고 기분이 좋습니다. 그래서 매일 테니스를 치러 갑니다.",
+      "options": [
+        "저는 테니스를 배우려고 합니다.",
+        "저는 테니스 치는 것을 좋아합니다.",
+        "저는 테니스 경기를 보고 싶습니다.",
+        "저는 친구와 테니스를 치면 좋겠습니다."
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-97-R046-QB97-R046-001",
+      "source_round": "97",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "중심 내용으로 가장 알맞은 것을 고르십시오.",
+      "passage": "저는 이번 방학에 스키를 배우고 있습니다. 재미있지만 아직 잘 못 탑니다. 열심히 스키 연습을 할 겁니다.",
+      "options": [
+        "저는 스키를 배울 겁니다.",
+        "저는 스키를 잘 타고 싶습니다.",
+        "저는 스키를 가르치면 좋겠습니다.",
+        "저는 스키를 타는 것이 재미없습니다."
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-99-R046-QB99-R046-001",
+      "source_round": "99",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "‘행복식당’은 음식이 맛있고 비싸지 않습니다. 식당이 크고 깨끗해서 사람들도 많습니다. 저는 행복식당에 자주 갑니다.",
+      "options": [
+        "저는 행복식당을 좋아합니다.",
+        "저는 요리를 잘하고 싶습니다.",
+        "저는 식당이 크면 좋겠습니다.",
+        "저는 행복식당에서 일할 겁니다."
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-100-R046-QB100-R046-001",
+      "source_round": "100",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "중심 내용을 고르십시오.",
+      "passage": "우리 집에는 피아노가 있습니다. 피아노를 치면 즐겁고 기분이 좋습니다. 그래서 저는 피아노를 자주 칩니다.",
+      "options": [
+        "저는 피아노를 배우려고 합니다.",
+        "저는 새 피아노를 사고 싶습니다.",
+        "저는 피아노 치는 것이 쉽습니다.",
+        "저는 피아노 치는 것을 좋아합니다."
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-102-R046-QB-R046-001",
+      "source_round": "102",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "다음을 읽고 중심 내용을 고르십시오.",
+      "passage": "요즘 춤을 배우고 있습니다. 춤을 추는 것이 아주 재미있습니다. 그래서 매일 춤 연습을 합니다.",
+      "options": [
+        "저는 춤을 오래 배웠습니다.",
+        "저는 춤을 배우는 것이 즐겁습니다.",
+        "저는 요즘 춤을 출 시간이 없습니다.",
+        "저는 친구와 춤 연습을 하고 싶습니다."
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-103-R046-DRAFT-103-R046",
+      "source_round": "103",
+      "original_question_number": 46,
+      "type": "main_idea",
+      "question": "윗글의 중심 내용을 고르십시오.",
+      "passage": "저는 지난달에 안경을 샀습니다. 예쁘지만 무겁고 불편합니다. 가벼운 안경을 사러 안경 가게에 갈 겁니다.",
+      "options": [
+        "저는 예쁜 안경이 필요합니다.",
+        "저는 가벼운 안경을 살 겁니다.",
+        "저는 안경을 오랫동안 썼습니다.",
+        "저는 안경 가게가 생기면 좋겠습니다."
+      ],
+      "correct_answer": 2
+    }
+  ]
+}

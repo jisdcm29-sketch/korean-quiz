@@ -1,0 +1,310 @@
+{
+  "type_no": 8,
+  "type_name": "장문 독해",
+  "stage_id": "s3",
+  "stage_name": "3단계 · 실용문 독해",
+  "stage_name_mn": "3-р шат · Хэрэглээний эх",
+  "range": "63~64",
+  "time_limit_seconds": 80,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R063-QB083-R063-001",
+      "source_round": "83",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 윗글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "직원 여러분께\n안녕하십니까? 우리 회사의 영어 수업이 다음과 같이 열립니다.\n많은 분들의 관심을 바랍니다.\n• 수업 기간: 8월 1일~8월 31일(화, 목 19시~21시)\n• 수업료: 무료\n• 신청 방법: 7월 22일(금)까지 이메일(mskim@hankuk.com)로 신청",
+      "options": [
+        "수업 시간을 바꾸려고",
+        "수업 신청을 받으려고",
+        "수업 방법을 설명하려고",
+        "수업 장소를 안내하려고"
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/83_R063_064.png",
+      "passage_group_id": "QB083-G063_064-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-83-R064-QB083-R064-001",
+      "source_round": "83",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "직원 여러분께\n안녕하십니까? 우리 회사의 영어 수업이 다음과 같이 열립니다.\n많은 분들의 관심을 바랍니다.\n• 수업 기간: 8월 1일~8월 31일(화, 목 19시~21시)\n• 수업료: 무료\n• 신청 방법: 7월 22일(금)까지 이메일(mskim@hankuk.com)로 신청",
+      "options": [
+        "칠월에 수업을 시작합니다.",
+        "영어 수업은 매일 있습니다.",
+        "영어 수업은 한 달 동안 합니다.",
+        "수업을 들을 때 돈을 내야 합니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/83_R063_064.png",
+      "passage_group_id": "QB083-G063_064-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-91-R063-QB91-R063-001",
+      "source_round": "91",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 댓글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "청바지 주문 문의 게시글을 보고 답하십시오.",
+      "options": [
+        "다른 청바지로 바꾸려고",
+        "청바지 주문을 취소하려고",
+        "청바지의 값을 확인하려고",
+        "청바지 도착 날짜를 물어보려고"
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/91_R063_064.png"
+    },
+    {
+      "id": "FIXED-91-R064-QB91-R064-001",
+      "source_round": "91",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "청바지 주문 문의 게시글을 보고 답하십시오.",
+      "options": [
+        "저는 목요일에 여행을 갑니다.",
+        "저는 오늘 이 청바지를 샀습니다.",
+        "저는 인터넷 쇼핑몰에서 이 옷을 샀습니다.",
+        "저는 서비스 센터에 전화한 적이 없습니다."
+      ],
+      "correct_answer": 3,
+      "image_url": "./data/reading-training/images/91_R063_064.png"
+    },
+    {
+      "id": "FIXED-96-R063-QB96-R063-001",
+      "source_round": "96",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 윗글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "인주수영장 공지 사항을 보고 답하십시오.",
+      "options": [
+        "수영장에 많이 오게 하려고",
+        "수영장 이용 방법을 물어보려고",
+        "수영장 청소를 할 사람을 찾으려고",
+        "수영장 청소하는 날을 알려 주려고"
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/96_R063_064.png",
+      "passage_group_id": "R96-063-064",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-96-R064-QB96-R064-001",
+      "source_round": "96",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "인주수영장 공지 사항을 보고 답하십시오.",
+      "options": [
+        "수영장 청소는 토요일에 끝납니다.",
+        "수영장 청소는 이틀 동안 할 겁니다.",
+        "주말에 수영복 가게는 문을 닫을 겁니다.",
+        "일요일부터 수영장을 이용할 수 있습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/96_R063_064.png",
+      "passage_group_id": "R96-063-064",
+      "shared_passage_index": null,
+      "shared_passage_total": null
+    },
+    {
+      "id": "FIXED-97-R063-QB97-R063-001",
+      "source_round": "97",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 이 글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "사랑카페 행사를 알리려고",
+        "사랑카페 행사의 날짜를 바꾸려고",
+        "사랑카페 행사에서 일할 사람을 모으려고",
+        "사랑카페 행사에서 할 수 있는 일을 정하려고"
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/97_R063_064.png",
+      "passage_group_id": "QB97-G063-064",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-97-R064-QB97-R064-001",
+      "source_round": "97",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "이 카페는 병원 안에 있습니다.",
+        "민수 씨는 경영학과 학생입니다.",
+        "이 카페는 오후부터 이용할 수 있습니다.",
+        "민수 씨는 지난주에 병원에서 퇴원했습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": "./data/reading-training/images/97_R063_064.png",
+      "passage_group_id": "QB97-G063-064",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R063-QB99-R063-001",
+      "source_round": "99",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 이 글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "행사 소식을 안내하려고",
+        "행사 안내 자료를 받으려고",
+        "행사를 도와줄 사람을 찾으려고",
+        "행사 날짜가 바뀐 것을 알리려고"
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/99_R063_064.png",
+      "passage_group_id": "QB99-G063-064",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-99-R064-QB99-R064-001",
+      "source_round": "99",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "",
+      "options": [
+        "이 회사는 한 달 동안 행사를 합니다.",
+        "이 회사는 작년부터 등산화를 팔았습니다.",
+        "이 회사는 한 가지의 등산화를 싸게 팝니다.",
+        "이 회사는 홈페이지에서 등산화를 싸게 팝니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/99_R063_064.png",
+      "passage_group_id": "QB99-G063-064",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R063-DRAFT-100-R063",
+      "source_round": "100",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 윗글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "한국대학교 학생지원센터 묻고 답하기 글입니다. 한국학과 1학년 김민수입니다. 어제 학생증을 잃어버려서 새로 만들어야 하는데요. 방학 때는 보통 몇 시까지 일합니까? 내일 사무실에 도착하면 5시쯤 될 것 같은데 그래도 학생증을 만들 수 있을까요? 답을 기다리겠습니다.",
+      "options": [
+        "잃어버린 물건을 찾으려고",
+        "사무실 위치를 확인하려고",
+        "학생증 만드는 곳을 알아보려고",
+        "사무실 문 닫는 시간을 물어보려고"
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/100_R063_064.png",
+      "passage_group_id": "DRAFT-100-G063-064",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-100-R064-DRAFT-100-R064",
+      "source_round": "100",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "한국대학교 학생지원센터 묻고 답하기 글입니다. 한국학과 1학년 김민수입니다. 어제 학생증을 잃어버려서 새로 만들어야 하는데요. 방학 때는 보통 몇 시까지 일합니까? 내일 사무실에 도착하면 5시쯤 될 것 같은데 그래도 학생증을 만들 수 있을까요? 답을 기다리겠습니다.",
+      "options": [
+        "저는 한국학과 학생입니다.",
+        "저는 오늘 학생증을 만들었습니다.",
+        "저는 방학하기 전에 사무실에 갈 겁니다.",
+        "저는 내일 두 시에 사무실에 가려고 합니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/100_R063_064.png",
+      "passage_group_id": "DRAFT-100-G063-064",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R063-QB-R063-001",
+      "source_round": "102",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 윗글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "한국아파트 게시판\n\n안녕하세요, 관리실입니다.\n우리 아파트에서는 관리실 옆에 자전거 주차장을 하나 더 만들었습니다.\n아파트 입구, 계단 등에 둔 자전거는 새 주차장으로 옮겨 주시기 바랍니다.\n새 주차장은 11월 10일 월요일부터 이용하실 수 있습니다.\n주민 여러분의 많은 협조 부탁드립니다.\n\n한국아파트 관리실(02-1234-5678)",
+      "options": [
+        "자전거 주차장의 요금을 바꾸려고",
+        "자전거 주차장의 위치를 확인하려고",
+        "자전거 주차장에서 일할 직원을 찾으려고",
+        "자전거 주차장이 생기는 것을 안내하려고"
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/R063_064.png",
+      "passage_group_id": "QB-G063_064-001",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-102-R064-QB-R064-001",
+      "source_round": "102",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "한국아파트 게시판\n\n안녕하세요, 관리실입니다.\n우리 아파트에서는 관리실 옆에 자전거 주차장을 하나 더 만들었습니다.\n아파트 입구, 계단 등에 둔 자전거는 새 주차장으로 옮겨 주시기 바랍니다.\n새 주차장은 11월 10일 월요일부터 이용하실 수 있습니다.\n주민 여러분의 많은 협조 부탁드립니다.\n\n한국아파트 관리실(02-1234-5678)",
+      "options": [
+        "새 주차장은 관리실 근처에 있습니다.",
+        "이 아파트에는 자전거 주차장이 없었습니다.",
+        "새 주차장은 십이월부터 이용할 수 있습니다.",
+        "아파트 입구에 있는 자전거는 옮기지 않아도 됩니다."
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/R063_064.png",
+      "passage_group_id": "QB-G063_064-001",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R063-QB103-R063-DRAFT",
+      "source_round": "103",
+      "original_question_number": 63,
+      "type": "common_passage_question",
+      "question": "왜 윗글을 썼는지 맞는 것을 고르십시오.",
+      "passage": "한국대학교 공지사항 웹페이지",
+      "options": [
+        "행사를 알리려고",
+        "행사를 취소하려고",
+        "행사 날짜를 바꾸려고",
+        "행사 내용을 물어보려고"
+      ],
+      "correct_answer": 1,
+      "image_url": "./data/reading-training/images/103_R063_064.png",
+      "passage_group_id": "QB103-G063_064-DRAFT",
+      "shared_passage_index": 1,
+      "shared_passage_total": 2
+    },
+    {
+      "id": "FIXED-103-R064-QB103-R064-DRAFT",
+      "source_round": "103",
+      "original_question_number": 64,
+      "type": "common_passage_question",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "한국대학교 공지사항 웹페이지",
+      "options": [
+        "이 행사에서 간식을 팝니다.",
+        "이 행사는 다섯 시부터 시작합니다.",
+        "이 행사에 일 학년은 올 수 없습니다.",
+        "이 행사에서 선배를 만날 수 있습니다."
+      ],
+      "correct_answer": 4,
+      "image_url": "./data/reading-training/images/103_R063_064.png",
+      "passage_group_id": "QB103-G063_064-DRAFT",
+      "shared_passage_index": 2,
+      "shared_passage_total": 2
+    }
+  ]
+}

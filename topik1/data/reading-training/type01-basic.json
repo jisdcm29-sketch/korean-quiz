@@ -1,0 +1,211 @@
+{
+  "version": 3,
+  "course": "TOPIK I 읽기",
+  "type_id": 1,
+  "type_name": "중심 화제",
+  "stage_id": "basic",
+  "stage_name": "기초",
+  "pass_score": 90,
+  "question_count": 13,
+  "time_limit_seconds": 45,
+  "difficulty_basis": "실제 TOPIK 회차 내부 문항 번호 순서에 따른 단계화",
+  "difficulty_group": "원문 31번군",
+  "source": "topik1-reading-ibt verified fixed exams",
+  "questions": [
+    {
+      "id": "FIXED-35-R031-QB35-R031-001",
+      "source_round": "35",
+      "original_question_number": 31,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "저는 김민수입니다. 이 사람은 제임스입니다.",
+      "options": [
+        "시간",
+        "장소",
+        "이름",
+        "주말"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-36-R031-QB36-R031-001",
+      "source_round": "36",
+      "original_question_number": 31,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "오빠가 있습니다. 언니도 있습니다.",
+      "options": [
+        "이름",
+        "가족",
+        "생일",
+        "친구"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-37-R031-QB37-R031-001",
+      "source_round": "37",
+      "original_question_number": 31,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "오늘은 1월 1일입니다. 내일은 1월 2일입니다.",
+      "options": [
+        "날짜",
+        "방학",
+        "아침",
+        "하루"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-41-R031-QB41-R031-001",
+      "source_round": "41",
+      "original_question_number": 31,
+      "type": "main_topic",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "선생님은 한국 사람입니다. 저는 프랑스 사람입니다.",
+      "options": [
+        "가족",
+        "나라",
+        "생일",
+        "친구"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-52-R031-QB52-R031-001",
+      "source_round": "52",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "형은 스물한 살입니다. 누나는 스무 살입니다.",
+      "options": [
+        "나이",
+        "날씨",
+        "이유",
+        "시간"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-60-R031-QB60-R031-001",
+      "source_round": "60",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 이야기입니까?",
+      "passage": "저는 일본에서 왔습니다. 친구는 미국에서 왔습니다.",
+      "options": [
+        "음식",
+        "나라",
+        "요일",
+        "선물"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-83-R031-QB083-R031-001",
+      "source_round": "83",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "사과가 맛있습니다. 바나나도 맛있습니다.",
+      "options": [
+        "날씨",
+        "과일",
+        "직업",
+        "나이"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-91-R031-QB91-R031-001",
+      "source_round": "91",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "사과가 있습니다. 수박은 없습니다.",
+      "options": [
+        "시간",
+        "과일",
+        "운동",
+        "가족"
+      ],
+      "correct_answer": 2
+    },
+    {
+      "id": "FIXED-96-R031-QB96-R031-001",
+      "source_round": "96",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "저는 영국 사람입니다. 친구는 중국 사람입니다.",
+      "options": [
+        "가족",
+        "남자",
+        "나라",
+        "학교"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-97-R031-QB97-R031-001",
+      "source_round": "97",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "저는 열다섯 살입니다. 언니는 열일곱 살입니다.",
+      "options": [
+        "나이",
+        "나라",
+        "직업",
+        "이름"
+      ],
+      "correct_answer": 1
+    },
+    {
+      "id": "FIXED-99-R031-QB99-R031-001",
+      "source_round": "99",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "저는 한국 사람입니다. 친구는 미국에서 왔습니다.",
+      "options": [
+        "가족",
+        "날씨",
+        "나라",
+        "공부"
+      ],
+      "correct_answer": 3
+    },
+    {
+      "id": "FIXED-102-R031-QB-R031-001",
+      "source_round": "102",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "저는 누나가 있습니다. 동생도 있습니다.",
+      "options": [
+        "나라",
+        "나이",
+        "날짜",
+        "가족"
+      ],
+      "correct_answer": 4
+    },
+    {
+      "id": "FIXED-103-R031-QB-103-R031-001",
+      "source_round": "103",
+      "original_question_number": 31,
+      "type": "topic_content",
+      "question": "무엇에 대한 내용입니까?",
+      "passage": "저는 중국 사람입니다. 친구는 프랑스에서 왔습니다.",
+      "options": [
+        "나라",
+        "직업",
+        "가족",
+        "요일"
+      ],
+      "correct_answer": 1
+    }
+  ]
+}

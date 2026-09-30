@@ -1,0 +1,138 @@
+{
+  "type_no": 4,
+  "type_name": "세부 내용",
+  "stage_id": "develop",
+  "stage_name": "발전",
+  "time_limit_seconds": 65,
+  "pass_score": 90,
+  "questions": [
+    {
+      "id": "FIXED-83-R044-QB083-R044-001",
+      "source_round": "83",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "어제 친구가 한국에 왔습니다. 오늘 우리 집에 놀러 올 겁니다. 저는 집을 깨끗하게 청소했습니다.",
+      "options": [
+        "저는 친구 집에 갈 겁니다.",
+        "저는 오늘 친구를 만납니다.",
+        "친구가 오늘 한국에 왔습니다.",
+        "친구하고 집을 청소할 겁니다."
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-91-R044-QB91-R044-001",
+      "source_round": "91",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "매년 여름에 한강에서 축제를 합니다. 저는 올해 한강 축제에 처음 갔습니다. 축제에서 춤 공연도 구경하고 맛있는 치킨도 먹었습니다.",
+      "options": [
+        "이 축제는 가을에 합니다.",
+        "이 축제에서 춤 공연을 봤습니다.",
+        "저는 작년에 이 축제에 갔습니다.",
+        "저는 이 축제에서 치킨을 못 먹었습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-96-R044-QB96-R044-001",
+      "source_round": "96",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 1년 동안 K-POP 춤을 배웠습니다. 매일 연습해서 지금은 잘 춥니다. 이번 달에는 K-POP 춤 대회에도 나갑니다.",
+      "options": [
+        "저는 K-POP 춤을 잘 춥니다.",
+        "저는 춤 연습을 못 했습니다.",
+        "저는 한 달 동안 춤을 배웠습니다.",
+        "저는 다음 달에 춤 대회에 나갑니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-97-R044-QB97-R044-001",
+      "source_round": "97",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "친구는 전주에 삽니다. 저는 토요일에 기차를 타고 전주에 갔습니다. 친구하고 같이 점심에 비빔밥을 먹고 전주를 구경했습니다.",
+      "options": [
+        "저는 전주에 살고 있습니다.",
+        "저는 기차로 전주에 갔습니다.",
+        "저는 혼자 비빔밥을 먹었습니다.",
+        "저는 점심을 먹고 친구를 만났습니다."
+      ],
+      "correct_answer": 2,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-99-R044-QB99-R044-001",
+      "source_round": "99",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 매일 저녁에 공원에서 산책을 합니다. 그런데 어제는 일이 있어서 산책을 못 갔습니다. 오늘은 아침밥을 먹고 산책했습니다.",
+      "options": [
+        "저는 어제 일이 있었습니다.",
+        "저는 어제 공원에 갔습니다.",
+        "저는 매일 아침에 산책을 합니다.",
+        "저는 오늘 산책을 하고 밥을 먹었습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-100-R044-QB100-R044-001",
+      "source_round": "100",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "내용이 같은 것을 고르십시오.",
+      "passage": "저는 회사 근처에서 춤을 배웁니다. 금요일 저녁에 춤을 배우러 가서 연습을 많이 합니다. 춤 연습이 조금 힘들지만 재미있습니다.",
+      "options": [
+        "저는 금요일에 춤을 춥니다.",
+        "저는 회사에서 춤을 배웁니다.",
+        "저는 춤 연습이 힘들지 않습니다.",
+        "저는 저녁에는 춤 연습을 안 합니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-102-R044-QB-R044-001",
+      "source_round": "102",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "다음을 읽고 내용이 같은 것을 고르십시오.",
+      "passage": "오늘 집에서 비누를 만들었습니다. 비누에 레몬을 넣었습니다. 이 비누로 손을 씻었는데 냄새가 좋았습니다.",
+      "options": [
+        "이 비누에 레몬이 들어갔습니다.",
+        "이 비누는 냄새가 나지 않습니다.",
+        "저는 오늘 레몬 비누를 샀습니다.",
+        "저는 이 비누를 사용하지 않았습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    },
+    {
+      "id": "FIXED-103-R044-DRAFT-103-R044",
+      "source_round": "103",
+      "original_question_number": 44,
+      "type": "same_content",
+      "question": "윗글의 내용과 같은 것을 고르십시오.",
+      "passage": "저는 고향에서 고등학교를 졸업하고 한국에 왔습니다. 지금 한국어를 배우고 있습니다. 내년에 한국 대학교에 입학하고 싶습니다.",
+      "options": [
+        "저는 한국어를 공부합니다.",
+        "저는 대학교에 입학했습니다.",
+        "저는 지금 고향에 살고 있습니다.",
+        "저는 한국에서 고등학교를 졸업했습니다."
+      ],
+      "correct_answer": 1,
+      "image_url": ""
+    }
+  ]
+}
