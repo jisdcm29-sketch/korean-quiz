@@ -2247,7 +2247,7 @@ function rebuildStudentProgressSummary() {
 
 const STUDENT_PROGRESS_DASHBOARD_1A = "1A 진도그래프";
 const STUDENT_PROGRESS_DASHBOARD_1B2A = "1B-2A 진도그래프";
-const WORKBOOK_EVAL_RESULTS_SHEET_NAME = "워크북평가결과";
+const WORKBOOK_EVAL_RESULTS_SHEET_NAME = "워크북읽기평가";
 
 // STEP31-11: 워크북 평가 성적을 현재 교재별 대시보드로 분리한다.
 // 각 학생은 가장 높은 교재/복습 단계에서 받은 최고 점수를 기준으로 정렬한다.
@@ -2277,6 +2277,7 @@ const MANAGEMENT_SHEET_FRONT_ORDER = [
   WORKBOOK_EVAL_DASHBOARD_1B,
   WORKBOOK_EVAL_DASHBOARD_2A,
   WORKBOOK_EVAL_RESULTS_SHEET_NAME,
+  "워크북듣기평가",
   STUDENT_PROGRESS_SHEET_NAME,
   STUDENT_PROGRESS_DASHBOARD_1A,
   STUDENT_PROGRESS_DASHBOARD_1B2A
@@ -3485,8 +3486,7 @@ const WORKBOOK_EVAL_HEADERS = [
 ];
 
 function getWorkbookEvaluationSheet_(ss) {
-  let sh = ss.getSheetByName(WORKBOOK_EVAL_RESULTS_SHEET_NAME);
-  if (!sh) sh = ss.insertSheet(WORKBOOK_EVAL_RESULTS_SHEET_NAME);
+  const sh = workbookNamedSheet_(ss, WORKBOOK_EVAL_RESULTS_SHEET_NAME, "워크북평가결과", WORKBOOK_EVAL_HEADERS);
   if (sh.getLastRow() === 0) {
     sh.getRange(1, 1, 1, WORKBOOK_EVAL_HEADERS.length).setValues([WORKBOOK_EVAL_HEADERS]);
     sh.setFrozenRows(1);
@@ -3522,7 +3522,7 @@ function saveWorkbookEvaluationResult_(ss, identity, p) {
   const attemptId = String(p.attemptId || "").trim().slice(0, 120);
   const book = String(p.book || "").trim().slice(0, 40);
   const review = String(p.review || "").trim().slice(0, 80);
-  const evalType = String(p.evalType || "").trim().slice(0, 60);
+  const evalType = "워크북읽기평가";
   const klass = String(p.klass || "").trim().slice(0, 80);
   const score = Number(p.score);
   const correct = Number(p.correct);
@@ -3538,19 +3538,22 @@ function saveWorkbookEvaluationResult_(ss, identity, p) {
   if (!Number.isFinite(total) || total <= 0) return { ok: false, error: "invalid_total" };
   if (!Number.isFinite(score) || score < 0 || score > 100) return { ok: false, error: "invalid_score" };
 
-  const sh = getWorkbookEvaluationSheet_(ss);
+  let sh;
   const lock = LockService.getScriptLock();
   let saveResult = null;
   let shouldRefresh = false;
 
   lock.waitLock(5000);
   try {
+    sh = getWorkbookEvaluationSheet_(ss);
     if (sh.getLastRow() >= 2) {
       const found = sh.getRange(2, 2, sh.getLastRow() - 1, 1)
         .createTextFinder(attemptId)
         .matchEntireCell(true)
         .findNext();
       if (found) {
+        const existing = sh.getRange(found.getRow(), 1, 1, WORKBOOK_EVAL_HEADERS.length).getValues()[0];
+        if (normalizePhone_(existing[2]) !== phone || String(existing[5]) !== book || String(existing[6]) !== review) return {ok:false,error:"workbook_attempt_identity_mismatch"};
         saveResult = { ok: true, saved: true, duplicate: true, row: found.getRow(), sheet: sh.getName() };
       }
     }
@@ -3567,6 +3570,12 @@ function saveWorkbookEvaluationResult_(ss, identity, p) {
       saveResult = { ok: true, saved: true, duplicate: false, row: row, sheet: sh.getName() };
       shouldRefresh = true;
     }
+    const stored = sh.getRange(saveResult.row, 1, 1, WORKBOOK_EVAL_HEADERS.length).getValues()[0];
+    saveResult.studentResult = workbookMirrorReading_(ss, stored);
+    SpreadsheetApp.flush();
+  } catch (err) {
+    console.error("Workbook reading result", err);
+    return {ok:false, saved:false, error:"workbook_result_save_failed"};
   } finally {
     try { lock.releaseLock(); } catch (err) {}
   }
@@ -3591,6 +3600,14 @@ function doGet(e) {
   const action = String(p.action || "").trim().toLowerCase();
   const callback = p.callback || "callback";
   let verifiedIdentity = null;
+
+  // STEP13: isolated listening module; existing actions retain their original path.
+  if (["workbook_listening_begin", "workbook_listening_checkpoint", "workbook_listening_submit"].indexOf(action) >= 0) {
+    if (typeof handleWorkbookListening_ !== "function") {
+      return jsonpOutput_(callback, {ok:false, error:"listening_not_installed"});
+    }
+    return jsonpOutput_(callback, handleWorkbookListening_(ss, action, p));
+  }
 
   // 1) 등록 전화번호의 학생이름 조회
   if (action === "lookup") {
@@ -3817,6 +3834,14 @@ function doGet(e) {
     return jsonpOutput_(callback, disableContentOverride_(ss, identity, p));
   }
 
+  // STEP15: authenticated TOPIK result, isolated from curriculum mastery.
+  if (action === "student_assessment_submit") {
+    const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
+    if (!result.ok) return jsonpOutput_(callback,result);
+    if (!p.deviceId || !result.payload || result.payload.deviceId !== String(p.deviceId)) return jsonpOutput_(callback,{ok:false,error:"device_mismatch"});
+    return jsonpOutput_(callback,saveTopikAssessmentStep15_(ss,{phone:result.phone,studentName:result.studentName},p));
+  }
+
   // STEP31-7: 워크북 평가 결과 저장. 기존 TestResults/진도현황에는 쓰지 않는다.
   if (action === "workbook_eval_submit") {
     const result = validateAuthToken_(ss, p.token, p.deviceId, p.name);
@@ -4029,4 +4054,157 @@ function doGet(e) {
     logRowsWritten: logRowsWritten,
     fastSessionStart: isFastSessionStart
   });
+}
+
+// STEP15: workbook attempts share the existing student's sheet, without writing TestResults.
+function workbookNamedSheet_(ss, name, legacyName, headers) {
+  let sh = ss.getSheetByName(name);
+  const old = ss.getSheetByName(legacyName);
+  if (sh && old) throw new Error('workbook_sheet_name_conflict: ' + name);
+  if (!sh && old) {
+    const h = old.getRange(1,1,1,headers.length).getValues()[0];
+    if (JSON.stringify(h) !== JSON.stringify(headers)) throw new Error('workbook_sheet_headers_mismatch');
+    old.setName(name); sh = old;
+  }
+  if (!sh) sh = ss.insertSheet(name);
+  if (sh.getLastRow()) {
+    const h = sh.getRange(1,1,1,headers.length).getValues()[0];
+    if (JSON.stringify(h) !== JSON.stringify(headers)) throw new Error('workbook_sheet_headers_mismatch');
+  }
+  return sh;
+}
+
+function workbookMirrorResult_(ss, v) {
+  const phone = normalizePhone_(v.phone);
+  if (!phone || !v.name || !v.id) throw new Error('workbook_identity_missing');
+  let sh = getStudentResultSheet_(ss, v.name, phone);
+  // Recheck the existing student's phone before adding workbook records.
+  if (sh.getLastRow() >= 2) {
+    const owner = normalizePhone_(sh.getRange(2,2).getValue());
+    if (owner && owner !== phone) {
+      const name = (sanitizeStudentSheetBase_(v.name).slice(0,80) + '_' + phone).slice(0,100);
+      sh = ss.getSheetByName(name) || ss.insertSheet(name);
+      if (sh.getLastRow() >= 2 && normalizePhone_(sh.getRange(2,2).getValue()) !== phone) throw new Error('student_sheet_identity_conflict');
+      if (!sh.getLastRow()) sh.getRange(1,1,1,10).setValues([['date','phone','name','book','lesson','testType','bestScore','attemptsToday','status','lastAt']]);
+      cacheStudentResultSheetName_(ss, phone, sh.getName());
+    }
+  }
+  const first = ['date','phone','name','book','lesson','testType','bestScore','attemptsToday','status','lastAt'];
+  if (JSON.stringify(sh.getRange(1,1,1,10).getValues()[0]) !== JSON.stringify(first)) throw new Error('student_sheet_headers_mismatch');
+  const extra = ['평가응시ID','정답수','전체문항','미응답','응시시간(초)','시간초과','답안JSON'];
+  const h = sh.getRange(1,11,1,extra.length).getValues()[0];
+  if (h.some(function(x,i) {return x !== '' && x !== extra[i];})) throw new Error('student_sheet_extra_columns_conflict');
+  if (JSON.stringify(h) !== JSON.stringify(extra)) sh.getRange(1,11,1,extra.length).setValues([extra]).setFontWeight('bold');
+  const id = v.type + ':' + v.id;
+  if (sh.getLastRow() >= 2) {
+    const found = sh.getRange(2,11,sh.getLastRow()-1,1).createTextFinder(id).matchEntireCell(true).findNext();
+    if (found) {
+      const row = sh.getRange(found.getRow(),1,1,17).getValues()[0];
+      if (normalizePhone_(row[1]) !== phone || row[5] !== v.type || Number(row[6]) !== Number(v.score)) throw new Error('student_workbook_result_conflict');
+      return {saved:true,duplicate:true,sheet:sh.getName(),row:found.getRow()};
+    }
+  }
+  const row = sh.getLastRow()+1;
+  sh.getRange(row,1,1,17).setValues([[
+    testResultDateKey_(ss,new Date(v.at)), phone, workbookSafeCell_(v.name),
+    workbookSafeCell_(v.book), workbookSafeCell_(v.review), v.type,
+    Number(v.score), 1, 'SUBMITTED', new Date(v.at), id,
+    v.correct, v.total, v.unanswered, v.elapsed, v.timedOut, v.answers
+  ]]);
+  return {saved:true,duplicate:false,sheet:sh.getName(),row:row};
+}
+
+function workbookSafeCell_(value) {
+  const s = String(value == null ? '' : value);
+  return /^[=+@-]/.test(s) ? "'" + s : s;
+}
+function workbookMirrorReading_(ss,r) {
+  return workbookMirrorResult_(ss,{type:'워크북읽기평가',at:r[0],id:r[1],phone:r[2],name:r[3],book:r[5],review:r[6],score:r[8],correct:r[9],total:r[10],unanswered:r[11],elapsed:r[12],timedOut:r[13],answers:r[14]});
+}
+function workbookMirrorListening_(ss,r) {
+  if (r[8] !== 'SUBMITTED') return null;
+  return workbookMirrorResult_(ss,{type:'워크북듣기평가',at:r[1],id:r[2],phone:r[3],name:r[4],book:'SNU-'+r[6],review:r[7],score:r[9],correct:r[10],total:r[11],unanswered:0,elapsed:r[13],timedOut:false,answers:r[12]});
+}
+
+function saveTopikAssessmentStep15_(ss, identity, p) {
+  const book = String(p.book || '').trim();
+  const type = String(p.evalType || '').trim();
+  const allowed = {'TOPIK1':['TOPIK I 읽기평가','TOPIK I 듣기평가'], 'TOPIK2':['TOPIK II 읽기평가','TOPIK II 듣기평가','TOPIK II 쓰기평가']};
+  const score = Number(p.score), total = Number(p.total), correct = Number(p.correct);
+  const id = String(p.attemptId || ''), review = String(p.review || '').slice(0,80);
+  if (!Object.prototype.hasOwnProperty.call(allowed,book) || allowed[book].indexOf(type) < 0 || !review || !/^[A-Za-z0-9_-]{16,120}$/.test(id)) return {ok:false,error:'invalid_topik_fields'};
+  if (!Number.isInteger(total) || total < 1 || total > 200 || !Number.isInteger(correct) || correct < 0 || correct > total || !Number.isFinite(score) || score < 0 || score > 100) return {ok:false,error:'invalid_topik_score'};
+  if (getDeveloperAccess_(ss,identity.phone)) return {ok:true,saved:true,skipped:true};
+  const lock = LockService.getScriptLock();
+  if (!lock.tryLock(5000)) return {ok:false,error:'assessment_busy'};
+  try {
+    const value = {type:type, at:new Date(), id:id,
+      phone:identity.phone, name:identity.studentName, book:book, review:review,
+      score:score,correct:correct,total:total,unanswered:Math.max(0,Number(p.unanswered)||0),
+      elapsed:Math.max(0,Math.round(Number(p.elapsedSec)||0)),timedOut:String(p.timedOut)==='true',answers:String(p.answers||'').slice(0,20000)};
+    if (p.source === 'mobile-stage') {
+      if (book !== 'TOPIK1' || type !== 'TOPIK I 읽기평가' || !/^유형 [1-8] · (basic|develop|real|s[1-6])$/.test(review)) return {ok:false,error:'invalid_stage'};
+      value.id = 'FIRST_'+identity.phone+'_'+review.replace(/[^1-8a-z]/g,'');
+      const student = getStudentResultSheet_(ss,identity.studentName,identity.phone);
+      const passHeaders = ['통과상태','통과시각'];
+      const headers = student.getRange(1,18,1,2).getValues()[0];
+      if (headers.some(function(x,i){return x !== '' && x !== passHeaders[i];})) return {ok:false,error:'student_pass_columns_conflict'};
+      if (student.getLastRow() >= 2) {
+        const found = student.getRange(2,11,student.getLastRow()-1,1).createTextFinder(type+':'+value.id).matchEntireCell(true).findNext();
+        if (found) {
+          const first = student.getRange(found.getRow(),1,1,17).getValues()[0];
+          if (normalizePhone_(first[1]) !== normalizePhone_(identity.phone)) return {ok:false,error:'identity_mismatch'};
+          value.score=first[6];value.correct=first[11];value.total=first[12];
+        }
+      }
+    }
+    const saved = workbookMirrorResult_(ss,value);
+    if (p.source === 'mobile-stage') {
+      const student=ss.getSheetByName(saved.sheet);
+      student.getRange(1,18,1,2).setValues([['통과상태','통과시각']]);
+      const old=student.getRange(saved.row,18,1,2).getValues()[0];
+      if (score >= 90 && old[0] !== 'PASS') student.getRange(saved.row,18,1,2).setValues([['PASS',new Date()]]);
+      else if (!old[0]) student.getRange(saved.row,18,1,2).setValues([['RETRY','']]);
+    }
+    SpreadsheetApp.flush();
+    return {ok:true,saved:true,studentResult:saved,duplicate:saved.duplicate};
+  } catch(err) {
+    console.error('TOPIK student result',err);
+    return {ok:false,error:'student_assessment_save_failed'};
+  } finally {lock.releaseLock();}
+}
+
+// Run manually in Apps Script after making a spreadsheet copy. Repeat until done:true.
+// Each run processes at most 60 records; checkpoint after each successful student write.
+function setupWorkbookResultSheetsStep15() {
+  const ss = SpreadsheetApp.getActive();
+  const lock = LockService.getScriptLock();
+  lock.waitLock(5000);
+  try {
+    const reading = getWorkbookEvaluationSheet_(ss);
+    const listening = kqlSheet_(ss);
+    const props = PropertiesService.getScriptProperties();
+    const key = 'workbook_step15_migration_' + ss.getId();
+    let state = JSON.parse(props.getProperty(key) || '{"reading":2,"listening":2}');
+    let count = 0;
+    const started = Date.now();
+    for (let kind of ['reading','listening']) {
+      const sh = kind === 'reading' ? reading : listening;
+      const width = kind === 'reading' ? WORKBOOK_EVAL_HEADERS.length : KQL_HEADERS_.length;
+      while (state[kind] <= sh.getLastRow() && count < 60 && Date.now()-started < 180000) {
+        const n = state[kind], r = sh.getRange(n,1,1,width).getValues()[0];
+        if (kind === 'reading') {
+          workbookMirrorReading_(ss,r);
+          if (r[7] !== '워크북읽기평가') sh.getRange(n,8).setValue('워크북읽기평가');
+        } else if (r[8] === 'SUBMITTED') workbookMirrorListening_(ss,r);
+        SpreadsheetApp.flush();
+        state[kind]++; count++;
+        props.setProperty(key,JSON.stringify(state));
+      }
+    }
+    const done = state.reading > reading.getLastRow() && state.listening > listening.getLastRow();
+    const result = {ok:true,done:done,processed:count,nextRows:state,readingSheet:reading.getName(),listeningSheet:listening.getName()};
+    console.log(JSON.stringify(result));
+    return result;
+  } finally { lock.releaseLock(); }
 }
