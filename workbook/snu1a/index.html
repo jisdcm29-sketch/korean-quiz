@@ -28,7 +28,12 @@
       <button id="review3Btn" class="test" type="button"><strong>5-6과</strong></button>
       <button id="review4Btn" class="test" type="button"><strong>7-8과</strong></button>
     </div>
-    <div id="listeningTests" class="grid" hidden><button id="listeningReview1Btn" class="test" type="button"><strong>1-2과</strong></button></div>
+    <div id="listeningTests" class="grid" hidden>
+      <button id="listeningReview1Btn" class="test" type="button"><strong>1-2과</strong></button>
+      <button id="listeningReview2Btn" class="test" type="button"><strong>3-4과</strong></button>
+      <button id="listeningReview3Btn" class="test" type="button"><strong>5-6과</strong></button>
+      <button id="listeningReview4Btn" class="test" type="button"><strong>7-8과</strong></button>
+    </div>
   </section></main>
 <script>
 (function(){
@@ -70,7 +75,10 @@
     if(historyMode){const u=new URL(location.href);u.searchParams.set('view',currentView);history[historyMode+'State'](null,'',u.toString())}
   }
   readingTab.onclick=()=>selectEvaluation('reading','push');listeningTab.onclick=()=>selectEvaluation('listening','push');
-  document.getElementById('listeningReview1Btn').onclick=()=>location.href=addAuth('../listening/');
+  document.getElementById('listeningReview1Btn').onclick=()=>location.href=addAuth('../listening/',{test:'1A-review1'});
+  document.getElementById('listeningReview2Btn').onclick=()=>location.href=addAuth('../listening/',{test:'1A-review2'});
+  document.getElementById('listeningReview3Btn').onclick=()=>location.href=addAuth('../listening/',{test:'1A-review3'});
+  document.getElementById('listeningReview4Btn').onclick=()=>location.href=addAuth('../listening/',{test:'1A-review4'});
   const requested=p.get('view');
   selectEvaluation(validView(requested)?requested:storedView(),'replace');
   window.addEventListener('popstate',()=>selectEvaluation(new URLSearchParams(location.search).get('view')||'menu'));
