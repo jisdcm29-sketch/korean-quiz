@@ -206,6 +206,7 @@
     .editorMessage{min-height:20px;margin-top:10px;font-size:13px}.editorMessage.ok{color:#86efac}.editorMessage.bad{color:#fecaca}
     @media(max-width:620px){.editorGrid{grid-template-columns:1fr}.tileEditBtn{right:6px;top:6px}}
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 
 <body>
@@ -593,7 +594,7 @@
 
       try{
         const url = new URL("../data/topik2/manifest.json", location.href).toString();
-        const res = await fetch(url, { cache:"no-store" });
+        const res = await fetch(url, { cache:"no-cache" });
         if(!res.ok) throw new Error("HTTP " + res.status + "\n" + url);
         MANIFEST = await res.json();
         await loadContentOverrides();

@@ -385,6 +385,7 @@
     .editorMessage{min-height:20px;margin-top:10px;font-size:13px}.editorMessage.ok{color:#86efac}.editorMessage.bad{color:#fecaca}
     @media(max-width:620px){.editorGrid{grid-template-columns:1fr}}
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 
 <body>
@@ -1060,7 +1061,7 @@
     if (!file){
       throw new Error("URL에 file 파라미터가 없습니다.\n예: ?file=/data/topik2/vocab/level01_attitude.json");
     }
-    const res = await fetch(file, { cache: "no-store" });
+    const res = await fetch(file, { cache: "no-cache" });
     if (!res.ok) throw new Error("데이터 로드 실패: " + res.status + " " + res.statusText + "\n" + file);
     const json = await res.json();
     if (!json || !Array.isArray(json.items)) {

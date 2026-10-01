@@ -112,6 +112,7 @@
     .prog{font-weight:900; color:var(--muted); font-size:13px; padding:10px 12px; border:1px solid var(--line); border-radius:14px; background:rgba(0,0,0,.12);}
     .tiny{font-size:12px; color:var(--muted); font-weight:850;}
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 
 <body>
@@ -366,7 +367,7 @@
         activity:{prompt:"블록을 눌러 문장을 만드세요.",blocks:["시간을","조금","늦출 수 있을까요?"],target:["시간을","조금","늦출 수 있을까요?"]},
         answer:{ok:"좋아요!",bad:"대상 → 정도 → 요청형 순서!"}
       },
-      {id:14,type:"order_sort",purpose:"이유문→결과문 순서",expr":"~해서 … / 그래서 …",mn:"TO_BE_FILLED_MN",example:"비가 많이 와서 길이 막혔습니다. 그래서 늦겠습니다.",
+      {id:14,type:"order_sort",purpose:"이유문→결과문 순서",expr:"~해서 … / 그래서 …",mn:"TO_BE_FILLED_MN",example:"비가 많이 와서 길이 막혔습니다. 그래서 늦겠습니다.",
         activity:{prompt:"두 문장 순서를 맞추세요.",cards:["그래서 늦겠습니다.","비가 많이 와서 길이 막혔습니다."],targetOrder:[1,0]},
         answer:{ok:"정답! 이유 → 결과(그래서)",bad:"이유가 먼저, 결과가 다음!"}
       },
