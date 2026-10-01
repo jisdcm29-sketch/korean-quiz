@@ -201,6 +201,7 @@
     }
     .mono{font-family: ui-monospace, SFMono-Regular, Menlo, Monaco, Consolas, "Liberation Mono", monospace;}
   </style>
+  <script src="js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 
 <body>
@@ -347,7 +348,7 @@
       if (!raw) return null;
       const s = JSON.parse(raw);
       if (!s || !s.name || !s.klass || !s.token || !s.sessionId || !s.loginAt) return null;
-      if (!s.lastActive) s.lastActive = now();
+      if (!s.lastActive) return null;
       return s;
     }catch(e){
       return null;
@@ -362,17 +363,8 @@
     localStorage.removeItem(LS_KEY);
   }
 
-  function updateLastActive(){
-    const s = readSession();
-    if (!s) return;
-    s.lastActive = now();
-    writeSession(s);
-  }
-
-  function isExpired(s){
-    const maxMs = AUTO_LOGOUT_MIN * 60 * 1000;
-    return (now() - (s.lastActive || 0)) > maxMs;
-  }
+  function updateLastActive(){ return window.KQSession.touch(); }
+  function isExpired(s){ return window.KQSession.expired(s); }
 
   function buildUrlWithParams(basePath, params){
     const u = new URL(basePath, location.href);
@@ -704,6 +696,8 @@
         loginAt: new Date().toISOString()
       };
       writeSession(session);
+      window.KQSession.noteValidated();
+      window.KQSession.touch(true);
 
       // STEP29-6: 인증 성공 직후 프로그램 선택 화면을 먼저 보여주는 동작은 유지한다.
       // 세션 시작 + LOGIN 로그 + 최근접속 갱신은 session_start_fast 한 번의 GAS 요청으로 묶어
@@ -793,19 +787,14 @@
 
     bindTopBar(renderDashboard);
 
-    document.getElementById("btnLogout").addEventListener("click", async () => {
-      const ss = readSession();
-      if (ss) await sendSessionEnd(ss, "manual");
-      clearSession();
-      renderLogin();
-    });
+    document.getElementById("btnLogout").addEventListener("click", () => window.KQSession.end("manual"));
 
     document.getElementById("goSnu").addEventListener("click", () => nav(PATHS.SNU));
     document.getElementById("goTopik1").addEventListener("click", () => nav(PATHS.TOPIK1));
     document.getElementById("goTopik2").addEventListener("click", () => nav(PATHS.TOPIK2));
 
     function nav(path){
-      updateLastActive();
+      if (!updateLastActive()) return;
       const ss = readSession();
       const url = buildUrlWithParams(path, {
         name: ss.name,
@@ -817,47 +806,8 @@
     }
   }
 
-  // ===== 자동 로그아웃(30분 미사용) =====
-  let inactivityTimer = null;
-  const activityEvents = ["pointerdown","pointermove","keydown","scroll","touchstart","click"];
-
-  function resetInactivity(){
-    const s = readSession();
-    if (!s) return;
-    updateLastActive();
-    if (inactivityTimer) clearTimeout(inactivityTimer);
-    inactivityTimer = setTimeout(() => {
-      const ss = readSession();
-      if (ss && isExpired(ss)){
-        (async () => {
-          await sendSessionEnd(ss, "timeout");
-          clearSession();
-          renderLogin();
-        })();
-      }
-    }, (AUTO_LOGOUT_MIN * 60 * 1000) + 500);
-  }
-
-  activityEvents.forEach(evt => {
-    window.addEventListener(evt, () => {
-      const s = readSession();
-      if (!s) return;
-      resetInactivity();
-    }, {passive:true});
-  });
-
-  // 추가 안전: 10초마다 만료 체크
-  setInterval(() => {
-    const s = readSession();
-    if (!s) return;
-    if (isExpired(s)){
-      (async () => {
-        await sendSessionEnd(s, "timeout");
-        clearSession();
-        renderLogin();
-      })();
-    }
-  }, 10_000);
+  // The shared guard owns the one 30-minute activity clock on all study pages.
+  function resetInactivity(){ return window.KQSession.touch(true); }
 
   // ===== Boot =====
   async function boot(){
@@ -903,6 +853,7 @@
       return renderAccessBlocked(validation.error || "expired_or_invalid");
     }
 
+    window.KQSession.noteValidated();
     resetInactivity();
     renderDashboard();
   }
