@@ -360,6 +360,7 @@ html{
 }
 /* MOBILE-LESSON-FIX-V1 END */
 </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 
 <body>
@@ -1850,7 +1851,7 @@ html{
         status.textContent = "Loading...";
         subtitle.textContent = tr("loading");
 
-        const res = await fetch(target.url, { cache:"no-store" });
+        const res = await fetch(target.url, { cache:"no-cache" });
         if(!res.ok) throw new Error("레슨 JSON 로드 실패: " + res.status);
 
         const d = await res.json();

@@ -232,6 +232,7 @@
       .lessonBtn.workbookEval{grid-column:1 / -1;min-height:96px}
     }
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 
 <body>
@@ -950,7 +951,7 @@
 
       try{
         const url = new URL("../data/snu/manifest.json", location.href).toString();
-        const res = await fetch(url, { cache:"no-store" });
+        const res = await fetch(url, { cache:"no-cache" });
         if(!res.ok) throw new Error("HTTP " + res.status + "\n" + url);
         MANIFEST = await res.json();
 
