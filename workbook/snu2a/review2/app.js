@@ -71,6 +71,8 @@
   init();
 
   function init(){
+    // STEP31-8: 워크북 평가는 인증 후에만 입장한다.
+    // 직접 주소로 들어온 경우에는 기존 로그인 화면으로 돌려보내 현재 인증 체계를 그대로 사용한다.
     if (!mainSession || !mainSession.token || !mainSession.name || !mainSession.phone) {
       location.replace(new URL('../../../', location.href).toString());
       return;
@@ -203,6 +205,8 @@
     } else {
       els.group.textContent = q.group || '';
     }
+    // 본문/대화에는 문항 번호를 붙이지 않는다.
+    // 문항 번호는 실제 질문(prompt) 앞에만 표시한다.
     if(q.context){
       if(q.contextHtml){
         els.context.innerHTML = q.context;
@@ -214,6 +218,8 @@
       els.context.classList.add('hidden');
       els.context.textContent = '';
     }
+    // 문항 번호와 대화문 본문을 분리해 A와 B가 같은 시작 위치에 오도록 한다.
+    // 일반 빈칸은 선택지 어휘가 들어갈 수 있도록 충분한 폭을 확보한다.
     const promptSource = q.promptHtml
       ? (q.prompt || '')
       : escapeHtml(q.prompt || '').replace(/\n/g, '<br>');
@@ -351,6 +357,9 @@
     clearInterval(ticker);
     clearTimeout(deadlineTimer);
     if(enforceDeadline()) return;
+
+    // 화면 타이머와 별개로 마감 시각용 timeout을 둔다.
+    // 모바일 브라우저가 백그라운드에서 타이머를 늦추더라도 focus/visibility 복귀 즉시 다시 검사한다.
     deadlineTimer = setTimeout(() => enforceDeadline(), Math.max(50, remainingSec() * 1000 + 80));
     ticker = setInterval(() => {
       renderTimer();
@@ -469,6 +478,8 @@
       ? String(q.options[q.answer] || '')
       : '';
     const plainAnswer = rawAnswer.replace(/<[^>]*>/g, '').trim();
+    // 빈칸은 정답 텍스트가 실제로 차지하는 폭만큼만 확보한다.
+    // 보이지 않는 정답 텍스트를 폭 측정용으로 넣어 괄호가 문장 속에서 자연스럽게 붙도록 한다.
     const measure = plainAnswer || '가';
     const safeMeasure = escapeHtml(measure).replace(/ /g, '&nbsp;');
     return String(html).replace(/\(\s{2,}\)/g,
