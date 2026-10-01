@@ -4,7 +4,7 @@
   <meta charset="utf-8">
   <meta name="viewport" content="width=device-width,initial-scale=1,viewport-fit=cover">
   <meta name="theme-color" content="#07101f">
-  <title>SNU 1A 평가 시험</title>
+  <title>SNU 1A 평가</title>
   <style>
     :root{--bg:#07101f;--card:#101b2e;--line:#293a58;--text:#f7fbff;--muted:#a8b7cd;--purple:#8b5cf6;--yellow:#f6b617}
     *{box-sizing:border-box} html,body{margin:0;min-height:100%;font-family:system-ui,-apple-system,Segoe UI,Roboto,"Noto Sans KR",sans-serif;background:linear-gradient(180deg,#06101d,#081526);color:var(--text)}
@@ -12,20 +12,23 @@
     .top-inner{max-width:760px;margin:0 auto;padding:11px 14px;display:flex;align-items:center;justify-content:space-between;gap:10px}.brand{font-weight:950;display:flex;align-items:center;gap:9px}.dot{width:9px;height:9px;border-radius:50%;background:var(--yellow)}
     .navs{display:flex;gap:8px}.navbtn{border:1px solid #334967;background:#111d32;color:#fff;border-radius:13px;padding:10px 13px;font-weight:900;cursor:pointer}.home{border-color:rgba(248,113,113,.48)}
     .wrap{max-width:760px;margin:0 auto;padding:14px 14px 30px}.card{background:linear-gradient(180deg,#101a2c,#0d1728);border:1px solid var(--line);border-radius:20px;padding:16px;box-shadow:0 12px 34px rgba(0,0,0,.25)}
+    .tabs{display:flex;gap:10px;margin-bottom:14px}.tab{flex:1;min-width:0;min-height:76px;overflow-wrap:anywhere;background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(20,29,50,.98));color:#fff;border:1px solid #455477;border-radius:13px;padding:12px;font:inherit;font-weight:900;cursor:pointer}[hidden]{display:none!important}
     .grid{display:grid;grid-template-columns:1fr 1fr;gap:12px}.test{width:100%;min-height:76px;text-align:center;border-radius:17px;border:1px solid #4d3b86;background:linear-gradient(135deg,rgba(139,92,246,.25),rgba(20,29,50,.98));color:#fff;padding:14px;cursor:pointer}.test strong{display:block;font-size:21px}.test:hover{filter:brightness(1.07)}
     .test.disabled{cursor:not-allowed;opacity:.52;border-color:#34445e;background:#0d1728}
     @media(max-width:560px){.top-inner{padding:9px 10px}.brand{font-size:15px}.navbtn{padding:9px 10px;font-size:13px}.wrap{padding:12px 10px 24px}.card{padding:12px;border-radius:18px}.grid{grid-template-columns:1fr;gap:10px}.test{min-height:72px;padding:12px}.test strong{font-size:20px}}
   </style>
 </head>
 <body>
-  <header class="topbar"><div class="top-inner"><div class="brand"><span class="dot"></span><span id="brandText">SNU 1A</span></div><div class="navs"><button id="backBtn" class="navbtn" type="button">← 1A</button><button id="homeBtn" class="navbtn home" type="button">홈</button></div></div></header>
+  <header class="topbar"><div class="top-inner"><div class="brand"><span class="dot"></span><span id="brandText">SNU 1A · 평가</span></div><div class="navs"><button id="backBtn" class="navbtn" type="button">← 1A</button><button id="homeBtn" class="navbtn home" type="button">홈</button></div></div></header>
   <main class="wrap"><section class="card">
-    <div class="grid">
+    <div id="evaluationChoices" class="tabs"><button id="readingTab" class="tab" type="button">읽기평가</button><button id="listeningTab" class="tab" type="button">듣기평가</button></div>
+    <div id="readingTests" class="grid" hidden>
       <button id="review1Btn" class="test" type="button"><strong>1-2과</strong></button>
       <button id="review2Btn" class="test" type="button"><strong>3-4과</strong></button>
       <button id="review3Btn" class="test" type="button"><strong>5-6과</strong></button>
       <button id="review4Btn" class="test" type="button"><strong>7-8과</strong></button>
     </div>
+    <div id="listeningTests" class="grid" hidden><button id="listeningReview1Btn" class="test" type="button"><strong>1-2과</strong></button></div>
   </section></main>
 <script>
 (function(){
@@ -41,7 +44,7 @@
   const name=p.get('name')||s.name||''; const klass=p.get('klass')||s.klass||'';
   if(lang==='MN'){
     document.documentElement.lang='mn';
-    document.getElementById('brandText').textContent='SNU 1A';
+    document.getElementById('brandText').textContent='SNU 1A · 읽기평가';
     document.getElementById('backBtn').textContent='← 1A';
     document.getElementById('homeBtn').textContent='Нүүр';
   }
@@ -49,11 +52,33 @@
     const u=new URL(url,location.href); const vals={name,klass,token,lang,...(extra||{})};
     Object.entries(vals).forEach(([k,v])=>{if(v!==undefined&&v!==null&&String(v)!=='')u.searchParams.set(k,String(v))}); return u.toString();
   }
+  const readingTab=document.getElementById('readingTab'), listeningTab=document.getElementById('listeningTab');
+  const viewKey='kq_eval_view_1A_'+s.token;
+  let currentView='menu';
+  if(lang==='MN'){readingTab.textContent='Унших чадварын үнэлгээ';listeningTab.textContent='Сонсох шалгалт'}
+  function validView(v){return ['menu','reading','listening'].includes(v)}
+  function storedView(){try{return sessionStorage.getItem(viewKey)||'menu'}catch(_e){return 'menu'}}
+  function selectEvaluation(view,historyMode){
+    currentView=validView(view)?view:'menu';
+    document.getElementById('evaluationChoices').hidden=currentView!=='menu';
+    document.getElementById('readingTests').hidden=currentView!=='reading';
+    document.getElementById('listeningTests').hidden=currentView!=='listening';
+    const label=lang==='MN'?(currentView==='menu'?'Үнэлгээ':currentView==='listening'?'Сонсох шалгалт':'Унших чадварын үнэлгээ'):(currentView==='menu'?'평가':currentView==='listening'?'듣기평가':'읽기평가');
+    document.getElementById('brandText').textContent='SNU 1A · '+label;document.title='SNU 1A '+label;
+    document.getElementById('backBtn').textContent=currentView==='menu'?'← 1A':(lang==='MN'?'← Үнэлгээ':'← 평가');
+    try{sessionStorage.setItem(viewKey,currentView)}catch(_e){}
+    if(historyMode){const u=new URL(location.href);u.searchParams.set('view',currentView);history[historyMode+'State'](null,'',u.toString())}
+  }
+  readingTab.onclick=()=>selectEvaluation('reading','push');listeningTab.onclick=()=>selectEvaluation('listening','push');
+  document.getElementById('listeningReview1Btn').onclick=()=>location.href=addAuth('../listening/');
+  const requested=p.get('view');
+  selectEvaluation(validView(requested)?requested:storedView(),'replace');
+  window.addEventListener('popstate',()=>selectEvaluation(new URLSearchParams(location.search).get('view')||'menu'));
   document.getElementById('review1Btn').addEventListener('click',()=>location.href=addAuth('./review1/'));
   document.getElementById('review2Btn').addEventListener('click',()=>location.href=addAuth('./review2/'));
   document.getElementById('review3Btn').addEventListener('click',()=>location.href=addAuth('./review3/'));
   document.getElementById('review4Btn').addEventListener('click',()=>location.href=addAuth('./review4/'));
-  document.getElementById('backBtn').addEventListener('click',()=>location.href=addAuth('../../snu/index.html',{book:'1A'}));
+  document.getElementById('backBtn').addEventListener('click',()=>{if(currentView!=='menu'){selectEvaluation('menu','push');return}location.href=addAuth('../../snu/index.html',{book:'1A'})});
   document.getElementById('homeBtn').addEventListener('click',()=>location.href=addAuth('../../index.html'));
 })();
 </script>
