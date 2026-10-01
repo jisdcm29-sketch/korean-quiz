@@ -2,15 +2,41 @@
 (() => {
   'use strict';
   const ENDPOINT='https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec';
-  const TEST='1A-review1', TOTAL=20;
-  // Workbook pp.73–75: original shared prompts; no answers, audio or option text.
-  const PROMPTS=[
-    {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
-    {end:10,text:'잘 듣고 알맞은 대답을 고르세요.'},
-    {end:13,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
-    {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
-    {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
-  ];
+  const TESTS={
+    '1A-review1':{rangeKr:'1–2과',rangeMn:'1–2-р хичээл',source:'Workbook pp.73–75',prompts:[
+      {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:10,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:13,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
+    ]},
+    '1A-review2':{rangeKr:'3–4과',rangeMn:'3–4-р хичээл',source:'Workbook pp.119–121',prompts:[
+      {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:12,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
+    ]},
+    '1A-review3':{rangeKr:'5–6과',rangeMn:'5–6-р хичээл',source:'Workbook pp.165–167',prompts:[
+      {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:12,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
+    ]},
+    '1A-review4':{rangeKr:'7–8과',rangeMn:'7–8-р хичээл',source:'Workbook pp.211–213',prompts:[
+      {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:10,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:12,text:'무엇에 대해 이야기합니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
+    ]}
+  };
+  const testParam=new URLSearchParams(location.search).get('test')||'1A-review1';
+  const TEST=Object.prototype.hasOwnProperty.call(TESTS,testParam)?testParam:'1A-review1';
+  const CFG=TESTS[TEST], TOTAL=20, PROMPTS=CFG.prompts;
+  // Public UI contains only workbook prompt groups; answers stay in Apps Script.
   const $=id=>document.getElementById(id);
   const guard=window.KQSession;
   if (!guard || !guard.check()) return;
@@ -152,7 +178,8 @@
   window.addEventListener('storage',e=>{if(e.key===key&&ready&&!submitting){try{refreshLocal();render();}catch(err){error(err);}}});
   window.addEventListener('online',()=>{if(ready&&!state.result)scheduleSync();});
   window.addEventListener('pageshow',()=>{if(ready){try{if(active()){refreshLocal();render();scheduleSync();}}catch(e){error(e);}}});
-  if(mn){document.documentElement.lang='mn';document.title='SNU 1A Сонсох шалгалт';$('title').textContent='SNU 1A · Сонсох шалгалт';$('range').textContent='1–2-р хичээл';$('start').textContent='Эхлэх';$('exit').textContent='Гарах';$('submitTitle').textContent='Хариулт илгээх';$('retry').textContent='Дахин илгээх';$('resultTitle').textContent='Сонсох шалгалтын дүн';$('done').textContent='Шалгалтын жагсаалт';$('options').setAttribute('aria-label','Хариултын дугаар');}
+  $('range').textContent=mn?CFG.rangeMn:CFG.rangeKr;
+  if(mn){document.documentElement.lang='mn';document.title='SNU 1A Сонсох шалгалт';$('title').textContent='SNU 1A · Сонсох шалгалт';$('start').textContent='Эхлэх';$('exit').textContent='Гарах';$('submitTitle').textContent='Хариулт илгээх';$('retry').textContent='Дахин илгээх';$('resultTitle').textContent='Сонсох шалгалтын дүн';$('done').textContent='Шалгалтын жагсаалт';$('options').setAttribute('aria-label','Хариултын дугаар');}
   if(!session.phone||!device){$('start').disabled=true;status('로그인 정보를 확인한 뒤 다시 로그인해 주세요.','Нэвтрэх мэдээллээ шалгаад дахин нэвтэрнэ үү.');return;}
   if(read())begin();
 })();
