@@ -517,6 +517,39 @@
       }
     }
 
+    // The existing server endpoint returns authorization and all lesson scores together.
+    // Keep one in-flight request per book; never retain authorization results after it settles.
+    const BOOK_STATUS_PENDING = new Map();
+    async function getBookSnapshot(bookId, lessons){
+      const book="SNU-"+String(bookId||"").toUpperCase();
+      const session=window.KQSession.read();
+      if(!window.KQSession.check()||!session)return {ok:false,error:"missing_token"};
+      const key=session.token+"|"+book;
+      if(BOOK_STATUS_PENDING.has(key))return BOOK_STATUS_PENDING.get(key);
+      const request=(async()=>{
+        try{
+          const data=await jsonpRequest({action:"snu_book_status",token:session.token,
+            name:getParam("name"),deviceId:session.deviceId||localStorage.getItem("kq_deviceId_v1")||"",book});
+          if(!data||data.ok!==true)return data||null;
+          if(data.book!==book||data.scope!=="book_snapshot"||Number(data.passScore)!==90||!data.lessons)return null;
+          // An incomplete snapshot falls back to the existing individually validated requests.
+          if(!lessons.every(ls=>{
+            const item=data.lessons[String(ls.no)];
+            if(!item||item.ok!==true||!item.tests)return false;
+            const tests=["vocab","grammar","mixed"].map(k=>item.tests[k]);
+            if(!tests.every(t=>t&&Number.isFinite(Number(t.bestScore))&&Number(t.bestScore)>=0))return false;
+            if(data.lowerBookAccess===true&&data.isDeveloper!==true)return item.status==="RECOGNIZED";
+            const passed=tests.every(t=>t.status==="PASS"&&Number(t.bestScore)>=90);
+            return item.status===(passed?"PASS":"RETRY");
+          }))return null;
+          window.KQSession.noteValidated();
+          return data;
+        }catch(_){return null;}
+      })();
+      BOOK_STATUS_PENDING.set(key,request);
+      try{return await request;}finally{if(BOOK_STATUS_PENDING.get(key)===request)BOOK_STATUS_PENDING.delete(key);}
+    }
+
     async function getLearningAccess(bookId){
       const token = getParam("token");
       if(!token) return {ok:false,error:"missing_token",isDeveloper:false};
@@ -735,7 +768,10 @@
       // 1A/1B/2A/2B 평가 버튼은 점수 조회보다 먼저 즉시 표시한다.
       appendWorkbookEvalButton(pickedNow.id);
 
-      const accessProfile = await getLearningAccess(pickedNow.id);
+      const snapshot = await getBookSnapshot(pickedNow.id, lessons);
+      if(PICKED !== pickedNow) return;
+      if(snapshot && snapshot.ok !== true){showAuthRequired(snapshot);return;}
+      const accessProfile = snapshot || await getLearningAccess(pickedNow.id);
       if(PICKED !== pickedNow) return;
       const isDeveloper = !!(accessProfile && accessProfile.ok === true && accessProfile.isDeveloper === true);
       // 전체 서울대 과정에서 교사 지정 시작 교재보다 낮은 교재는 이미 이수한 과정으로 인정한다.
@@ -779,7 +815,9 @@
       if(higherBook){
         higherGateInfo = previousBookGateInfo(pickedNow.id);
         if(higherGateInfo){
-          higherGateResult = await getLessonMastery(higherGateInfo.id, higherGateInfo.lessonNo);
+          const gate=snapshot && snapshot.previousGate;
+          higherGateResult = gate && gate.book === "SNU-"+higherGateInfo.id.toUpperCase() && Number(gate.lesson) === Number(higherGateInfo.lessonNo)
+            ? gate.mastery : await getLessonMastery(higherGateInfo.id, higherGateInfo.lessonNo);
           if(PICKED !== pickedNow) return;
           higherGatePassed = !!(higherGateResult && higherGateResult.ok === true && higherGateResult.status === "PASS");
         }
@@ -787,6 +825,7 @@
 
       const results = lowerBookAccess
         ? lessons.map(()=>({ok:true,status:"RECOGNIZED",tests:{vocab:{bestScore:0},grammar:{bestScore:0},mixed:{bestScore:0}}}))
+        : snapshot ? lessons.map(ls=>snapshot.lessons[String(ls.no)])
         : await Promise.all(lessons.map(ls=>getLessonMastery(pickedNow.id, ls.no)));
       if(PICKED !== pickedNow) return;
 
@@ -935,6 +974,7 @@
     });
 
     async function loadManifest(){
+      if(!window.KQSession.check())return;
       clearErr();
       applyTop();
       statusEl.textContent = tr("loading");
@@ -943,17 +983,20 @@
       // validateSession/manifest/진도 API가 느려도 평가 버튼은 기다리지 않는다.
       restoreRequestedBookShell();
 
+      const manifestPending=fetch(new URL("../data/snu/manifest.json",location.href),{cache:"no-cache"})
+        .then(async res=>{if(!res.ok)throw new Error("HTTP "+res.status);return {data:await res.json()};})
+        .catch(error=>({error}));
       const auth = await validateSession();
+      if(!window.KQSession.check())return;
       if(!auth || auth.ok !== true){
         showAuthRequired(auth || {ok:false,error:"empty_response"});
         return;
       }
 
       try{
-        const url = new URL("../data/snu/manifest.json", location.href).toString();
-        const res = await fetch(url, { cache:"no-cache" });
-        if(!res.ok) throw new Error("HTTP " + res.status + "\n" + url);
-        MANIFEST = await res.json();
+        const loaded=await manifestPending;
+        if(loaded.error)throw loaded.error;
+        MANIFEST=loaded.data;
 
         statusEl.textContent = tr("loaded");
         renderBooks();
