@@ -92,6 +92,14 @@ function validateAuthToken_(ss, token, deviceId, name) {
     return { ok: false, error: "not_authorized" };
   }
 
+  // Active, authorized requests renew the same token. Check identity and the whitelist first.
+  // Renew at most once per hour; CacheService lifetime stays within the existing two-hour limit.
+  const remaining = Number(payload.exp || 0) - Date.now();
+  if (remaining <= AUTH_TOKEN_TTL_SEC * 1000 / 2) {
+    payload.exp = Date.now() + AUTH_TOKEN_TTL_SEC * 1000;
+    CacheService.getScriptCache().put(authTokenKey_(token), JSON.stringify(payload), AUTH_TOKEN_TTL_SEC);
+  }
+
   return {
     ok: true,
     payload: payload,
