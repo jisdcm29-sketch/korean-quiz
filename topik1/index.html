@@ -206,6 +206,7 @@
     .editorMessage{min-height:20px;margin-top:10px;font-size:13px}.editorMessage.ok{color:#86efac}.editorMessage.bad{color:#fecaca}
     @media(max-width:620px){.editorGrid{grid-template-columns:1fr}.tileEditBtn{right:6px;top:6px}}
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 
 <body>
@@ -312,49 +313,8 @@
       try{ localStorage.removeItem(SESSION_KEY); }catch(e){}
     }
 
-    function sessionExpired_(s){
-      const last = Number(s && s.lastActive || 0);
-      return !last || (Date.now() - last) > AUTO_LOGOUT_MIN * 60 * 1000;
-    }
-
-    function touchSession_(){
-      const s = readLocalSession_();
-      if(!s) return;
-      s.lastActive = Date.now();
-      try{ localStorage.setItem(SESSION_KEY, JSON.stringify(s)); }catch(e){}
-    }
-
-    function logoutForInactivity_(){
-      clearLocalSession_();
-      const u = new URL('../index.html', location.href);
-      location.replace(u.toString());
-    }
-
-    let lastTouchWrite_ = 0;
-    function onUserActivity_(){
-      const now = Date.now();
-      if(now - lastTouchWrite_ < 5000) return;
-      lastTouchWrite_ = now;
-      const s = readLocalSession_();
-      if(!s) return;
-      if(sessionExpired_(s)){ logoutForInactivity_(); return; }
-      touchSession_();
-    }
-
-    ["pointerdown","keydown","scroll","touchstart","click"].forEach(evt=>{
-      window.addEventListener(evt,onUserActivity_,{passive:true});
-    });
-    document.addEventListener('visibilitychange',()=>{
-      if(document.visibilityState !== 'visible') return;
-      const s = readLocalSession_();
-      if(!s) return;
-      if(sessionExpired_(s)) logoutForInactivity_();
-      else touchSession_();
-    });
-    setInterval(()=>{
-      const s = readLocalSession_();
-      if(s && sessionExpired_(s)) logoutForInactivity_();
-    },10000);
+    function sessionExpired_(s){ return window.KQSession.expired(s); }
+    function touchSession_(){ return window.KQSession.touch(true); }
 
     function jsonpRequest_(baseUrl, params, timeoutMs=10000){
       return new Promise((resolve,reject)=>{
@@ -433,13 +393,15 @@
 
       try{
         const res = await jsonpRequest_(SCRIPT_URL,{
-          action:"validate", token, deviceId:getDeviceId_(), name, klass
+          action:"learning_start", token, deviceId:getDeviceId_(), name, klass, book:TOPIK_PROGRESS_BOOK
         });
         if(!res || !res.ok){
           clearLocalSession_();
           renderAuthBlocked_((res && res.error) || "expired_or_invalid");
           return false;
         }
+        DEV_ACCESS_CACHE=!!(res.developerAccess||res.isDeveloper);
+        window.KQSession.noteValidated();
         touchSession_();
         return true;
       }catch(e){
@@ -729,8 +691,7 @@
     async function loadManifest(){
       clearErr();applyTop();statusEl.textContent=tr("loading");
       try{
-        const url=new URL("../data/topik1/manifest.json",location.href).toString();const res=await fetch(url,{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status+"\n"+url);
-        MANIFEST=await res.json();await loadContentOverrides();statusEl.textContent=tr("loaded");applyTop();
+        const url=new URL("../data/topik1/manifest.json",location.href).toString();const [manifest]=await Promise.all([fetch(url,{cache:"no-cache"}).then(res=>{if(!res.ok)throw new Error("HTTP "+res.status+"\n"+url);return res.json()}),loadContentOverrides()]);MANIFEST=manifest;statusEl.textContent=tr("loaded");applyTop();
       }catch(e){statusEl.textContent="오류";showErr(tr("manifestFail")+"\n"+(e.message||e));}
     }
     (async function boot(){

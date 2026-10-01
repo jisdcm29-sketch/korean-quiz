@@ -36,6 +36,7 @@
     @media(max-width:760px){.pill{display:none}.topbar{padding:8px 10px}.brand{font-size:14px}.right{gap:6px}.btn{min-height:44px;padding:9px 11px;border-radius:13px}.btnBack{min-width:46px}.btnLang{min-width:52px}.container{padding:10px}.card{padding:14px;border-radius:18px}.h1{font-size:24px}.studyBox{padding:15px;border-radius:17px}.koSentence{font-size:25px}.mnSentence{font-size:20px}.analysisText{font-size:15px}.navRow{grid-template-columns:1fr 1fr}.counter{grid-column:1/-1;grid-row:1;text-align:center}.navRow .prev{grid-column:1;grid-row:2;width:100%}.navRow .next{grid-column:2;grid-row:2;width:100%;min-width:0}.btnCheck{width:100%}}
     @media(max-width:480px){.topbar{padding:7px 8px}.brand{font-size:13px;gap:7px}.dot{width:8px;height:8px}.right{gap:5px}.btn{min-height:44px;padding:8px 9px}.btnBack{min-width:44px}.btnLang{min-width:48px}.container{padding:7px}.card{padding:10px;border-radius:16px}.h1{font-size:21px;line-height:1.28}.muted{font-size:13px;line-height:1.55}.studyBox{padding:11px;border-radius:15px}.sectionBadge{font-size:12px;padding:6px 9px}.questionNo{margin-top:14px}.koSentence{font-size:22px;line-height:1.48;margin-top:8px}.practiceHint{font-size:13px}.checkRow{margin-top:16px}.mnSentence{font-size:18px}.analysisText{font-size:14px;line-height:1.65}.answerCard{padding:12px}.navRow{gap:8px}.navRow .prev,.navRow .next{font-size:14px}.completeTitle{font-size:22px}}
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 <body>
   <header class="topbar">
@@ -228,7 +229,7 @@
       };
       const path=`../data/topik1/${encodeURIComponent(cat)}/level${level}.json`;
       try{
-        const res=await fetch(new URL(path,location.href),{cache:'no-store'});
+        const res=await fetch(new URL(path,location.href),{cache:"no-cache"});
         if(!res.ok){
           if(res.status===404){
             $('status').textContent='';$('subtitle').textContent='';$('notice').textContent=`Level ${levelNo}: ${tr('prepared')}`;$('notice').classList.remove('hidden');return;

@@ -39,6 +39,7 @@
     .contentEditorControls,.itemEditorBar{display:flex;align-items:center;justify-content:flex-end;gap:8px;flex-wrap:wrap}.contentEditorControls{margin:10px 0}.contentEditorControls[hidden]{display:none}.editorBadge{font-size:12px;color:#fde68a;border:1px solid #7c5d16;background:#2d230d;border-radius:999px;padding:5px 9px;font-weight:850}.editModeBtn,.editItemBtn{padding:8px 12px;border:1px solid var(--amber);background:#302715;color:#fde68a;border-radius:11px;cursor:pointer;font-weight:900}.editModeBtn.active{background:#644b0e;color:#fff}.editedMark{font-size:12px;color:#86efac;font-weight:850}.editCol{width:110px;text-align:right}.editorModal{position:fixed;inset:0;z-index:120;display:flex;align-items:center;justify-content:center;padding:16px;background:rgba(0,0,0,.72)}.editorModal[hidden]{display:none}.editorDialog{width:min(680px,100%);max-height:92vh;overflow:auto;background:#111a2a;border:1px solid #4b5d78;border-radius:20px;box-shadow:0 24px 70px rgba(0,0,0,.55);padding:18px}.editorDialog h2{margin:0 0 4px;color:#fde68a}.editorMeta{color:var(--muted);font-size:13px;margin-bottom:14px}.editorField{display:block;margin-top:12px;font-weight:850}.editorField input,.editorField textarea{width:100%;margin-top:6px;border:1px solid #3b4b66;background:#08111f;color:#fff;border-radius:11px;padding:11px 12px;font:inherit}.editorField textarea{min-height:88px;resize:vertical}.editorActions{display:flex;justify-content:flex-end;gap:8px;flex-wrap:wrap;margin-top:18px}.editorActions button{padding:10px 14px;border-radius:11px;border:1px solid var(--line);background:#101829;color:#fff;cursor:pointer;font-weight:900}.editorActions .save{border-color:#22c55e;background:#123725}.editorActions .restore{border-color:#ef4444;background:#3a151b}.editorActions button:disabled{opacity:.55;cursor:wait}.editorMessage{min-height:20px;margin-top:10px;font-size:13px}.editorMessage.ok{color:#86efac}.editorMessage.bad{color:#fecaca}
     @media(max-width:520px){.container{padding:10px}.card{padding:14px;border-radius:18px}.btnRow{flex-wrap:nowrap;gap:8px}.btn{min-height:50px;font-size:15px;padding:10px 12px;border-radius:14px}.btnBack{font-size:18px;min-width:52px}.btnLang{min-width:60px}.tabs{display:grid;grid-template-columns:1fr 1fr;gap:8px;margin-top:10px}.tab{min-height:48px;font-size:15px;padding:10px 8px;border-radius:14px;text-align:center}.quizControls{display:grid;grid-template-columns:1fr 1fr;justify-content:stretch}.quizControls .btnMode,.quizControls .btnNew{grid-column:span 2}.quizStats{grid-template-columns:repeat(2,1fr)}#btnMode,#btnNew{width:100%;font-size:13px;padding:10px;min-height:44px;border-radius:14px}.qText{font-size:26px}.choices{gap:6px}.choice{font-size:22px;min-height:48px;padding:12px 10px}th,td{padding:10px 8px}.numCol{width:46px}}
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 <body>
   <header class="topbar">
@@ -165,13 +166,15 @@
 
     try{
       const res = await jsonpRequest_(SCRIPT_URL,{
-        action:"validate", token, deviceId:getDeviceId_(), name, klass
+        action:"learning_start", token, deviceId:getDeviceId_(), name, klass, book:PROGRESS_BOOK
       });
       if(!res || !res.ok){
         clearLocalSession_();
         renderAuthBlocked_((res && res.error) || "expired_or_invalid");
         return false;
       }
+      DEV_ACCESS_CACHE=!!(res.developerAccess||res.isDeveloper);
+      window.KQSession.noteValidated();
       return true;
     }catch(e){
       renderAuthBlocked_("validation_network_error");
@@ -239,7 +242,9 @@
     });
   }
 
+  let DEV_ACCESS_CACHE=null;
   async function developerAccess_(){
+    if(DEV_ACCESS_CACHE!==null)return DEV_ACCESS_CACHE;
     const u = new URL(location.href);
     try{
       const r = await jsonpRequest_(SCRIPT_URL,{
@@ -388,7 +393,7 @@
   function renderQuiz(d){const v=d.vocab||[];document.getElementById("quizHint").textContent=tr("quizHint",v.length);if(!v.length){document.getElementById("quiz").innerHTML=`<div class='muted'>${tr("noVocab")}</div>`;return}startQuiz(d)}
 
   async function main(){const authOk=await validateEntry_();if(!authOk)return;const progressOk=await validateProgressEntry_();if(!progressOk)return;applyTexts();document.getElementById("toggleContentEditMode").addEventListener("click",()=>{if(!CONTENT_CAN_EDIT)return;CONTENT_EDIT_MODE=!CONTENT_EDIT_MODE;updateContentEditorControls_();if(DATA){renderVocab(DATA);if(document.getElementById("panel-quiz").classList.contains("active"))renderQuiz(DATA)}});document.getElementById("btnBack").addEventListener("click",()=>{stopQuizTimer();const qs=passthroughQS();location.href=`./index.html${qs?`?${qs}`:""}`});document.getElementById("tab-vocab").addEventListener("click",()=>setActiveTab("vocab"));document.getElementById("tab-quiz").addEventListener("click",()=>{setActiveTab("quiz");if(DATA&&!QUIZ_STATE)renderQuiz(DATA)});document.getElementById("btnLang").addEventListener("click",()=>{const next=getLang()==="KR"?"MN":"KR";setLang(next);const u=new URL(location.href);u.searchParams.set("lang",next);history.replaceState(null,"",u.toString());applyTexts();if(DATA){renderVocab(DATA);if(document.getElementById("panel-quiz").classList.contains("active"))renderQuiz(DATA)}});document.getElementById("btnMode").addEventListener("click",()=>{QUIZ_MODE=QUIZ_MODE==="KO2MN"?"MN2KO":"KO2MN";applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnTime7").addEventListener("click",()=>{QUIZ_SECONDS=7;applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnTime10").addEventListener("click",()=>{QUIZ_SECONDS=10;applyTexts();if(DATA)renderQuiz(DATA)});document.getElementById("btnNew").addEventListener("click",()=>{if(DATA)renderQuiz(DATA)});
-    const status=document.getElementById("status"),subtitle=document.getElementById("subtitle");let dataPath=getParam("data");if(!dataPath){const set=String(parseInt(getParam("set")||"1",10)||1).padStart(2,"0");dataPath=`../data/topik1/collocation/set${set}.json`}try{status.textContent="Loading...";subtitle.textContent=tr("loading");const res=await fetch(new URL(dataPath,location.href).toString(),{cache:"no-store"});if(!res.ok)throw new Error("HTTP "+res.status);DATA=await res.json();if(Number(DATA&&DATA.set)!==requestedSet_()||String(DATA&&DATA.type||"").toLowerCase()!=="topik1_collocation"){renderInvalidEntry_("json_set_mismatch");return;}await loadContentOverrides_();applyTexts();renderVocab(DATA);status.textContent=tr("loaded")}catch(e){status.textContent="오류";subtitle.textContent=(e&&e.message)?e.message:String(e)}}
+    const status=document.getElementById("status"),subtitle=document.getElementById("subtitle");let dataPath=getParam("data");if(!dataPath){const set=String(parseInt(getParam("set")||"1",10)||1).padStart(2,"0");dataPath=`../data/topik1/collocation/set${set}.json`}try{status.textContent="Loading...";subtitle.textContent=tr("loading");const res=await fetch(new URL(dataPath,location.href).toString(),{cache:"no-cache"});if(!res.ok)throw new Error("HTTP "+res.status);DATA=await res.json();if(Number(DATA&&DATA.set)!==requestedSet_()||String(DATA&&DATA.type||"").toLowerCase()!=="topik1_collocation"){renderInvalidEntry_("json_set_mismatch");return;}await loadContentOverrides_();applyTexts();renderVocab(DATA);status.textContent=tr("loaded")}catch(e){status.textContent="오류";subtitle.textContent=(e&&e.message)?e.message:String(e)}}
   main();
 </script>
 </body>

@@ -29,6 +29,7 @@
     @media(min-width:760px){.studyNav{grid-template-columns:repeat(3,1fr)}}
     @media(max-width:600px){.container{padding:9px}.card{padding:12px}h1{font-size:24px}.studyNav{grid-template-columns:1fr 1fr}.studyPick{font-size:14px}.choices{grid-template-columns:1fr}.choice{font-size:18px}.stats{grid-template-columns:repeat(3,1fr)}.stat b{font-size:16px}.point h2{font-size:21px}.studyArrows{grid-template-columns:1fr auto 1fr}.btn{padding:10px 12px}.right .btnHome{display:none}}
   </style>
+  <script src="../js/kq-session.js?v=20261001" data-kq-session></script>
 </head>
 <body>
 <header class="topbar">
@@ -150,13 +151,15 @@
 
     try{
       const res = await jsonpRequest_(SCRIPT_URL,{
-        action:"validate", token, deviceId:getDeviceId_(), name, klass
+        action:"learning_start", token, deviceId:getDeviceId_(), name, klass, book:PROGRESS_BOOK
       });
       if(!res || !res.ok){
         clearLocalSession_();
         renderAuthBlocked_((res && res.error) || "expired_or_invalid");
         return false;
       }
+      DEV_ACCESS_CACHE=!!(res.developerAccess||res.isDeveloper);
+      window.KQSession.noteValidated();
       return true;
     }catch(e){
       renderAuthBlocked_("validation_network_error");
@@ -359,7 +362,7 @@
     else $('nextStage').onclick=null;
   }
 
-  async function init(){const authOk=await validateEntry_();if(!authOk)return;const progressOk=await validateProgressEntry_();if(!progressOk)return;applyText();$('toggleContentEditMode').onclick=()=>{if(!CONTENT_CAN_EDIT)return;CONTENT_EDIT_MODE=!CONTENT_EDIT_MODE;updateContentEditorControls_();renderStudy();if(document.getElementById('quiz').classList.contains('active')){quizState=null;renderQuizIntro()}};$('back').onclick=()=>location.href=indexUrl();$('lang').onclick=()=>{const next=lang()==='KR'?'MN':'KR';localStorage.setItem('kq_lang',next);params.set('lang',next);location.search=params.toString()};document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showPanel(t.dataset.panel));const path=params.get('data');if(!path){$('subtitle').textContent=tx('문법 데이터 경로가 없습니다.','Дүрмийн өгөгдлийн зам алга.');return}try{const res=await fetch(new URL(path,location.href),{cache:'no-store'});if(!res.ok)throw Error('HTTP '+res.status);DATA=await res.json();if(Number(DATA&&DATA.stage)!==requestedStage_()){renderInvalidEntry_('json_stage_mismatch');return;}await loadContentOverrides_();try{CURRENT_MASTERY=await masteryStatus_(requestedStage_());}catch(_e){CURRENT_MASTERY=null;}$('title').textContent=lang()==='MN'?(DATA.title_mn||DATA.title_kr):DATA.title_kr;$('subtitle').textContent=lang()==='MN'?(DATA.description_mn||DATA.description_kr):DATA.description_kr;$('stageBadge').textContent=tx(`${DATA.stage}단계 · 문법 ${DATA.points.length}개`,` ${DATA.stage}-р шат · ${DATA.points.length} дүрэм`);renderStudy();setStageNav()}catch(e){$('err').textContent=tx('불러오기 오류: ','Унших алдаа: ')+e.message;$('err').classList.remove('hidden')}}
+  async function init(){const authOk=await validateEntry_();if(!authOk)return;const progressOk=await validateProgressEntry_();if(!progressOk)return;applyText();$('toggleContentEditMode').onclick=()=>{if(!CONTENT_CAN_EDIT)return;CONTENT_EDIT_MODE=!CONTENT_EDIT_MODE;updateContentEditorControls_();renderStudy();if(document.getElementById('quiz').classList.contains('active')){quizState=null;renderQuizIntro()}};$('back').onclick=()=>location.href=indexUrl();$('lang').onclick=()=>{const next=lang()==='KR'?'MN':'KR';localStorage.setItem('kq_lang',next);params.set('lang',next);location.search=params.toString()};document.querySelectorAll('.tab').forEach(t=>t.onclick=()=>showPanel(t.dataset.panel));const path=params.get('data');if(!path){$('subtitle').textContent=tx('문법 데이터 경로가 없습니다.','Дүрмийн өгөгдлийн зам алга.');return}try{const res=await fetch(new URL(path,location.href),{cache:"no-cache"});if(!res.ok)throw Error('HTTP '+res.status);DATA=await res.json();if(Number(DATA&&DATA.stage)!==requestedStage_()){renderInvalidEntry_('json_stage_mismatch');return;}await loadContentOverrides_();try{CURRENT_MASTERY=await masteryStatus_(requestedStage_());}catch(_e){CURRENT_MASTERY=null;}$('title').textContent=lang()==='MN'?(DATA.title_mn||DATA.title_kr):DATA.title_kr;$('subtitle').textContent=lang()==='MN'?(DATA.description_mn||DATA.description_kr):DATA.description_kr;$('stageBadge').textContent=tx(`${DATA.stage}단계 · 문법 ${DATA.points.length}개`,` ${DATA.stage}-р шат · ${DATA.points.length} дүрэм`);renderStudy();setStageNav()}catch(e){$('err').textContent=tx('불러오기 오류: ','Унших алдаа: ')+e.message;$('err').classList.remove('hidden')}}
   init();
 </script>
 </body></html>
