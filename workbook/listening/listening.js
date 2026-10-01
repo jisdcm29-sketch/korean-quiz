@@ -3,34 +3,68 @@
   'use strict';
   const ENDPOINT='https://script.google.com/macros/s/AKfycbz6WBgnJXTAperJK2NwX-VwkmPEQrU4SluCcXjbmYYgcywYM2AcHZwkymBse6E9Kaqg/exec';
   const TESTS={
-    '1A-review1':{rangeKr:'1–2과',rangeMn:'1–2-р хичээл',source:'Workbook pp.73–75',prompts:[
+    '1A-review1':{book:'1A',rangeKr:'1–2과',rangeMn:'1–2-р хичээл',source:'Workbook pp.73–75',prompts:[
       {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
       {end:10,text:'잘 듣고 알맞은 대답을 고르세요.'},
       {end:13,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
       {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
       {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
     ]},
-    '1A-review2':{rangeKr:'3–4과',rangeMn:'3–4-р хичээл',source:'Workbook pp.119–121',prompts:[
+    '1A-review2':{book:'1A',rangeKr:'3–4과',rangeMn:'3–4-р хичээл',source:'Workbook pp.119–121',prompts:[
       {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
       {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
       {end:12,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
       {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
       {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
     ]},
-    '1A-review3':{rangeKr:'5–6과',rangeMn:'5–6-р хичээл',source:'Workbook pp.165–167',prompts:[
+    '1A-review3':{book:'1A',rangeKr:'5–6과',rangeMn:'5–6-р хичээл',source:'Workbook pp.165–167',prompts:[
       {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
       {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
       {end:12,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
       {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
       {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
     ]},
-    '1A-review4':{rangeKr:'7–8과',rangeMn:'7–8-р хичээл',source:'Workbook pp.211–213',prompts:[
+    '1A-review4':{book:'1A',rangeKr:'7–8과',rangeMn:'7–8-р хичээл',source:'Workbook pp.211–213',prompts:[
       {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
       {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
       {end:10,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
       {end:12,text:'무엇에 대해 이야기합니까? 잘 듣고 알맞은 것을 고르세요.'},
       {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
       {end:20,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'}
+    ]},
+    '1B-review1':{book:'1B',rangeKr:'9–10과',rangeMn:'9–10-р хичээл',source:'Workbook pp.51–53',prompts:[
+      {end:2,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:11,text:'무엇에 대해 이야기합니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:14,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:18,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:20,text:'잘 듣고 질문에 답하세요.'}
+    ]},
+    '1B-review2':{book:'1B',rangeKr:'11–12과',rangeMn:'11–12-р хичээл',source:'Workbook pp.97–99',prompts:[
+      {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:11,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:14,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:18,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:20,text:'잘 듣고 질문에 답하세요.'}
+    ]},
+    '1B-review3':{book:'1B',rangeKr:'13–14과',rangeMn:'13–14-р хичээл',source:'Workbook pp.143–145',prompts:[
+      {end:3,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:10,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:12,text:'무엇에 대해 이야기합니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:15,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:18,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:20,text:'잘 듣고 질문에 답하세요.'}
+    ]},
+    '1B-review4':{book:'1B',rangeKr:'15–16과',rangeMn:'15–16-р хичээл',source:'Workbook pp.189–191',prompts:[
+      {end:2,text:'잘 듣고 알맞은 것을 고르세요.'},
+      {end:8,text:'잘 듣고 알맞은 대답을 고르세요.'},
+      {end:11,text:'여기는 어디입니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:14,text:'무엇에 대해 이야기합니까? 잘 듣고 알맞은 것을 고르세요.'},
+      {end:16,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
+      {end:18,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:20,text:'잘 듣고 질문에 답하세요.'}
     ]}
   };
   const testParam=new URLSearchParams(location.search).get('test')||'1A-review1';
@@ -57,7 +91,7 @@
   function status(kr,mnText){$('status').textContent=t(kr,mnText);}
   function id(){return crypto.randomUUID ? crypto.randomUUID() : 'kql_'+Date.now()+'_'+Math.random().toString(36).slice(2);}
   function authUrl(path){const u=new URL(path,location.href);Object.entries({name:session.name,klass:session.klass,token:session.token,lang}).forEach(([k,v])=>u.searchParams.set(k,v));return u.href;}
-  function exit(){if(state && state.answers.length && !state.result && !confirm(t('이동해도 확정한 답안은 잠금 상태로 유지됩니다. 나갈까요?','Баталгаажуулсан хариулт өөрчлөгдөхгүй. Гарах уу?')))return;location.href=authUrl('../snu1a/?view=listening');}
+  function exit(){if(state && state.answers.length && !state.result && !confirm(t('이동해도 확정한 답안은 잠금 상태로 유지됩니다. 나갈까요?','Баталгаажуулсан хариулт өөрчлөгдөхгүй. Гарах уу?')))return;location.href=authUrl('../snu'+CFG.book.toLowerCase()+'/?view=listening');}
   function api(action,extra={}) {
     return new Promise((resolve,reject)=>{
       if(!active()){reject(new Error('expired_or_invalid'));return;}
@@ -178,8 +212,11 @@
   window.addEventListener('storage',e=>{if(e.key===key&&ready&&!submitting){try{refreshLocal();render();}catch(err){error(err);}}});
   window.addEventListener('online',()=>{if(ready&&!state.result)scheduleSync();});
   window.addEventListener('pageshow',()=>{if(ready){try{if(active()){refreshLocal();render();scheduleSync();}}catch(e){error(e);}}});
+  const bookLabel='SNU '+CFG.book;
   $('range').textContent=mn?CFG.rangeMn:CFG.rangeKr;
-  if(mn){document.documentElement.lang='mn';document.title='SNU 1A Сонсох шалгалт';$('title').textContent='SNU 1A · Сонсох шалгалт';$('start').textContent='Эхлэх';$('exit').textContent='Гарах';$('submitTitle').textContent='Хариулт илгээх';$('retry').textContent='Дахин илгээх';$('resultTitle').textContent='Сонсох шалгалтын дүн';$('done').textContent='Шалгалтын жагсаалт';$('options').setAttribute('aria-label','Хариултын дугаар');}
+  document.title=bookLabel+(mn?' Сонсох шалгалт':' 듣기평가');
+  $('title').textContent=bookLabel+' · '+t('듣기평가','Сонсох шалгалт');
+  if(mn){document.documentElement.lang='mn';$('start').textContent='Эхлэх';$('exit').textContent='Гарах';$('submitTitle').textContent='Хариулт илгээх';$('retry').textContent='Дахин илгээх';$('resultTitle').textContent='Сонсох шалгалтын дүн';$('done').textContent='Шалгалтын жагсаалт';$('options').setAttribute('aria-label','Хариултын дугаар');}
   if(!session.phone||!device){$('start').disabled=true;status('로그인 정보를 확인한 뒤 다시 로그인해 주세요.','Нэвтрэх мэдээллээ шалгаад дахин нэвтэрнэ үү.');return;}
   if(read())begin();
 })();
