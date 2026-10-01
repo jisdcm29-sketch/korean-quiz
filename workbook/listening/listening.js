@@ -65,11 +65,32 @@
       {end:16,text:'다음 대화를 듣고 알맞은 그림을 고르세요.'},
       {end:18,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
       {end:20,text:'잘 듣고 질문에 답하세요.'}
+    ]},
+    '2A-review1':{book:'2A',rangeKr:'1–3과',rangeMn:'1–3-р хичээл',source:'Workbook pp.61–63',total:15,prompts:[
+      {end:2,text:'잘 듣고 알맞은 그림을 고르세요.'},
+      {end:7,text:'잘 듣고 맞는 대화를 고르세요.'},
+      {end:9,text:'다음은 무엇에 대해 말하고 있습니까?'},
+      {end:11,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:15,text:'잘 듣고 질문에 맞는 답을 고르세요.'}
+    ]},
+    '2A-review2':{book:'2A',rangeKr:'4–6과',rangeMn:'4–6-р хичээл',source:'Workbook pp.119–121',total:15,prompts:[
+      {end:2,text:'잘 듣고 알맞은 그림을 고르세요.'},
+      {end:7,text:'잘 듣고 맞는 대화를 고르세요.'},
+      {end:9,text:'다음은 무엇에 대해 말하고 있습니까?'},
+      {end:11,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:15,text:'잘 듣고 질문에 맞는 답을 고르세요.'}
+    ]},
+    '2A-review3':{book:'2A',rangeKr:'7–9과',rangeMn:'7–9-р хичээл',source:'Workbook pp.179–181',total:15,prompts:[
+      {end:2,text:'잘 듣고 알맞은 그림을 고르세요.'},
+      {end:7,text:'잘 듣고 맞는 대화를 고르세요.'},
+      {end:9,text:'다음은 무엇에 대해 말하고 있습니까?'},
+      {end:11,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:15,text:'잘 듣고 질문에 맞는 답을 고르세요.'}
     ]}
   };
   const testParam=new URLSearchParams(location.search).get('test')||'1A-review1';
   const TEST=Object.prototype.hasOwnProperty.call(TESTS,testParam)?testParam:'1A-review1';
-  const CFG=TESTS[TEST], TOTAL=20, PROMPTS=CFG.prompts;
+  const CFG=TESTS[TEST], TOTAL=CFG.total||20, PROMPTS=CFG.prompts;
   // Public UI contains only workbook prompt groups; answers stay in Apps Script.
   const $=id=>document.getElementById(id);
   const guard=window.KQSession;
