@@ -284,7 +284,7 @@
         <div class="grid" id="lessonGrid"></div>
         <div class="grid hidden" id="workbookEvalWrap">
           <button class="lessonBtn workbookEval" id="workbookEvalBtn" type="button">
-            <span class="lessonBtnInner"><span>★ 평가 시험</span></span>
+            <span class="lessonBtnInner"><span>★ 평가</span></span>
           </button>
         </div>
       </div>
@@ -326,7 +326,7 @@
         teacherOverride: "교사 지정 시작점 적용",
         lowerCourseAccess: "교사 인정 · 이전 과정 전체 접근",
         teacherStartInvalid: "교사 지정 시작 과를 현재 교재 범위에 맞게 조정했습니다.",
-        workbookEval: "평가 시험",
+        workbookEval: "평가",
         workbookEvalSub: ""
       },
       MN: {
@@ -360,7 +360,7 @@
         teacherOverride: "Багшийн эхлэх цэг хэрэгжиж байна",
         lowerCourseAccess: "Багш зөвшөөрсөн · өмнөх шат бүхэлдээ нээлттэй",
         teacherStartInvalid: "Багшийн заасан эхлэх хичээлийг энэ номын хүрээнд тохирууллаа.",
-        workbookEval: "Үнэлгээний шалгалт",
+        workbookEval: "Үнэлгээ",
         workbookEvalSub: ""
       }
     };
@@ -459,6 +459,7 @@
       const u = new URL(target, location.href);
       const p = new URLSearchParams(passthroughQS());
       p.forEach((v,k)=>u.searchParams.set(k,v));
+      if(id === "1A") u.searchParams.set("view", "menu");
       location.href = u.toString();
     }
 
