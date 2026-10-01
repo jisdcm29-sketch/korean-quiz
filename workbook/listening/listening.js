@@ -86,6 +86,27 @@
       {end:9,text:'다음은 무엇에 대해 말하고 있습니까?'},
       {end:11,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
       {end:15,text:'잘 듣고 질문에 맞는 답을 고르세요.'}
+    ]},
+    '2B-review1':{book:'2B',rangeKr:'10–12과',rangeMn:'10–12-р хичээл',source:'Workbook pp.63–65',total:15,prompts:[
+      {end:2,text:'잘 듣고 알맞은 그림을 고르세요.'},
+      {end:7,text:'잘 듣고 맞는 대화를 고르세요.'},
+      {end:9,text:'다음은 무엇에 대해 말하고 있습니까?'},
+      {end:11,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:15,text:'잘 듣고 질문에 맞는 답을 고르세요.'}
+    ]},
+    '2B-review2':{book:'2B',rangeKr:'13–15과',rangeMn:'13–15-р хичээл',source:'Workbook pp.123–125',total:15,prompts:[
+      {end:2,text:'잘 듣고 알맞은 그림을 고르세요.'},
+      {end:7,text:'잘 듣고 맞는 대화를 고르세요.'},
+      {end:9,text:'다음은 무엇에 대해 말하고 있습니까?'},
+      {end:11,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:15,text:'잘 듣고 질문에 맞는 답을 고르세요.'}
+    ]},
+    '2B-review3':{book:'2B',rangeKr:'16–18과',rangeMn:'16–18-р хичээл',source:'Workbook pp.183–185',total:15,prompts:[
+      {end:2,text:'잘 듣고 알맞은 그림을 고르세요.'},
+      {end:7,text:'잘 듣고 맞는 대화를 고르세요.'},
+      {end:9,text:'다음은 무엇에 대해 말하고 있습니까?'},
+      {end:11,text:'잘 듣고 대화 내용과 같은 것을 고르세요.'},
+      {end:15,text:'잘 듣고 질문에 맞는 답을 고르세요.'}
     ]}
   };
   const testParam=new URLSearchParams(location.search).get('test')||'1A-review1';
