@@ -128,6 +128,7 @@
   function validAnswers(a){return Array.isArray(a)&&a.length<=TOTAL&&a.every(n=>Number.isInteger(n)&&n>=1&&n<=4);}
   function compatible(a,b){return a.slice(0,Math.min(a.length,b.length)).every((n,i)=>n===b[i]);}
   function read(){try{const s=JSON.parse(localStorage.getItem(key)||'null');return s&&/^[A-Za-z0-9_-]{16,80}$/.test(s.attemptId)&&validAnswers(s.answers)?s:null;}catch(_){return null;}}
+  function completed(s){return !!(s && s.result && s.result.submitted === true && s.result.saved === true);}
   function persist(){localStorage.setItem(key,JSON.stringify(state));}
   function show(id){['intro','exam','submission','result'].forEach(x=>$(x).hidden=x!==id);}
   function status(kr,mnText){$('status').textContent=t(kr,mnText);}
@@ -179,7 +180,8 @@
     $('start').disabled=true;
     status('시험을 준비하고 있습니다.','Шалгалтыг бэлтгэж байна.');
     try{
-      state=read()||{attemptId:id(),answers:[]};persist();
+      const previous=read();
+      state=completed(previous)?{attemptId:id(),answers:[]}:(previous||{attemptId:id(),answers:[]});persist();
       const r=await api('workbook_listening_begin');
       merge(r,true);lastSynced=r.answers.length;ready=true;render();
       if(!r.submitted && state.answers.length>r.answers.length)scheduleSync();
@@ -253,12 +255,13 @@
   $('start').onclick=begin;$('retry').onclick=submit;$('exit').onclick=exit;$('done').onclick=exit;
   window.addEventListener('storage',e=>{if(e.key===key&&ready&&!submitting){try{refreshLocal();render();}catch(err){error(err);}}});
   window.addEventListener('online',()=>{if(ready&&!state.result)scheduleSync();});
-  window.addEventListener('pageshow',()=>{if(ready){try{if(active()){refreshLocal();render();scheduleSync();}}catch(e){error(e);}}});
+  window.addEventListener('pageshow',e=>{if(e.persisted && ready && completed(state)){ready=false;show('intro');$('status').textContent='';return;}if(ready){try{if(active()){refreshLocal();render();scheduleSync();}}catch(err){error(err);}}});
   const bookLabel='SNU '+CFG.book;
   $('range').textContent=mn?CFG.rangeMn:CFG.rangeKr;
   document.title=bookLabel+(mn?' Сонсох шалгалт':' 듣기평가');
   $('title').textContent=bookLabel+' · '+t('듣기평가','Сонсох шалгалт');
   if(mn){document.documentElement.lang='mn';$('start').textContent='Эхлэх';$('exit').textContent='Гарах';$('submitTitle').textContent='Хариулт илгээх';$('retry').textContent='Дахин илгээх';$('resultTitle').textContent='Сонсох шалгалтын дүн';$('done').textContent='Шалгалтын жагсаалт';$('options').setAttribute('aria-label','Хариултын дугаар');}
   if(!session.phone||!device){$('start').disabled=true;status('로그인 정보를 확인한 뒤 다시 로그인해 주세요.','Нэвтрэх мэдээллээ шалгаад дахин нэвтэрнэ үү.');return;}
-  if(read())begin();
+  const previousAttempt=read();
+  if(previousAttempt && !completed(previousAttempt))begin();
 })();
